@@ -57,5 +57,6 @@ export async function GET(req: NextRequest) {
     }),
   );
 
+  
   return NextResponse.json({ ok: true, archived: rows.length, key });
 }
