@@ -30,7 +30,7 @@ export function DashboardShell({
     <main className="min-h-screen bg-paper">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
         <Link href="/" className="font-display text-xl font-semibold">
-          Kvitto
+          Utlagg 
         </Link>
         <div className="flex items-center gap-4 text-sm">
           <span className="hidden text-ink/60 sm:block">Hej, {name}</span>

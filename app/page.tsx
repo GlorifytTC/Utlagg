@@ -10,7 +10,7 @@ export default function HomePage() {
       {/* Nav */}
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <Link href="/" className="font-display text-xl font-semibold">
-          Kvitto
+          Utlagg 
         </Link>
         <nav className="flex items-center gap-6 text-sm">
           <Link href="#funktioner" className="hidden text-ink/70 hover:text-ink sm:block">

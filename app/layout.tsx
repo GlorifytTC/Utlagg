@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Schibsted_Grotesk } from "next/font/google";
 import { Providers } from "@/components/Providers";
+// @ts-ignore: CSS side-effect import without type declarations
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -18,22 +19,22 @@ const schibsted = Schibsted_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL ?? "http://localhost:3000"),
   title: {
-    default: "Kvitto — AI-driven kvittohantering för svenska företag",
-    template: "%s · Kvitto",
+    default: "Utlagg — AI-driven expense management för svenska företag",
+    template: "%s · Utlagg",
   },
   description:
     "Skanna kvitton med AI, bokför moms (6/12/25 %) automatiskt och exportera till Skatteverket. GDPR-säker kvittohantering och expense management i Sverige.",
   keywords: [
-    "kvittohantering",
+    "utlagg",
     "expense management Sverige",
+    "kvittohantering",
     "AI scanning",
-    "kvitto app",
-    "bokföring moms",
     "utläggshantering",
+    "bokföring moms",
     "BAS-konto",
   ],
   openGraph: {
-    title: "Kvitto — AI-driven kvittohantering",
+    title: "Utlagg — AI-driven expense management",
     description:
       "Skanna, bokför och exportera kvitton automatiskt. Byggd för svenska moms- och bokföringsregler.",
     locale: "sv_SE",

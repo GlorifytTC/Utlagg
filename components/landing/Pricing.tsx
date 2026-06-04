@@ -18,7 +18,7 @@ export function Pricing() {
       return;
     }
     if (tier === "enterprise") {
-      window.location.href = "mailto:sales@kvitto.se?subject=Enterprise";
+      window.location.href = "mailto:sales@Utlagg .se?subject=Enterprise";
       return;
     }
     if (status !== "authenticated") {
