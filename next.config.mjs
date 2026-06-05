@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Emit a self-contained server (.next/standalone/server.js) for Railway/Docker.
-  output: "standalone",
+  // Standalone output is for Railway/Docker only. On Vercel it's unnecessary
+  // and can interfere with function routing, so disable it there (Vercel sets
+  // the VERCEL env var at build time).
+  output: process.env.VERCEL ? undefined : "standalone",
   images: {
     remotePatterns: [
       // Allow receipt images served from your storage bucket / CDN.
