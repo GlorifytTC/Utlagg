@@ -3,10 +3,12 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { Pricing } from "@/components/landing/Pricing";
 import { Features } from "@/components/landing/Features";
 import { Footer } from "@/components/landing/Footer";
+import { StructuredData } from "@/components/StructuredData";
 
 export default function HomePage() {
   return (
     <main className="bg-paper">
+      <StructuredData />
       {/* Nav */}
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <Link href="/" className="font-display text-xl font-semibold">

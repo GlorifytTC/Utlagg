@@ -67,6 +67,16 @@ export const users = pgTable("users", {
   usageResetAt: timestamp("usage_reset_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
+  // --- Email verification + password reset (phase 6, all nullable) ---
+  emailVerified: timestamp("email_verified", { withTimezone: true }),
+  emailVerificationToken: varchar("email_verification_token", { length: 255 }),
+  emailVerificationTokenExpires: timestamp("email_verification_token_expires", {
+    withTimezone: true,
+  }),
+  passwordResetToken: varchar("password_reset_token", { length: 255 }),
+  passwordResetTokenExpires: timestamp("password_reset_token_expires", {
+    withTimezone: true,
+  }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -212,6 +222,18 @@ export const integrationTokens = pgTable(
     ),
   }),
 );
+
+/* ------------------------------------------------------------------ */
+/* webhook_events (Stripe idempotency — process each event once)       */
+/* ------------------------------------------------------------------ */
+
+export const webhookEvents = pgTable("webhook_events", {
+  id: varchar("id", { length: 255 }).primaryKey(), // Stripe event id (evt_...)
+  type: varchar("type", { length: 120 }).notNull(),
+  processedAt: timestamp("processed_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
 
 /* ------------------------------------------------------------------ */
 /* Relations                                                          */

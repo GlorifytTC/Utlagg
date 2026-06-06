@@ -1,32 +1,67 @@
-import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
+import { eq, sql, desc } from "drizzle-orm";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
-import { users } from "@/db/schema";
-import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { receipts, users } from "@/db/schema";
+import type { Receipt } from "@/db/schema";
+import { StatsCards } from "@/components/dashboard/StatsCards";
+import { RecentReceipts } from "@/components/dashboard/RecentReceipts";
+import { UsageChart } from "@/components/dashboard/UsageChart";
 
-export const metadata = { title: "Dashboard" };
+export const metadata = { title: "Översikt" };
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
+  const userId = session.user.id;
 
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, session.user.id))
-    .limit(1);
-
+  const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
   if (!user) redirect("/login");
 
+  const [stats] = await db
+    .select({
+      total: sql<number>`count(*)::int`,
+      thisMonth: sql<number>`count(case when date_trunc('month', ${receipts.createdAt}) = date_trunc('month', now()) then 1 end)::int`,
+      totalAmount: sql<number>`coalesce(sum(${receipts.totalAmount}), 0)::float`,
+    })
+    .from(receipts)
+    .where(eq(receipts.userId, userId));
+
+  const recent = (await db
+    .select()
+    .from(receipts)
+    .where(eq(receipts.userId, userId))
+    .orderBy(desc(receipts.createdAt))
+    .limit(5)) as Receipt[];
+
+  const limit = user.scanLimit as number;
+  const used = user.scansUsedThisMonth as number;
+  const usagePercent =
+    limit === -1 ? -1 : Math.min(100, (used / Math.max(1, limit)) * 100);
+
   return (
-    <DashboardShell
-      name={user.name ?? user.email}
-      used={user.scansUsedThisMonth}
-      limit={user.scanLimit}
-      tier={user.subscriptionTier}
-    />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Översikt</h1>
+        <p className="text-gray-500 dark:text-gray-400">
+          Välkommen tillbaka, {user.name ?? user.email}
+        </p>
+      </div>
+
+      <StatsCards
+        totalReceipts={Number(stats?.total ?? 0)}
+        thisMonthReceipts={Number(stats?.thisMonth ?? 0)}
+        totalAmount={Number(stats?.totalAmount ?? 0)}
+        usagePercent={usagePercent}
+        planLabel={user.subscriptionTier}
+      />
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <UsageChart used={used} limit={limit} />
+        <RecentReceipts receipts={recent} />
+      </div>
+    </div>
   );
 }

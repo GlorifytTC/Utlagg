@@ -70,6 +70,11 @@ export default function LoginPage() {
             Skapa konto
           </Link>
         </p>
+        <p className="mt-2 text-sm text-ink/60">
+          <Link href="/forgot-password" className="text-nordic-600 underline">
+            Glömt lösenord?
+          </Link>
+        </p>
       </div>
     </main>
   );

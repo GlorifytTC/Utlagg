@@ -40,6 +40,11 @@ export const metadata: Metadata = {
     locale: "sv_SE",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Utlagg — AI-driven kvittohantering",
+    description: "Smart kvittoscanning med AI för svenska företag.",
+  },
   robots: { index: true, follow: true },
 };
 

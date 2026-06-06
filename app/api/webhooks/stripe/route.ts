@@ -3,8 +3,9 @@ import { eq } from "drizzle-orm";
 import type Stripe from "stripe";
 import { stripe, tierFromPriceId } from "@/lib/stripe";
 import { db } from "@/db";
-import { users, subscriptions } from "@/db/schema";
+import { users, subscriptions, webhookEvents } from "@/db/schema";
 import { logAudit } from "@/lib/audit";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 // Stripe needs the raw body for signature verification — don't let Next parse it.
@@ -34,7 +35,26 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Idempotency: skip events we've already processed (Stripe may resend).
+    try {
+      await db.insert(webhookEvents).values({ id: event.id, type: event.type });
+    } catch {
+      // Duplicate primary key -> already handled; ack and return.
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+
     switch (event.type) {
+      case "checkout.session.completed": {
+        const sessionObj = event.data.object as Stripe.Checkout.Session;
+        const email =
+          sessionObj.customer_details?.email ??
+          sessionObj.customer_email ??
+          null;
+        if (email) {
+          await sendWelcomeEmail(email);
+        }
+        break;
+      }
       case "customer.subscription.updated":
       case "customer.subscription.created": {
         const sub = event.data.object as Stripe.Subscription;

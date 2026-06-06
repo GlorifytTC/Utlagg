@@ -62,3 +62,42 @@ export async function enforceRateLimit(
 }
 
 export const rateLimitEnabled = () => limiter !== null;
+
+/**
+ * Named limiters for specific routes. Each is null when Upstash isn't
+ * configured; checkLimit() then allows the request (fail-open in dev).
+ */
+function make(tokens: number, window: Parameters<typeof Ratelimit.slidingWindow>[1]) {
+  if (
+    !process.env.UPSTASH_REDIS_REST_URL ||
+    !process.env.UPSTASH_REDIS_REST_TOKEN
+  ) {
+    return null;
+  }
+  return new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(tokens, window),
+    analytics: true,
+    prefix: "kvitto",
+  });
+}
+
+export const rateLimit = {
+  upload: make(10, "10 s"),
+  api: make(30, "1 m"),
+  auth: make(5, "1 m"),
+};
+
+/**
+ * Check a named bucket for an identifier. Returns true if allowed.
+ * Fail-open when the bucket is null (Upstash not configured).
+ */
+export async function checkLimit(
+  bucket: keyof typeof rateLimit,
+  identifier: string,
+): Promise<boolean> {
+  const rl = rateLimit[bucket];
+  if (!rl) return true;
+  const { success } = await rl.limit(identifier);
+  return success;
+}
