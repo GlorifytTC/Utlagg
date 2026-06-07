@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { BankIDLogin } from "@/components/auth/BankIDLogin";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -56,13 +57,7 @@ export default function LoginPage() {
           >
             {loading ? "Loggar in…" : "Logga in"}
           </button>
-          <button
-            disabled
-            title="Lanseras i fas 2"
-            className="w-full cursor-not-allowed rounded-full border hairline px-5 py-3 text-sm text-ink/40"
-          >
-            Logga in med BankID (snart)
-          </button>
+          <BankIDLogin callbackUrl="/dashboard" />
         </div>
         <p className="mt-6 text-sm text-ink/60">
           Inget konto?{" "}

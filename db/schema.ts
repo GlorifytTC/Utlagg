@@ -51,6 +51,9 @@ export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: varchar("email", { length: 320 }).notNull().unique(),
   hashedPassword: text("hashed_password"), // nullable: BankID users have none
+  // SHA-256 of the BankID personnummer — lets us match returning BankID users
+  // without storing the raw personal number. Nullable + unique.
+  bankIdSubject: varchar("bank_id_subject", { length: 64 }).unique(),
   name: varchar("name", { length: 200 }),
   companyName: varchar("company_name", { length: 200 }),
   role: userRole("role").notNull().default("admin"),
@@ -109,6 +112,10 @@ export const receipts = pgTable(
     status: receiptStatus("status").notNull().default("pending"),
     aiConfidence: real("ai_confidence"),
     receiptText: text("receipt_text"), // raw OCR text — kept for audit
+    // Fortnox sync state
+    fortnoxSynced: boolean("fortnox_synced").notNull().default(false),
+    fortnoxSyncedAt: timestamp("fortnox_synced_at", { withTimezone: true }),
+    fortnoxVoucherId: varchar("fortnox_voucher_id", { length: 64 }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -224,6 +231,69 @@ export const integrationTokens = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
+/* mileage_entries (Milersättning)                                     */
+/* ------------------------------------------------------------------ */
+
+// Skatteverket tax-free rate for own car, 2026: 25 kr/mil = 2.50 kr/km.
+// (Per *mil* = 10 km. 18.50 kr/mil was the old pre-2023 rate.)
+export const MILEAGE_RATE_PER_KM = 2.5;
+
+export const mileageEntries = pgTable(
+  "mileage_entries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    startAddress: text("start_address").notNull(),
+    endAddress: text("end_address").notNull(),
+    distanceKm: numeric("distance_km", { precision: 10, scale: 2 }).notNull(),
+    ratePerKm: numeric("rate_per_km", { precision: 6, scale: 2 }).notNull(),
+    amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
+    date: timestamp("date", { withTimezone: true }).notNull(),
+    purpose: varchar("purpose", { length: 20 }).notNull().default("business"),
+    note: text("note"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => ({ userIdx: index("mileage_user_idx").on(t.userId) }),
+);
+
+/* ------------------------------------------------------------------ */
+/* approval_requests (Attestflöden)                                    */
+/* ------------------------------------------------------------------ */
+
+export const approvalRequests = pgTable(
+  "approval_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    requesterId: uuid("requester_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    approverEmail: varchar("approver_email", { length: 320 }).notNull(),
+    receiptId: uuid("receipt_id").references(() => receipts.id, {
+      onDelete: "set null",
+    }),
+    mileageId: uuid("mileage_id").references(() => mileageEntries.id, {
+      onDelete: "set null",
+    }),
+    amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
+    status: approvalStatus("status").notNull().default("pending"),
+    requesterComment: text("requester_comment"),
+    approverComment: text("approver_comment"),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => ({
+    requesterIdx: index("approval_requester_idx").on(t.requesterId),
+    approverIdx: index("approval_approver_idx").on(t.approverEmail),
+  }),
+);
+
+/* ------------------------------------------------------------------ */
 /* webhook_events (Stripe idempotency — process each event once)       */
 /* ------------------------------------------------------------------ */
 
@@ -277,3 +347,5 @@ export type Expense = typeof expenses.$inferSelect;
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type Subscription = typeof subscriptions.$inferSelect;
 export type IntegrationToken = typeof integrationTokens.$inferSelect;
+export type MileageEntry = typeof mileageEntries.$inferSelect;
+export type ApprovalRequest = typeof approvalRequests.$inferSelect;

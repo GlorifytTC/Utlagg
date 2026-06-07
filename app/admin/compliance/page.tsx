@@ -1,6 +1,6 @@
 import { retentionReport } from "@/lib/compliance";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { SkatteverketExport } from "@/components/SkatteverketExport";
 
 export const metadata = { title: "Admin · Efterlevnad" };
 export const dynamic = "force-dynamic";
@@ -27,11 +27,7 @@ export default async function AdminCompliance() {
           <CardDescription>Alla kvitton med momsuppdelning (CSV) för ett datumintervall</CardDescription>
         </CardHeader>
         <CardContent>
-          <form method="GET" action="/api/admin/compliance/skatteverket" className="flex flex-wrap items-end gap-2">
-            <label className="text-sm">Från<br /><input type="date" name="from" className="rounded border border-gray-300 px-2 py-1 dark:border-gray-700 dark:bg-gray-950" /></label>
-            <label className="text-sm">Till<br /><input type="date" name="to" className="rounded border border-gray-300 px-2 py-1 dark:border-gray-700 dark:bg-gray-950" /></label>
-            <Button type="submit" variant="outline">Ladda ner CSV</Button>
-          </form>
+          <SkatteverketExport endpoint="/api/admin/compliance/skatteverket" />
         </CardContent>
       </Card>
 

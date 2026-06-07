@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/components/ThemeProvider";
+import { SkatteverketExport } from "@/components/SkatteverketExport";
 
 export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme();
@@ -73,6 +74,16 @@ export default function SettingsPage() {
           <a href="/api/integrations/fortnox/auth">
             <Button variant="outline">Koppla Fortnox</Button>
           </a>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Skatteverket-export (PRO)</CardTitle>
+          <CardDescription>Välj period och ladda ner alla kvitton med moms och BAS-konto</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SkatteverketExport />
         </CardContent>
       </Card>
     </div>

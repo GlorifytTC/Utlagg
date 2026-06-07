@@ -41,19 +41,30 @@ export async function skatteverketCsv(from?: string, to?: string): Promise<strin
     const s = v == null ? "" : String(v);
     return /[",;\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
-  const header = ["Datum", "Leverantör", "Belopp", "Moms", "Momssats", "BAS-konto", "Kategori"];
+  const sv = (n: unknown) => {
+    if (n == null) return "";
+    const num = typeof n === "string" ? Number(n) : (n as number);
+    return Number.isNaN(num) ? "" : num.toFixed(2).replace(".", ",");
+  };
+  const header = [
+    "Kvittodatum", "Leverantör", "Belopp (SEK)", "Moms (SEK)", "Momssats (%)",
+    "BAS-konto", "Kategori", "Beskrivning", "Bildreferens",
+  ];
   const lines = rows.map((r: Record<string, unknown>) =>
     [
       r.date ? new Date(r.date as string).toISOString().slice(0, 10) : "",
       r.vendorName,
-      r.totalAmount,
-      r.vatAmount,
+      sv(r.totalAmount),
+      sv(r.vatAmount),
       r.vatRate,
       r.basCode,
       r.category,
+      (r.receiptText ? String(r.receiptText).split("\n")[0].slice(0, 120) : "") ||
+        (r.category ?? ""),
+      r.imageUrl,
     ].map(esc).join(";"),
   );
-  return "\uFEFF" + [header.join(";"), ...lines].join("\n");
+  return "\uFEFF" + [header.join(";"), ...lines].join("\r\n");
 }
 
 /** 7-year retention analysis (Bokföringslagen). */

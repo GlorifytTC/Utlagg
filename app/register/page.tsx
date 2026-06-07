@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { BankIDLogin } from "@/components/auth/BankIDLogin";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -65,6 +66,10 @@ export default function RegisterPage() {
             className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper hover:bg-nordic-900 disabled:opacity-60">
             {loading ? "Skapar konto…" : "Skapa konto"}
           </button>
+          <div className="flex items-center gap-3 text-xs text-ink/40">
+            <span className="h-px flex-1 bg-ink/10" /> eller <span className="h-px flex-1 bg-ink/10" />
+          </div>
+          <BankIDLogin callbackUrl="/dashboard" />
         </div>
         <p className="mt-6 text-sm text-ink/60">
           Har du redan konto?{" "}

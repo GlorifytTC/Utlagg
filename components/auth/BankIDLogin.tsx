@@ -1,124 +1,121 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import QRCode from "qrcode";
 
-type Status = "idle" | "starting" | "pending" | "complete" | "failed";
-
-interface Identity {
-  personalNumber: string;
-  name: string;
-}
+type Status = "idle" | "pending" | "failed";
 
 /**
- * Drives the BankID animated-QR flow against /api/bankid/auth.
- * On "complete" it calls onComplete(identity); the parent decides how to turn
- * that into a signed-in session (see the integration note).
+ * BankID sign-up OR login (same flow). Starts an order, animates the QR
+ * client-side, and calls signIn("bankid", { orderRef }). New personnummer ->
+ * account is created; returning one -> logged in.
  */
-export function BankIDLogin({
-  onComplete,
-}: {
-  onComplete?: (identity: Identity | null) => void;
-}) {
+export function BankIDLogin({ callbackUrl = "/dashboard" }: { callbackUrl?: string }) {
+  const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
-  const [autoStartToken, setAutoStartToken] = useState<string | null>(null);
+  const [qr, setQr] = useState<string | null>(null);
+  const [autoStart, setAutoStart] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const sessionId = useRef<string | null>(null);
-  const poll = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const stop = useCallback(() => {
-    if (poll.current) clearInterval(poll.current);
-    poll.current = null;
+    if (timer.current) clearInterval(timer.current);
+    timer.current = null;
   }, []);
+  useEffect(() => () => stop(), [stop]);
 
-  const renderQr = useCallback(async (qr: string) => {
-    try {
-      setQrDataUrl(await QRCode.toDataURL(qr, { margin: 1, width: 240 }));
-    } catch {
-      /* ignore render errors */
-    }
-  }, []);
+  async function animatedQrData(token: string, secret: string, seconds: number) {
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      "raw",
+      enc.encode(secret),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign"],
+    );
+    const sig = await crypto.subtle.sign("HMAC", key, enc.encode(String(seconds)));
+    const hex = [...new Uint8Array(sig)]
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    return `bankid.${token}.${seconds}.${hex}`;
+  }
 
-  const start = useCallback(async () => {
+  async function start() {
     setError(null);
-    setStatus("starting");
+    setStatus("pending");
+    let seeds;
     try {
       const res = await fetch("/api/bankid/auth", { method: "POST" });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        setError(body.error ?? "Kunde inte starta BankID.");
+        const b = await res.json().catch(() => ({}));
+        setError(b.error ?? "Kunde inte starta BankID.");
         setStatus("failed");
         return;
       }
-      const data = await res.json();
-      sessionId.current = data.sessionId;
-      setAutoStartToken(data.autoStartToken);
-      await renderQr(data.qr);
-      setStatus("pending");
-
-      poll.current = setInterval(async () => {
-        if (!sessionId.current) return;
-        const r = await fetch("/api/bankid/auth", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: sessionId.current }),
-        });
-        const d = await r.json();
-        if (d.status === "complete") {
-          stop();
-          setStatus("complete");
-          onComplete?.(d.identity ?? null);
-        } else if (d.status === "failed") {
-          stop();
-          setStatus("failed");
-          setError(d.hintCode ?? "Autentiseringen avbröts.");
-        } else if (d.qr) {
-          await renderQr(d.qr);
-        }
-      }, 1000);
+      seeds = await res.json();
     } catch {
       setError("Nätverksfel mot BankID.");
       setStatus("failed");
+      return;
     }
-  }, [onComplete, renderQr, stop]);
 
-  useEffect(() => () => stop(), [stop]);
+    setAutoStart(seeds.autoStartToken);
+    const started = Date.now();
+    const tick = async () => {
+      const seconds = Math.floor((Date.now() - started) / 1000);
+      try {
+        const data = await animatedQrData(seeds.qrStartToken, seeds.qrStartSecret, seconds);
+        setQr(await QRCode.toDataURL(data, { margin: 1, width: 240 }));
+      } catch {
+        /* ignore */
+      }
+    };
+    await tick();
+    timer.current = setInterval(tick, 1000);
+
+    // Blocks server-side until the user completes in the BankID app.
+    const result = await signIn("bankid", {
+      orderRef: seeds.orderRef,
+      redirect: false,
+    });
+    stop();
+    if (result?.ok) {
+      router.push(callbackUrl);
+      router.refresh();
+    } else {
+      setStatus("failed");
+      setError("BankID avbröts eller misslyckades.");
+    }
+  }
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      {status === "idle" || status === "failed" ? (
+    <div className="flex flex-col items-center gap-3">
+      {status !== "pending" && (
         <button
           onClick={start}
-          className="rounded-lg bg-ink px-5 py-3 text-paper"
+          className="w-full rounded-full border hairline px-5 py-3 text-sm font-medium hover:bg-ink/5"
         >
-          Logga in med BankID
+          {status === "failed" ? "Försök igen med BankID" : "Logga in / skapa konto med BankID"}
         </button>
-      ) : null}
-
-      {status === "starting" ? <p className="text-sm">Startar BankID…</p> : null}
-
-      {status === "pending" && qrDataUrl ? (
+      )}
+      {status === "pending" && qr && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={qrDataUrl} alt="BankID QR-kod" width={240} height={240} />
-          {autoStartToken ? (
+          <img src={qr} alt="BankID QR-kod" width={220} height={220} />
+          {autoStart && (
             <a
               className="text-sm underline"
-              href={`bankid:///?autostarttoken=${autoStartToken}&redirect=null`}
+              href={`bankid:///?autostarttoken=${autoStart}&redirect=null`}
             >
               Öppna BankID på den här enheten
             </a>
-          ) : null}
+          )}
           <p className="text-xs text-ink/60">Skanna QR-koden med BankID-appen.</p>
         </>
-      ) : null}
-
-      {status === "complete" ? (
-        <p className="text-sm text-nordic">Inloggning klar.</p>
-      ) : null}
-
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      )}
+      {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
 }

@@ -1,0 +1,90 @@
+import { NextResponse, type NextRequest } from "next/server";
+import { getServerSession } from "next-auth";
+import { and, desc, eq } from "drizzle-orm";
+import { z } from "zod";
+import { db } from "@/db";
+import { approvalRequests, receipts, mileageEntries } from "@/db/schema";
+import { authOptions } from "@/lib/auth";
+import { logAudit, clientIp } from "@/lib/audit";
+
+export const runtime = "nodejs";
+
+const schema = z
+  .object({
+    receiptId: z.string().uuid().optional(),
+    mileageId: z.string().uuid().optional(),
+    approverEmail: z.string().email(),
+    requesterComment: z.string().max(1000).optional(),
+  })
+  .refine((d) => d.receiptId || d.mileageId, "Välj kvitto eller resa");
+
+export async function GET(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+  const type = req.nextUrl.searchParams.get("type") ?? "incoming";
+
+  const where =
+    type === "outgoing"
+      ? eq(approvalRequests.requesterId, session.user.id)
+      : eq(approvalRequests.approverEmail, (session.user.email ?? "").toLowerCase());
+
+  const rows = await db
+    .select()
+    .from(approvalRequests)
+    .where(where)
+    .orderBy(desc(approvalRequests.createdAt));
+  return NextResponse.json({ requests: rows });
+}
+
+export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+
+  const parsed = schema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message ?? "Ogiltiga fält" },
+      { status: 400 },
+    );
+  }
+
+  // Derive amount from the owned receipt or mileage entry.
+  let amount = "0";
+  if (parsed.data.receiptId) {
+    const [r] = await db
+      .select()
+      .from(receipts)
+      .where(and(eq(receipts.id, parsed.data.receiptId), eq(receipts.userId, session.user.id)))
+      .limit(1);
+    if (!r) return NextResponse.json({ error: "Kvitto saknas" }, { status: 404 });
+    amount = String(r.totalAmount ?? "0");
+  } else if (parsed.data.mileageId) {
+    const [m] = await db
+      .select()
+      .from(mileageEntries)
+      .where(and(eq(mileageEntries.id, parsed.data.mileageId), eq(mileageEntries.userId, session.user.id)))
+      .limit(1);
+    if (!m) return NextResponse.json({ error: "Resa saknas" }, { status: 404 });
+    amount = String(m.amount);
+  }
+
+  const [created] = await db
+    .insert(approvalRequests)
+    .values({
+      requesterId: session.user.id,
+      approverEmail: parsed.data.approverEmail.toLowerCase(),
+      receiptId: parsed.data.receiptId,
+      mileageId: parsed.data.mileageId,
+      amount,
+      requesterComment: parsed.data.requesterComment,
+    })
+    .returning();
+
+  await logAudit({
+    userId: session.user.id,
+    action: "approval.submit",
+    details: `to ${parsed.data.approverEmail} · ${amount} kr`,
+    ipAddress: clientIp(req),
+  });
+  return NextResponse.json({ request: created }, { status: 201 });
+}
