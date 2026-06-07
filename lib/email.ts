@@ -62,6 +62,19 @@ export function sendVerificationEmail(to: string, token: string) {
   );
 }
 
+export function sendCompanyInviteEmail(to: string, token: string) {
+  const url = `${APP_URL}/accept-invite?token=${encodeURIComponent(token)}`;
+  return send(
+    to,
+    "Du har bjudits in till ett företag på Utlagg",
+    layout(
+      "Inbjudan till Utlagg",
+      `<p>Du har blivit inbjuden att gå med i ett företag på Utlagg. Logga in eller skapa ett konto och acceptera inbjudan. Länken gäller i 7 dagar.</p>
+       <p><a href="${url}" style="color:#2F6079">Acceptera inbjudan →</a></p>`,
+    ),
+  );
+}
+
 export function sendPasswordResetEmail(to: string, token: string) {
   const url = `${APP_URL}/reset-password?token=${encodeURIComponent(token)}`;
   return send(

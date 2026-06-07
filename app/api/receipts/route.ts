@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { receipts, users } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
+import { getUserCompany } from "@/lib/company";
 
 export const runtime = "nodejs";
 
@@ -75,10 +76,12 @@ export async function POST(req: NextRequest) {
     }
 
     const d = parsed.data;
+    const membership = await getUserCompany(userId);
     const [created] = await db
       .insert(receipts)
       .values({
         userId,
+        companyId: membership?.companyId ?? null,
         imageUrl: d.imageUrl,
         vendorName: d.vendorName,
         date: d.date ? new Date(d.date) : undefined,

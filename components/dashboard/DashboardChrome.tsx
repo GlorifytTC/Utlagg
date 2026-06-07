@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   Home, Receipt, CreditCard, BarChart3, Settings, User,
-  LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug, Lock,
+  LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug, Lock, Building2,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,7 @@ const nav = [
   { name: "Integrationer", href: "/dashboard/integrations", icon: Plug, feature: "fortnox" as Feature },
   { name: "Prenumeration", href: "/dashboard/subscription", icon: CreditCard },
   { name: "Statistik", href: "/dashboard/stats", icon: BarChart3 },
+  { name: "Företag", href: "/dashboard/company", icon: Building2 },
   { name: "Inställningar", href: "/dashboard/settings", icon: Settings },
   { name: "Profil", href: "/dashboard/profile", icon: User },
 ];

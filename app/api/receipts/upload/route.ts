@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import crypto from "node:crypto";
 import { getServerSession } from "next-auth";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
@@ -50,10 +51,19 @@ export async function POST(req: NextRequest) {
   try {
     const { key } = await uploadReceiptImage(userId, fileId, parsed.data.image);
 
+    // Tamper-evidence: hash the raw image bytes (strip any data-URL prefix).
+    const b64 = parsed.data.image.includes(",")
+      ? parsed.data.image.slice(parsed.data.image.indexOf(",") + 1)
+      : parsed.data.image;
+    const fileHash = crypto
+      .createHash("sha256")
+      .update(Buffer.from(b64, "base64"))
+      .digest("hex");
+
     if (parsed.data.receiptId) {
       await db
         .update(receipts)
-        .set({ imageUrl: key })
+        .set({ imageUrl: key, fileHash })
         .where(
           and(
             eq(receipts.id, parsed.data.receiptId),
@@ -72,7 +82,7 @@ export async function POST(req: NextRequest) {
     });
 
     const previewUrl = await getSignedReceiptUrl(key);
-    return NextResponse.json({ key, previewUrl }, { status: 201 });
+    return NextResponse.json({ key, previewUrl, fileHash }, { status: 201 });
   } catch (err) {
     console.error("upload error:", err);
     return NextResponse.json(

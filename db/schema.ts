@@ -19,6 +19,14 @@ import { relations } from "drizzle-orm";
 /* ------------------------------------------------------------------ */
 
 export const userRole = pgEnum("user_role", ["admin", "member"]);
+
+/** Role of a user *within a company*. */
+export const companyRole = pgEnum("company_role", [
+  "owner",
+  "admin",
+  "approver",
+  "member",
+]);
 export const subscriptionTier = pgEnum("subscription_tier", [
   "free",
   "pro",
@@ -116,6 +124,10 @@ export const receipts = pgTable(
     fortnoxSynced: boolean("fortnox_synced").notNull().default(false),
     fortnoxSyncedAt: timestamp("fortnox_synced_at", { withTimezone: true }),
     fortnoxVoucherId: varchar("fortnox_voucher_id", { length: 64 }),
+    // Company scoping (nullable: solo users have no company)
+    companyId: uuid("company_id"),
+    // SHA-256 of the stored image bytes — tamper-evidence (Bokföringslagen 2024)
+    fileHash: varchar("file_hash", { length: 64 }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -228,6 +240,59 @@ export const integrationTokens = pgTable(
       t.provider,
     ),
   }),
+);
+
+/* ------------------------------------------------------------------ */
+/* companies / company_members / company_invites (team model)          */
+/* ------------------------------------------------------------------ */
+
+export const companies = pgTable("companies", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull(),
+  orgNumber: varchar("org_number", { length: 12 }), // svenskt organisationsnummer
+  vatNumber: varchar("vat_number", { length: 50 }),
+  address: text("address"),
+  city: varchar("city", { length: 100 }),
+  postalCode: varchar("postal_code", { length: 20 }),
+  country: varchar("country", { length: 2 }).notNull().default("SE"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const companyMembers = pgTable(
+  "company_members",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: companyRole("role").notNull().default("member"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    companyIdx: index("company_members_company_idx").on(t.companyId),
+    userIdx: index("company_members_user_idx").on(t.userId),
+  }),
+);
+
+export const companyInvites = pgTable(
+  "company_invites",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    email: varchar("email", { length: 320 }).notNull(),
+    role: companyRole("role").notNull().default("member"),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull(), // sha256 of raw token
+    invitedBy: uuid("invited_by").references(() => users.id, { onDelete: "set null" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({ emailIdx: index("company_invites_email_idx").on(t.email) }),
 );
 
 /* ------------------------------------------------------------------ */
@@ -349,3 +414,5 @@ export type Subscription = typeof subscriptions.$inferSelect;
 export type IntegrationToken = typeof integrationTokens.$inferSelect;
 export type MileageEntry = typeof mileageEntries.$inferSelect;
 export type ApprovalRequest = typeof approvalRequests.$inferSelect;
+export type Company = typeof companies.$inferSelect;
+export type CompanyMember = typeof companyMembers.$inferSelect;

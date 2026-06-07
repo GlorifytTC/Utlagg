@@ -71,6 +71,9 @@ export default function SettingsPage() {
           <a href="/api/export/pdf">
             <Button variant="outline">Exportera PDF</Button>
           </a>
+          <a href="/api/export/sie">
+            <Button variant="outline">Exportera SIE (bokföring)</Button>
+          </a>
           <a href="/api/integrations/fortnox/auth">
             <Button variant="outline">Koppla Fortnox</Button>
           </a>
