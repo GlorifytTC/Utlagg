@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { requireAdmin } from "@/lib/admin";
+import { adminGate } from "@/lib/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -13,8 +13,10 @@ const nav = [
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await requireAdmin();
-  if (!session) redirect("/login");
+  const gate = await adminGate();
+  if (gate.state === "anon") redirect("/login");
+  if (gate.state === "forbidden") redirect("/dashboard");
+  const session = gate.session;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">

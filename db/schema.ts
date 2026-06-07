@@ -56,7 +56,7 @@ export const users = pgTable("users", {
   bankIdSubject: varchar("bank_id_subject", { length: 64 }).unique(),
   name: varchar("name", { length: 200 }),
   companyName: varchar("company_name", { length: 200 }),
-  role: userRole("role").notNull().default("admin"),
+  role: userRole("role").notNull().default("member"),
   subscriptionTier: subscriptionTier("subscription_tier")
     .notNull()
     .default("free"),
