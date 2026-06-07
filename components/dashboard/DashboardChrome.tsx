@@ -6,17 +6,19 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   Home, Receipt, CreditCard, BarChart3, Settings, User,
-  LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug,
+  LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug, Lock,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { cn } from "@/lib/utils";
+import { hasFeature, type Feature } from "@/lib/features";
+import type { Tier } from "@/lib/plans";
 
 const nav = [
   { name: "Översikt", href: "/dashboard", icon: Home },
   { name: "Kvitton", href: "/dashboard/receipts", icon: Receipt },
-  { name: "Milersättning", href: "/dashboard/mileage", icon: Car },
-  { name: "Attest", href: "/dashboard/approvals", icon: CheckSquare },
-  { name: "Integrationer", href: "/dashboard/integrations", icon: Plug },
+  { name: "Milersättning", href: "/dashboard/mileage", icon: Car, feature: "mileage" as Feature },
+  { name: "Attest", href: "/dashboard/approvals", icon: CheckSquare, feature: "approvals" as Feature },
+  { name: "Integrationer", href: "/dashboard/integrations", icon: Plug, feature: "fortnox" as Feature },
   { name: "Prenumeration", href: "/dashboard/subscription", icon: CreditCard },
   { name: "Statistik", href: "/dashboard/stats", icon: BarChart3 },
   { name: "Inställningar", href: "/dashboard/settings", icon: Settings },
@@ -31,7 +33,7 @@ function isActive(pathname: string, href: string) {
   return href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
 }
 
-function NavList({ onNavigate }: { onNavigate?: () => void }) {
+function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier }) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const dark = theme === "dark";
@@ -60,7 +62,10 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
               )}
             >
               <Icon className="h-5 w-5" />
-              <span>{item.name}</span>
+              <span className="flex-1">{item.name}</span>
+              {tier && "feature" in item && !hasFeature(tier, (item as { feature: Feature }).feature) && (
+                <Lock className="h-3.5 w-3.5 text-gray-400" />
+              )}
             </Link>
           );
         })}
@@ -78,7 +83,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-export function DashboardChrome({ children }: { children: React.ReactNode }) {
+export function DashboardChrome({ children, tier }: { children: React.ReactNode; tier?: Tier }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -86,7 +91,7 @@ export function DashboardChrome({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Desktop rail (lg+) */}
       <aside className="fixed left-0 top-0 hidden h-full w-64 border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 lg:block">
-        <NavList />
+        <NavList tier={tier} />
       </aside>
 
       {/* Top bar with hamburger (below lg) */}
@@ -105,7 +110,7 @@ export function DashboardChrome({ children }: { children: React.ReactNode }) {
             <button onClick={() => setOpen(false)} aria-label="Stäng meny" className="absolute right-3 top-3 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
               <X className="h-5 w-5" />
             </button>
-            <NavList onNavigate={() => setOpen(false)} />
+            <NavList onNavigate={() => setOpen(false)} tier={tier} />
           </aside>
         </div>
       )}

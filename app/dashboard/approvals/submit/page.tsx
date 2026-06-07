@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { UpsellCard } from "@/components/UpsellCard";
 
 interface Receipt { id: string; vendorName: string | null; totalAmount: string | null; }
 
@@ -17,6 +18,14 @@ export default function SubmitApprovalPage() {
   const [approverEmail, setApproverEmail] = useState("");
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
+  const [allowed, setAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setAllowed(d ? Boolean(d.features?.approvals) : false))
+      .catch(() => setAllowed(false));
+  }, []);
 
   useEffect(() => {
     fetch("/api/receipts").then(async (r) => {
@@ -35,6 +44,19 @@ export default function SubmitApprovalPage() {
     setLoading(false);
     if (res.ok) { toast.success("Skickad för attest"); router.push("/dashboard/approvals/history"); }
     else { const e = await res.json().catch(() => ({})); toast.error(e.error ?? "Kunde inte skicka"); }
+  }
+
+  if (allowed === false) {
+    return (
+      <div className="max-w-xl space-y-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Skicka för attest</h1>
+        <UpsellCard
+          title="Attestflöden"
+          requiredPlan="Företag"
+          description="Skicka utlägg för godkännande och hantera attestkedjor. Ingår i Företag-planen."
+        />
+      </div>
+    );
   }
 
   return (

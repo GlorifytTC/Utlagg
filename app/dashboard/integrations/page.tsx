@@ -6,6 +6,9 @@ import { db } from "@/db";
 import { integrationTokens, receipts } from "@/db/schema";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FortnoxPanel } from "@/components/dashboard/FortnoxPanel";
+import { currentTier } from "@/lib/entitlements";
+import { hasFeature } from "@/lib/features";
+import { UpsellCard } from "@/components/UpsellCard";
 
 export const metadata = { title: "Integrationer" };
 export const dynamic = "force-dynamic";
@@ -13,6 +16,20 @@ export const dynamic = "force-dynamic";
 export default async function IntegrationsPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
+
+  const ctx = await currentTier();
+  if (!ctx || !hasFeature(ctx.tier, "fortnox")) {
+    return (
+      <div className="max-w-2xl space-y-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Integrationer</h1>
+        <UpsellCard
+          title="Fortnox-integration"
+          requiredPlan="Pro"
+          description="Bokför kvitton automatiskt som verifikationer i Fortnox. Ingår från Pro-planen."
+        />
+      </div>
+    );
+  }
 
   const [token] = await db
     .select({ id: integrationTokens.id })

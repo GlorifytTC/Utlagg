@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { UpsellCard } from "@/components/UpsellCard";
 
 interface Entry {
   id: string;
@@ -29,6 +30,14 @@ export default function MileagePage() {
     note: "",
   });
   const [loading, setLoading] = useState(false);
+  const [allowed, setAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setAllowed(d ? Boolean(d.features?.mileage) : false))
+      .catch(() => setAllowed(false));
+  }, []);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/mileage");
@@ -68,6 +77,19 @@ export default function MileagePage() {
   async function remove(id: string) {
     const res = await fetch(`/api/mileage/${id}`, { method: "DELETE" });
     if (res.ok) { toast.success("Borttagen"); load(); }
+  }
+
+  if (allowed === false) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Milersättning</h1>
+        <UpsellCard
+          title="Milersättning"
+          requiredPlan="Företag"
+          description="Registrera resor och få skattefri milersättning (2,50 kr/km) automatiskt uträknad. Ingår i Företag-planen."
+        />
+      </div>
+    );
   }
 
   return (

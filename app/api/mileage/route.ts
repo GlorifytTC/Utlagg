@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { mileageEntries, MILEAGE_RATE_PER_KM } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
+import { requireFeature } from "@/lib/entitlements";
 
 export const runtime = "nodejs";
 
@@ -30,8 +31,14 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+  const gate = await requireFeature("mileage");
+  if (gate.status === 401) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+  if (!gate.ok)
+    return NextResponse.json(
+      { error: "Milersättning ingår i Företag-planen.", upgrade: true },
+      { status: 403 },
+    );
+  const userId = gate.userId!;
 
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success) {
@@ -46,7 +53,7 @@ export async function POST(req: NextRequest) {
   const [entry] = await db
     .insert(mileageEntries)
     .values({
-      userId: session.user.id,
+      userId,
       startAddress: parsed.data.startAddress,
       endAddress: parsed.data.endAddress,
       distanceKm: km.toFixed(2),
@@ -59,7 +66,7 @@ export async function POST(req: NextRequest) {
     .returning();
 
   await logAudit({
-    userId: session.user.id,
+    userId,
     action: "mileage.create",
     details: `${km} km · ${amount} kr`,
     ipAddress: clientIp(req),

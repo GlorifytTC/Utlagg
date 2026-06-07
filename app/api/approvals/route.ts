@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { approvalRequests, receipts, mileageEntries } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
+import { requireFeature } from "@/lib/entitlements";
 
 export const runtime = "nodejs";
 
@@ -37,8 +38,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+  const gate = await requireFeature("approvals");
+  if (gate.status === 401) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+  if (!gate.ok)
+    return NextResponse.json(
+      { error: "Attestflöden ingår i Företag-planen.", upgrade: true },
+      { status: 403 },
+    );
+  const userId = gate.userId!;
 
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success) {
@@ -54,7 +61,7 @@ export async function POST(req: NextRequest) {
     const [r] = await db
       .select()
       .from(receipts)
-      .where(and(eq(receipts.id, parsed.data.receiptId), eq(receipts.userId, session.user.id)))
+      .where(and(eq(receipts.id, parsed.data.receiptId), eq(receipts.userId, userId)))
       .limit(1);
     if (!r) return NextResponse.json({ error: "Kvitto saknas" }, { status: 404 });
     amount = String(r.totalAmount ?? "0");
@@ -62,7 +69,7 @@ export async function POST(req: NextRequest) {
     const [m] = await db
       .select()
       .from(mileageEntries)
-      .where(and(eq(mileageEntries.id, parsed.data.mileageId), eq(mileageEntries.userId, session.user.id)))
+      .where(and(eq(mileageEntries.id, parsed.data.mileageId), eq(mileageEntries.userId, userId)))
       .limit(1);
     if (!m) return NextResponse.json({ error: "Resa saknas" }, { status: 404 });
     amount = String(m.amount);
@@ -71,7 +78,7 @@ export async function POST(req: NextRequest) {
   const [created] = await db
     .insert(approvalRequests)
     .values({
-      requesterId: session.user.id,
+      requesterId: userId,
       approverEmail: parsed.data.approverEmail.toLowerCase(),
       receiptId: parsed.data.receiptId,
       mileageId: parsed.data.mileageId,
@@ -81,7 +88,7 @@ export async function POST(req: NextRequest) {
     .returning();
 
   await logAudit({
-    userId: session.user.id,
+    userId,
     action: "approval.submit",
     details: `to ${parsed.data.approverEmail} · ${amount} kr`,
     ipAddress: clientIp(req),

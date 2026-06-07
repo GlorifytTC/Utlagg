@@ -1,31 +1,36 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { integrationTokens, receipts } from "@/db/schema";
-import { authOptions } from "@/lib/auth";
 import { pushReceiptToFortnox } from "@/lib/fortnox";
 import { logAudit, clientIp } from "@/lib/audit";
+import { requireFeature } from "@/lib/entitlements";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 /** Push all of the user's not-yet-synced receipts to Fortnox as vouchers. */
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+  const gate = await requireFeature("fortnox");
+  if (gate.status === 401) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+  if (!gate.ok)
+    return NextResponse.json(
+      { error: "Fortnox-integration ingår i Pro-planen.", upgrade: true },
+      { status: 403 },
+    );
+  const userId = gate.userId!;
 
   const [token] = await db
     .select()
     .from(integrationTokens)
-    .where(and(eq(integrationTokens.userId, session.user.id), eq(integrationTokens.provider, "fortnox")))
+    .where(and(eq(integrationTokens.userId, userId), eq(integrationTokens.provider, "fortnox")))
     .limit(1);
   if (!token) return NextResponse.json({ error: "Fortnox är inte kopplat" }, { status: 409 });
 
   const pending = await db
     .select()
     .from(receipts)
-    .where(and(eq(receipts.userId, session.user.id), eq(receipts.fortnoxSynced, false)));
+    .where(and(eq(receipts.userId, userId), eq(receipts.fortnoxSynced, false)));
 
   let synced = 0;
   let failed = 0;
@@ -51,7 +56,7 @@ export async function POST(req: NextRequest) {
   }
 
   await logAudit({
-    userId: session.user.id,
+    userId,
     action: "integration.fortnox.sync_all",
     details: `synced ${synced}, failed ${failed}`,
     ipAddress: clientIp(req),
