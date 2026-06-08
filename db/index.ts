@@ -42,6 +42,7 @@ if (isBuildPhase && !connectionString) {
     globalForDb.client ?? postgres(connectionString, { max: 10, prepare: false });
   if (process.env.NODE_ENV !== "production") globalForDb.client = client;
 
+  
   _db = drizzle(client, { schema });
 }
 
