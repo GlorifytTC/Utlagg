@@ -71,6 +71,10 @@ export const users = pgTable("users", {
   subscriptionStatus: subscriptionStatus("subscription_status")
     .notNull()
     .default("active"),
+  // Admin "comp"/trial controls (subscription granted manually, not via Stripe)
+  subscriptionSource: varchar("subscription_source", { length: 20 }), // 'manual' | 'stripe' | null
+  subscriptionGrantedUntil: timestamp("subscription_granted_until", { withTimezone: true }),
+  subscriptionPaused: boolean("subscription_paused").notNull().default(false),
   scansUsedThisMonth: integer("scans_used_this_month").notNull().default(0),
   // -1 represents "unlimited" for paid tiers
   scanLimit: integer("scan_limit").notNull().default(25),

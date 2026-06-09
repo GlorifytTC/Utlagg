@@ -7,16 +7,26 @@ import { users } from "@/db/schema";
 import { hasFeature, type Feature } from "@/lib/features";
 import type { Tier } from "@/lib/plans";
 
-/** Resolve the signed-in user's current subscription tier (default 'free'). */
+/** Resolve the signed-in user's EFFECTIVE tier (honours pause + trial expiry). */
 export async function currentTier(): Promise<{ userId: string; tier: Tier } | null> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return null;
   const [u] = await db
-    .select({ tier: users.subscriptionTier })
+    .select({
+      tier: users.subscriptionTier,
+      paused: users.subscriptionPaused,
+      grantedUntil: users.subscriptionGrantedUntil,
+    })
     .from(users)
     .where(eq(users.id, session.user.id))
     .limit(1);
-  return { userId: session.user.id, tier: (u?.tier ?? "free") as Tier };
+
+  let tier = (u?.tier ?? "free") as Tier;
+  // A paused subscription or an expired manual grant falls back to free.
+  if (u?.paused) tier = "free";
+  if (u?.grantedUntil && new Date(u.grantedUntil).getTime() < Date.now()) tier = "free";
+
+  return { userId: session.user.id, tier };
 }
 
 export interface Gate {

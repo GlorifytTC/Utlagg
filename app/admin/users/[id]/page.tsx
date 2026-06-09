@@ -5,6 +5,7 @@ import { users, subscriptions, receipts, auditLogs } from "@/db/schema";
 import { formatDate, formatSek } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminUserActions } from "@/components/admin/AdminUserActions";
+import { AdminSubscriptionControl } from "@/components/admin/AdminSubscriptionControl";
 
 export const metadata = { title: "Admin · Användare" };
 export const dynamic = "force-dynamic";
@@ -48,7 +49,25 @@ export default async function AdminUserDetail({ params }: { params: { id: string
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>Prenumeration</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Prenumeration — full kontroll</CardTitle></CardHeader>
+        <CardContent>
+          <AdminSubscriptionControl
+            userId={user.id}
+            current={{
+              tier: user.subscriptionTier,
+              status: user.subscriptionStatus,
+              source: user.subscriptionSource ?? null,
+              grantedUntil: user.subscriptionGrantedUntil
+                ? new Date(user.subscriptionGrantedUntil).toISOString()
+                : null,
+              paused: user.subscriptionPaused,
+            }}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>Stripe-prenumeration</CardTitle></CardHeader>
         <CardContent className="text-sm">
           {sub ? (
             <p>
