@@ -22,8 +22,10 @@ export function Footer() {
         </div>
       </div>
       <p className="mt-8 text-xs text-ink/40">
-        © {new Date().getFullYear()} Kvitto. Detta är en startmall — verifiera
-        moms- och bokföringsregler med din revisor innan produktion.
+        © {new Date().getFullYear()} GlorifyTC.
+      </p>
+      <p className="mt-8 text-xs text-ink/40">
+        Detta är en startmall — verifiera moms- och bokföringsregler med din revisor innan produktion.
       </p>
     </footer>
   );
