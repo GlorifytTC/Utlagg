@@ -296,6 +296,44 @@ export const companyInvites = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
+/* customer_invoices (kundfakturor — invoices the company sends out)    */
+/* ------------------------------------------------------------------ */
+
+export const customerInvoices = pgTable(
+  "customer_invoices",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    createdById: uuid("created_by_id").references(() => users.id, { onDelete: "set null" }),
+    invoiceNumber: varchar("invoice_number", { length: 40 }).notNull(),
+    // Seller snapshot (the company's own details, frozen at issue time)
+    sellerName: varchar("seller_name", { length: 255 }).notNull(),
+    sellerOrgNumber: varchar("seller_org_number", { length: 12 }),
+    sellerVatNumber: varchar("seller_vat_number", { length: 50 }),
+    sellerAddress: text("seller_address"),
+    // Buyer
+    buyerName: varchar("buyer_name", { length: 255 }).notNull(),
+    buyerOrgNumber: varchar("buyer_org_number", { length: 20 }),
+    buyerVatNumber: varchar("buyer_vat_number", { length: 50 }),
+    buyerAddress: text("buyer_address"),
+    issueDate: timestamp("issue_date", { withTimezone: true }).notNull(),
+    dueDate: timestamp("due_date", { withTimezone: true }),
+    reverseCharge: boolean("reverse_charge").notNull().default(false),
+    currency: varchar("currency", { length: 3 }).notNull().default("SEK"),
+    lineItems: jsonb("line_items").notNull(), // [{description, quantity, unitPrice, vatRate}]
+    subtotal: numeric("subtotal", { precision: 12, scale: 2 }).notNull(),
+    vatTotal: numeric("vat_total", { precision: 12, scale: 2 }).notNull(),
+    total: numeric("total", { precision: 12, scale: 2 }).notNull(),
+    note: text("note"),
+    status: varchar("status", { length: 20 }).notNull().default("draft"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({ companyIdx: index("customer_invoices_company_idx").on(t.companyId) }),
+);
+
+/* ------------------------------------------------------------------ */
 /* mileage_entries (Milersättning)                                     */
 /* ------------------------------------------------------------------ */
 

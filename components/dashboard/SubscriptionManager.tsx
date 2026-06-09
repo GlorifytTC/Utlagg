@@ -16,6 +16,8 @@ export function SubscriptionManager({
   periodEnd: string | null;
 }) {
   const [loading, setLoading] = useState<string | null>(null);
+  const [showCancel, setShowCancel] = useState(false);
+  const [accepted, setAccepted] = useState(false);
 
   async function upgrade(tier: "pro" | "business") {
     setLoading(tier);
@@ -39,11 +41,11 @@ export function SubscriptionManager({
   }
 
   async function cancel() {
-    if (!confirm("Avsluta prenumerationen vid periodens slut?")) return;
     setLoading("cancel");
     const res = await fetch("/api/subscription/cancel", { method: "POST" });
     if (res.ok) {
       toast.success("Prenumerationen avslutas vid periodens slut.");
+      setShowCancel(false);
     } else {
       const e = await res.json().catch(() => ({}));
       toast.error(e.error ?? "Kunde inte avsluta prenumeration");
@@ -55,6 +57,30 @@ export function SubscriptionManager({
 
   return (
     <div className="space-y-6">
+      {showCancel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 dark:bg-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Avsluta prenumeration?</h2>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Innan du avslutar, läs och godkänn följande:</p>
+            <ul className="mt-3 space-y-2 text-sm text-gray-600 dark:text-gray-300">
+              <li>• Vi sparar dina kvitton och fakturor i <strong>1 år efter din senaste betalning</strong>. Därefter raderas de.</li>
+              <li>• Du kan <strong>inte skanna nya kvitton</strong> utan en aktiv prenumeration.</li>
+              <li>• Har du ett företag med anställda kan du behöva <strong>ta bort medlemmar</strong> om du går ner i plan.</li>
+            </ul>
+            <label className="mt-4 flex items-start gap-2 text-sm text-gray-700 dark:text-gray-200">
+              <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5" />
+              <span>Jag förstår och godkänner att min data raderas efter 1 år.</span>
+            </label>
+            <div className="mt-5 flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowCancel(false)} disabled={loading !== null}>Avbryt</Button>
+              <Button variant="destructive" onClick={cancel} disabled={!accepted || loading !== null}>
+                {loading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Avsluta ändå"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Nuvarande plan</CardTitle>
@@ -66,8 +92,8 @@ export function SubscriptionManager({
         <CardContent className="flex items-center justify-between">
           <p className="text-2xl font-bold">{current?.priceLabel ?? "—"}</p>
           {currentTier !== "free" && currentTier !== "enterprise" && (
-            <Button variant="outline" onClick={cancel} disabled={loading !== null}>
-              {loading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Avsluta prenumeration"}
+            <Button variant="outline" onClick={() => { setAccepted(false); setShowCancel(true); }} disabled={loading !== null}>
+              Avsluta prenumeration
             </Button>
           )}
         </CardContent>

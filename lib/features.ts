@@ -1,7 +1,7 @@
 import { PLANS, type Tier } from "@/lib/plans";
 
 /** Premium features that require a paid tier. */
-export type Feature = "fortnox" | "mileage" | "approvals";
+export type Feature = "fortnox" | "mileage" | "approvals" | "invoicing";
 
 const TIER_ORDER: Tier[] = ["free", "pro", "business", "enterprise"];
 export function tierRank(t: Tier): number {
@@ -14,12 +14,14 @@ export const FEATURE_MIN_TIER: Record<Feature, Tier> = {
   fortnox: "pro", // Pro+
   mileage: "business", // Företag+
   approvals: "business", // Företag+
+  invoicing: "pro", // Pro+ (kundfakturor)
 };
 
 export const FEATURE_LABEL: Record<Feature, string> = {
   fortnox: "Fortnox-integration",
   mileage: "Milersättning",
   approvals: "Attestflöden",
+  invoicing: "Fakturering",
 };
 
 export function hasFeature(tier: Tier, feature: Feature): boolean {
@@ -38,5 +40,6 @@ export function entitlementsFor(tier: Tier): Record<Feature, boolean> {
     fortnox: hasFeature(tier, "fortnox"),
     mileage: hasFeature(tier, "mileage"),
     approvals: hasFeature(tier, "approvals"),
+    invoicing: hasFeature(tier, "invoicing"),
   };
 }

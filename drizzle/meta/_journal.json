@@ -29,6 +29,13 @@
       "when": 1780864462842,
       "tag": "0003_company_model_and_archiving",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1781021712538,
+      "tag": "0004_customer_invoices",
+      "breakpoints": true
     }
   ]
 }

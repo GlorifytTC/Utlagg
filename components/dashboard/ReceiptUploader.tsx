@@ -28,6 +28,39 @@ const emptyDraft = (): Draft => ({
   receiptText: "",
 });
 
+/**
+ * Downscale + re-encode an image to keep stored receipts small (max ~1500px,
+ * JPEG ~0.6). Falls back to the original data URL if anything goes wrong.
+ */
+async function compressImage(file: File, maxDim = 1500, quality = 0.6): Promise<string> {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = reject;
+      i.src = dataUrl;
+    });
+    const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+    const w = Math.round(img.width * scale);
+    const h = Math.round(img.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return dataUrl;
+    ctx.drawImage(img, 0, 0, w, h);
+    return canvas.toDataURL("image/jpeg", quality);
+  } catch {
+    return dataUrl;
+  }
+}
+
 export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   const [stage, setStage] = useState<"idle" | "scanning" | "review">("idle");
   const [draft, setDraft] = useState<Draft>(emptyDraft());
@@ -39,12 +72,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
     setError(null);
     setStage("scanning");
     try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+      const base64 = await compressImage(file);
 
       const res = await fetch("/api/ocr", {
         method: "POST",
