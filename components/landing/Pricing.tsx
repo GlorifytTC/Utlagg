@@ -1,3 +1,4 @@
+// components/landing/Pricing.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,11 +7,13 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { PLANS } from "@/lib/plans";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function Pricing() {
   const { status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   async function handleSelect(tier: string) {
     if (tier === "free") {
@@ -18,7 +21,7 @@ export function Pricing() {
       return;
     }
     if (tier === "enterprise") {
-      window.location.href = "mailto:sales@Utlagg .se?subject=Enterprise";
+      window.location.href = "mailto:sales@Utlagg.se?subject=Enterprise";
       return;
     }
     if (status !== "authenticated") {
@@ -40,14 +43,24 @@ export function Pricing() {
     }
   }
 
+  const getPlanName = (tier: string) =>
+    t[
+      `plan${tier.charAt(0).toUpperCase() + tier.slice(1)}` as keyof typeof t
+    ] as string;
+
+  const getFeatures = (tier: string) =>
+    t[
+      `plan${tier.charAt(0).toUpperCase() + tier.slice(1)}Features` as keyof typeof t
+    ] as string[];
+
   return (
     <section id="priser" className="mx-auto max-w-6xl px-6 py-24">
       <div className="mb-14 max-w-xl">
         <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-          Priser
+          {t.pricingTagline}
         </p>
         <h2 className="mt-3 font-display text-4xl leading-tight md:text-5xl">
-          Enkelt. Per företag, inte per användare.
+          {t.pricingTitle}
         </h2>
       </div>
 
@@ -68,15 +81,15 @@ export function Pricing() {
           >
             {plan.highlight && (
               <span className="mb-3 inline-block w-fit rounded-full bg-nordic-600 px-3 py-1 text-xs font-medium text-white">
-                Populärast
+                {t.pricingPopular}
               </span>
             )}
-            <h3 className="font-display text-2xl">{plan.name}</h3>
+            <h3 className="font-display text-2xl">{getPlanName(plan.tier)}</h3>
             <p className="mt-2 font-sans text-3xl font-semibold">
               {plan.priceLabel}
             </p>
             <ul className="mt-6 flex-1 space-y-2 text-sm text-ink/80">
-              {plan.features.map((f) => (
+              {getFeatures(plan.tier).map((f) => (
                 <li key={f} className="flex gap-2">
                   <span className="text-amber">✓</span>
                   {f}
@@ -95,12 +108,12 @@ export function Pricing() {
               )}
             >
               {loading === plan.tier
-                ? "Laddar…"
+                ? t.pricingLoading
                 : plan.tier === "free"
-                  ? "Börja gratis"
+                  ? t.startFree
                   : plan.tier === "enterprise"
-                    ? "Kontakta oss"
-                    : "Välj " + plan.name}
+                    ? t.pricingContactUs
+                    : `${t.pricingChoosePlan} ${getPlanName(plan.tier)}`}
             </button>
           </motion.div>
         ))}
