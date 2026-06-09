@@ -30,8 +30,8 @@ export function StatsCards({
       {items.map((it) => {
         const Icon = it.icon;
         return (
-          <Card key={it.label}>
-            <CardContent className="flex items-center gap-4 p-5">
+          <Card key={it.label} className="h-full">
+            <CardContent className="flex h-full items-center gap-4 p-5">
               <div className="rounded-lg bg-nordic-50 p-3 text-nordic-600 dark:bg-nordic-900/30 dark:text-nordic-400">
                 <Icon className="h-5 w-5" />
               </div>
