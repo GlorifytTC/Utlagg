@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { db } from "@/db";
 import { receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
@@ -16,16 +16,28 @@ function csvCell(value: unknown): string {
   return s;
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   }
 
+  // Optional date range: ?from=YYYY-MM-DD&to=YYYY-MM-DD (inclusive).
+  const sp = req.nextUrl.searchParams;
+  const fromStr = sp.get("from");
+  const toStr = sp.get("to");
+  const from = fromStr && !Number.isNaN(Date.parse(fromStr)) ? new Date(fromStr) : null;
+  const to = toStr && !Number.isNaN(Date.parse(toStr)) ? new Date(toStr) : null;
+  if (to) to.setHours(23, 59, 59, 999); // include the whole end day
+
+  const conditions = [eq(receipts.userId, session.user.id)];
+  if (from) conditions.push(gte(receipts.date, from));
+  if (to) conditions.push(lte(receipts.date, to));
+
   const rows = await db
     .select()
     .from(receipts)
-    .where(eq(receipts.userId, session.user.id))
+    .where(and(...conditions))
     .orderBy(desc(receipts.date));
 
   const header = [
@@ -66,16 +78,15 @@ export async function GET() {
   await logAudit({
     userId: session.user.id,
     action: "export.csv",
-    details: `Exported ${rows.length} receipts`,
+    details: `Exported ${rows.length} receipts${from || to ? ` (${fromStr ?? "…"}–${toStr ?? "…"})` : ""}`,
   });
 
+  const rangeSuffix = from || to ? `-${fromStr ?? "start"}_${toStr ?? "nu"}` : "";
   return new NextResponse(csv, {
     status: 200,
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="kvitton-${new Date()
-        .toISOString()
-        .slice(0, 10)}.csv"`,
+      "Content-Disposition": `attachment; filename="kvitton${rangeSuffix || "-" + new Date().toISOString().slice(0, 10)}.csv"`,
     },
   });
 }

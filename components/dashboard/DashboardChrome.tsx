@@ -9,22 +9,24 @@ import {
   LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug, Lock, Building2, FileText,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
+import { useLanguage } from "@/context/LanguageContext";
+import type { Translations } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 import { hasFeature, type Feature } from "@/lib/features";
 import type { Tier } from "@/lib/plans";
 
 const nav = [
-  { name: "Översikt", href: "/dashboard", icon: Home },
-  { name: "Kvitton", href: "/dashboard/receipts", icon: Receipt },
-  { name: "Milersättning", href: "/dashboard/mileage", icon: Car, feature: "mileage" as Feature },
-  { name: "Attest", href: "/dashboard/approvals", icon: CheckSquare, feature: "approvals" as Feature },
-  { name: "Integrationer", href: "/dashboard/integrations", icon: Plug, feature: "fortnox" as Feature },
-  { name: "Prenumeration", href: "/dashboard/subscription", icon: CreditCard },
-  { name: "Statistik", href: "/dashboard/stats", icon: BarChart3 },
-  { name: "Fakturor", href: "/dashboard/invoices", icon: FileText, feature: "invoicing" as Feature },
-  { name: "Företag", href: "/dashboard/company", icon: Building2 },
-  { name: "Inställningar", href: "/dashboard/settings", icon: Settings },
-  { name: "Profil", href: "/dashboard/profile", icon: User },
+  { key: "navOverview", href: "/dashboard", icon: Home },
+  { key: "navReceipts", href: "/dashboard/receipts", icon: Receipt },
+  { key: "navMileage", href: "/dashboard/mileage", icon: Car, feature: "mileage" as Feature },
+  { key: "navApprovals", href: "/dashboard/approvals", icon: CheckSquare, feature: "approvals" as Feature },
+  { key: "navIntegrations", href: "/dashboard/integrations", icon: Plug, feature: "fortnox" as Feature },
+  { key: "navSubscription", href: "/dashboard/subscription", icon: CreditCard },
+  { key: "navStats", href: "/dashboard/stats", icon: BarChart3 },
+  { key: "navInvoices", href: "/dashboard/invoices", icon: FileText, feature: "invoicing" as Feature },
+  { key: "navCompany", href: "/dashboard/company", icon: Building2 },
+  { key: "navSettings", href: "/dashboard/settings", icon: Settings },
+  { key: "navProfile", href: "/dashboard/profile", icon: User },
 ];
 // Five most-used destinations for the mobile bottom bar.
 const bottomNav = nav.filter((n) =>
@@ -38,6 +40,7 @@ function isActive(pathname: string, href: string) {
 function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier }) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const { t, lang, toggleLanguage } = useLanguage();
   const dark = theme === "dark";
   return (
     <div className="flex h-full flex-col">
@@ -64,7 +67,7 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
               )}
             >
               <Icon className="h-5 w-5" />
-              <span className="flex-1">{item.name}</span>
+              <span className="flex-1">{t[item.key as keyof Translations]}</span>
               {tier && "feature" in item && !hasFeature(tier, (item as { feature: Feature }).feature) && (
                 <Lock className="h-3.5 w-3.5 text-gray-400" />
               )}
@@ -73,12 +76,15 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
         })}
       </nav>
       <div className="space-y-2 border-t border-gray-200 p-4 dark:border-gray-800">
+        <button onClick={toggleLanguage} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800">
+          <span className="h-5 w-5 text-center text-xs font-bold">{lang === "sv" ? "EN" : "SV"}</span> <span>{lang === "sv" ? "English" : "Svenska"}</span>
+        </button>
         <button onClick={toggleTheme} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800">
           {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           <span>{dark ? "Ljust läge" : "Mörkt läge"}</span>
         </button>
         <button onClick={() => signOut({ callbackUrl: "/" })} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
-          <LogOut className="h-5 w-5" /> <span>Logga ut</span>
+          <LogOut className="h-5 w-5" /> <span>{t.navLogout}</span>
         </button>
       </div>
     </div>
@@ -86,6 +92,7 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
 }
 
 export function DashboardChrome({ children, tier }: { children: React.ReactNode; tier?: Tier }) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -135,7 +142,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
               )}
             >
               <Icon className="h-5 w-5" />
-              {item.name}
+              {t[item.key as keyof Translations]}
             </Link>
           );
         })}

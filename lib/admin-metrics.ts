@@ -1,4 +1,4 @@
-import { sql, gte, like, and } from "drizzle-orm";
+import { sql, gte, like, and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users, receipts, auditLogs } from "@/db/schema";
 
@@ -28,8 +28,26 @@ export async function computeMetrics(): Promise<Metrics> {
     totalUsers += Number(r.count);
   }
 
-  const payingCustomers = byTier.pro + byTier.business;
-  const mrr = byTier.pro * PRICE.pro + byTier.business * PRICE.business;
+  // Revenue counts ONLY genuinely paying customers — exclude admin-comped
+  // ("manual") grants and anything not currently active.
+  const payingRows = (await db
+    .select({ tier: users.subscriptionTier, count: sql<number>`count(*)::int` })
+    .from(users)
+    .where(
+      and(
+        sql`${users.subscriptionTier} in ('pro','business')`,
+        eq(users.subscriptionStatus, "active"),
+        sql`(${users.subscriptionSource} is distinct from 'manual')`,
+        eq(users.subscriptionPaused, false),
+      ),
+    )
+    .groupBy(users.subscriptionTier)) as { tier: string; count: number }[];
+
+  const paidByTier: Record<string, number> = { pro: 0, business: 0 };
+  for (const r of payingRows) paidByTier[r.tier] = Number(r.count);
+
+  const payingCustomers = paidByTier.pro + paidByTier.business;
+  const mrr = paidByTier.pro * PRICE.pro + paidByTier.business * PRICE.business;
   const arr = mrr * 12;
   const arpu = payingCustomers > 0 ? mrr / payingCustomers : 0;
 

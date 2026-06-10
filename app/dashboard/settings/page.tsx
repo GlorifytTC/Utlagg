@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/components/ThemeProvider";
 import { SkatteverketExport } from "@/components/SkatteverketExport";
+import { CsvRangeExport } from "@/components/dashboard/CsvRangeExport";
 
 export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme();
@@ -86,6 +87,7 @@ export default function SettingsPage() {
           <CardDescription>Välj period och ladda ner alla kvitton med moms och BAS-konto</CardDescription>
         </CardHeader>
         <CardContent>
+          <CsvRangeExport />
           <SkatteverketExport />
         </CardContent>
       </Card>

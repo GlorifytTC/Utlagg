@@ -61,10 +61,37 @@ export interface Translations {
   footerBankID: string;
   footerCopyright: string;
   footerDisclaimer: string;
+  // Dashboard navigation
+  navOverview: string;
+  navReceipts: string;
+  navMileage: string;
+  navApprovals: string;
+  navIntegrations: string;
+  navSubscription: string;
+  navStats: string;
+  navInvoices: string;
+  navCompany: string;
+  navSettings: string;
+  navProfile: string;
+  navLogout: string;
+  langName: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    navOverview: "Översikt",
+    navReceipts: "Kvitton",
+    navMileage: "Milersättning",
+    navApprovals: "Attest",
+    navIntegrations: "Integrationer",
+    navSubscription: "Prenumeration",
+    navStats: "Statistik",
+    navInvoices: "Fakturor",
+    navCompany: "Företag",
+    navSettings: "Inställningar",
+    navProfile: "Profil",
+    navLogout: "Logga ut",
+    langName: "Svenska",
     // Navigation
     features: "Funktioner",
     pricing: "Priser",
@@ -150,6 +177,19 @@ export const strings: Record<Lang, Translations> = {
       "Detta är en startmall — verifiera moms- och bokföringsregler med din revisor innan produktion.",
   },
   en: {
+    navOverview: "Overview",
+    navReceipts: "Receipts",
+    navMileage: "Mileage",
+    navApprovals: "Approvals",
+    navIntegrations: "Integrations",
+    navSubscription: "Subscription",
+    navStats: "Statistics",
+    navInvoices: "Invoices",
+    navCompany: "Company",
+    navSettings: "Settings",
+    navProfile: "Profile",
+    navLogout: "Log out",
+    langName: "English",
     // Navigation
     features: "Features",
     pricing: "Pricing",
