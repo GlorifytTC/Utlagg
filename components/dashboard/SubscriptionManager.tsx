@@ -139,9 +139,16 @@ export function SubscriptionManager({
                   <Button
                     variant="outline"
                     className="w-full"
-                    onClick={() => (window.location.href = "mailto:sales@utlagg.se?subject=Enterprise")}
+                    disabled={loading !== null}
+                    onClick={async () => {
+                      setLoading("enterprise");
+                      const r = await fetch("/api/billing/enterprise-inquiry", { method: "POST" });
+                      setLoading(null);
+                      if (r.ok) toast.success("Tack! Vi hör av oss om en offert.");
+                      else window.location.href = "mailto:sales@utlagg.se?subject=Enterprise";
+                    }}
                   >
-                    Kontakta säljteam
+                    {loading === "enterprise" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Begär offert"}
                   </Button>
                 )}
               </CardContent>

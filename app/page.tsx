@@ -7,7 +7,7 @@ import { Pricing } from "@/components/landing/Pricing";
 import { Features } from "@/components/landing/Features";
 import { Footer } from "@/components/landing/Footer";
 import { StructuredData } from "@/components/StructuredData";
-import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 function HomeContent() {
   const { t, lang, toggleLanguage } = useLanguage();
@@ -53,9 +53,5 @@ function HomeContent() {
 }
 
 export default function HomePage() {
-  return (
-    <LanguageProvider>
-      <HomeContent />
-    </LanguageProvider>
-  );
+  return <HomeContent />;
 }

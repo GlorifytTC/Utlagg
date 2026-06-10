@@ -37,6 +37,21 @@ function layout(title: string, body: string): string {
   </div></body></html>`;
 }
 
+export function sendEnterpriseInquiry(ownerEmail: string, fromEmail: string, note?: string) {
+  return send(
+    ownerEmail,
+    "Enterprise-förfrågan från " + fromEmail,
+    layout(
+      "Ny Enterprise-förfrågan",
+      `<p>En användare vill ha en Enterprise-offert.</p>
+       <p><strong>E-post:</strong> ${fromEmail}</p>
+       ${note ? `<p><strong>Meddelande:</strong> ${note}</p>` : ""}
+       <p>Svara dem direkt för att komma överens om pris, och sätt sedan deras plan till
+       Enterprise i adminpanelen.</p>`,
+    ),
+  );
+}
+
 export function sendWelcomeEmail(to: string, name?: string) {
   return send(
     to,

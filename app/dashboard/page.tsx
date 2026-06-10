@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { eq, sql, desc } from "drizzle-orm";
@@ -43,6 +44,34 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {(() => {
+        const grantExpired = user.subscriptionGrantedUntil
+          ? new Date(user.subscriptionGrantedUntil).getTime() < Date.now()
+          : false;
+        const premiumEnded =
+          user.subscriptionPaused ||
+          grantExpired ||
+          (user.subscriptionTier === "free" && user.subscriptionStatus === "canceled");
+        if (!premiumEnded) return null;
+        return (
+          <div className="flex flex-col gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-amber-500/40 dark:bg-amber-500/10">
+            <div>
+              <p className="font-semibold text-amber-900 dark:text-amber-200">
+                Din premiumperiod har avslutats
+              </p>
+              <p className="text-sm text-amber-800 dark:text-amber-300/90">
+                Välj ett paket för att fortsätta använda premiumfunktionerna.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/subscription"
+              className="inline-flex shrink-0 items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700"
+            >
+              Välj paket
+            </Link>
+          </div>
+        );
+      })()}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Översikt</h1>
         <p className="text-gray-500 dark:text-gray-400">
