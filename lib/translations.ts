@@ -75,10 +75,19 @@ export interface Translations {
   navProfile: string;
   navLogout: string;
   langName: string;
+  // Dashboard overview
+  dashWelcome: string;
+  dashPremiumEndedTitle: string;
+  dashPremiumEndedBody: string;
+  dashChoosePlan: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    dashWelcome: "Välkommen tillbaka",
+    dashPremiumEndedTitle: "Din premiumperiod har avslutats",
+    dashPremiumEndedBody: "Välj ett paket för att fortsätta använda premiumfunktionerna.",
+    dashChoosePlan: "Välj paket",
     navOverview: "Översikt",
     navReceipts: "Kvitton",
     navMileage: "Milersättning",
@@ -177,6 +186,10 @@ export const strings: Record<Lang, Translations> = {
       "Detta är en startmall — verifiera moms- och bokföringsregler med din revisor innan produktion.",
   },
   en: {
+    dashWelcome: "Welcome back",
+    dashPremiumEndedTitle: "Your premium period has ended",
+    dashPremiumEndedBody: "Choose a plan to keep using the premium features.",
+    dashChoosePlan: "Choose plan",
     navOverview: "Overview",
     navReceipts: "Receipts",
     navMileage: "Mileage",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   Home, Receipt, CreditCard, BarChart3, Settings, User,
@@ -39,6 +39,7 @@ function isActive(pathname: string, href: string) {
 
 function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const { t, lang, toggleLanguage } = useLanguage();
   const dark = theme === "dark";
@@ -76,7 +77,7 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
         })}
       </nav>
       <div className="space-y-2 border-t border-gray-200 p-4 dark:border-gray-800">
-        <button onClick={toggleLanguage} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800">
+        <button onClick={() => { toggleLanguage(); router.refresh(); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800">
           <span className="h-5 w-5 text-center text-xs font-bold">{lang === "sv" ? "EN" : "SV"}</span> <span>{lang === "sv" ? "English" : "Svenska"}</span>
         </button>
         <button onClick={toggleTheme} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800">

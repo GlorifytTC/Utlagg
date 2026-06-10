@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getT } from "@/lib/i18n-server";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { eq, sql, desc } from "drizzle-orm";
@@ -20,6 +21,7 @@ export default async function DashboardPage() {
 
   const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
   if (!user) redirect("/login");
+  const t = getT();
 
   const [stats] = await db
     .select({
@@ -57,25 +59,25 @@ export default async function DashboardPage() {
           <div className="flex flex-col gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-amber-500/40 dark:bg-amber-500/10">
             <div>
               <p className="font-semibold text-amber-900 dark:text-amber-200">
-                Din premiumperiod har avslutats
+                {t.dashPremiumEndedTitle}
               </p>
               <p className="text-sm text-amber-800 dark:text-amber-300/90">
-                Välj ett paket för att fortsätta använda premiumfunktionerna.
+                {t.dashPremiumEndedBody}
               </p>
             </div>
             <Link
               href="/dashboard/subscription"
               className="inline-flex shrink-0 items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700"
             >
-              Välj paket
+              {t.dashChoosePlan}
             </Link>
           </div>
         );
       })()}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Översikt</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navOverview}</h1>
         <p className="text-gray-500 dark:text-gray-400">
-          Välkommen tillbaka, {user.name ?? user.email}
+          {t.dashWelcome}, {user.name ?? user.email}
         </p>
       </div>
 

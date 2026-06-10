@@ -32,6 +32,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLang(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, next);
+      // Also a cookie, so SERVER components (the dashboard pages) can read it.
+      document.cookie = `${STORAGE_KEY}=${next}; path=/; max-age=31536000; samesite=lax`;
     } catch {
       /* ignore */
     }
