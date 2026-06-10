@@ -80,23 +80,11 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
     try {
       const base64 = await compressImage(file);
 
-      // Free OCR: extract text in the browser with Tesseract (Swedish), then
-      // send just the text to the server to parse. Falls back to sending the
-      // image (server uses Vision only if configured).
-      let body: string;
-      try {
-        const { default: Tesseract } = await import("tesseract.js");
-        const { data: { text } } = await Tesseract.recognize(base64, "swe+eng");
-        body = JSON.stringify({ text });
-      } catch (ocrErr) {
-        console.error("browser OCR failed, falling back:", ocrErr);
-        body = JSON.stringify({ image: base64 });
-      }
-
+      // OCR runs on the SERVER now (no browser worker → no CSP issues).
       const res = await fetch("/api/ocr", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body,
+        body: JSON.stringify({ image: base64 }),
       });
       const data = await res.json();
 

@@ -58,6 +58,46 @@ export async function runOcr(imageBase64: string): Promise<ExtractedReceipt> {
   return parseReceiptText(rawText);
 }
 
+/**
+ * Free server-side OCR via OCR.space. Runs on the server, so there is NO browser
+ * Web Worker and therefore NO Content-Security-Policy issue. Set OCR_SPACE_API_KEY
+ * to your own free key (ocr.space/ocrapi); falls back to the demo key otherwise.
+ */
+export async function runOcrSpace(imageBase64: string): Promise<ExtractedReceipt> {
+  const apiKey = process.env.OCR_SPACE_API_KEY || "helloworld";
+  const dataUrl = imageBase64.startsWith("data:")
+    ? imageBase64
+    : `data:image/jpeg;base64,${imageBase64}`;
+
+  const form = new URLSearchParams();
+  form.set("base64Image", dataUrl);
+  form.set("language", "swe");
+  form.set("OCREngine", "2");
+  form.set("scale", "true");
+  form.set("detectOrientation", "true");
+  form.set("isOverlayRequired", "false");
+
+  const res = await fetch("https://api.ocr.space/parse/image", {
+    method: "POST",
+    headers: { apikey: apiKey, "Content-Type": "application/x-www-form-urlencoded" },
+    body: form.toString(),
+  });
+  if (!res.ok) throw new Error(`OCR.space error ${res.status}`);
+
+  const data = (await res.json()) as {
+    ParsedResults?: Array<{ ParsedText?: string }>;
+    IsErroredOnProcessing?: boolean;
+    ErrorMessage?: string | string[];
+  };
+  if (data.IsErroredOnProcessing) {
+    throw new Error(
+      Array.isArray(data.ErrorMessage) ? data.ErrorMessage.join("; ") : data.ErrorMessage ?? "OCR failed",
+    );
+  }
+  const rawText = data.ParsedResults?.[0]?.ParsedText ?? "";
+  return parseReceiptText(rawText);
+}
+
 /* ----------------------- heuristic parsing ----------------------- */
 
 // Amount with optional thousands separators and optional 1-2 decimal digits.

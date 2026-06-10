@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { runOcr, parseReceiptText, OCR_CONFIDENCE_THRESHOLD, type ExtractedReceipt } from "@/lib/ocr";
+import { runOcr, runOcrSpace, parseReceiptText, OCR_CONFIDENCE_THRESHOLD, type ExtractedReceipt } from "@/lib/ocr";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -36,16 +36,19 @@ export async function POST(req: NextRequest) {
 
   let result: ExtractedReceipt = EMPTY;
   try {
-    if (parsed.data.text && parsed.data.text.trim()) {
-      // Free path: text already extracted in the browser (Tesseract).
+    if (parsed.data.image) {
+      // Server-side OCR. Vision if a key is configured (best quality), else the
+      // free OCR.space engine. Either way it runs on the server — no browser
+      // worker, so no CSP can block it.
+      result = process.env.GOOGLE_CLOUD_API_KEY
+        ? await runOcr(parsed.data.image)
+        : await runOcrSpace(parsed.data.image);
+    } else if (parsed.data.text && parsed.data.text.trim()) {
+      // Back-compat: text already extracted client-side.
       result = parseReceiptText(parsed.data.text);
-    } else if (parsed.data.image && process.env.GOOGLE_CLOUD_API_KEY) {
-      // Optional paid path: Google Vision, only if configured.
-      result = await runOcr(parsed.data.image);
     }
-    // else: no text and no Vision key -> return EMPTY (manual entry), never 502.
   } catch (err) {
-    console.error("ocr parse error:", err);
+    console.error("ocr error:", err);
     result = EMPTY;
   }
 
