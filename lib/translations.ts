@@ -80,10 +80,59 @@ export interface Translations {
   dashPremiumEndedTitle: string;
   dashPremiumEndedBody: string;
   dashChoosePlan: string;
+  // Receipts page
+  receiptsSubtitle: string;
+  receiptNewTitle: string;
+  receiptDragDrop: string;
+  receiptChooseImage: string;
+  receiptTakePhoto: string;
+  receiptCameraHint: string;
+  receiptSearch: string;
+  receiptExportCsv: string;
+  receiptFrom: string;
+  receiptTo: string;
+  receiptExport: string;
+  receiptNone: string;
+  receiptLoading: string;
+  colDate: string;
+  colVendor: string;
+  colBas: string;
+  colVat: string;
+  colAmount: string;
+  colStatus: string;
+  statusPending: string;
+  statusApproved: string;
+  statusRejected: string;
+  scansThisMonth: string;
+  unlimited: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    receiptsSubtitle: "Ladda upp, granska och exportera",
+    receiptNewTitle: "Nytt kvitto",
+    receiptDragDrop: "Dra & släpp kvittot här, eller",
+    receiptChooseImage: "Välj bild",
+    receiptTakePhoto: "Ta foto",
+    receiptCameraHint: "Ta foto öppnar kameran på mobilen.",
+    receiptSearch: "Sök leverantör, BAS eller belopp",
+    receiptExportCsv: "Exportera CSV",
+    receiptFrom: "Från",
+    receiptTo: "Till",
+    receiptExport: "Exportera",
+    receiptNone: "Inga kvitton ännu. Ladda upp ditt första ovan.",
+    receiptLoading: "Laddar…",
+    colDate: "Datum",
+    colVendor: "Leverantör",
+    colBas: "BAS",
+    colVat: "Moms",
+    colAmount: "Belopp",
+    colStatus: "Status",
+    statusPending: "Väntar",
+    statusApproved: "Godkänd",
+    statusRejected: "Nekad",
+    scansThisMonth: "Skanningar denna månad",
+    unlimited: "obegränsat",
     dashWelcome: "Välkommen tillbaka",
     dashPremiumEndedTitle: "Din premiumperiod har avslutats",
     dashPremiumEndedBody: "Välj ett paket för att fortsätta använda premiumfunktionerna.",
@@ -186,6 +235,30 @@ export const strings: Record<Lang, Translations> = {
       "Detta är en startmall — verifiera moms- och bokföringsregler med din revisor innan produktion.",
   },
   en: {
+    receiptsSubtitle: "Upload, review and export",
+    receiptNewTitle: "New receipt",
+    receiptDragDrop: "Drag & drop your receipt here, or",
+    receiptChooseImage: "Choose image",
+    receiptTakePhoto: "Take photo",
+    receiptCameraHint: "Take photo opens the camera on mobile.",
+    receiptSearch: "Search vendor, BAS or amount",
+    receiptExportCsv: "Export CSV",
+    receiptFrom: "From",
+    receiptTo: "To",
+    receiptExport: "Export",
+    receiptNone: "No receipts yet. Upload your first above.",
+    receiptLoading: "Loading…",
+    colDate: "Date",
+    colVendor: "Vendor",
+    colBas: "BAS",
+    colVat: "VAT",
+    colAmount: "Amount",
+    colStatus: "Status",
+    statusPending: "Pending",
+    statusApproved: "Approved",
+    statusRejected: "Rejected",
+    scansThisMonth: "Scans this month",
+    unlimited: "unlimited",
     dashWelcome: "Welcome back",
     dashPremiumEndedTitle: "Your premium period has ended",
     dashPremiumEndedBody: "Choose a plan to keep using the premium features.",

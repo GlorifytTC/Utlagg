@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BasSelect } from "./BasSelect";
 import { getBasAccount } from "@/lib/bas";
 import { resolveVatRate, vatFromGross, type VatRate } from "@/lib/vat";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Draft {
   vendorName: string;
@@ -62,11 +63,13 @@ async function compressImage(file: File, maxDim = 1500, quality = 0.6): Promise<
 }
 
 export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
+  const { t } = useLanguage();
   const [stage, setStage] = useState<"idle" | "scanning" | "review">("idle");
   const [draft, setDraft] = useState<Draft>(emptyDraft());
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback(async (file: File) => {
     setError(null);
@@ -80,7 +83,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       let body: string;
       try {
         const { default: Tesseract } = await import("tesseract.js");
-        const { data: { text } } = await Tesseract.recognize(base64, "swe");
+        const { data: { text } } = await Tesseract.recognize(base64, "swe+eng");
         body = JSON.stringify({ text });
       } catch (ocrErr) {
         console.error("browser OCR failed, falling back:", ocrErr);
@@ -176,7 +179,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
 
   return (
     <div className="rounded-2xl border hairline bg-white/60 p-6">
-      <h2 className="font-display text-xl">Nytt kvitto</h2>
+      <h2 className="font-display text-xl">{t.receiptNewTitle}</h2>
 
       <AnimatePresence mode="wait">
         {stage === "idle" && (
@@ -201,18 +204,36 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             }`}
           >
             <p className="text-sm text-ink/70">
-              Dra & släpp kvittot här, eller
+              {t.receiptDragDrop}
             </p>
-            <div className="mt-3 flex gap-3">
+            <div className="mt-3 flex flex-wrap justify-center gap-3">
               <button
                 onClick={() => inputRef.current?.click()}
                 className="rounded-full bg-ink px-5 py-2.5 text-sm text-paper hover:bg-nordic-900"
               >
-                Välj bild
+                {t.receiptChooseImage}
+              </button>
+              <button
+                onClick={() => cameraRef.current?.click()}
+                className="rounded-full border border-ink/20 px-5 py-2.5 text-sm text-ink hover:bg-ink/5"
+              >
+                {t.receiptTakePhoto}
               </button>
             </div>
+            {/* Gallery / file picker (no capture). */}
             <input
               ref={inputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleFile(f);
+              }}
+            />
+            {/* Camera (capture forces the rear camera on mobile). */}
+            <input
+              ref={cameraRef}
               type="file"
               accept="image/*"
               capture="environment"
@@ -223,7 +244,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
               }}
             />
             <p className="mt-3 text-xs text-ink/40">
-              På mobil öppnas kameran automatiskt.
+              {t.receiptCameraHint}
             </p>
           </motion.div>
         )}

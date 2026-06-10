@@ -60,15 +60,37 @@ export async function runOcr(imageBase64: string): Promise<ExtractedReceipt> {
 
 /* ----------------------- heuristic parsing ----------------------- */
 
-const AMOUNT_RE = /(\d{1,3}(?:[ .]\d{3})*(?:[.,]\d{2}))/;
+// Amount with optional thousands separators and optional 1-2 decimal digits.
+const AMOUNT_RE = /(\d{1,3}(?:[ .,]\d{3})*(?:[.,]\d{1,2})?|\d+(?:[.,]\d{1,2})?)/;
+const AMOUNT_RE_G = new RegExp(AMOUNT_RE.source, "g");
 
+// Handle both EU ("1.234,56") and US ("1,234.56") number formats.
 function toNumber(raw: string): number | null {
-  const cleaned = raw
-    .replace(/\s/g, "")
-    .replace(/\.(?=\d{3}\b)/g, "") // thousands dot
-    .replace(",", ".");
-  const n = Number(cleaned);
-  return Number.isFinite(n) ? n : null;
+  let s = raw.replace(/[^\d.,]/g, "");
+  if (!s) return null;
+  const lastComma = s.lastIndexOf(",");
+  const lastDot = s.lastIndexOf(".");
+  if (lastComma > -1 || lastDot > -1) {
+    const decSep = lastComma > lastDot ? "," : ".";
+    const thouSep = decSep === "," ? "." : ",";
+    s = s.split(thouSep).join("");
+    s = s.replace(decSep, ".");
+  }
+  const n = Number(s);
+  return Number.isFinite(n) ? Math.round(n * 100) / 100 : null;
+}
+
+function allAmounts(text: string): number[] {
+  const out: number[] = [];
+  const matches = text.match(AMOUNT_RE_G) ?? [];
+  for (const m of matches) {
+    const n = toNumber(m);
+    // Ignore bare years / tiny integers that are usually not money.
+    if (n != null && n >= 1 && !(Number.isInteger(n) && n >= 1900 && n <= 2100)) {
+      out.push(n);
+    }
+  }
+  return out;
 }
 
 export function parseReceiptText(rawText: string): ExtractedReceipt {
@@ -80,38 +102,45 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   let confidenceHits = 0;
   const totalSignals = 4;
 
-  // Vendor: first non-numeric line is a decent guess for the store name.
+  // Vendor: first line with letters that isn't a time/number row.
   const vendorName =
-    lines.find((l) => /[A-Za-zÅÄÖåäö]{3,}/.test(l) && !/\d{2}[:.]\d{2}/.test(l)) ??
+    lines.find((l) => /[A-Za-zÅÄÖåäö]{3,}/.test(l) && !/^\d{1,2}[:.]\d{2}/.test(l)) ??
     null;
   if (vendorName) confidenceHits++;
 
-  // Date: match common Swedish formats yyyy-mm-dd or dd/mm/yyyy.
+  // Date: ISO, dd/mm/yyyy, dd-mm-yyyy, yyyy/mm/dd, dd.mm.yy, etc.
   let date: string | null = null;
-  const isoMatch = rawText.match(/(\d{4})-(\d{2})-(\d{2})/);
-  const dmyMatch = rawText.match(/(\d{2})[/.](\d{2})[/.](\d{2,4})/);
-  if (isoMatch) {
-    date = `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
-  } else if (dmyMatch) {
-    const yr = dmyMatch[3].length === 2 ? `20${dmyMatch[3]}` : dmyMatch[3];
-    date = `${yr}-${dmyMatch[2]}-${dmyMatch[1]}`;
+  const iso = rawText.match(/(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+  const dmy = rawText.match(/(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})/);
+  const pad = (s: string) => s.padStart(2, "0");
+  if (iso) {
+    date = `${iso[1]}-${pad(iso[2])}-${pad(iso[3])}`;
+  } else if (dmy) {
+    const yr = dmy[3].length === 2 ? `20${dmy[3]}` : dmy[3];
+    date = `${yr}-${pad(dmy[2])}-${pad(dmy[1])}`;
   }
   if (date) confidenceHits++;
 
-  // Total: prefer a line mentioning "total"/"summa"/"att betala".
+  // Total: prefer a labelled line (multilingual); else fall back to the largest
+  // amount on the bill, which is the total on the vast majority of receipts.
   let totalAmount: number | null = null;
-  const totalLine = lines.find((l) =>
-    /total|summa|att betala|totalt/i.test(l),
-  );
-  const totalSource = totalLine ?? lines.slice(-5).join(" ");
-  const totalM = totalSource.match(AMOUNT_RE);
-  if (totalM) totalAmount = toNumber(totalM[1]);
-  if (totalAmount) confidenceHits++;
+  const TOTAL_RE =
+    /total|totalt|summa|att betala|att\s*betala|grand total|amount due|balance due|to pay|belopp|sum|beløp|yhteensä|gesamt|montant/i;
+  const totalLine = [...lines].reverse().find((l) => TOTAL_RE.test(l));
+  if (totalLine) {
+    const m = totalLine.match(AMOUNT_RE);
+    if (m) totalAmount = toNumber(m[1]);
+  }
+  if (totalAmount == null) {
+    const amounts = allAmounts(rawText);
+    if (amounts.length) totalAmount = Math.max(...amounts);
+  }
+  if (totalAmount != null) confidenceHits++;
 
-  // VAT: line mentioning "moms" / "vat".
+  // VAT: labelled line (multilingual). Capture rate when it's a known value.
   let vatAmount: number | null = null;
   let vatRate: 6 | 12 | 25 | null = null;
-  const vatLine = lines.find((l) => /\bmoms\b|\bvat\b/i.test(l));
+  const vatLine = lines.find((l) => /\bmoms\b|\bvat\b|\btax\b|\bmva\b|\balv\b|\bmwst\b|\btva\b/i.test(l));
   if (vatLine) {
     const rateM = vatLine.match(/(\d{1,2})\s*%/);
     if (rateM) {

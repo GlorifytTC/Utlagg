@@ -1,3 +1,5 @@
+"use client";
+import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
 export function UsageMeter({
@@ -13,10 +15,11 @@ export function UsageMeter({
   const pct = unlimited ? 0 : Math.min(100, (used / limit) * 100);
   const near = !unlimited && pct >= 80;
 
+  const { t } = useLanguage();
   return (
     <div className="rounded-2xl border hairline bg-white/60 p-5">
       <div className="flex items-baseline justify-between">
-        <p className="text-sm text-ink/60">Skanningar denna månad</p>
+        <p className="text-sm text-ink/60">{t.scansThisMonth}</p>
         <span className="rounded-full bg-nordic-50 px-2.5 py-0.5 text-xs font-medium text-nordic-600 capitalize">
           {tier}
         </span>
@@ -24,7 +27,7 @@ export function UsageMeter({
       <p className="mt-2 font-display text-2xl">
         {used}
         {unlimited ? (
-          <span className="text-base text-ink/40"> / obegränsat</span>
+          <span className="text-base text-ink/40"> / {t.unlimited}</span>
         ) : (
           <span className="text-base text-ink/40"> / {limit}</span>
         )}

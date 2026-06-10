@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { customerInvoices, companies } from "@/db/schema";
@@ -20,7 +20,7 @@ const lineSchema = z.object({
 });
 
 const schema = z.object({
-  invoiceNumber: z.string().trim().min(1).max(40),
+  invoiceNumber: z.string().trim().max(40).optional(),
   buyerName: z.string().trim().min(1).max(255),
   buyerOrgNumber: z.string().trim().max(20).optional(),
   buyerVatNumber: z.string().trim().max(50).optional(),
@@ -76,12 +76,23 @@ export async function POST(req: NextRequest) {
 
   const totals = computeInvoiceTotals(d.lineItems, d.reverseCharge);
 
+  // Invoice number is optional — auto-generate a per-company sequential number
+  // (YYYY-NNNN) when the user leaves it blank.
+  let invoiceNumber = d.invoiceNumber?.trim();
+  if (!invoiceNumber) {
+    const [{ count }] = (await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(customerInvoices)
+      .where(eq(customerInvoices.companyId, company.id))) as { count: number }[];
+    invoiceNumber = `${new Date().getFullYear()}-${String((count ?? 0) + 1).padStart(4, "0")}`;
+  }
+
   const [created] = await db
     .insert(customerInvoices)
     .values({
       companyId: company.id,
       createdById: gate.userId!,
-      invoiceNumber: d.invoiceNumber,
+      invoiceNumber,
       sellerName: company.name,
       sellerOrgNumber: company.orgNumber,
       sellerVatNumber: company.vatNumber,

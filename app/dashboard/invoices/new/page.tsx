@@ -35,8 +35,8 @@ export default function NewInvoicePage() {
   }
 
   async function save() {
-    if (!form.invoiceNumber || !form.buyerName || lines.some((l) => !l.description)) {
-      toast.error("Fyll i fakturanummer, kund och alla rader");
+    if (!form.buyerName || lines.some((l) => !l.description)) {
+      toast.error("Fyll i kund och alla rader");
       return;
     }
     if (reverseCharge && !form.buyerVatNumber && !form.buyerOrgNumber) {
@@ -67,8 +67,8 @@ export default function NewInvoicePage() {
       <Card>
         <CardHeader><CardTitle>Kund</CardTitle></CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2"><Label>Fakturanummer</Label>
-            <Input value={form.invoiceNumber} onChange={(e) => setForm({ ...form, invoiceNumber: e.target.value })} placeholder="2026-001" /></div>
+          <div className="space-y-2"><Label>Fakturanummer (valfritt)</Label>
+            <Input value={form.invoiceNumber} onChange={(e) => setForm({ ...form, invoiceNumber: e.target.value })} placeholder="Lämna tomt för automatiskt nummer" /></div>
           <div className="space-y-2"><Label>Kundnamn</Label>
             <Input value={form.buyerName} onChange={(e) => setForm({ ...form, buyerName: e.target.value })} /></div>
           <div className="space-y-2"><Label>Org.nummer</Label>

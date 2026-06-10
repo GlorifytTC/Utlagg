@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { ReceiptsManager } from "@/components/dashboard/ReceiptsManager";
+import { getT } from "@/lib/i18n-server";
 
 export const metadata = { title: "Kvitton" };
 export const dynamic = "force-dynamic";
@@ -12,6 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function ReceiptsPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
+  const t = getT();
 
   const [user] = await db
     .select()
@@ -23,8 +25,8 @@ export default async function ReceiptsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Kvitton</h1>
-        <p className="text-gray-500 dark:text-gray-400">Ladda upp, granska och exportera</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navReceipts}</h1>
+        <p className="text-gray-500 dark:text-gray-400">{t.receiptsSubtitle}</p>
       </div>
       <ReceiptsManager
         used={user.scansUsedThisMonth}
