@@ -70,6 +70,9 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const [showCamera, setShowCamera] = useState(false);
 
   const handleFile = useCallback(async (file: File) => {
     setError(null);
@@ -123,6 +126,54 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       setStage("review");
     }
   }, []);
+
+  async function openCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+        audio: false,
+      });
+      streamRef.current = stream;
+      setShowCamera(true);
+      // Attach after the modal mounts.
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play().catch(() => {});
+        }
+      }, 50);
+    } catch {
+      // No webcam / permission denied (common on desktop) — fall back to the
+      // file/camera input so mobile still gets the native camera.
+      cameraRef.current?.click();
+    }
+  }
+
+  function closeCamera() {
+    streamRef.current?.getTracks().forEach((tr) => tr.stop());
+    streamRef.current = null;
+    setShowCamera(false);
+  }
+
+  function capturePhoto() {
+    const video = videoRef.current;
+    if (!video) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d")?.drawImage(video, 0, 0);
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          const file = new File([blob], `kvitto-${Date.now()}.jpg`, { type: "image/jpeg" });
+          handleFile(file);
+        }
+        closeCamera();
+      },
+      "image/jpeg",
+      0.85,
+    );
+  }
 
   function onBasChange(code: string) {
     const account = getBasAccount(code);
@@ -179,6 +230,19 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
 
   return (
     <div className="rounded-2xl border hairline bg-white/60 p-6">
+      {showCamera && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-black/80 p-4">
+          <video ref={videoRef} playsInline muted className="max-h-[70vh] w-full max-w-lg rounded-xl bg-black" />
+          <div className="flex gap-3">
+            <button onClick={capturePhoto} className="rounded-full bg-white px-6 py-2.5 text-sm font-medium text-ink">
+              {t.receiptTakePhoto}
+            </button>
+            <button onClick={closeCamera} className="rounded-full border border-white/40 px-6 py-2.5 text-sm text-white">
+              {t.receiptCancel}
+            </button>
+          </div>
+        </div>
+      )}
       <h2 className="font-display text-xl">{t.receiptNewTitle}</h2>
 
       <AnimatePresence mode="wait">
@@ -214,7 +278,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 {t.receiptChooseImage}
               </button>
               <button
-                onClick={() => cameraRef.current?.click()}
+                onClick={openCamera}
                 className="rounded-full border border-ink/20 px-5 py-2.5 text-sm text-ink hover:bg-ink/5"
               >
                 {t.receiptTakePhoto}

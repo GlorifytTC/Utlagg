@@ -105,10 +105,12 @@ export interface Translations {
   statusRejected: string;
   scansThisMonth: string;
   unlimited: string;
+  receiptCancel: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    receiptCancel: "Avbryt",
     receiptsSubtitle: "Ladda upp, granska och exportera",
     receiptNewTitle: "Nytt kvitto",
     receiptDragDrop: "Dra & släpp kvittot här, eller",
@@ -235,6 +237,7 @@ export const strings: Record<Lang, Translations> = {
       "Detta är en startmall — verifiera moms- och bokföringsregler med din revisor innan produktion.",
   },
   en: {
+    receiptCancel: "Cancel",
     receiptsSubtitle: "Upload, review and export",
     receiptNewTitle: "New receipt",
     receiptDragDrop: "Drag & drop your receipt here, or",
