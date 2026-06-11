@@ -72,7 +72,8 @@ export async function runOcrSpace(imageBase64: string): Promise<ExtractedReceipt
   const form = new URLSearchParams();
   form.set("base64Image", dataUrl);
   form.set("language", "swe");
-  form.set("OCREngine", "2");
+  // Engine 1 supports Swedish ('swe'); Engine 2 rejects it (error E201).
+  form.set("OCREngine", "1");
   form.set("scale", "true");
   form.set("detectOrientation", "true");
   form.set("isOverlayRequired", "false");
