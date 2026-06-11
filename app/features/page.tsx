@@ -1,4 +1,3 @@
-// app/features/page.tsx
 "use client";
 
 import { motion } from "framer-motion";
@@ -6,6 +5,34 @@ import Link from "next/link";
 import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+
+const COMPARISON_ROWS = [
+  {
+    labelKey: "featuresCompareOcrLabel",
+    utlaggKey: "featuresCompareOcrUtlagg",
+    tradKey: "featuresCompareOcrTraditional",
+  },
+  {
+    labelKey: "featuresCompareBasLabel",
+    utlaggKey: "featuresCompareBasUtlagg",
+    tradKey: "featuresCompareBasTraditional",
+  },
+  {
+    labelKey: "featuresCompareVatLabel",
+    utlaggKey: "featuresCompareVatUtlagg",
+    tradKey: "featuresCompareVatTraditional",
+  },
+  {
+    labelKey: "featuresCompareBankidLabel",
+    utlaggKey: "featuresCompareBankidUtlagg",
+    tradKey: "featuresCompareBankidTraditional",
+  },
+  {
+    labelKey: "featuresCompareDataLabel",
+    utlaggKey: "featuresCompareDataUtlagg",
+    tradKey: "featuresCompareDataTraditional",
+  },
+] as const;
 
 function FeaturesPageContent() {
   const { t } = useLanguage();
@@ -43,8 +70,7 @@ function FeaturesPageContent() {
               transition={{ delay: 0.08 }}
               className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70"
             >
-              Six capabilities purpose-built for Swedish companies, sole
-              traders, and accounting firms.
+              {t.featuresPageSubtitle}
             </motion.p>
           </div>
         </section>
@@ -74,63 +100,37 @@ function FeaturesPageContent() {
         <section className="border-t hairline bg-grain">
           <div className="mx-auto max-w-6xl px-6 py-24">
             <h2 className="mb-10 max-w-xl font-display text-3xl md:text-4xl">
-              How Utlagg compares
+              {t.featuresCompareTitle}
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead>
                   <tr className="border-b hairline">
                     <th className="pb-4 pr-8 font-medium text-ink/60">
-                      Capability
+                      {t.featuresCompareCapability}
                     </th>
-                    <th className="pb-4 pr-8 font-medium text-ink">Utlagg</th>
+                    <th className="pb-4 pr-8 font-medium text-ink">
+                      {t.featuresCompareUtlagg}
+                    </th>
                     <th className="pb-4 pr-8 font-medium text-ink/60">
-                      Traditional tools
+                      {t.featuresCompareTraditional}
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y hairline">
-                  <tr>
-                    <td className="py-4 pr-8">Receipt OCR accuracy</td>
-                    <td className="py-4 pr-8 font-medium text-nordic-600">
-                      98 %+
-                    </td>
-                    <td className="py-4 pr-8 text-ink/60">70–85 %</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">BAS mapping</td>
-                    <td className="py-4 pr-8 font-medium text-nordic-600">
-                      Automatic, self-correcting
-                    </td>
-                    <td className="py-4 pr-8 text-ink/60">
-                      Manual or template-based
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">Swedish VAT handling</td>
-                    <td className="py-4 pr-8 font-medium text-nordic-600">
-                      6 / 12 / 25 % auto-detected
-                    </td>
-                    <td className="py-4 pr-8 text-ink/60">
-                      Often configured per-vendor
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">BankID sign-off</td>
-                    <td className="py-4 pr-8 font-medium text-nordic-600">
-                      Built-in
-                    </td>
-                    <td className="py-4 pr-8 text-ink/60">
-                      Separate identity provider
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">Data residency</td>
-                    <td className="py-4 pr-8 font-medium text-nordic-600">
-                      Sweden
-                    </td>
-                    <td className="py-4 pr-8 text-ink/60">EU or US</td>
-                  </tr>
+                  {COMPARISON_ROWS.map((row) => (
+                    <tr key={row.labelKey}>
+                      <td className="py-4 pr-8">
+                        {t[row.labelKey as keyof typeof t] as string}
+                      </td>
+                      <td className="py-4 pr-8 font-medium text-nordic-600">
+                        {t[row.utlaggKey as keyof typeof t] as string}
+                      </td>
+                      <td className="py-4 pr-8 text-ink/60">
+                        {t[row.tradKey as keyof typeof t] as string}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -147,11 +147,10 @@ function FeaturesPageContent() {
           >
             <div>
               <h2 className="font-display text-2xl">
-                Ready to try the features?
+                {t.featuresCtaTitle}
               </h2>
               <p className="mt-1 text-sm text-ink/60">
-                Create a free account and upload your first receipt in under a
-                minute.
+                {t.featuresCtaBody}
               </p>
             </div>
             <Link

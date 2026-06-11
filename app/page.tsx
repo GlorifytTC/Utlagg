@@ -84,7 +84,7 @@ function HomeContent() {
               </p>
               <h2 className="mt-2 font-display text-3xl">{t.pricingTitle}</h2>
               <p className="mt-1 text-sm text-ink/60">
-                Free plan available. No credit card required.
+                {t.pricingCalloutSubtitle}
               </p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-3">

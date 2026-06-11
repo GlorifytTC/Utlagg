@@ -1,4 +1,3 @@
-// app/pricing/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -11,6 +10,36 @@ import { cn } from "@/lib/utils";
 import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+
+const PRICING_TABLE_ROWS = [
+  { labelKey: "pricingTableReceipts", free: "50", pro: "500", business: "2,500", enterprise: "∞" },
+  { labelKey: "pricingTableMembers", free: "1", pro: "1", business: "Upp till 20", enterprise: "∞" },
+  { labelKey: "pricingTableOcr", free: "✓", pro: "✓", business: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableBas", free: "✓", pro: "✓", business: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableCurrency", free: "✓", pro: "✓", business: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableSie4", free: "✓", pro: "✓", business: "✓", enterprise: "✓" },
+  {
+    labelKey: "pricingTableSync",
+    free: "—",
+    pro: "✓",
+    business: "✓",
+    enterprise: "✓",
+  },
+  { labelKey: "pricingTableBankid", free: "✓", pro: "✓", business: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableRoles", free: "—", pro: "—", business: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableLimits", free: "—", pro: "—", business: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableOnboarding", free: "—", pro: "—", business: "—", enterprise: "✓" },
+  { labelKey: "pricingTableSupport", free: "—", pro: "—", business: "✓", enterprise: "✓" },
+] as const;
+
+const FAQ_KEYS = [
+  { q: "pricingFaq1Q" as const, a: "pricingFaq1A" as const },
+  { q: "pricingFaq2Q" as const, a: "pricingFaq2A" as const },
+  { q: "pricingFaq3Q" as const, a: "pricingFaq3A" as const },
+  { q: "pricingFaq4Q" as const, a: "pricingFaq4A" as const },
+];
+
+const TIER_ORDER = ["free", "pro", "business", "enterprise"] as const;
 
 function PricingPageContent() {
   const { status } = useSession();
@@ -56,25 +85,6 @@ function PricingPageContent() {
       `plan${tier.charAt(0).toUpperCase() + tier.slice(1)}Features` as keyof typeof t
     ] as string[];
 
-  const FAQ = [
-    {
-      q: "Can I switch plans later?",
-      a: "Yes. Upgrade or downgrade at any time. If you downgrade mid-cycle, the new plan takes effect at the next billing period.",
-    },
-    {
-      q: "Is there a long-term commitment?",
-      a: "No. All paid plans are billed monthly. Cancel anytime from your account settings.",
-    },
-    {
-      q: "Do you handle non-Swedish receipts?",
-      a: "Yes. Our OCR model handles receipts in Swedish, English, Norwegian, Danish, Finnish, and German — with automatic currency conversion.",
-    },
-    {
-      q: "How does the free trial work?",
-      a: "The Pro plan includes a 14-day free trial. No charge until the trial ends. You can downgrade to Free during the trial and keep your data.",
-    },
-  ];
-
   return (
     <div className="bg-paper">
       <Navbar />
@@ -99,8 +109,7 @@ function PricingPageContent() {
               transition={{ delay: 0.08 }}
               className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70"
             >
-              Start for free. Upgrade when your team grows. Every plan includes
-              unlimited receipt storage and seven-year compliance archiving.
+              {t.pricingPageSubtitle}
             </motion.p>
           </div>
         </section>
@@ -169,105 +178,39 @@ function PricingPageContent() {
         <section className="border-t hairline bg-grain">
           <div className="mx-auto max-w-6xl px-6 py-24">
             <h2 className="mb-10 font-display text-3xl md:text-4xl">
-              Full feature comparison
+              {t.pricingComparisonTitle}
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead>
                   <tr className="border-b hairline">
                     <th className="pb-4 pr-8 font-medium text-ink/60" />
-                    {PLANS.map((p) => (
-                      <th key={p.tier} className="pb-4 pr-8 font-medium text-ink">
-                        {getPlanName(p.tier)}
+                    {TIER_ORDER.map((tier) => (
+                      <th key={tier} className="pb-4 pr-8 font-medium text-ink">
+                        {getPlanName(tier)}
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y hairline">
-                  <tr>
-                    <td className="py-4 pr-8">Receipts per month</td>
-                    <td className="py-4 pr-8">50</td>
-                    <td className="py-4 pr-8">500</td>
-                    <td className="py-4 pr-8">2,500</td>
-                    <td className="py-4 pr-8">Unlimited</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">Team members</td>
-                    <td className="py-4 pr-8">1</td>
-                    <td className="py-4 pr-8">1</td>
-                    <td className="py-4 pr-8">Up to 20</td>
-                    <td className="py-4 pr-8">Unlimited</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">AI OCR</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">BAS auto-categorisation</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">Multi-currency</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">SIE4 export</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">Fortnox / Visma / Bokio sync</td>
-                    <td className="py-4 pr-8 text-ink/40">—</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">BankID sign-off</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">Role-based access</td>
-                    <td className="py-4 pr-8 text-ink/40">—</td>
-                    <td className="py-4 pr-8 text-ink/40">—</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">Spending limits</td>
-                    <td className="py-4 pr-8 text-ink/40">—</td>
-                    <td className="py-4 pr-8 text-ink/40">—</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">Custom onboarding</td>
-                    <td className="py-4 pr-8 text-ink/40">—</td>
-                    <td className="py-4 pr-8 text-ink/40">—</td>
-                    <td className="py-4 pr-8 text-ink/40">—</td>
-                    <td className="py-4 pr-8">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 pr-8">Priority support</td>
-                    <td className="py-4 pr-8 text-ink/40">—</td>
-                    <td className="py-4 pr-8 text-ink/40">—</td>
-                    <td className="py-4 pr-8">✓</td>
-                    <td className="py-4 pr-8">✓</td>
-                  </tr>
+                  {PRICING_TABLE_ROWS.map((row) => (
+                    <tr key={row.labelKey}>
+                      <td className="py-4 pr-8">
+                        {t[row.labelKey as keyof typeof t] as string}
+                      </td>
+                      {TIER_ORDER.map((tier) => (
+                        <td
+                          key={tier}
+                          className={cn(
+                            "py-4 pr-8",
+                            row[tier] === "—" && "text-ink/40",
+                          )}
+                        >
+                          {row[tier] === "∞" ? t.unlimited : row[tier]}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -277,10 +220,10 @@ function PricingPageContent() {
         {/* FAQ */}
         <section className="mx-auto max-w-6xl px-6 py-24">
           <h2 className="mb-10 font-display text-3xl md:text-4xl">
-            Common questions
+            {t.pricingFaqTitle}
           </h2>
           <div className="grid gap-6 sm:grid-cols-2">
-            {FAQ.map((item, i) => (
+            {FAQ_KEYS.map((item, i) => (
               <motion.div
                 key={item.q}
                 initial={{ opacity: 0, y: 12 }}
@@ -289,9 +232,11 @@ function PricingPageContent() {
                 transition={{ delay: i * 0.06 }}
                 className="rounded-2xl border hairline bg-paper p-6"
               >
-                <h3 className="font-display text-lg">{item.q}</h3>
+                <h3 className="font-display text-lg">
+                  {t[item.q as keyof typeof t] as string}
+                </h3>
                 <p className="mt-2 text-sm leading-relaxed text-ink/70">
-                  {item.a}
+                  {t[item.a as keyof typeof t] as string}
                 </p>
               </motion.div>
             ))}
@@ -302,10 +247,10 @@ function PricingPageContent() {
         <section className="border-t hairline bg-grain">
           <div className="mx-auto max-w-6xl px-6 py-20 text-center">
             <h2 className="font-display text-3xl md:text-4xl">
-              Start with the free plan
+              {t.pricingBottomTitle}
             </h2>
             <p className="mx-auto mt-3 max-w-md text-ink/70">
-              No credit card required. Upgrade when you need more.
+              {t.pricingBottomSubtitle}
             </p>
             <Link
               href="/register"
