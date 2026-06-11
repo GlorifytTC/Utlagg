@@ -13,6 +13,7 @@
 
 export interface ExtractedReceipt {
   vendorName: string | null;
+  orgNumber: string | null;
   date: string | null; // ISO yyyy-mm-dd
   totalAmount: number | null;
   vatAmount: number | null;
@@ -134,69 +135,142 @@ function allAmounts(text: string): number[] {
   return out;
 }
 
+const KNOWN_MERCHANTS: Array<[RegExp, string]> = [
+  [/bauhaus/i, "Bauhaus"],
+  [/willy.?s|willy/i, "Willys"],
+  [/\bica\b/i, "ICA"],
+  [/\bcoop\b/i, "Coop"],
+  [/hemköp|hemkop/i, "Hemköp"],
+  [/citygross|city gross/i, "City Gross"],
+  [/lidl/i, "Lidl"],
+  [/\bk-?rauta|krauta/i, "K-Rauta"],
+  [/byggmax/i, "Byggmax"],
+  [/jula\b/i, "Jula"],
+  [/clas ohlson/i, "Clas Ohlson"],
+  [/circle ?k|statoil|preem|\bokq8\b|shell/i, "Drivmedel"],
+  [/pressbyrån|pressbyran|7-?eleven/i, "Pressbyrån"],
+  [/espresso house|wayne|starbucks/i, "Café"],
+  [/elgiganten|media ?markt|power\b|netonnet/i, "Elektronik"],
+  [/apoteket|apotek hjärtat|kronans/i, "Apotek"],
+  [/\bsj\b|\bvy\b|\bsl\b|taxi|uber|bolt/i, "Resa"],
+];
+
+// A token that is clearly a phone number / org number / postcode, not money.
+function looksLikePhoneOrgOrUrl(line: string): boolean {
+  return (
+    /\b(tlf|tel|telefon|phone|fax)\b/i.test(line) ||
+    /\borg\.?\s*nr\b|\bvat\b|momsreg/i.test(line) ||
+    /\d{6}-\d{4}\b/.test(line) || // Swedish org/VAT number
+    /\bwww\.|\.se\b|\.com\b|@/i.test(line) ||
+    /\bS-?\d{3}\s?\d{2}\b/.test(line) // postcode like S-721 38
+  );
+}
+
+// Largest amount WITH decimals on a single line (totals are written x,xx).
+function decimalAmountOnLine(line: string): number | null {
+  const matches = line.match(/\d{1,3}(?:[ .]\d{3})*[.,]\d{2}|\d+[.,]\d{2}/g);
+  if (!matches) return null;
+  const nums = matches.map(toNumber).filter((n): n is number => n != null);
+  return nums.length ? Math.max(...nums) : null;
+}
+
 export function parseReceiptText(rawText: string): ExtractedReceipt {
   const lines = rawText
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean);
+  const lower = rawText.toLowerCase();
 
   let confidenceHits = 0;
   const totalSignals = 4;
 
-  // Vendor: first line with letters that isn't a time/number row.
-  const vendorName =
-    lines.find((l) => /[A-Za-zÅÄÖåäö]{3,}/.test(l) && !/^\d{1,2}[:.]\d{2}/.test(l)) ??
-    null;
+  // --- Org number (Swedish): 6 digits - 4 digits ---
+  const orgM = rawText.match(/(\d{6})-(\d{4})/);
+  const orgNumber = orgM ? `${orgM[1]}-${orgM[2]}` : null;
+
+  // --- Vendor ---
+  let vendorName: string | null = null;
+  for (const [re, name] of KNOWN_MERCHANTS) {
+    if (re.test(lower)) { vendorName = name; break; }
+  }
+  if (!vendorName) {
+    // Website domain → name (e.g. www.bauhaus.se → Bauhaus).
+    const dom = rawText.match(/(?:www\.)?([a-zA-ZåäöÅÄÖ][a-zA-Z0-9åäöÅÄÖ-]{2,})\.(?:se|com|nu)\b/);
+    if (dom) vendorName = dom[1].charAt(0).toUpperCase() + dom[1].slice(1);
+  }
+  if (!vendorName) {
+    vendorName =
+      lines.find(
+        (l) =>
+          /[A-Za-zÅÄÖåäö]{3,}/.test(l) &&
+          !/^\d{1,2}[:.]\d{2}/.test(l) &&
+          !looksLikePhoneOrgOrUrl(l) &&
+          !/\b\d{4,}\b/.test(l), // skip lines dominated by long numbers
+      ) ?? lines[0] ?? null;
+  }
   if (vendorName) confidenceHits++;
 
-  // Date: ISO, dd/mm/yyyy, dd-mm-yyyy, yyyy/mm/dd, dd.mm.yy, etc.
-  let date: string | null = null;
-  const iso = rawText.match(/(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-  const dmy = rawText.match(/(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})/);
+  // --- Date: ISO, dd/mm/yyyy, dd-mm-yyyy, and footer "DD MM YY" ---
   const pad = (s: string) => s.padStart(2, "0");
+  let date: string | null = null;
+  const iso = rawText.match(/(20\d{2})[-/.](\d{1,2})[-/.](\d{1,2})/);
+  const dmy = rawText.match(/\b(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})\b/);
   if (iso) {
     date = `${iso[1]}-${pad(iso[2])}-${pad(iso[3])}`;
   } else if (dmy) {
     const yr = dmy[3].length === 2 ? `20${dmy[3]}` : dmy[3];
     date = `${yr}-${pad(dmy[2])}-${pad(dmy[1])}`;
+  } else {
+    // Space-separated footer date "DD MM YY" (e.g. 29 09 14), maybe + time.
+    const sp = rawText.match(/\b(\d{2})\s(\d{2})\s(\d{2})\b/);
+    if (sp) {
+      const d = +sp[1], mo = +sp[2];
+      if (d >= 1 && d <= 31 && mo >= 1 && mo <= 12) date = `20${pad(sp[3])}-${pad(sp[2])}-${pad(sp[1])}`;
+    }
   }
   if (date) confidenceHits++;
 
-  // Total: prefer a labelled line (multilingual); else fall back to the largest
-  // amount on the bill, which is the total on the vast majority of receipts.
+  // --- Total: labelled line with a decimal amount, ignoring change/cash rows ---
   let totalAmount: number | null = null;
-  const TOTAL_RE =
-    /total|totalt|summa|att betala|att\s*betala|grand total|amount due|balance due|to pay|belopp|sum|beløp|yhteensä|gesamt|montant/i;
-  const totalLine = [...lines].reverse().find((l) => TOTAL_RE.test(l));
-  if (totalLine) {
-    const m = totalLine.match(AMOUNT_RE);
-    if (m) totalAmount = toNumber(m[1]);
+  const TOTAL_RE = /\b(total|totalt|att\s*betala|summa|grand total|amount due|to pay)\b/i;
+  const EXCLUDE_RE = /moms|netto|brutto|mottaget|kontant|\båter\b|växel|change|tillbaka|öresavrund|avrund/i;
+  const totalCandidates = lines.filter(
+    (l) => TOTAL_RE.test(l) && !EXCLUDE_RE.test(l) && decimalAmountOnLine(l) != null,
+  );
+  if (totalCandidates.length) {
+    // The "att betala/total" total is usually the largest such labelled amount.
+    totalAmount = Math.max(...totalCandidates.map((l) => decimalAmountOnLine(l)!));
   }
   if (totalAmount == null) {
-    const amounts = allAmounts(rawText);
-    if (amounts.length) totalAmount = Math.max(...amounts);
+    // Fallback: largest decimal amount that isn't on a phone/org line.
+    const candidates: number[] = [];
+    for (const l of lines) {
+      if (looksLikePhoneOrgOrUrl(l)) continue;
+      const a = decimalAmountOnLine(l);
+      if (a != null) candidates.push(a);
+    }
+    if (candidates.length) totalAmount = Math.max(...candidates);
   }
   if (totalAmount != null) confidenceHits++;
 
-  // VAT: labelled line (multilingual). Capture rate when it's a known value.
+  // --- VAT rate + amount ---
   let vatAmount: number | null = null;
   let vatRate: 6 | 12 | 25 | null = null;
-  const vatLine = lines.find((l) => /\bmoms\b|\bvat\b|\btax\b|\bmva\b|\balv\b|\bmwst\b|\btva\b/i.test(l));
-  if (vatLine) {
-    const rateM = vatLine.match(/(\d{1,2})\s*%/);
-    if (rateM) {
-      const r = Number(rateM[1]);
-      if (r === 6 || r === 12 || r === 25) vatRate = r;
-    }
-    const amountM = vatLine.match(AMOUNT_RE);
-    if (amountM) vatAmount = toNumber(amountM[1]);
-    if (vatAmount || vatRate) confidenceHits++;
-  }
+  const rateM = rawText.match(/moms%?\s*[:=]?\s*(\d{1,2})|(\d{1,2})\s*%\s*(?:av|moms|vat)/i);
+  const rawRate = rateM ? Number(rateM[1] ?? rateM[2]) : null;
+  if (rawRate === 6 || rawRate === 12 || rawRate === 25) vatRate = rawRate;
+  // VAT amount: a "moms" line (not the "moms%" header) with a decimal amount.
+  const momsLine = lines.find(
+    (l) => /\bmoms\b/i.test(l) && !/moms%/i.test(l) && !/\bav\b/i.test(l) && decimalAmountOnLine(l) != null,
+  );
+  if (momsLine) vatAmount = decimalAmountOnLine(momsLine);
+  if (vatAmount != null || vatRate != null) confidenceHits++;
 
   const confidence = rawText ? confidenceHits / totalSignals : 0;
 
   return {
     vendorName,
+    orgNumber,
     date,
     totalAmount,
     vatAmount,

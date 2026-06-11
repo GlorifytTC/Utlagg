@@ -15,6 +15,7 @@ const schema = z.object({
 
 const EMPTY: ExtractedReceipt = {
   vendorName: null,
+  orgNumber: null,
   date: null,
   totalAmount: null,
   vatAmount: null,
