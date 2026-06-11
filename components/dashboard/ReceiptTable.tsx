@@ -61,6 +61,21 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
     window.location.href = `/api/export/csv${qs ? `?${qs}` : ""}`;
   }
 
+  async function approve(id: string) {
+    await fetch(`/api/receipts/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "approved" }),
+    });
+    load();
+  }
+
+  async function remove(id: string) {
+    if (!confirm(t.receiptDeleteConfirm)) return;
+    await fetch(`/api/receipts/${id}`, { method: "DELETE" });
+    load();
+  }
+
   return (
     <div className="rounded-2xl border hairline bg-white/60">
       <div className="flex flex-col gap-3 border-b hairline p-5">
@@ -110,6 +125,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                 <th className="px-5 py-3 font-medium">{t.colVat}</th>
                 <th className="px-5 py-3 font-medium">{t.colAmount}</th>
                 <th className="px-5 py-3 font-medium">{t.colStatus}</th>
+                <th className="px-5 py-3 font-medium text-right">{t.colActions}</th>
               </tr>
             </thead>
             <tbody>
@@ -127,6 +143,24 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                     <span className={cn("rounded-full px-2.5 py-1 text-xs font-medium", STATUS_STYLE[r.status])}>
                       {statusLabel[r.status] ?? r.status}
                     </span>
+                  </td>
+                  <td className="px-5 py-3">
+                    <div className="flex justify-end gap-2">
+                      {r.status === "pending" && (
+                        <button
+                          onClick={() => approve(r.id)}
+                          className="rounded-full border hairline px-3 py-1 text-xs hover:border-emerald-400 hover:text-emerald-700"
+                        >
+                          {t.receiptApprove}
+                        </button>
+                      )}
+                      <button
+                        onClick={() => remove(r.id)}
+                        className="rounded-full border hairline px-3 py-1 text-xs text-red-600 hover:border-red-400"
+                      >
+                        {t.receiptDelete}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

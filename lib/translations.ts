@@ -106,10 +106,18 @@ export interface Translations {
   scansThisMonth: string;
   unlimited: string;
   receiptCancel: string;
+  receiptApprove: string;
+  receiptDelete: string;
+  receiptDeleteConfirm: string;
+  colActions: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    receiptApprove: "Godkänn",
+    receiptDelete: "Ta bort",
+    receiptDeleteConfirm: "Ta bort detta kvitto? Detta går inte att ångra.",
+    colActions: "Åtgärder",
     receiptCancel: "Avbryt",
     receiptsSubtitle: "Ladda upp, granska och exportera",
     receiptNewTitle: "Nytt kvitto",
@@ -237,6 +245,10 @@ export const strings: Record<Lang, Translations> = {
       "Detta är en startmall — verifiera moms- och bokföringsregler med din revisor innan produktion.",
   },
   en: {
+    receiptApprove: "Approve",
+    receiptDelete: "Delete",
+    receiptDeleteConfirm: "Delete this receipt? This cannot be undone.",
+    colActions: "Actions",
     receiptCancel: "Cancel",
     receiptsSubtitle: "Upload, review and export",
     receiptNewTitle: "New receipt",
