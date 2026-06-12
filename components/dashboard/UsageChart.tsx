@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getT } from "@/lib/i18n-server";
 
 export function UsageChart({
   used,
@@ -7,14 +8,15 @@ export function UsageChart({
   used: number;
   limit: number; // -1 = unlimited
 }) {
+  const t = getT();
   const unlimited = limit === -1;
   const pct = unlimited ? 0 : Math.min(100, Math.round((used / Math.max(1, limit)) * 100));
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Skanningar denna månad</CardTitle>
+        <CardTitle>{t.scansThisMonth}</CardTitle>
         <CardDescription>
-          {unlimited ? "Obegränsat i din plan" : `${used} av ${limit} använda`}
+          {unlimited ? t.usageUnlimitedPlan : `${used} ${t.usageOf} ${limit} ${t.usageUsedWord}`}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -31,7 +33,7 @@ export function UsageChart({
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{pct}% använt</p>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{pct}% {t.usagePercentUsed}</p>
           </>
         )}
       </CardContent>

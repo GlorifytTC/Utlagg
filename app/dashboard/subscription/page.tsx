@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { users, subscriptions } from "@/db/schema";
 import { SubscriptionManager } from "@/components/dashboard/SubscriptionManager";
+import { getT } from "@/lib/i18n-server";
 
 export const metadata = { title: "Prenumeration" };
 export const dynamic = "force-dynamic";
@@ -19,6 +20,7 @@ export default async function SubscriptionPage() {
     .where(eq(users.id, session.user.id))
     .limit(1);
   if (!user) redirect("/login");
+  const t = getT();
 
   const [sub] = await db
     .select()
@@ -39,8 +41,8 @@ export default async function SubscriptionPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Prenumeration</h1>
-        <p className="text-gray-500 dark:text-gray-400">Hantera din plan och fakturering</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navSubscription}</h1>
+        <p className="text-gray-500 dark:text-gray-400">{t.subManageDesc}</p>
       </div>
       <SubscriptionManager currentTier={user.subscriptionTier} periodEnd={periodEnd} />
     </div>

@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function FortnoxPanel({ connected }: { connected: boolean }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   async function syncAll() {
     setBusy("sync");
@@ -19,23 +21,23 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
       router.refresh();
     } else {
       const e = await res.json().catch(() => ({}));
-      toast.error(e.error ?? "Synk misslyckades");
+      toast.error(e.error ?? t.fortnoxSyncFail);
     }
   }
 
   async function disconnect() {
-    if (!confirm("Koppla bort Fortnox?")) return;
+    if (!confirm(t.fortnoxDisconnectConfirm)) return;
     setBusy("disc");
     const res = await fetch("/api/integrations/fortnox/disconnect", { method: "POST" });
     setBusy(null);
-    if (res.ok) { toast.success("Frånkopplad"); router.refresh(); }
-    else toast.error("Kunde inte koppla bort");
+    if (res.ok) { toast.success(t.fortnoxDisconnected); router.refresh(); }
+    else toast.error(t.fortnoxDisconnectFail);
   }
 
   if (!connected) {
     return (
       <a href="/api/integrations/fortnox/auth">
-        <Button>Anslut till Fortnox</Button>
+        <Button>{t.fortnoxConnect}</Button>
       </a>
     );
   }
@@ -43,13 +45,13 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <span className="inline-flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-        <span className="h-2 w-2 rounded-full bg-green-500" /> Ansluten
+        <span className="h-2 w-2 rounded-full bg-green-500" /> {t.fortnoxConnected}
       </span>
       <Button onClick={syncAll} disabled={busy !== null}>
-        {busy === "sync" ? "Synkar…" : "Synka nu"}
+        {busy === "sync" ? t.fortnoxSyncing : t.fortnoxSyncNow}
       </Button>
       <Button variant="outline" onClick={disconnect} disabled={busy !== null}>
-        Koppla bort
+        {t.fortnoxDisconnect}
       </Button>
     </div>
   );

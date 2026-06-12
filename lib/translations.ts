@@ -113,10 +113,150 @@ export interface Translations {
   idleTitle: string;
   idleStay: string;
   idleLogout: string;
+  statTotalReceipts: string;
+  statThisMonth: string;
+  statTotalAmount: string;
+  statUsage: string;
+  recentTitle: string;
+  recentDesc: string;
+  noReceiptsYet: string;
+  uploadFirst: string;
+  unknownVendor: string;
+  usageUnlimitedPlan: string;
+  usageOf: string;
+  usageUsedWord: string;
+  usagePercentUsed: string;
+  subCurrentPlan: string;
+  subYouAreOnPre: string;
+  subYouAreOnPost: string;
+  subRenews: string;
+  subCancel: string;
+  subCurrentBadge: string;
+  subSwitchTo: string;
+  subRequestQuote: string;
+  planQuote: string;
+  cancelTitle: string;
+  cancelIntro: string;
+  cancelBullet1Pre: string;
+  cancelBullet1Strong: string;
+  cancelBullet1Post: string;
+  cancelBullet2Pre: string;
+  cancelBullet2Strong: string;
+  cancelBullet2Post: string;
+  cancelBullet3Pre: string;
+  cancelBullet3Strong: string;
+  cancelBullet3Post: string;
+  cancelAccept: string;
+  cancelAbort: string;
+  cancelConfirm: string;
+  toastCheckoutFail: string;
+  toastNetwork: string;
+  toastCancelScheduled: string;
+  toastCancelFail: string;
+  toastQuoteThanks: string;
+  featUnlimitedScans: string;
+  feat25Scans: string;
+  featBasicOcr: string;
+  featCsv: string;
+  featFortnox: string;
+  featSwedishVat: string;
+  featAuditLog: string;
+  featAllPro: string;
+  featApprovals: string;
+  featMileage: string;
+  featCarbon: string;
+  featAllBusiness: string;
+  intFortnoxDesc: string;
+  intWaitingSync: string;
+  intUpsellTitle: string;
+  intUpsellDesc: string;
+  intNote: string;
+  fortnoxConnect: string;
+  fortnoxConnected: string;
+  fortnoxSyncing: string;
+  fortnoxSyncNow: string;
+  fortnoxDisconnect: string;
+  fortnoxDisconnectConfirm: string;
+  fortnoxDisconnected: string;
+  fortnoxDisconnectFail: string;
+  fortnoxSyncFail: string;
+  subManageDesc: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    subManageDesc: "Hantera din plan och fakturering",
+    subCurrentPlan: "Nuvarande plan",
+    subYouAreOnPre: "Du är på ",
+    subYouAreOnPost: "-planen",
+    subRenews: "förnyas",
+    subCancel: "Avsluta prenumeration",
+    subCurrentBadge: "Nuvarande",
+    subSwitchTo: "Byt till",
+    subRequestQuote: "Begär offert",
+    planQuote: "Offert",
+    planFree: "Gratis",
+    planPro: "Pro",
+    planBusiness: "Företag",
+    planEnterprise: "Enterprise",
+    cancelTitle: "Avsluta prenumeration?",
+    cancelIntro: "Innan du avslutar, läs och godkänn följande:",
+    cancelBullet1Pre: "Vi sparar dina kvitton och fakturor i ",
+    cancelBullet1Strong: "1 år efter din senaste betalning",
+    cancelBullet1Post: ". Därefter raderas de.",
+    cancelBullet2Pre: "Du kan ",
+    cancelBullet2Strong: "inte skanna nya kvitton",
+    cancelBullet2Post: " utan en aktiv prenumeration.",
+    cancelBullet3Pre: "Har du ett företag med anställda kan du behöva ",
+    cancelBullet3Strong: "ta bort medlemmar",
+    cancelBullet3Post: " om du går ner i plan.",
+    cancelAccept: "Jag förstår och godkänner att min data raderas efter 1 år.",
+    cancelAbort: "Avbryt",
+    cancelConfirm: "Avsluta ändå",
+    toastCheckoutFail: "Kunde inte starta betalning",
+    toastNetwork: "Nätverksfel",
+    toastCancelScheduled: "Prenumerationen avslutas vid periodens slut.",
+    toastCancelFail: "Kunde inte avsluta prenumeration",
+    toastQuoteThanks: "Tack! Vi hör av oss om en offert.",
+    featUnlimitedScans: "Obegränsade skanningar",
+    feat25Scans: "25 skanningar/mån",
+    featBasicOcr: "Grundläggande OCR",
+    featCsv: "CSV-export",
+    featFortnox: "Fortnox-integration",
+    featSwedishVat: "Svensk moms (6/12/25 %)",
+    featAuditLog: "7-årig revisionslogg",
+    featAllPro: "Allt i Pro",
+    featApprovals: "Attestflöden",
+    featMileage: "Milersättning",
+    featCarbon: "Koldioxidavtryck",
+    featAllBusiness: "Allt i Företag",
+    intFortnoxDesc: "Bokför dina kvitton automatiskt som verifikationer i Fortnox.",
+    intWaitingSync: "kvitton väntar på synk.",
+    intUpsellTitle: "Fortnox-integration",
+    intUpsellDesc: "Bokför kvitton automatiskt som verifikationer i Fortnox. Ingår från Pro-planen.",
+    intNote: "Konteringen (vilka BAS-konton verifikationen bokförs på) bör stämmas av med din bokföringsbyrå innan du synkar skarpt.",
+    fortnoxConnect: "Anslut till Fortnox",
+    fortnoxConnected: "Ansluten",
+    fortnoxSyncing: "Synkar…",
+    fortnoxSyncNow: "Synka nu",
+    fortnoxDisconnect: "Koppla bort",
+    fortnoxDisconnectConfirm: "Koppla bort Fortnox?",
+    fortnoxDisconnected: "Frånkopplad",
+    fortnoxDisconnectFail: "Kunde inte koppla bort",
+    fortnoxSyncFail: "Synk misslyckades",
+    statTotalReceipts: "Kvitton totalt",
+    statThisMonth: "Denna månad",
+    statTotalAmount: "Totalt belopp",
+    statUsage: "Förbrukning",
+    recentTitle: "Senaste kvitton",
+    recentDesc: "Dina fem senast tillagda kvitton",
+    noReceiptsYet: "Inga kvitton ännu.",
+    uploadFirst: "Ladda upp ditt första",
+    unknownVendor: "Okänd leverantör",
+    usageUnlimitedPlan: "Obegränsat i din plan",
+    usageOf: "av",
+    usageUsedWord: "använda",
+    usagePercentUsed: "använt",
     idleTitle: "Du loggas snart ut",
     idleStay: "Stanna inloggad",
     idleLogout: "Logga ut nu",
@@ -213,10 +353,6 @@ export const strings: Record<Lang, Translations> = {
     pricingChoosePlan: "Välj",
 
     // Plan names
-    planFree: "Gratis",
-    planPro: "Pro",
-    planBusiness: "Företag",
-    planEnterprise: "Enterprise",
 
     // Plan features
     planFreeFeatures: [
@@ -251,6 +387,78 @@ export const strings: Record<Lang, Translations> = {
       "Detta är en startmall — verifiera moms- och bokföringsregler med din revisor innan produktion.",
   },
   en: {
+    subManageDesc: "Manage your plan and billing",
+    subCurrentPlan: "Current plan",
+    subYouAreOnPre: "You're on the ",
+    subYouAreOnPost: " plan",
+    subRenews: "renews",
+    subCancel: "Cancel subscription",
+    subCurrentBadge: "Current",
+    subSwitchTo: "Switch to",
+    subRequestQuote: "Request a quote",
+    planQuote: "Quote",
+    planFree: "Free",
+    planPro: "Pro",
+    planBusiness: "Business",
+    planEnterprise: "Enterprise",
+    cancelTitle: "Cancel subscription?",
+    cancelIntro: "Before you cancel, please read and accept the following:",
+    cancelBullet1Pre: "We keep your receipts and invoices for ",
+    cancelBullet1Strong: "1 year after your last payment",
+    cancelBullet1Post: ". After that they are deleted.",
+    cancelBullet2Pre: "You can ",
+    cancelBullet2Strong: "not scan new receipts",
+    cancelBullet2Post: " without an active subscription.",
+    cancelBullet3Pre: "If you have a company with employees you may need to ",
+    cancelBullet3Strong: "remove members",
+    cancelBullet3Post: " if you downgrade.",
+    cancelAccept: "I understand and accept that my data is deleted after 1 year.",
+    cancelAbort: "Cancel",
+    cancelConfirm: "Cancel anyway",
+    toastCheckoutFail: "Could not start checkout",
+    toastNetwork: "Network error",
+    toastCancelScheduled: "Your subscription will end at the close of the period.",
+    toastCancelFail: "Could not cancel subscription",
+    toastQuoteThanks: "Thanks! We'll be in touch with a quote.",
+    featUnlimitedScans: "Unlimited scans",
+    feat25Scans: "25 scans/mo",
+    featBasicOcr: "Basic OCR",
+    featCsv: "CSV export",
+    featFortnox: "Fortnox integration",
+    featSwedishVat: "Swedish VAT (6/12/25%)",
+    featAuditLog: "7-year audit log",
+    featAllPro: "Everything in Pro",
+    featApprovals: "Approval workflows",
+    featMileage: "Mileage",
+    featCarbon: "Carbon footprint",
+    featAllBusiness: "Everything in Business",
+    intFortnoxDesc: "Automatically post your receipts as entries in Fortnox.",
+    intWaitingSync: "receipts waiting to sync.",
+    intUpsellTitle: "Fortnox integration",
+    intUpsellDesc: "Automatically post receipts as entries in Fortnox. Included from the Pro plan.",
+    intNote: "The accounting (which BAS accounts entries post to) should be checked with your accountant before syncing for real.",
+    fortnoxConnect: "Connect to Fortnox",
+    fortnoxConnected: "Connected",
+    fortnoxSyncing: "Syncing…",
+    fortnoxSyncNow: "Sync now",
+    fortnoxDisconnect: "Disconnect",
+    fortnoxDisconnectConfirm: "Disconnect Fortnox?",
+    fortnoxDisconnected: "Disconnected",
+    fortnoxDisconnectFail: "Could not disconnect",
+    fortnoxSyncFail: "Sync failed",
+    statTotalReceipts: "Total receipts",
+    statThisMonth: "This month",
+    statTotalAmount: "Total amount",
+    statUsage: "Usage",
+    recentTitle: "Recent receipts",
+    recentDesc: "Your five most recently added receipts",
+    noReceiptsYet: "No receipts yet.",
+    uploadFirst: "Upload your first",
+    unknownVendor: "Unknown supplier",
+    usageUnlimitedPlan: "Unlimited in your plan",
+    usageOf: "of",
+    usageUsedWord: "used",
+    usagePercentUsed: "used",
     idleTitle: "You'll be logged out soon",
     idleStay: "Stay logged in",
     idleLogout: "Log out now",
@@ -348,10 +556,6 @@ export const strings: Record<Lang, Translations> = {
     pricingChoosePlan: "Choose",
 
     // Plan names
-    planFree: "Free",
-    planPro: "Pro",
-    planBusiness: "Business",
-    planEnterprise: "Enterprise",
 
     // Plan features
     planFreeFeatures: ["25 scans/month", "Basic OCR", "CSV export"],

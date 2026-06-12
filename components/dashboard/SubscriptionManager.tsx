@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PLANS } from "@/lib/plans";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function SubscriptionManager({
   currentTier,
@@ -18,6 +19,25 @@ export function SubscriptionManager({
   const [loading, setLoading] = useState<string | null>(null);
   const [showCancel, setShowCancel] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const { t } = useLanguage();
+  const planName = (n: string) =>
+    ({ Gratis: t.planFree, Pro: t.planPro, "Företag": t.planBusiness, Enterprise: t.planEnterprise } as Record<string, string>)[n] ?? n;
+  const priceLbl = (l: string) => (l === "Offert" ? t.planQuote : l);
+  const featLbl = (f: string) =>
+    (({
+      "Obegränsade skanningar": t.featUnlimitedScans,
+      "25 skanningar/mån": t.feat25Scans,
+      "Grundläggande OCR": t.featBasicOcr,
+      "CSV-export": t.featCsv,
+      "Fortnox-integration": t.featFortnox,
+      "Svensk moms (6/12/25 %)": t.featSwedishVat,
+      "7-årig revisionslogg": t.featAuditLog,
+      "Allt i Pro": t.featAllPro,
+      "Attestflöden": t.featApprovals,
+      "Milersättning": t.featMileage,
+      "Koldioxidavtryck": t.featCarbon,
+      "Allt i Företag": t.featAllBusiness,
+    } as Record<string, string>)[f] ?? f);
 
   async function upgrade(tier: "pro" | "business") {
     setLoading(tier);
@@ -31,11 +51,11 @@ export function SubscriptionManager({
       if (res.ok && data.url) {
         window.location.href = data.url;
       } else {
-        toast.error(data.error ?? "Kunde inte starta betalning");
+        toast.error(data.error ?? t.toastCheckoutFail);
         setLoading(null);
       }
     } catch {
-      toast.error("Nätverksfel");
+      toast.error(t.toastNetwork);
       setLoading(null);
     }
   }
@@ -44,11 +64,11 @@ export function SubscriptionManager({
     setLoading("cancel");
     const res = await fetch("/api/subscription/cancel", { method: "POST" });
     if (res.ok) {
-      toast.success("Prenumerationen avslutas vid periodens slut.");
+      toast.success(t.toastCancelScheduled);
       setShowCancel(false);
     } else {
       const e = await res.json().catch(() => ({}));
-      toast.error(e.error ?? "Kunde inte avsluta prenumeration");
+      toast.error(e.error ?? t.toastCancelFail);
     }
     setLoading(null);
   }
@@ -60,21 +80,21 @@ export function SubscriptionManager({
       {showCancel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 dark:bg-gray-900">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Avsluta prenumeration?</h2>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Innan du avslutar, läs och godkänn följande:</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.cancelTitle}</h2>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{t.cancelIntro}</p>
             <ul className="mt-3 space-y-2 text-sm text-gray-600 dark:text-gray-300">
-              <li>• Vi sparar dina kvitton och fakturor i <strong>1 år efter din senaste betalning</strong>. Därefter raderas de.</li>
-              <li>• Du kan <strong>inte skanna nya kvitton</strong> utan en aktiv prenumeration.</li>
-              <li>• Har du ett företag med anställda kan du behöva <strong>ta bort medlemmar</strong> om du går ner i plan.</li>
+              <li>• {t.cancelBullet1Pre}<strong>{t.cancelBullet1Strong}</strong>{t.cancelBullet1Post}</li>
+              <li>• {t.cancelBullet2Pre}<strong>{t.cancelBullet2Strong}</strong>{t.cancelBullet2Post}</li>
+              <li>• {t.cancelBullet3Pre}<strong>{t.cancelBullet3Strong}</strong>{t.cancelBullet3Post}</li>
             </ul>
             <label className="mt-4 flex items-start gap-2 text-sm text-gray-700 dark:text-gray-200">
               <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5" />
-              <span>Jag förstår och godkänner att min data raderas efter 1 år.</span>
+              <span>{t.cancelAccept}</span>
             </label>
             <div className="mt-5 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowCancel(false)} disabled={loading !== null}>Avbryt</Button>
+              <Button variant="outline" onClick={() => setShowCancel(false)} disabled={loading !== null}>{t.cancelAbort}</Button>
               <Button variant="destructive" onClick={cancel} disabled={!accepted || loading !== null}>
-                {loading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Avsluta ändå"}
+                {loading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : t.cancelConfirm}
               </Button>
             </div>
           </div>
@@ -83,17 +103,17 @@ export function SubscriptionManager({
 
       <Card>
         <CardHeader>
-          <CardTitle>Nuvarande plan</CardTitle>
+          <CardTitle>{t.subCurrentPlan}</CardTitle>
           <CardDescription>
-            Du är på {current?.name ?? currentTier}-planen
-            {periodEnd ? ` · förnyas ${new Date(periodEnd).toLocaleDateString("sv-SE")}` : ""}
+            {t.subYouAreOnPre}{planName(current?.name ?? currentTier)}{t.subYouAreOnPost}
+            {periodEnd ? ` · ${t.subRenews} ${new Date(periodEnd).toLocaleDateString()}` : ""}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-between">
-          <p className="text-2xl font-bold">{current?.priceLabel ?? "—"}</p>
+          <p className="text-2xl font-bold">{current ? priceLbl(current.priceLabel) : "—"}</p>
           {currentTier !== "free" && currentTier !== "enterprise" && (
             <Button variant="outline" onClick={() => { setAccepted(false); setShowCancel(true); }} disabled={loading !== null}>
-              Avsluta prenumeration
+              {t.subCancel}
             </Button>
           )}
         </CardContent>
@@ -107,18 +127,18 @@ export function SubscriptionManager({
             <Card key={plan.tier} className={isCurrent ? "ring-2 ring-nordic-500" : ""}>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>{plan.name}</CardTitle>
-                  {isCurrent && <Badge className="bg-nordic-600 text-white">Nuvarande</Badge>}
+                  <CardTitle>{planName(plan.name)}</CardTitle>
+                  {isCurrent && <Badge className="bg-nordic-600 text-white">{t.subCurrentBadge}</Badge>}
                 </div>
                 <CardDescription className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {plan.priceLabel}
+                  {priceLbl(plan.priceLabel)}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="space-y-2 text-sm">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-2">
-                      <span className="text-green-500">✓</span> {f}
+                      <span className="text-green-500">✓</span> {featLbl(f)}
                     </li>
                   ))}
                 </ul>
@@ -131,7 +151,7 @@ export function SubscriptionManager({
                     {loading === plan.tier ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      `Byt till ${plan.name}`
+                      `${t.subSwitchTo} ${planName(plan.name)}`
                     )}
                   </Button>
                 )}
@@ -144,11 +164,11 @@ export function SubscriptionManager({
                       setLoading("enterprise");
                       const r = await fetch("/api/billing/enterprise-inquiry", { method: "POST" });
                       setLoading(null);
-                      if (r.ok) toast.success("Tack! Vi hör av oss om en offert.");
+                      if (r.ok) toast.success(t.toastQuoteThanks);
                       else window.location.href = "mailto:sales@utlagg.se?subject=Enterprise";
                     }}
                   >
-                    {loading === "enterprise" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Begär offert"}
+                    {loading === "enterprise" ? <Loader2 className="h-4 w-4 animate-spin" /> : t.subRequestQuote}
                   </Button>
                 )}
               </CardContent>

@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { formatSek } from "@/lib/utils";
 import { Receipt, TrendingUp, Wallet, Gauge } from "lucide-react";
+import { getT } from "@/lib/i18n-server";
 
 export function StatsCards({
   totalReceipts,
@@ -15,13 +16,14 @@ export function StatsCards({
   usagePercent: number;
   planLabel: string;
 }) {
+  const t = getT();
   const items = [
-    { label: "Kvitton totalt", value: String(totalReceipts), icon: Receipt },
-    { label: "Denna månad", value: String(thisMonthReceipts), icon: TrendingUp },
-    { label: "Totalt belopp", value: formatSek(totalAmount), icon: Wallet },
+    { label: t.statTotalReceipts, value: String(totalReceipts), icon: Receipt },
+    { label: t.statThisMonth, value: String(thisMonthReceipts), icon: TrendingUp },
+    { label: t.statTotalAmount, value: formatSek(totalAmount), icon: Wallet },
     {
-      label: "Förbrukning",
-      value: usagePercent < 0 ? "Obegränsat" : `${Math.round(usagePercent)} %`,
+      label: t.statUsage,
+      value: usagePercent < 0 ? t.unlimited : `${Math.round(usagePercent)} %`,
       icon: Gauge,
     },
   ];
