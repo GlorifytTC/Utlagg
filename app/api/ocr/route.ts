@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { runOcr, runOcrSpace, runMindee, parseReceiptText, OCR_CONFIDENCE_THRESHOLD, type ExtractedReceipt } from "@/lib/ocr";
+import { runOcr, runOcrSpace, runMindee, runVisionLLM, parseReceiptText, OCR_CONFIDENCE_THRESHOLD, type ExtractedReceipt } from "@/lib/ocr";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -39,21 +39,30 @@ export async function POST(req: NextRequest) {
   let result: ExtractedReceipt = EMPTY;
   try {
     if (parsed.data.image) {
-      // Best: Mindee receipt model (structured fields). If it's not configured
-      // or fails, fall back to server OCR (Vision if keyed, else OCR.space).
+      const img = parsed.data.image;
+      // Priority: Vision LLM (most accurate) -> Mindee -> server OCR.
       const ocrFallback = () =>
-        process.env.GOOGLE_CLOUD_API_KEY
-          ? runOcr(parsed.data.image!)
-          : runOcrSpace(parsed.data.image!);
-      if (process.env.MINDEE_API_KEY) {
+        process.env.GOOGLE_CLOUD_API_KEY ? runOcr(img) : runOcrSpace(img);
+      const mindeeOrOcr = async (): Promise<ExtractedReceipt> => {
+        if (process.env.MINDEE_API_KEY) {
+          try {
+            return await runMindee(img);
+          } catch (e) {
+            console.error("mindee failed, falling back to OCR:", e);
+            return await ocrFallback();
+          }
+        }
+        return await ocrFallback();
+      };
+      if (process.env.OPENAI_API_KEY) {
         try {
-          result = await runMindee(parsed.data.image);
+          result = await runVisionLLM(img);
         } catch (e) {
-          console.error("mindee failed, falling back to OCR:", e);
-          result = await ocrFallback();
+          console.error("vision LLM failed, falling back:", e);
+          result = await mindeeOrOcr();
         }
       } else {
-        result = await ocrFallback();
+        result = await mindeeOrOcr();
       }
     } else if (parsed.data.text && parsed.data.text.trim()) {
       // Back-compat: text already extracted client-side.

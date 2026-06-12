@@ -181,6 +181,54 @@ export interface Translations {
   fortnoxDisconnectFail: string;
   fortnoxSyncFail: string;
   subManageDesc: string;
+  featuresPageSubtitle: string;
+  featuresCompareTitle: string;
+  featuresCompareCapability: string;
+  featuresCompareUtlagg: string;
+  featuresCompareTraditional: string;
+  featuresCompareOcrLabel: string;
+  featuresCompareOcrUtlagg: string;
+  featuresCompareOcrTraditional: string;
+  featuresCompareBasLabel: string;
+  featuresCompareBasUtlagg: string;
+  featuresCompareBasTraditional: string;
+  featuresCompareVatLabel: string;
+  featuresCompareVatUtlagg: string;
+  featuresCompareVatTraditional: string;
+  featuresCompareBankidLabel: string;
+  featuresCompareBankidUtlagg: string;
+  featuresCompareBankidTraditional: string;
+  featuresCompareDataLabel: string;
+  featuresCompareDataUtlagg: string;
+  featuresCompareDataTraditional: string;
+  featuresCtaTitle: string;
+  featuresCtaBody: string;
+  pricingPageSubtitle: string;
+  pricingComparisonTitle: string;
+  pricingFaqTitle: string;
+  pricingBottomTitle: string;
+  pricingBottomSubtitle: string;
+  pricingCalloutSubtitle: string;
+  pricingFaq1Q: string;
+  pricingFaq1A: string;
+  pricingFaq2Q: string;
+  pricingFaq2A: string;
+  pricingFaq3Q: string;
+  pricingFaq3A: string;
+  pricingFaq4Q: string;
+  pricingFaq4A: string;
+  pricingTableReceipts: string;
+  pricingTableMembers: string;
+  pricingTableOcr: string;
+  pricingTableBas: string;
+  pricingTableCurrency: string;
+  pricingTableSie4: string;
+  pricingTableSync: string;
+  pricingTableBankid: string;
+  pricingTableRoles: string;
+  pricingTableLimits: string;
+  pricingTableOnboarding: string;
+  pricingTableSupport: string;
 }
 
 export const strings: Record<Lang, Translations> = {
@@ -385,6 +433,57 @@ export const strings: Record<Lang, Translations> = {
     footerCopyright: "© {year} GlorifyTC.",
     footerDisclaimer:
       "Detta är en startmall — verifiera moms- och bokföringsregler med din revisor innan produktion.",
+
+
+    // lib/translations.ts — ADD these values to strings.sv
+    featuresPageSubtitle: "Sex funktioner byggda för svenska företag, enskilda firmor och redovisningsbyråer.",
+    featuresCompareTitle: "Så jämför sig Utlagg",
+    featuresCompareCapability: "Funktion",
+    featuresCompareUtlagg: "Utlagg",
+    featuresCompareTraditional: "Traditionella verktyg",
+    featuresCompareOcrLabel: "OCR-träffsäkerhet",
+    featuresCompareOcrUtlagg: "98 %+",
+    featuresCompareOcrTraditional: "70–85 %",
+    featuresCompareBasLabel: "BAS-kontoplan",
+    featuresCompareBasUtlagg: "Automatisk, självkorrigerande",
+    featuresCompareBasTraditional: "Manuell eller mallbaserad",
+    featuresCompareVatLabel: "Svensk moms",
+    featuresCompareVatUtlagg: "6 / 12 / 25 % identifieras automatiskt",
+    featuresCompareVatTraditional: "Ofta konfigurerat per leverantör",
+    featuresCompareBankidLabel: "BankID-attestering",
+    featuresCompareBankidUtlagg: "Inbyggt",
+    featuresCompareBankidTraditional: "Separat identitetsleverantör",
+    featuresCompareDataLabel: "Datalagring",
+    featuresCompareDataUtlagg: "Sverige",
+    featuresCompareDataTraditional: "EU eller USA",
+    featuresCtaTitle: "Redo att testa funktionerna?",
+    featuresCtaBody: "Skapa ett gratis konto och ladda upp ditt första kvitto på under en minut.",
+    pricingPageSubtitle: "Börja gratis. Uppgradera när teamet växer. Alla paket inkluderar obegränsad kvittolagring och sju års regelefterlevnad.",
+    pricingComparisonTitle: "Fullständig funktionsjämförelse",
+    pricingFaqTitle: "Vanliga frågor",
+    pricingBottomTitle: "Börja med gratisplanen",
+    pricingBottomSubtitle: "Inget kort krävs. Uppgradera när du behöver mer.",
+    pricingCalloutSubtitle: "Gratisplan tillgänglig. Inget kort krävs.",
+    pricingFaq1Q: "Kan jag byta paket senare?",
+    pricingFaq1A: "Ja. Uppgradera eller nedgradera när som helst. Om du nedgraderar mitt i en period träder det nya paketet i kraft vid nästa faktureringsperiod.",
+    pricingFaq2Q: "Finns det någon bindningstid?",
+    pricingFaq2A: "Nej. Alla betalda paket faktureras månadsvis. Avsluta när som helst från dina kontoinställningar.",
+    pricingFaq3Q: "Hanterar ni icke-svenska kvitton?",
+    pricingFaq3A: "Ja. Vår OCR-modell hanterar kvitton på svenska, engelska, norska, danska, finska och tyska — med automatisk valutaomvandling.",
+    pricingFaq4Q: "Hur fungerar gratisperioden?",
+    pricingFaq4A: "Pro-paketet inkluderar 14 dagars gratis provperiod. Ingen debitering förrän provperioden löper ut. Du kan nedgradera till Gratis under provperioden och behålla din data.",
+    pricingTableReceipts: "Kvitton per månad",
+    pricingTableMembers: "Teammedlemmar",
+    pricingTableOcr: "AI-OCR",
+    pricingTableBas: "BAS-autokategorisering",
+    pricingTableCurrency: "Flera valutor",
+    pricingTableSie4: "SIE4-export",
+    pricingTableSync: "Fortnox / Visma / Bokio-synk",
+    pricingTableBankid: "BankID-attestering",
+    pricingTableRoles: "Rollbaserad åtkomst",
+    pricingTableLimits: "Beloppsgränser",
+    pricingTableOnboarding: "Anpassad onboarding",
+    pricingTableSupport: "Prioriterad support",
   },
   en: {
     subManageDesc: "Manage your plan and billing",
@@ -589,5 +688,55 @@ export const strings: Record<Lang, Translations> = {
     footerCopyright: "© {year} GlorifyTC.",
     footerDisclaimer:
       "This is a starter template — verify VAT and bookkeeping rules with your accountant before production.",
+
+    // lib/translations.ts — ADD these values to strings.en (mirror the Swedish keys)
+    featuresPageSubtitle: "Six capabilities purpose-built for Swedish companies, sole traders, and accounting firms.",
+    featuresCompareTitle: "How Utlagg compares",
+    featuresCompareCapability: "Capability",
+    featuresCompareUtlagg: "Utlagg",
+    featuresCompareTraditional: "Traditional tools",
+    featuresCompareOcrLabel: "Receipt OCR accuracy",
+    featuresCompareOcrUtlagg: "98 %+",
+    featuresCompareOcrTraditional: "70–85 %",
+    featuresCompareBasLabel: "BAS mapping",
+    featuresCompareBasUtlagg: "Automatic, self-correcting",
+    featuresCompareBasTraditional: "Manual or template-based",
+    featuresCompareVatLabel: "Swedish VAT handling",
+    featuresCompareVatUtlagg: "6 / 12 / 25 % auto-detected",
+    featuresCompareVatTraditional: "Often configured per-vendor",
+    featuresCompareBankidLabel: "BankID sign-off",
+    featuresCompareBankidUtlagg: "Built-in",
+    featuresCompareBankidTraditional: "Separate identity provider",
+    featuresCompareDataLabel: "Data residency",
+    featuresCompareDataUtlagg: "Sweden",
+    featuresCompareDataTraditional: "EU or US",
+    featuresCtaTitle: "Ready to try the features?",
+    featuresCtaBody: "Create a free account and upload your first receipt in under a minute.",
+    pricingPageSubtitle: "Start for free. Upgrade when your team grows. Every plan includes unlimited receipt storage and seven-year compliance archiving.",
+    pricingComparisonTitle: "Full feature comparison",
+    pricingFaqTitle: "Common questions",
+    pricingBottomTitle: "Start with the free plan",
+    pricingBottomSubtitle: "No credit card required. Upgrade when you need more.",
+    pricingCalloutSubtitle: "Free plan available. No credit card required.",
+    pricingFaq1Q: "Can I switch plans later?",
+    pricingFaq1A: "Yes. Upgrade or downgrade at any time. If you downgrade mid-cycle, the new plan takes effect at the next billing period.",
+    pricingFaq2Q: "Is there a long-term commitment?",
+    pricingFaq2A: "No. All paid plans are billed monthly. Cancel anytime from your account settings.",
+    pricingFaq3Q: "Do you handle non-Swedish receipts?",
+    pricingFaq3A: "Yes. Our OCR model handles receipts in Swedish, English, Norwegian, Danish, Finnish, and German — with automatic currency conversion.",
+    pricingFaq4Q: "How does the free trial work?",
+    pricingFaq4A: "The Pro plan includes a 14-day free trial. No charge until the trial ends. You can downgrade to Free during the trial and keep your data.",
+    pricingTableReceipts: "Receipts per month",
+    pricingTableMembers: "Team members",
+    pricingTableOcr: "AI OCR",
+    pricingTableBas: "BAS auto-categorisation",
+    pricingTableCurrency: "Multi-currency",
+    pricingTableSie4: "SIE4 export",
+    pricingTableSync: "Fortnox / Visma / Bokio sync",
+    pricingTableBankid: "BankID sign-off",
+    pricingTableRoles: "Role-based access",
+    pricingTableLimits: "Spending limits",
+    pricingTableOnboarding: "Custom onboarding",
+    pricingTableSupport: "Priority support",
   },
 };

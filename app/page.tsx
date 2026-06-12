@@ -2,56 +2,118 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { Pricing } from "@/components/landing/Pricing";
-import { Features } from "@/components/landing/Features";
 import { Footer } from "@/components/landing/Footer";
+import { Navbar } from "@/components/landing/Navbar";
 import { StructuredData } from "@/components/StructuredData";
-import { useLanguage } from "@/context/LanguageContext";
+import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
+
+const TEASER_FEATURES = [
+  { key: "feature1" },
+  { key: "feature2" },
+  { key: "feature3" },
+] as const;
 
 function HomeContent() {
-  const { t, lang, toggleLanguage } = useLanguage();
+  const { t } = useLanguage();
 
   return (
-    <main className="bg-paper">
+    <div className="bg-paper">
       <StructuredData />
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <Link href="/" className="font-display text-xl font-semibold">
-          Utlagg
-        </Link>
-        <nav className="flex items-center gap-6 text-sm">
-          <button
-            onClick={toggleLanguage}
-            className="rounded border border-ink/20 px-3 py-1 text-ink/70 hover:border-ink/40 hover:text-ink transition"
-          >
-            {lang === "sv" ? "SV / EN" : "EN / SV"}
-          </button>
-          <Link href="#funktioner" className="hidden text-ink/70 hover:text-ink sm:block">
-            {t.features}
-          </Link>
-          <Link href="#priser" className="hidden text-ink/70 hover:text-ink sm:block">
-            {t.pricing}
-          </Link>
-          <Link href="/login" className="text-ink/70 hover:text-ink">
-            {t.login}
-          </Link>
-          <Link
-            href="/register"
-            className="rounded-full bg-ink px-4 py-2 text-paper hover:bg-nordic-900 transition"
-          >
-            {t.startFree}
-          </Link>
-        </nav>
-      </header>
+      <Navbar />
 
-      <HeroSection />
-      <Features />
-      <Pricing />
+      <main>
+        <HeroSection />
+
+        {/* Feature teaser */}
+        <section className="border-y hairline bg-grain">
+          <div className="mx-auto max-w-6xl px-6 py-20">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <h2 className="max-w-sm font-display text-4xl md:text-5xl">
+                {t.featuresHeadline}
+              </h2>
+              <Link
+                href="/features"
+                className="hidden text-sm text-nordic-600 transition hover:underline sm:block"
+              >
+                {t.features} →
+              </Link>
+            </div>
+
+            <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border hairline bg-ink/10 sm:grid-cols-3">
+              {TEASER_FEATURES.map(({ key }, i) => (
+                <motion.div
+                  key={key}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.07 }}
+                  className="bg-paper p-8"
+                >
+                  <h3 className="font-display text-xl">
+                    {t[`${key}Title` as keyof typeof t] as string}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-ink/70">
+                    {t[`${key}Body` as keyof typeof t] as string}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+
+            <Link
+              href="/features"
+              className="mt-6 block text-sm text-nordic-600 transition hover:underline sm:hidden"
+            >
+              {t.features} →
+            </Link>
+          </div>
+        </section>
+
+        {/* Pricing callout */}
+        <section className="mx-auto max-w-6xl px-6 py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col gap-6 rounded-3xl border hairline bg-paper p-8 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div>
+              <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
+                {t.pricingTagline}
+              </p>
+              <h2 className="mt-2 font-display text-3xl">{t.pricingTitle}</h2>
+              <p className="mt-1 text-sm text-ink/60">
+                {t.pricingCalloutSubtitle}
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-3">
+              <Link
+                href="/register"
+                className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-paper transition hover:bg-nordic-900"
+              >
+                {t.startFree}
+              </Link>
+              <Link
+                href="/pricing"
+                className="rounded-full border hairline px-6 py-3 text-sm font-medium transition hover:border-ink/40"
+              >
+                {t.pricing} →
+              </Link>
+            </div>
+          </motion.div>
+        </section>
+      </main>
+
       <Footer />
-    </main>
+    </div>
   );
 }
 
 export default function HomePage() {
-  return <HomeContent />;
+  return (
+    <LanguageProvider>
+      <HomeContent />
+    </LanguageProvider>
+  );
 }

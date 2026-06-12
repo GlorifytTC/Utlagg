@@ -368,3 +368,75 @@ export async function runMindee(image: string): Promise<ExtractedReceipt> {
     confidence: 0.95,
   };
 }
+
+/**
+ * Vision LLM extraction — sends the receipt IMAGE to a multimodal model that
+ * reads the layout the way a person would, returning structured fields. This is
+ * the most accurate path (handles logos, table-style VAT, cash/change rows).
+ * Enabled when OPENAI_API_KEY is set; callers fall back to Mindee/OCR on error.
+ */
+export async function runVisionLLM(image: string): Promise<ExtractedReceipt> {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) throw new Error("OPENAI_API_KEY not set");
+
+  const dataUrl = image.startsWith("data:") ? image : `data:image/jpeg;base64,${image}`;
+  const prompt = `You read Swedish receipts (kvitton). Return ONLY a JSON object (no markdown) with exactly these keys:
+{
+  "vendorName": string|null,     // store/company name, e.g. "Bauhaus", "Willys"
+  "orgNumber": string|null,      // Swedish org number like "969630-6944"
+  "receiptNumber": string|null,  // kvittonummer / bong / receipt no. if printed
+  "date": string|null,           // purchase date as YYYY-MM-DD
+  "totalAmount": number|null,    // amount actually PAID (grand total). NOT cash given ("Mottaget"), NOT change ("Åter"/"Växel"), NOT a phone or org number
+  "vatRate": number|null,        // main VAT percent: 6, 12 or 25
+  "vatAmount": number|null       // VAT amount in kronor ("Moms")
+}
+Use a dot as the decimal separator. Return null for anything not clearly printed. If several VAT rates appear, pick the main one.`;
+
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+    body: JSON.stringify({
+      model: process.env.OPENAI_VISION_MODEL || "gpt-4o-mini",
+      max_tokens: 500,
+      temperature: 0,
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: "You extract structured data from receipt images and reply with JSON only." },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: prompt },
+            { type: "image_url", image_url: { url: dataUrl } },
+          ],
+        },
+      ],
+    }),
+  });
+  if (!res.ok) throw new Error(`OpenAI HTTP ${res.status}`);
+
+  const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+  const content = json?.choices?.[0]?.message?.content ?? "{}";
+  let data: Record<string, unknown> = {};
+  try {
+    data = JSON.parse(content);
+  } catch {
+    data = {};
+  }
+  const num = (v: unknown): number | null => (v == null || v === "" ? null : Number(v));
+  const str = (v: unknown): string | null => (v == null || v === "" ? null : String(v));
+  let vatRate: 6 | 12 | 25 | null = null;
+  const r = num(data.vatRate);
+  if (r === 6 || r === 12 || r === 25) vatRate = r;
+
+  return {
+    vendorName: str(data.vendorName),
+    orgNumber: str(data.orgNumber),
+    receiptNumber: str(data.receiptNumber),
+    date: str(data.date),
+    totalAmount: num(data.totalAmount),
+    vatAmount: num(data.vatAmount),
+    vatRate,
+    rawText: "",
+    confidence: 0.97,
+  };
+}
