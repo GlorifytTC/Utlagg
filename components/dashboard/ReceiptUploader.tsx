@@ -9,6 +9,7 @@ import { useLanguage } from "@/context/LanguageContext";
 
 interface Draft {
   vendorName: string;
+  receiptNumber: string;
   date: string; // yyyy-mm-dd
   totalAmount: string;
   vatAmount: string;
@@ -16,10 +17,12 @@ interface Draft {
   basCode: string | null;
   aiConfidence: number | null;
   receiptText: string;
+  image: string; // data URL of the (compressed) receipt photo
 }
 
 const emptyDraft = (): Draft => ({
   vendorName: "",
+  receiptNumber: "",
   date: new Date().toISOString().slice(0, 10),
   totalAmount: "",
   vatAmount: "",
@@ -27,6 +30,7 @@ const emptyDraft = (): Draft => ({
   basCode: null,
   aiConfidence: null,
   receiptText: "",
+  image: "",
 });
 
 /**
@@ -93,15 +97,24 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
         setDraft(emptyDraft());
         setError(data.error ?? "OCR misslyckades — ange manuellt.");
       } else {
+        // Auto-fill Moms: use the read amount, else compute from total + rate.
+        let vat = data.vatAmount as number | null;
+        const total = data.totalAmount as number | null;
+        const rate = data.vatRate as number | null;
+        if ((vat == null || vat === 0) && total && rate) {
+          vat = Math.round((total - total / (1 + rate / 100)) * 100) / 100;
+        }
         setDraft({
           vendorName: data.vendorName ?? "",
+          receiptNumber: data.receiptNumber ?? "",
           date: data.date ?? new Date().toISOString().slice(0, 10),
           totalAmount: data.totalAmount?.toString() ?? "",
-          vatAmount: data.vatAmount?.toString() ?? "",
+          vatAmount: vat != null ? vat.toString() : "",
           vatRate: (data.vatRate as VatRate) ?? 25,
           basCode: null,
           aiConfidence: data.confidence ?? null,
           receiptText: data.rawText ?? "",
+          image: base64,
         });
         if (data.needsManualReview) {
           setError("Låg träffsäkerhet — kontrollera fälten innan du sparar.");
@@ -191,6 +204,8 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           vendorName: draft.vendorName || undefined,
+          receiptNumber: draft.receiptNumber || undefined,
+          imageUrl: draft.image || undefined,
           date: draft.date ? new Date(draft.date).toISOString() : undefined,
           totalAmount: draft.totalAmount ? Number(draft.totalAmount) : undefined,
           vatAmount: draft.vatAmount ? Number(draft.vatAmount) : undefined,
@@ -332,6 +347,14 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 value={draft.vendorName}
                 onChange={(e) => setDraft({ ...draft, vendorName: e.target.value })}
                 className="input"
+              />
+            </Field>
+            <Field label="Kvittonummer">
+              <input
+                value={draft.receiptNumber}
+                onChange={(e) => setDraft({ ...draft, receiptNumber: e.target.value })}
+                className="input"
+                placeholder="Valfritt"
               />
             </Field>
             <div className="grid grid-cols-2 gap-3">

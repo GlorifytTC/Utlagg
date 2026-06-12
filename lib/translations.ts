@@ -110,10 +110,16 @@ export interface Translations {
   receiptDelete: string;
   receiptDeleteConfirm: string;
   colActions: string;
+  idleTitle: string;
+  idleStay: string;
+  idleLogout: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    idleTitle: "Du loggas snart ut",
+    idleStay: "Stanna inloggad",
+    idleLogout: "Logga ut nu",
     receiptApprove: "Godkänn",
     receiptDelete: "Ta bort",
     receiptDeleteConfirm: "Ta bort detta kvitto? Detta går inte att ångra.",
@@ -245,6 +251,9 @@ export const strings: Record<Lang, Translations> = {
       "Detta är en startmall — verifiera moms- och bokföringsregler med din revisor innan produktion.",
   },
   en: {
+    idleTitle: "You'll be logged out soon",
+    idleStay: "Stay logged in",
+    idleLogout: "Log out now",
     receiptApprove: "Approve",
     receiptDelete: "Delete",
     receiptDeleteConfirm: "Delete this receipt? This cannot be undone.",

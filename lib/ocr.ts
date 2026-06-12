@@ -14,6 +14,7 @@
 export interface ExtractedReceipt {
   vendorName: string | null;
   orgNumber: string | null;
+  receiptNumber: string | null;
   date: string | null; // ISO yyyy-mm-dd
   totalAmount: number | null;
   vatAmount: number | null;
@@ -184,6 +185,10 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   let confidenceHits = 0;
   const totalSignals = 4;
 
+  // --- Receipt / kvitto number (only when clearly labelled) ---
+  const recM = rawText.match(/(?:kvitto\s*(?:nr|nummer)?|kvittonr|bong|kassakvitto|receipt|kassa\s*nr)\s*[:.#]?\s*(\d{2,})/i);
+  const receiptNumber = recM ? recM[1] : null;
+
   // --- Org number (Swedish): 6 digits - 4 digits ---
   const orgM = rawText.match(/(\d{6})-(\d{4})/);
   const orgNumber = orgM ? `${orgM[1]}-${orgM[2]}` : null;
@@ -271,6 +276,7 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   return {
     vendorName,
     orgNumber,
+    receiptNumber,
     date,
     totalAmount,
     vatAmount,

@@ -18,6 +18,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
   const [query, setQuery] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [preview, setPreview] = useState<string | null>(null);
 
   const statusLabel: Record<string, string> = {
     pending: t.statusPending,
@@ -78,6 +79,14 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
 
   return (
     <div className="rounded-2xl border hairline bg-white/60">
+      {preview && (
+        <div
+          onClick={() => setPreview(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+        >
+          <img src={preview} alt="" className="max-h-[90vh] max-w-full rounded-lg" />
+        </div>
+      )}
       <div className="flex flex-col gap-3 border-b hairline p-5">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-xl">{t.navReceipts}</h2>
@@ -132,7 +141,19 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
               {filtered.map((r) => (
                 <tr key={r.id} className="border-t hairline hover:bg-paper/50">
                   <td className="px-5 py-3">{formatDate(r.date)}</td>
-                  <td className="px-5 py-3 font-medium">{r.vendorName ?? "—"}</td>
+                  <td className="px-5 py-3 font-medium">
+                    <div className="flex items-center gap-2">
+                      {r.imageUrl && (
+                        <img
+                          src={r.imageUrl}
+                          alt=""
+                          onClick={() => setPreview(r.imageUrl!)}
+                          className="h-9 w-9 cursor-pointer rounded object-cover ring-1 ring-black/10"
+                        />
+                      )}
+                      <span>{r.vendorName ?? "—"}</span>
+                    </div>
+                  </td>
                   <td className="px-5 py-3 font-mono text-ink/70">{r.basCode ?? "—"}</td>
                   <td className="px-5 py-3">
                     {r.vatRate ? `${r.vatRate}%` : "—"}{" "}

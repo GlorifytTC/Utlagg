@@ -26,7 +26,8 @@ export async function GET() {
 }
 
 const createSchema = z.object({
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.string().optional(),
+  receiptNumber: z.string().max(60).optional(),
   vendorName: z.string().optional(),
   date: z.string().datetime().optional(),
   totalAmount: z.number().nonnegative().optional(),
@@ -83,6 +84,7 @@ export async function POST(req: NextRequest) {
         userId,
         companyId: membership?.companyId ?? null,
         imageUrl: d.imageUrl,
+        receiptNumber: d.receiptNumber,
         vendorName: d.vendorName,
         date: d.date ? new Date(d.date) : undefined,
         totalAmount: d.totalAmount?.toFixed(2),

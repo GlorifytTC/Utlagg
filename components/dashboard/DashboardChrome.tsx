@@ -9,6 +9,7 @@ import {
   LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug, Lock, Building2, FileText,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
+import { IdleLogout } from "@/components/IdleLogout";
 import { useLanguage } from "@/context/LanguageContext";
 import type { Translations } from "@/lib/translations";
 import { cn } from "@/lib/utils";
@@ -99,6 +100,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <IdleLogout />
       {/* Desktop rail (lg+) */}
       <aside className="fixed left-0 top-0 hidden h-full w-64 border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 lg:block">
         <NavList tier={tier} />
@@ -106,9 +108,19 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
 
       {/* Top bar with hamburger (below lg) */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900 lg:hidden">
-        <Link href="/" className="font-display text-lg font-semibold">Utlagg</Link>
-        <button onClick={() => setOpen(true)} aria-label="Öppna meny" className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-          <Menu className="h-6 w-6" />
+        <div className="flex items-center gap-2">
+          <button onClick={() => setOpen(true)} aria-label="Öppna meny" className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
+            <Menu className="h-6 w-6" />
+          </button>
+          <Link href="/" className="font-display text-lg font-semibold">Utlagg</Link>
+        </div>
+        <button
+          onClick={() => signOut({ callbackUrl: "/" })}
+          aria-label={t.navLogout}
+          className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+        >
+          <LogOut className="h-5 w-5" />
+          <span className="hidden sm:inline">{t.navLogout}</span>
         </button>
       </header>
 
@@ -126,7 +138,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
       )}
 
       {/* Main content */}
-      <main className="min-h-screen p-4 pb-24 sm:p-6 lg:ml-64 lg:p-8 lg:pb-8">{children}</main>
+      <main className="min-h-screen p-4 pb-24 sm:p-6 md:pb-8 lg:ml-64 lg:p-8">{children}</main>
 
       {/* Bottom nav (mobile only) */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-5 border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 md:hidden">

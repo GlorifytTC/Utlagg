@@ -10,7 +10,8 @@ import { collectBankId } from "@/lib/bankid";
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
-    maxAge: 7 * 24 * 60 * 60, // 7 days
+    maxAge: 8 * 60 * 60, // 8 hours absolute cap (was 7 days)
+    updateAge: 30 * 60, // refresh the token at most every 30 min of activity
   },
   pages: {
     signIn: "/login",

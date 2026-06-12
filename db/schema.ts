@@ -112,6 +112,7 @@ export const receipts = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     imageUrl: text("image_url"),
+    receiptNumber: varchar("receipt_number", { length: 60 }),
     vendorName: varchar("vendor_name", { length: 300 }),
     date: timestamp("date", { withTimezone: true }),
     // money stored as numeric to avoid float rounding errors
