@@ -28,3 +28,25 @@ body {
 .hairline {
   border-color: rgba(22, 24, 29, 0.12);
 }
+
+/* Paper base so the fixed ambient layer never flashes white */
+body {
+  background-color: #F4F1EA;
+}
+
+/* Ambient drifting background — slow, soft, premium. Reduced-motion safe. */
+@keyframes amb1 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(4vw, 5vh, 0) scale(1.12); }
+}
+@keyframes amb2 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-5vw, -4vh, 0) scale(1.08); }
+}
+@keyframes amb3 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(3vw, -6vh, 0) scale(1.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .amb-blob { animation: none !important; }
+}

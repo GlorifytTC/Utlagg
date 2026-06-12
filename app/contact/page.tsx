@@ -5,6 +5,7 @@ import { Mail, Briefcase, Clock } from "lucide-react";
 import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+import { AmbientBackground } from "@/components/landing/AmbientBackground";
 
 const SUPPORT_EMAIL = "hej@utlagg.se";
 const SALES_EMAIL = "sales@utlagg.se";
@@ -30,7 +31,8 @@ function ContactContent() {
   ];
 
   return (
-    <div className="bg-paper">
+    <div className="relative">
+      <AmbientBackground />
       <Navbar />
       <main className="mx-auto max-w-6xl px-6 pt-16 md:pt-24">
         <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">

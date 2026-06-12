@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+import { AmbientBackground } from "@/components/landing/AmbientBackground";
 
 function AboutContent() {
   const { t } = useLanguage();
@@ -21,7 +22,8 @@ function AboutContent() {
   ];
 
   return (
-    <div className="bg-paper">
+    <div className="relative">
+      <AmbientBackground />
       <Navbar />
       <main>
         {/* Hero */}

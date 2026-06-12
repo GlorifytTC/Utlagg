@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
+import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { StructuredData } from "@/components/StructuredData";
 import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 
@@ -19,7 +20,8 @@ function HomeContent() {
   const { t } = useLanguage();
 
   return (
-    <div className="bg-paper">
+    <div className="relative">
+      <AmbientBackground />
       <StructuredData />
       <Navbar />
 
