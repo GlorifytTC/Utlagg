@@ -36,21 +36,21 @@ export default function CompanyPage() {
   const canManage = role === "owner" || role === "admin";
 
   async function createCompany() {
-    if (!form.name) { toast.error("Ange företagsnamn"); return; }
+    if (!form.name) { toast.error(t.toastEnterCompanyName); return; }
     const r = await fetch("/api/company", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form),
     });
-    if (r.ok) { toast.success("Företag skapat"); load(); }
-    else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? "Kunde inte skapa"); }
+    if (r.ok) { toast.success(t.toastCompanyCreated); load(); }
+    else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? t.toastCreateFail); }
   }
 
   async function sendInvite() {
-    if (!invite.email) { toast.error("Ange e-post"); return; }
+    if (!invite.email) { toast.error(t.toastEnterEmail); return; }
     const r = await fetch("/api/company/invite", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(invite),
     });
-    if (r.ok) { toast.success("Inbjudan skickad"); setInvite({ email: "", role: "member" }); }
-    else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? "Kunde inte bjuda in"); }
+    if (r.ok) { toast.success(t.toastInviteSent); setInvite({ email: "", role: "member" }); }
+    else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? t.toastInviteFail); }
   }
 
   async function changeRole(memberId: string, newRole: string) {
@@ -58,33 +58,33 @@ export default function CompanyPage() {
       method: "PATCH", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ memberId, role: newRole }),
     });
-    if (r.ok) { toast.success("Roll uppdaterad"); load(); } else toast.error("Kunde inte uppdatera");
+    if (r.ok) { toast.success(t.toastRoleUpdated); load(); } else toast.error(t.toastUpdateFail);
   }
 
   async function removeMember(memberId: string) {
-    if (!confirm("Ta bort medlemmen?")) return;
+    if (!confirm(t.confirmRemoveMember)) return;
     const r = await fetch(`/api/company/members?memberId=${memberId}`, { method: "DELETE" });
-    if (r.ok) { toast.success("Borttagen"); load(); }
-    else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? "Kunde inte ta bort"); }
+    if (r.ok) { toast.success(t.toastRemoved); load(); }
+    else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? t.toastRemoveFail); }
   }
 
-  if (loading) return <p className="text-sm text-gray-500">Laddar…</p>;
+  if (loading) return <p className="text-sm text-gray-500">{t.loading}</p>;
 
   if (!company) {
     return (
       <div className="max-w-xl space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Företag</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navCompany}</h1>
         <Card>
           <CardHeader>
-            <CardTitle>Skapa företag</CardTitle>
-            <CardDescription>Skapa ett företag för att bjuda in kollegor och dela utlägg.</CardDescription>
+            <CardTitle>{t.btnCreateCompany}</CardTitle>
+            <CardDescription>{t.coCreateDesc}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2"><Label>Företagsnamn</Label>
+            <div className="space-y-2"><Label>{t.fldCompanyName}</Label>
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-            <div className="space-y-2"><Label>Organisationsnummer</Label>
+            <div className="space-y-2"><Label>{t.fldOrgNumber}</Label>
               <Input value={form.orgNumber} onChange={(e) => setForm({ ...form, orgNumber: e.target.value })} placeholder="556677-8899" /></div>
-            <div className="space-y-2"><Label>Momsregistreringsnummer</Label>
+            <div className="space-y-2"><Label>{t.fldVatNumber}</Label>
               <Input value={form.vatNumber} onChange={(e) => setForm({ ...form, vatNumber: e.target.value })} placeholder="SE556677889901" /></div>
             <Button onClick={createCompany}>{t.btnCreateCompany}</Button>
           </CardContent>
@@ -98,7 +98,7 @@ export default function CompanyPage() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{company.name}</h1>
 
       <Card>
-        <CardHeader><CardTitle>Medlemmar</CardTitle><CardDescription>Din roll: {role}</CardDescription></CardHeader>
+        <CardHeader><CardTitle>{t.coMembers}</CardTitle><CardDescription>{t.coYourRole} {role}</CardDescription></CardHeader>
         <CardContent>
           <ul className="divide-y divide-gray-100 dark:divide-gray-800">
             {members.map((m) => (
@@ -111,9 +111,9 @@ export default function CompanyPage() {
                   {canManage && m.role !== "owner" ? (
                     <select value={m.role} onChange={(e) => changeRole(m.id, e.target.value)}
                       className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-700 dark:bg-gray-950">
-                      <option value="member">Medlem</option>
-                      <option value="approver">Attestant</option>
-                      <option value="admin">Admin</option>
+                      <option value="member">{t.roleMember}</option>
+                      <option value="approver">{t.roleApprover}</option>
+                      <option value="admin">{t.roleAdmin}</option>
                     </select>
                   ) : (<span className="text-sm text-gray-500">{m.role}</span>)}
                   {canManage && m.role !== "owner" && (
@@ -128,16 +128,16 @@ export default function CompanyPage() {
 
       {canManage && (
         <Card>
-          <CardHeader><CardTitle>{t.btnInviteColleague}</CardTitle><CardDescription>Skickar en inbjudan via e-post (gäller 7 dagar).</CardDescription></CardHeader>
+          <CardHeader><CardTitle>{t.btnInviteColleague}</CardTitle><CardDescription>{t.coInviteDesc}</CardDescription></CardHeader>
           <CardContent className="flex flex-wrap items-end gap-2">
-            <div className="space-y-2"><Label>E-post</Label>
+            <div className="space-y-2"><Label>{t.fldEmail}</Label>
               <Input type="email" value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} placeholder="kollega@foretag.se" /></div>
-            <div className="space-y-2"><Label>Roll</Label>
+            <div className="space-y-2"><Label>{t.fldRole}</Label>
               <select value={invite.role} onChange={(e) => setInvite({ ...invite, role: e.target.value })}
                 className="flex h-10 rounded-lg border border-gray-300 px-3 text-sm dark:border-gray-700 dark:bg-gray-950">
-                <option value="member">Medlem</option>
-                <option value="approver">Attestant</option>
-                <option value="admin">Admin</option>
+                <option value="member">{t.roleMember}</option>
+                <option value="approver">{t.roleApprover}</option>
+                <option value="admin">{t.roleAdmin}</option>
               </select></div>
             <Button onClick={sendInvite}>{t.btnSendInvite}</Button>
           </CardContent>

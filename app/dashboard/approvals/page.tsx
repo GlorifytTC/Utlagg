@@ -27,7 +27,7 @@ export default function ApprovalsPage() {
   useEffect(() => { load(); }, [load]);
 
   async function decide(id: string, decision: "approved" | "rejected") {
-    const comment = window.prompt(decision === "approved" ? "Kommentar (valfritt):" : "Skäl till avslag:") ?? "";
+    const comment = window.prompt(decision === "approved" ? t.promptComment : t.promptReason) ?? "";
     setBusy(id);
     const res = await fetch(`/api/approvals/${id}/decide`, {
       method: "POST",
@@ -35,8 +35,8 @@ export default function ApprovalsPage() {
       body: JSON.stringify({ decision, comment }),
     });
     setBusy(null);
-    if (res.ok) { toast.success(decision === "approved" ? "Godkänd" : "Avslagen"); load(); }
-    else toast.error("Kunde inte spara beslut");
+    if (res.ok) { toast.success(decision === "approved" ? t.toastApproved : t.toastRejected); load(); }
+    else toast.error(t.toastDecisionFail);
   }
 
   const pending = reqs.filter((r) => r.status === "pending");
@@ -44,7 +44,7 @@ export default function ApprovalsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Attest</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navApprovals}</h1>
         <div className="flex gap-2">
           <Link href="/dashboard/approvals/submit"><Button variant="outline">{t.btnSubmitApproval}</Button></Link>
           <Link href="/dashboard/approvals/history"><Button variant="outline">{t.btnHistory}</Button></Link>
@@ -53,12 +53,12 @@ export default function ApprovalsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Väntar på ditt godkännande</CardTitle>
-          <CardDescription>Förfrågningar adresserade till din e-post</CardDescription>
+          <CardTitle>{t.apWaiting}</CardTitle>
+          <CardDescription>{t.apWaitingDesc}</CardDescription>
         </CardHeader>
         <CardContent>
           {pending.length === 0 ? (
-            <p className="text-sm text-gray-500">Inga väntande förfrågningar.</p>
+            <p className="text-sm text-gray-500">{t.apNoneWaiting}</p>
           ) : (
             <ul className="divide-y divide-gray-100 dark:divide-gray-800">
               {pending.map((r) => (

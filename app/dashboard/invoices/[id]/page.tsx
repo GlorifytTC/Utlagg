@@ -8,6 +8,7 @@ import { customerInvoices } from "@/db/schema";
 import { getUserCompany } from "@/lib/company";
 import { REVERSE_CHARGE_TEXT, type InvoiceLine } from "@/lib/invoice";
 import { PrintButton } from "@/components/PrintButton";
+import { getT } from "@/lib/i18n-server";
 
 export const metadata = { title: "Faktura" };
 export const dynamic = "force-dynamic";
@@ -27,12 +28,13 @@ export default async function InvoiceView({ params }: { params: { id: string } }
     .limit(1);
   if (!inv) notFound();
 
+  const t = getT();
   const lines = (inv.lineItems as InvoiceLine[]) ?? [];
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex items-center justify-between print:hidden">
-        <Link href="/dashboard/invoices" className="text-sm text-nordic-600 underline">← Fakturor</Link>
+        <Link href="/dashboard/invoices" className="text-sm text-nordic-600 underline">← {t.navInvoices}</Link>
         <PrintButton />
       </div>
 
@@ -40,29 +42,29 @@ export default async function InvoiceView({ params }: { params: { id: string } }
         <div className="flex justify-between">
           <div>
             <p className="text-lg font-bold">{inv.sellerName}</p>
-            {inv.sellerOrgNumber && <p>Org.nr: {inv.sellerOrgNumber}</p>}
-            {inv.sellerVatNumber && <p>Momsnr: {inv.sellerVatNumber}</p>}
+            {inv.sellerOrgNumber && <p>{t.invOrgNr} {inv.sellerOrgNumber}</p>}
+            {inv.sellerVatNumber && <p>{t.invVatNr} {inv.sellerVatNumber}</p>}
             {inv.sellerAddress && <p>{inv.sellerAddress}</p>}
           </div>
           <div className="text-right">
-            <p className="text-xl font-bold">FAKTURA</p>
-            <p>Nr: {inv.invoiceNumber}</p>
-            <p>Datum: {new Date(inv.issueDate).toLocaleDateString("sv-SE")}</p>
-            {inv.dueDate && <p>Förfaller: {new Date(inv.dueDate).toLocaleDateString("sv-SE")}</p>}
+            <p className="text-xl font-bold">{t.invInvoiceWord}</p>
+            <p>{t.invNrLabel} {inv.invoiceNumber}</p>
+            <p>{t.invDateLabel} {new Date(inv.issueDate).toLocaleDateString()}</p>
+            {inv.dueDate && <p>{t.invDueLabel} {new Date(inv.dueDate).toLocaleDateString()}</p>}
           </div>
         </div>
 
         <div className="mt-6">
-          <p className="font-semibold">Faktureras till</p>
+          <p className="font-semibold">{t.invBillTo}</p>
           <p>{inv.buyerName}</p>
-          {inv.buyerOrgNumber && <p>Org.nr: {inv.buyerOrgNumber}</p>}
-          {inv.buyerVatNumber && <p>Momsnr: {inv.buyerVatNumber}</p>}
+          {inv.buyerOrgNumber && <p>{t.invOrgNr} {inv.buyerOrgNumber}</p>}
+          {inv.buyerVatNumber && <p>{t.invVatNr} {inv.buyerVatNumber}</p>}
           {inv.buyerAddress && <p>{inv.buyerAddress}</p>}
         </div>
 
         <table className="mt-6 w-full text-sm">
           <thead className="border-b border-gray-300 text-left">
-            <tr><th className="py-2">Beskrivning</th><th>Antal</th><th>à-pris</th>{!inv.reverseCharge && <th>Moms</th>}<th className="text-right">Belopp</th></tr>
+            <tr><th className="py-2">{t.phDescription}</th><th>{t.phQuantity}</th><th>{t.phUnitPrice}</th>{!inv.reverseCharge && <th>{t.invColVat}</th>}<th className="text-right">{t.invColAmount}</th></tr>
           </thead>
           <tbody>
             {lines.map((l, i) => (
@@ -78,9 +80,9 @@ export default async function InvoiceView({ params }: { params: { id: string } }
         </table>
 
         <div className="mt-4 flex flex-col items-end gap-1">
-          <p>Summa exkl. moms: {kr(inv.subtotal)} kr</p>
-          <p>Moms: {inv.reverseCharge ? "0,00 kr" : `${kr(inv.vatTotal)} kr`}</p>
-          <p className="text-base font-bold">Att betala: {kr(inv.total)} kr {inv.currency}</p>
+          <p>{t.invSubtotal}: {kr(inv.subtotal)} kr</p>
+          <p>{t.invColVat}: {inv.reverseCharge ? "0,00 kr" : `${kr(inv.vatTotal)} kr`}</p>
+          <p className="text-base font-bold">{t.invToPay}: {kr(inv.total)} kr {inv.currency}</p>
         </div>
 
         {inv.reverseCharge && (
@@ -90,7 +92,7 @@ export default async function InvoiceView({ params }: { params: { id: string } }
       </div>
 
       <p className="text-xs text-gray-400 print:hidden">
-        Mallen tillhandahålls av Utlagg. Du ansvarar själv för fakturans innehåll och korrekthet.
+        {t.invViewDisclaimer}
       </p>
     </div>
   );

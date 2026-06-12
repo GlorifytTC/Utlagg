@@ -36,7 +36,7 @@ export default function SubmitApprovalPage() {
   }, []);
 
   async function submit() {
-    if (!receiptId || !approverEmail) { toast.error("Välj kvitto och attestant"); return; }
+    if (!receiptId || !approverEmail) { toast.error(t.toastSelectReceiptApprover); return; }
     setLoading(true);
     const res = await fetch("/api/approvals", {
       method: "POST",
@@ -44,8 +44,8 @@ export default function SubmitApprovalPage() {
       body: JSON.stringify({ receiptId, approverEmail, requesterComment: comment }),
     });
     setLoading(false);
-    if (res.ok) { toast.success("Skickad för attest"); router.push("/dashboard/approvals/history"); }
-    else { const e = await res.json().catch(() => ({})); toast.error(e.error ?? "Kunde inte skicka"); }
+    if (res.ok) { toast.success(t.toastSubmitted); router.push("/dashboard/approvals/history"); }
+    else { const e = await res.json().catch(() => ({})); toast.error(e.error ?? t.toastSubmitFail); }
   }
 
   if (allowed === false) {
@@ -53,9 +53,9 @@ export default function SubmitApprovalPage() {
       <div className="max-w-xl space-y-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
         <UpsellCard
-          title="Attestflöden"
+          title={t.apUpsellTitle}
           requiredPlan="Företag"
-          description="Skicka utlägg för godkännande och hantera attestkedjor. Ingår i Företag-planen."
+          description={t.apUpsellDesc}
         />
       </div>
     );
@@ -66,34 +66,34 @@ export default function SubmitApprovalPage() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
       <Card>
         <CardHeader>
-          <CardTitle>Förfrågan</CardTitle>
-          <CardDescription>Välj ett kvitto och vem som ska godkänna</CardDescription>
+          <CardTitle>{t.apRequest}</CardTitle>
+          <CardDescription>{t.apRequestDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="receipt">Kvitto</Label>
+            <Label htmlFor="receipt">{t.fldReceipt}</Label>
             <select id="receipt" value={receiptId} onChange={(e) => setReceiptId(e.target.value)} className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-950">
-              <option value="">Välj kvitto…</option>
+              <option value="">{t.phSelectReceipt}</option>
               {receipts.map((r) => (
                 <option key={r.id} value={r.id}>
-                  {(r.vendorName ?? "Okänd")} — {Number(r.totalAmount ?? 0).toFixed(2).replace(".", ",")} kr
+                  {(r.vendorName ?? t.unknownShort)} — {Number(r.totalAmount ?? 0).toFixed(2).replace(".", ",")} kr
                 </option>
               ))}
             </select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="approver">Attestantens e-post</Label>
+            <Label htmlFor="approver">{t.fldApproverEmail}</Label>
             <Input id="approver" type="email" value={approverEmail} onChange={(e) => setApproverEmail(e.target.value)} placeholder="chef@foretag.se" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="comment">Kommentar</Label>
-            <Input id="comment" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Valfritt" />
+            <Label htmlFor="comment">{t.fldComment}</Label>
+            <Input id="comment" value={comment} onChange={(e) => setComment(e.target.value)} placeholder={t.phOptional} />
           </div>
           <Button onClick={submit} disabled={loading}>{loading ? t.stSubmitting : t.btnSubmitApproval}</Button>
         </CardContent>
       </Card>
       <p className="text-xs text-gray-400">
-        Attestanten ser förfrågan när hen loggar in med ett konto som har den e-postadressen.
+        {t.apSubmitNote}
       </p>
     </div>
   );

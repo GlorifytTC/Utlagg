@@ -28,16 +28,16 @@ export default function ProfilePage() {
     });
     if (res.ok) {
       await update({ name });
-      toast.success("Namn uppdaterat");
+      toast.success(t.toastNameUpdated);
     } else {
-      toast.error("Kunde inte uppdatera namn");
+      toast.error(t.toastNameUpdateFail);
     }
     setLoading(false);
   }
 
   async function changePassword() {
     if (newPassword !== confirmPassword) {
-      toast.error("Lösenorden matchar inte");
+      toast.error(t.toastPwMismatch);
       return;
     }
     setLoading(true);
@@ -47,13 +47,13 @@ export default function ProfilePage() {
       body: JSON.stringify({ currentPassword, newPassword }),
     });
     if (res.ok) {
-      toast.success("Lösenord ändrat");
+      toast.success(t.toastPwChanged);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } else {
       const e = await res.json().catch(() => ({}));
-      toast.error(e.message ?? "Kunde inte ändra lösenord");
+      toast.error(e.message ?? t.toastPwChangeFail);
     }
     setLoading(false);
   }
@@ -62,10 +62,10 @@ export default function ProfilePage() {
     setLoading(true);
     const res = await fetch("/api/user/delete", { method: "DELETE" });
     if (res.ok) {
-      toast.success("Konto raderat");
+      toast.success(t.toastAccountDeleted);
       await signOut({ callbackUrl: "/" });
     } else {
-      toast.error("Kunde inte radera konto");
+      toast.error(t.toastAccountDeleteFail);
       setLoading(false);
       setConfirmOpen(false);
     }
@@ -73,47 +73,47 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Profilinställningar</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.prTitle}</h1>
 
       <Card>
         <CardHeader>
-          <CardTitle>Namn</CardTitle>
-          <CardDescription>Ditt namn visas på kvitton och fakturor</CardDescription>
+          <CardTitle>{t.prNameTitle}</CardTitle>
+          <CardDescription>{t.prNameDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Namn</Label>
+            <Label htmlFor="name">{t.fldName}</Label>
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            E-post: {session?.user?.email ?? "—"}
+            {t.prEmailLabel} {session?.user?.email ?? "—"}
           </p>
           <Button onClick={updateName} disabled={loading}>
-            Spara ändringar
+            {t.btnSaveChanges}
           </Button>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Byt lösenord</CardTitle>
-          <CardDescription>Använd ett starkt lösenord (minst 8 tecken)</CardDescription>
+          <CardTitle>{t.prChangePw}</CardTitle>
+          <CardDescription>{t.prPwDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="current">Nuvarande lösenord</Label>
+            <Label htmlFor="current">{t.fldCurrentPw}</Label>
             <Input id="current" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="new">Nytt lösenord</Label>
+            <Label htmlFor="new">{t.fldNewPw}</Label>
             <Input id="new" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirm">Bekräfta nytt lösenord</Label>
+            <Label htmlFor="confirm">{t.fldConfirmPw}</Label>
             <Input id="confirm" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
           </div>
           <Button onClick={changePassword} disabled={loading}>
-            Byt lösenord
+            {t.btnChangePw}
           </Button>
         </CardContent>
       </Card>
@@ -122,7 +122,7 @@ export default function ProfilePage() {
         <CardHeader>
           <CardTitle className="text-red-600">{t.btnDeleteAccount}</CardTitle>
           <CardDescription>
-            När du raderar ditt konto försvinner dina kvitton och data permanent.
+            {t.prDeleteDesc}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -136,17 +136,17 @@ export default function ProfilePage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <Card className="w-full max-w-md">
             <CardHeader>
-              <CardTitle>Är du helt säker?</CardTitle>
+              <CardTitle>{t.prSureTitle}</CardTitle>
               <CardDescription>
-                Detta går inte att ångra. Alla dina kvitton och inställningar raderas permanent.
+                {t.prSureDesc}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setConfirmOpen(false)} disabled={loading}>
-                Avbryt
+                {t.btnCancel}
               </Button>
               <Button variant="destructive" onClick={deleteAccount} disabled={loading}>
-                Ja, radera mitt konto
+                {t.prConfirmDelete}
               </Button>
             </CardContent>
           </Card>

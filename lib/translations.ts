@@ -255,10 +255,424 @@ export interface Translations {
   btnDeleteAccountPermanent: string;
   stSaving: string;
   stSubmitting: string;
+  setAppearance: string;
+  setAppearanceDesc: string;
+  setSwitchToLight: string;
+  setSwitchToDark: string;
+  setCompanyDesc: string;
+  fldCompanyName: string;
+  phCompany: string;
+  setExportTitle: string;
+  setExportDesc: string;
+  setSkvTitle: string;
+  setSkvDesc: string;
+  toastCompanySaved: string;
+  toastSaveFail: string;
+  toastEnterCompanyName: string;
+  toastCompanyCreated: string;
+  toastCreateFail: string;
+  toastEnterEmail: string;
+  toastInviteSent: string;
+  toastInviteFail: string;
+  toastRoleUpdated: string;
+  toastUpdateFail: string;
+  confirmRemoveMember: string;
+  toastRemoved: string;
+  toastRemoveFail: string;
+  loading: string;
+  coCreateDesc: string;
+  fldOrgNumber: string;
+  fldVatNumber: string;
+  coMembers: string;
+  coYourRole: string;
+  roleMember: string;
+  roleApprover: string;
+  roleAdmin: string;
+  coInviteDesc: string;
+  fldEmail: string;
+  fldRole: string;
+  invUpsellTitle: string;
+  invUpsellDesc: string;
+  invNeedCompanyTitle: string;
+  invNeedCompanyDesc: string;
+  invNoneYet: string;
+  invColNr: string;
+  invColCustomer: string;
+  invColDate: string;
+  invColAmount: string;
+  invColVat: string;
+  invReverse: string;
+  invDisclaimer: string;
+  toastFillCustomerRows: string;
+  toastReverseNeedsVat: string;
+  toastInvoiceSaved: string;
+  invCustomer: string;
+  fldInvoiceNumber: string;
+  phAutoNumber: string;
+  fldCustomerName: string;
+  fldOrgNumberShort: string;
+  fldVatNumberShort: string;
+  fldAddress: string;
+  fldIssueDate: string;
+  fldDueDate: string;
+  invLines: string;
+  invLinesDesc: string;
+  phDescription: string;
+  phQuantity: string;
+  phUnitPrice: string;
+  ariaRemoveRow: string;
+  invReversePre: string;
+  invReversePost: string;
+  invSubtotal: string;
+  invVatReverse: string;
+  invToPay: string;
+  toastFillAddresses: string;
+  toastTripSaved: string;
+  milUpsellDesc: string;
+  milRatePre: string;
+  milRateNote: string;
+  milNewTrip: string;
+  milNewTripDesc: string;
+  fldFrom: string;
+  fldTo: string;
+  phStartAddress: string;
+  phEndAddress: string;
+  fldDistance: string;
+  fldDate: string;
+  fldPurpose: string;
+  purposeBusiness: string;
+  purposePrivate: string;
+  fldAmount: string;
+  milLog: string;
+  milNoneYet: string;
+  milKm: string;
+  purposeBusinessShort: string;
+  milManualNote: string;
+  promptComment: string;
+  promptReason: string;
+  toastApproved: string;
+  toastRejected: string;
+  toastDecisionFail: string;
+  apWaiting: string;
+  apWaitingDesc: string;
+  apNoneWaiting: string;
+  toastSelectReceiptApprover: string;
+  toastSubmitted: string;
+  toastSubmitFail: string;
+  apUpsellTitle: string;
+  apUpsellDesc: string;
+  apRequest: string;
+  apRequestDesc: string;
+  fldReceipt: string;
+  phSelectReceipt: string;
+  unknownShort: string;
+  fldApproverEmail: string;
+  fldComment: string;
+  phOptional: string;
+  apSubmitNote: string;
+  toastNameUpdated: string;
+  toastNameUpdateFail: string;
+  toastPwMismatch: string;
+  toastPwChanged: string;
+  toastPwChangeFail: string;
+  toastAccountDeleted: string;
+  toastAccountDeleteFail: string;
+  prTitle: string;
+  prNameTitle: string;
+  prNameDesc: string;
+  fldName: string;
+  prEmailLabel: string;
+  btnSaveChanges: string;
+  prChangePw: string;
+  prPwDesc: string;
+  fldCurrentPw: string;
+  fldNewPw: string;
+  fldConfirmPw: string;
+  btnChangePw: string;
+  prDeleteDesc: string;
+  prSureTitle: string;
+  prSureDesc: string;
+  prConfirmDelete: string;
+  stSubtitle: string;
+  stTotalVat: string;
+  stPerMonth: string;
+  stLastSixMonths: string;
+  stNoData: string;
+  invOrgNr: string;
+  invVatNr: string;
+  invInvoiceWord: string;
+  invNrLabel: string;
+  invDateLabel: string;
+  invDueLabel: string;
+  invBillTo: string;
+  invViewDisclaimer: string;
+  apHistoryTitle: string;
+  apHistoryDesc: string;
+  apNoneYet: string;
+  about: string;
+  contact: string;
+  navMenu: string;
+  navClose: string;
+  howKicker: string;
+  howTitle: string;
+  howStep1Title: string;
+  howStep1Body: string;
+  howStep2Title: string;
+  howStep2Body: string;
+  howStep3Title: string;
+  howStep3Body: string;
+  footerProduct: string;
+  footerCompany: string;
+  footerLegal: string;
+  footerTerms: string;
+  footerPrivacy: string;
+  aboutKicker: string;
+  aboutTitle: string;
+  aboutLead: string;
+  aboutStoryTitle: string;
+  aboutStoryBody: string;
+  aboutValuesTitle: string;
+  aboutVal1Title: string;
+  aboutVal1Body: string;
+  aboutVal2Title: string;
+  aboutVal2Body: string;
+  aboutVal3Title: string;
+  aboutVal3Body: string;
+  aboutStatsTitle: string;
+  aboutStat1Val: string;
+  aboutStat1Label: string;
+  aboutStat2Val: string;
+  aboutStat2Label: string;
+  aboutStat3Val: string;
+  aboutStat3Label: string;
+  aboutCtaTitle: string;
+  aboutCtaBody: string;
+  contactKicker: string;
+  contactTitle: string;
+  contactLead: string;
+  contactEmailLabel: string;
+  contactSalesLabel: string;
+  contactResponseLabel: string;
+  contactResponseValue: string;
+  contactFormTitle: string;
+  contactFormDesc: string;
+  contactName: string;
+  contactEmailField: string;
+  contactMessage: string;
+  contactMessagePh: string;
+  contactSend: string;
+  contactSubject: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    about: "Om oss",
+    contact: "Kontakt",
+    navMenu: "Meny",
+    navClose: "Stäng",
+    howKicker: "Så fungerar det",
+    howTitle: "Från kvitto till bokföring på sekunder",
+    howStep1Title: "Skanna",
+    howStep1Body: "Fota kvittot eller ladda upp en bild. AI:n läser leverantör, datum, moms och belopp åt dig.",
+    howStep2Title: "Granska",
+    howStep2Body: "Kontrollera de ifyllda fälten och välj BAS-konto. Allt är redigerbart innan du sparar.",
+    howStep3Title: "Exportera",
+    howStep3Body: "Exportera till SIE, CSV eller Fortnox — redo för din bokföring och Skatteverket.",
+    footerProduct: "Produkt",
+    footerCompany: "Företag",
+    footerLegal: "Juridik",
+    footerTerms: "Villkor",
+    footerPrivacy: "Integritetspolicy",
+    aboutKicker: "Om Utlagg",
+    aboutTitle: "Byggt i Sverige, för svenska regler.",
+    aboutLead: "Utlagg gör kvittohantering och utlägg enkelt för svenska företag — med moms, BAS-konton och Skatteverket inbyggt från start, inte påklistrat i efterhand.",
+    aboutStoryTitle: "Varför vi byggde Utlagg",
+    aboutStoryBody: "De flesta utläggsverktyg är byggda för en internationell marknad och känner inte till svensk moms, omvänd byggskattskyldighet eller Bokföringslagens sjuåriga arkiveringskrav. Vi tröttnade på att rätta samma fel manuellt varje månad. Utlagg läser kvittot, fyller i rätt momssats och BAS-konto, och sparar underlaget i sju år — så att bokföringen stämmer redan från början.",
+    aboutValuesTitle: "Vad vi står för",
+    aboutVal1Title: "Regelverk först",
+    aboutVal1Body: "Svensk moms, BAS-kontoplan och Bokföringslagen är inte tillval — de är grunden produkten är byggd på.",
+    aboutVal2Title: "Inga överraskningar",
+    aboutVal2Body: "Tydlig prissättning, ingen bindningstid och din data är din. Du kan exportera allt och säga upp när du vill.",
+    aboutVal3Title: "Integritet på riktigt",
+    aboutVal3Body: "GDPR-säker hantering, kryptering och BankID-inloggning. Dina kvitton lämnar aldrig din kontroll i onödan.",
+    aboutStatsTitle: "Byggt för svensk bokföring",
+    aboutStat1Val: "6/12/25 %",
+    aboutStat1Label: "Svenska momssatser, datumstyrda",
+    aboutStat2Val: "2,50 kr/km",
+    aboutStat2Label: "Skattefri milersättning",
+    aboutStat3Val: "7 år",
+    aboutStat3Label: "Arkiv enligt Bokföringslagen",
+    aboutCtaTitle: "Redo att förenkla era utlägg?",
+    aboutCtaBody: "Kom igång gratis på några minuter. Inget kort krävs.",
+    contactKicker: "Kontakt",
+    contactTitle: "Hör av dig.",
+    contactLead: "Frågor om produkten, priser eller din bokföring? Vi svarar normalt inom en arbetsdag.",
+    contactEmailLabel: "E-post",
+    contactSalesLabel: "Försäljning & offert",
+    contactResponseLabel: "Svarstid",
+    contactResponseValue: "Inom 1 arbetsdag",
+    contactFormTitle: "Skicka ett meddelande",
+    contactFormDesc: "Fyll i formuläret så öppnas ditt e-postprogram med meddelandet förifyllt.",
+    contactName: "Namn",
+    contactEmailField: "Din e-post",
+    contactMessage: "Meddelande",
+    contactMessagePh: "Hur kan vi hjälpa till?",
+    contactSend: "Skicka meddelande",
+    contactSubject: "Förfrågan via utlagg.se",
+    invOrgNr: "Org.nr:",
+    invVatNr: "Momsnr:",
+    invInvoiceWord: "FAKTURA",
+    invNrLabel: "Nr:",
+    invDateLabel: "Datum:",
+    invDueLabel: "Förfaller:",
+    invBillTo: "Faktureras till",
+    invViewDisclaimer: "Mallen tillhandahålls av Utlagg. Du ansvarar själv för fakturans innehåll och korrekthet.",
+    apHistoryTitle: "Attesthistorik",
+    apHistoryDesc: "Dina skickade förfrågningar",
+    apNoneYet: "Inga förfrågningar ännu.",
+    toastNameUpdated: "Namn uppdaterat",
+    toastNameUpdateFail: "Kunde inte uppdatera namn",
+    toastPwMismatch: "Lösenorden matchar inte",
+    toastPwChanged: "Lösenord ändrat",
+    toastPwChangeFail: "Kunde inte ändra lösenord",
+    toastAccountDeleted: "Konto raderat",
+    toastAccountDeleteFail: "Kunde inte radera konto",
+    prTitle: "Profilinställningar",
+    prNameTitle: "Namn",
+    prNameDesc: "Ditt namn visas på kvitton och fakturor",
+    fldName: "Namn",
+    prEmailLabel: "E-post:",
+    btnSaveChanges: "Spara ändringar",
+    prChangePw: "Byt lösenord",
+    prPwDesc: "Använd ett starkt lösenord (minst 8 tecken)",
+    fldCurrentPw: "Nuvarande lösenord",
+    fldNewPw: "Nytt lösenord",
+    fldConfirmPw: "Bekräfta nytt lösenord",
+    btnChangePw: "Byt lösenord",
+    prDeleteDesc: "När du raderar ditt konto försvinner dina kvitton och data permanent.",
+    prSureTitle: "Är du helt säker?",
+    prSureDesc: "Detta går inte att ångra. Alla dina kvitton och inställningar raderas permanent.",
+    prConfirmDelete: "Ja, radera mitt konto",
+    stSubtitle: "Översikt över dina kvitton och moms",
+    stTotalVat: "Total moms",
+    stPerMonth: "Kvitton per månad",
+    stLastSixMonths: "Senaste sex månaderna",
+    stNoData: "Ingen data ännu.",
+    toastFillAddresses: "Fyll i adresser och sträcka",
+    toastTripSaved: "Resa sparad",
+    milUpsellDesc: "Registrera resor och få skattefri milersättning (2,50 kr/km) automatiskt uträknad. Ingår i Företag-planen.",
+    milRatePre: "Skattefri sats för egen bil:",
+    milRateNote: "(25 kr/mil, Skatteverket 2026)",
+    milNewTrip: "Ny resa",
+    milNewTripDesc: "Ange sträckan i kilometer. Belopp beräknas automatiskt.",
+    fldFrom: "Från",
+    fldTo: "Till",
+    phStartAddress: "Startadress",
+    phEndAddress: "Slutadress",
+    fldDistance: "Sträcka (km)",
+    fldDate: "Datum",
+    fldPurpose: "Syfte",
+    purposeBusiness: "Tjänsteresa",
+    purposePrivate: "Privat",
+    fldAmount: "Belopp",
+    milLog: "Körjournal",
+    milNoneYet: "Inga resor ännu.",
+    milKm: "km",
+    purposeBusinessShort: "Tjänst",
+    milManualNote: "Sträckan anges manuellt. Automatisk avståndsberäkning (Google Maps/OpenRouteService) kan kopplas in med en API-nyckel — den är inte aktiverad här.",
+    promptComment: "Kommentar (valfritt):",
+    promptReason: "Skäl till avslag:",
+    toastApproved: "Godkänd",
+    toastRejected: "Avslagen",
+    toastDecisionFail: "Kunde inte spara beslut",
+    apWaiting: "Väntar på ditt godkännande",
+    apWaitingDesc: "Förfrågningar adresserade till din e-post",
+    apNoneWaiting: "Inga väntande förfrågningar.",
+    toastSelectReceiptApprover: "Välj kvitto och attestant",
+    toastSubmitted: "Skickad för attest",
+    toastSubmitFail: "Kunde inte skicka",
+    apUpsellTitle: "Attestflöden",
+    apUpsellDesc: "Skicka utlägg för godkännande och hantera attestkedjor. Ingår i Företag-planen.",
+    apRequest: "Förfrågan",
+    apRequestDesc: "Välj ett kvitto och vem som ska godkänna",
+    fldReceipt: "Kvitto",
+    phSelectReceipt: "Välj kvitto…",
+    unknownShort: "Okänd",
+    fldApproverEmail: "Attestantens e-post",
+    fldComment: "Kommentar",
+    phOptional: "Valfritt",
+    apSubmitNote: "Attestanten ser förfrågan när hen loggar in med ett konto som har den e-postadressen.",
+    setAppearance: "Utseende",
+    setAppearanceDesc: "Välj ljust eller mörkt läge",
+    setSwitchToLight: "Byt till ljust läge",
+    setSwitchToDark: "Byt till mörkt läge",
+    setCompanyDesc: "Visas på exporter och underlag",
+    fldCompanyName: "Företagsnamn",
+    phCompany: "Ditt företag AB",
+    setExportTitle: "Export & integrationer",
+    setExportDesc: "Ladda ner dina data eller koppla bokföring",
+    setSkvTitle: "Skatteverket-export (PRO)",
+    setSkvDesc: "Välj period och ladda ner alla kvitton med moms och BAS-konto",
+    toastCompanySaved: "Företagsnamn sparat",
+    toastSaveFail: "Kunde inte spara",
+    toastEnterCompanyName: "Ange företagsnamn",
+    toastCompanyCreated: "Företag skapat",
+    toastCreateFail: "Kunde inte skapa",
+    toastEnterEmail: "Ange e-post",
+    toastInviteSent: "Inbjudan skickad",
+    toastInviteFail: "Kunde inte bjuda in",
+    toastRoleUpdated: "Roll uppdaterad",
+    toastUpdateFail: "Kunde inte uppdatera",
+    confirmRemoveMember: "Ta bort medlemmen?",
+    toastRemoved: "Borttagen",
+    toastRemoveFail: "Kunde inte ta bort",
+    loading: "Laddar…",
+    coCreateDesc: "Skapa ett företag för att bjuda in kollegor och dela utlägg.",
+    fldOrgNumber: "Organisationsnummer",
+    fldVatNumber: "Momsregistreringsnummer",
+    coMembers: "Medlemmar",
+    coYourRole: "Din roll:",
+    roleMember: "Medlem",
+    roleApprover: "Attestant",
+    roleAdmin: "Admin",
+    coInviteDesc: "Skickar en inbjudan via e-post (gäller 7 dagar).",
+    fldEmail: "E-post",
+    fldRole: "Roll",
+    invUpsellTitle: "Fakturering",
+    invUpsellDesc: "Skapa och skicka kundfakturor (inkl. omvänd byggmoms) till dina kunder. Ingår från Pro-planen.",
+    invNeedCompanyTitle: "Skapa ett företag först",
+    invNeedCompanyDesc: "Säljaruppgifterna (namn, organisationsnummer) på fakturan hämtas från ditt företag.",
+    invNoneYet: "Inga fakturor ännu.",
+    invColNr: "Nr",
+    invColCustomer: "Kund",
+    invColDate: "Datum",
+    invColAmount: "Belopp",
+    invColVat: "Moms",
+    invReverse: "Omvänd",
+    invDisclaimer: "Du ansvarar själv för att uppgifterna på fakturan är korrekta. Utlagg tillhandahåller mallen och sparar fakturan.",
+    toastFillCustomerRows: "Fyll i kund och alla rader",
+    toastReverseNeedsVat: "Vid omvänd skattskyldighet krävs köparens moms-/org.nummer",
+    toastInvoiceSaved: "Faktura sparad",
+    invCustomer: "Kund",
+    fldInvoiceNumber: "Fakturanummer (valfritt)",
+    phAutoNumber: "Lämna tomt för automatiskt nummer",
+    fldCustomerName: "Kundnamn",
+    fldOrgNumberShort: "Org.nummer",
+    fldVatNumberShort: "Momsnummer",
+    fldAddress: "Adress",
+    fldIssueDate: "Fakturadatum",
+    fldDueDate: "Förfallodatum",
+    invLines: "Rader",
+    invLinesDesc: "Pris anges exkl. moms.",
+    phDescription: "Beskrivning",
+    phQuantity: "Antal",
+    phUnitPrice: "à-pris",
+    ariaRemoveRow: "Ta bort rad",
+    invReversePre: "Omvänd skattskyldighet (byggtjänster) — fakturan ställs ut utan moms och får texten",
+    invReversePost: "Köparens moms-/org.nummer måste anges.",
+    invSubtotal: "Summa exkl. moms",
+    invVatReverse: "0,00 kr (omvänd)",
+    invToPay: "Att betala",
     btnSaveInvoice: "Spara faktura",
     btnDeleteAccountPermanent: "Radera konto permanent",
     stSaving: "Sparar…",
@@ -538,6 +952,213 @@ export const strings: Record<Lang, Translations> = {
     pricingTableSupport: "Prioriterad support",
   },
   en: {
+    about: "About",
+    contact: "Contact",
+    navMenu: "Menu",
+    navClose: "Close",
+    howKicker: "How it works",
+    howTitle: "From receipt to bookkeeping in seconds",
+    howStep1Title: "Scan",
+    howStep1Body: "Snap the receipt or upload an image. The AI reads supplier, date, VAT and amount for you.",
+    howStep2Title: "Review",
+    howStep2Body: "Check the filled-in fields and choose a BAS account. Everything stays editable before you save.",
+    howStep3Title: "Export",
+    howStep3Body: "Export to SIE, CSV or Fortnox — ready for your books and the Swedish Tax Agency.",
+    footerProduct: "Product",
+    footerCompany: "Company",
+    footerLegal: "Legal",
+    footerTerms: "Terms",
+    footerPrivacy: "Privacy policy",
+    aboutKicker: "About Utlagg",
+    aboutTitle: "Built in Sweden, for Swedish rules.",
+    aboutLead: "Utlagg makes receipts and expenses effortless for Swedish businesses — with VAT, BAS accounts and the Tax Agency built in from the start, not bolted on afterwards.",
+    aboutStoryTitle: "Why we built Utlagg",
+    aboutStoryBody: "Most expense tools are built for an international market and don't understand Swedish VAT, reverse-charge construction tax or the seven-year archiving rule in the Bookkeeping Act. We got tired of fixing the same things by hand every month. Utlagg reads the receipt, fills in the right VAT rate and BAS account, and keeps the record for seven years — so the books are right from the start.",
+    aboutValuesTitle: "What we stand for",
+    aboutVal1Title: "Compliance first",
+    aboutVal1Body: "Swedish VAT, the BAS chart of accounts and the Bookkeeping Act aren't add-ons — they're the foundation the product is built on.",
+    aboutVal2Title: "No surprises",
+    aboutVal2Body: "Clear pricing, no lock-in, and your data is yours. Export everything and cancel whenever you like.",
+    aboutVal3Title: "Real privacy",
+    aboutVal3Body: "GDPR-safe handling, encryption and BankID login. Your receipts never leave your control unnecessarily.",
+    aboutStatsTitle: "Built for Swedish bookkeeping",
+    aboutStat1Val: "6/12/25%",
+    aboutStat1Label: "Swedish VAT rates, date-aware",
+    aboutStat2Val: "2.50 kr/km",
+    aboutStat2Label: "Tax-free mileage",
+    aboutStat3Val: "7 years",
+    aboutStat3Label: "Archive per the Bookkeeping Act",
+    aboutCtaTitle: "Ready to simplify your expenses?",
+    aboutCtaBody: "Get started free in minutes. No card required.",
+    contactKicker: "Contact",
+    contactTitle: "Get in touch.",
+    contactLead: "Questions about the product, pricing or your bookkeeping? We usually reply within one business day.",
+    contactEmailLabel: "Email",
+    contactSalesLabel: "Sales & quotes",
+    contactResponseLabel: "Response time",
+    contactResponseValue: "Within 1 business day",
+    contactFormTitle: "Send a message",
+    contactFormDesc: "Fill in the form and your email app opens with the message ready to send.",
+    contactName: "Name",
+    contactEmailField: "Your email",
+    contactMessage: "Message",
+    contactMessagePh: "How can we help?",
+    contactSend: "Send message",
+    contactSubject: "Enquiry via utlagg.se",
+    invOrgNr: "Reg. no:",
+    invVatNr: "VAT no:",
+    invInvoiceWord: "INVOICE",
+    invNrLabel: "No:",
+    invDateLabel: "Date:",
+    invDueLabel: "Due:",
+    invBillTo: "Billed to",
+    invViewDisclaimer: "The template is provided by Utlagg. You are responsible for the invoice's content and accuracy.",
+    apHistoryTitle: "Approval history",
+    apHistoryDesc: "Your sent requests",
+    apNoneYet: "No requests yet.",
+    toastNameUpdated: "Name updated",
+    toastNameUpdateFail: "Could not update name",
+    toastPwMismatch: "The passwords don't match",
+    toastPwChanged: "Password changed",
+    toastPwChangeFail: "Could not change password",
+    toastAccountDeleted: "Account deleted",
+    toastAccountDeleteFail: "Could not delete account",
+    prTitle: "Profile settings",
+    prNameTitle: "Name",
+    prNameDesc: "Your name appears on receipts and invoices",
+    fldName: "Name",
+    prEmailLabel: "Email:",
+    btnSaveChanges: "Save changes",
+    prChangePw: "Change password",
+    prPwDesc: "Use a strong password (at least 8 characters)",
+    fldCurrentPw: "Current password",
+    fldNewPw: "New password",
+    fldConfirmPw: "Confirm new password",
+    btnChangePw: "Change password",
+    prDeleteDesc: "When you delete your account, your receipts and data are permanently removed.",
+    prSureTitle: "Are you absolutely sure?",
+    prSureDesc: "This cannot be undone. All your receipts and settings are permanently deleted.",
+    prConfirmDelete: "Yes, delete my account",
+    stSubtitle: "Overview of your receipts and VAT",
+    stTotalVat: "Total VAT",
+    stPerMonth: "Receipts per month",
+    stLastSixMonths: "Last six months",
+    stNoData: "No data yet.",
+    toastFillAddresses: "Fill in addresses and distance",
+    toastTripSaved: "Trip saved",
+    milUpsellDesc: "Log trips and get tax-free mileage (2.50 kr/km) calculated automatically. Included in the Business plan.",
+    milRatePre: "Tax-free rate for own car:",
+    milRateNote: "(25 kr/10 km, Swedish Tax Agency 2026)",
+    milNewTrip: "New trip",
+    milNewTripDesc: "Enter the distance in kilometres. The amount is calculated automatically.",
+    fldFrom: "From",
+    fldTo: "To",
+    phStartAddress: "Start address",
+    phEndAddress: "End address",
+    fldDistance: "Distance (km)",
+    fldDate: "Date",
+    fldPurpose: "Purpose",
+    purposeBusiness: "Business trip",
+    purposePrivate: "Private",
+    fldAmount: "Amount",
+    milLog: "Trip log",
+    milNoneYet: "No trips yet.",
+    milKm: "km",
+    purposeBusinessShort: "Business",
+    milManualNote: "Distance is entered manually. Automatic distance calculation (Google Maps/OpenRouteService) can be added with an API key — it is not enabled here.",
+    promptComment: "Comment (optional):",
+    promptReason: "Reason for rejection:",
+    toastApproved: "Approved",
+    toastRejected: "Rejected",
+    toastDecisionFail: "Could not save the decision",
+    apWaiting: "Awaiting your approval",
+    apWaitingDesc: "Requests addressed to your email",
+    apNoneWaiting: "No pending requests.",
+    toastSelectReceiptApprover: "Select a receipt and approver",
+    toastSubmitted: "Submitted for approval",
+    toastSubmitFail: "Could not submit",
+    apUpsellTitle: "Approval workflows",
+    apUpsellDesc: "Send expenses for approval and manage approval chains. Included in the Business plan.",
+    apRequest: "Request",
+    apRequestDesc: "Choose a receipt and who should approve",
+    fldReceipt: "Receipt",
+    phSelectReceipt: "Select a receipt…",
+    unknownShort: "Unknown",
+    fldApproverEmail: "Approver's email",
+    fldComment: "Comment",
+    phOptional: "Optional",
+    apSubmitNote: "The approver sees the request when they log in with an account that has that email address.",
+    setAppearance: "Appearance",
+    setAppearanceDesc: "Choose light or dark mode",
+    setSwitchToLight: "Switch to light mode",
+    setSwitchToDark: "Switch to dark mode",
+    setCompanyDesc: "Shown on exports and records",
+    fldCompanyName: "Company name",
+    phCompany: "Your Company Ltd",
+    setExportTitle: "Export & integrations",
+    setExportDesc: "Download your data or connect accounting",
+    setSkvTitle: "Swedish Tax Agency export (PRO)",
+    setSkvDesc: "Choose a period and download all receipts with VAT and BAS account",
+    toastCompanySaved: "Company name saved",
+    toastSaveFail: "Could not save",
+    toastEnterCompanyName: "Enter a company name",
+    toastCompanyCreated: "Company created",
+    toastCreateFail: "Could not create",
+    toastEnterEmail: "Enter an email",
+    toastInviteSent: "Invitation sent",
+    toastInviteFail: "Could not invite",
+    toastRoleUpdated: "Role updated",
+    toastUpdateFail: "Could not update",
+    confirmRemoveMember: "Remove this member?",
+    toastRemoved: "Removed",
+    toastRemoveFail: "Could not remove",
+    loading: "Loading…",
+    coCreateDesc: "Create a company to invite colleagues and share expenses.",
+    fldOrgNumber: "Company registration number",
+    fldVatNumber: "VAT number",
+    coMembers: "Members",
+    coYourRole: "Your role:",
+    roleMember: "Member",
+    roleApprover: "Approver",
+    roleAdmin: "Admin",
+    coInviteDesc: "Sends an invitation by email (valid for 7 days).",
+    fldEmail: "Email",
+    fldRole: "Role",
+    invUpsellTitle: "Invoicing",
+    invUpsellDesc: "Create and send customer invoices (incl. reverse-charge construction VAT). Included from the Pro plan.",
+    invNeedCompanyTitle: "Create a company first",
+    invNeedCompanyDesc: "The seller details (name, registration number) on the invoice are taken from your company.",
+    invNoneYet: "No invoices yet.",
+    invColNr: "No.",
+    invColCustomer: "Customer",
+    invColDate: "Date",
+    invColAmount: "Amount",
+    invColVat: "VAT",
+    invReverse: "Reverse",
+    invDisclaimer: "You are responsible for ensuring the invoice details are correct. Utlagg provides the template and stores the invoice.",
+    toastFillCustomerRows: "Fill in the customer and all rows",
+    toastReverseNeedsVat: "Reverse charge requires the buyer's VAT/registration number",
+    toastInvoiceSaved: "Invoice saved",
+    invCustomer: "Customer",
+    fldInvoiceNumber: "Invoice number (optional)",
+    phAutoNumber: "Leave blank for an automatic number",
+    fldCustomerName: "Customer name",
+    fldOrgNumberShort: "Reg. number",
+    fldVatNumberShort: "VAT number",
+    fldAddress: "Address",
+    fldIssueDate: "Invoice date",
+    fldDueDate: "Due date",
+    invLines: "Lines",
+    invLinesDesc: "Prices are excl. VAT.",
+    phDescription: "Description",
+    phQuantity: "Qty",
+    phUnitPrice: "Unit price",
+    ariaRemoveRow: "Remove row",
+    invReversePre: "Reverse charge (construction services) — the invoice is issued without VAT and carries the text",
+    invReversePost: "The buyer's VAT/registration number must be provided.",
+    invSubtotal: "Subtotal excl. VAT",
+    invVatReverse: "0,00 kr (reverse)",
+    invToPay: "To pay",
     btnSaveInvoice: "Save invoice",
     btnDeleteAccountPermanent: "Delete account permanently",
     stSaving: "Saving…",

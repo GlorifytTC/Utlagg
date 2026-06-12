@@ -25,47 +25,47 @@ export default function SettingsPage() {
       body: JSON.stringify({ companyName: company }),
     });
     toast[res.ok ? "success" : "error"](
-      res.ok ? "Företagsnamn sparat" : "Kunde inte spara",
+      res.ok ? t.toastCompanySaved : t.toastSaveFail,
     );
     setLoading(false);
   }
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Inställningar</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navSettings}</h1>
 
       <Card>
         <CardHeader>
-          <CardTitle>Utseende</CardTitle>
-          <CardDescription>Välj ljust eller mörkt läge</CardDescription>
+          <CardTitle>{t.setAppearance}</CardTitle>
+          <CardDescription>{t.setAppearanceDesc}</CardDescription>
         </CardHeader>
         <CardContent>
           <Button variant="outline" onClick={toggleTheme}>
-            Byt till {theme === "dark" ? "ljust" : "mörkt"} läge
+            {theme === "dark" ? t.setSwitchToLight : t.setSwitchToDark}
           </Button>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Företag</CardTitle>
-          <CardDescription>Visas på exporter och underlag</CardDescription>
+          <CardTitle>{t.navCompany}</CardTitle>
+          <CardDescription>{t.setCompanyDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="company">Företagsnamn</Label>
-            <Input id="company" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Ditt företag AB" />
+            <Label htmlFor="company">{t.fldCompanyName}</Label>
+            <Input id="company" value={company} onChange={(e) => setCompany(e.target.value)} placeholder={t.phCompany} />
           </div>
           <Button onClick={saveCompany} disabled={loading}>
-            Spara
+            {t.btnSave}
           </Button>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Export & integrationer</CardTitle>
-          <CardDescription>Ladda ner dina data eller koppla bokföring</CardDescription>
+          <CardTitle>{t.setExportTitle}</CardTitle>
+          <CardDescription>{t.setExportDesc}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           <a href="/api/export/csv">
@@ -85,8 +85,8 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Skatteverket-export (PRO)</CardTitle>
-          <CardDescription>Välj period och ladda ner alla kvitton med moms och BAS-konto</CardDescription>
+          <CardTitle>{t.setSkvTitle}</CardTitle>
+          <CardDescription>{t.setSkvDesc}</CardDescription>
         </CardHeader>
         <CardContent>
           <CsvRangeExport />

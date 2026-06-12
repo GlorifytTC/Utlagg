@@ -70,6 +70,37 @@ function HomeContent() {
           </div>
         </section>
 
+        {/* How it works */}
+        <section className="mx-auto max-w-6xl px-6 py-20 md:py-28">
+          <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
+            {t.howKicker}
+          </p>
+          <h2 className="mt-3 max-w-xl font-display text-4xl leading-tight md:text-5xl">
+            {t.howTitle}
+          </h2>
+
+          <div className="mt-14 grid gap-10 md:grid-cols-3 md:gap-8">
+            {[
+              { n: "01", title: t.howStep1Title, body: t.howStep1Body },
+              { n: "02", title: t.howStep2Title, body: t.howStep2Body },
+              { n: "03", title: t.howStep3Title, body: t.howStep3Body },
+            ].map((s, i) => (
+              <motion.div
+                key={s.n}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="relative border-t-2 border-ink pt-6"
+              >
+                <span className="font-display text-5xl text-nordic-600/90">{s.n}</span>
+                <h3 className="mt-4 font-display text-2xl">{s.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-ink/65">{s.body}</p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
         {/* Pricing callout */}
         <section className="mx-auto max-w-6xl px-6 py-20">
           <motion.div

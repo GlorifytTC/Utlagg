@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { receipts } from "@/db/schema";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatSek } from "@/lib/utils";
+import { getT } from "@/lib/i18n-server";
 
 export const metadata = { title: "Statistik" };
 export const dynamic = "force-dynamic";
@@ -20,6 +21,7 @@ export default async function StatsPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
   const userId = session.user.id;
+  const t = getT();
 
   const months = (await db
     .select({
@@ -48,26 +50,26 @@ export default async function StatsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Statistik</h1>
-        <p className="text-gray-500 dark:text-gray-400">Översikt över dina kvitton och moms</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navStats}</h1>
+        <p className="text-gray-500 dark:text-gray-400">{t.stSubtitle}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
           <CardContent className="p-5">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Kvitton totalt</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t.statTotalReceipts}</p>
             <p className="text-2xl font-semibold">{Number(totals?.count ?? 0)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-5">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Total moms</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t.stTotalVat}</p>
             <p className="text-2xl font-semibold">{formatSek(Number(totals?.totalVat ?? 0))}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-5">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Totalt belopp</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t.statTotalAmount}</p>
             <p className="text-2xl font-semibold">{formatSek(Number(totals?.totalAmount ?? 0))}</p>
           </CardContent>
         </Card>
@@ -75,12 +77,12 @@ export default async function StatsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Kvitton per månad</CardTitle>
-          <CardDescription>Senaste sex månaderna</CardDescription>
+          <CardTitle>{t.stPerMonth}</CardTitle>
+          <CardDescription>{t.stLastSixMonths}</CardDescription>
         </CardHeader>
         <CardContent>
           {ordered.length === 0 ? (
-            <p className="text-sm text-gray-500 dark:text-gray-400">Ingen data ännu.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t.stNoData}</p>
           ) : (
             <div className="flex items-end gap-3" style={{ height: 180 }}>
               {ordered.map((m) => (
