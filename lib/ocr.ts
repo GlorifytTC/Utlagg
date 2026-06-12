@@ -238,19 +238,22 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   // --- Total: labelled line with a decimal amount, ignoring change/cash rows ---
   let totalAmount: number | null = null;
   const TOTAL_RE = /\b(total|totalt|att\s*betala|summa|grand total|amount due|to pay)\b/i;
-  const EXCLUDE_RE = /moms|netto|brutto|mottaget|kontant|\båter\b|växel|change|tillbaka|öresavrund|avrund/i;
+  const EXCLUDE_RE =
+    /moms|netto|brutto|mottaget|kontant|\båter\b|\bater\b|växel|vaxel|change|tillbaka|retur|öresavrund|oresavrund|avrund|dragning|växelpengar/i;
+  // A line carrying a negative amount is change/refund, never the total.
+  const isNegative = (l: string) => /[-−]\s*\d/.test(l);
   const totalCandidates = lines.filter(
-    (l) => TOTAL_RE.test(l) && !EXCLUDE_RE.test(l) && decimalAmountOnLine(l) != null,
+    (l) => TOTAL_RE.test(l) && !EXCLUDE_RE.test(l) && !isNegative(l) && decimalAmountOnLine(l) != null,
   );
   if (totalCandidates.length) {
-    // The "att betala/total" total is usually the largest such labelled amount.
     totalAmount = Math.max(...totalCandidates.map((l) => decimalAmountOnLine(l)!));
   }
   if (totalAmount == null) {
-    // Fallback: largest decimal amount that isn't on a phone/org line.
+    // Fallback: largest decimal amount on a line that isn't a phone/org row,
+    // a VAT/net/gross breakdown, cash given, change returned, or a negative.
     const candidates: number[] = [];
     for (const l of lines) {
-      if (looksLikePhoneOrgOrUrl(l)) continue;
+      if (looksLikePhoneOrgOrUrl(l) || EXCLUDE_RE.test(l) || isNegative(l)) continue;
       const a = decimalAmountOnLine(l);
       if (a != null) candidates.push(a);
     }
@@ -269,6 +272,18 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
     (l) => /\bmoms\b/i.test(l) && !/moms%/i.test(l) && !/\bav\b/i.test(l) && decimalAmountOnLine(l) != null,
   );
   if (momsLine) vatAmount = decimalAmountOnLine(momsLine);
+
+  // Cross-fill: if we have two of {total, vatAmount, vatRate} infer the third.
+  if (vatRate == null && vatAmount != null && totalAmount != null && totalAmount > vatAmount) {
+    const net = totalAmount - vatAmount;
+    const pct = (vatAmount / net) * 100;
+    const nearest = [6, 12, 25].reduce((a, b) => (Math.abs(b - pct) < Math.abs(a - pct) ? b : a));
+    if (Math.abs(nearest - pct) <= 1.5) vatRate = nearest as 6 | 12 | 25;
+  }
+  if (vatAmount == null && vatRate != null && totalAmount != null) {
+    vatAmount = Math.round((totalAmount - totalAmount / (1 + vatRate / 100)) * 100) / 100;
+  }
+
   if (vatAmount != null || vatRate != null) confidenceHits++;
 
   const confidence = rawText ? confidenceHits / totalSignals : 0;
@@ -287,3 +302,69 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
 }
 
 export const OCR_CONFIDENCE_THRESHOLD = 0.8;
+
+/**
+ * Mindee Expense-Receipts API — a receipt-trained model that returns structured
+ * fields (vendor, date, total, taxes, org number) directly, instead of us
+ * guessing from raw OCR text. Enabled only when MINDEE_API_KEY is set; the
+ * caller falls back to OCR.space/Vision if this throws.
+ */
+export async function runMindee(image: string): Promise<ExtractedReceipt> {
+  const key = process.env.MINDEE_API_KEY;
+  if (!key) throw new Error("MINDEE_API_KEY not set");
+
+  const base64 = image.replace(/^data:[^;]+;base64,/, "");
+  const bytes = Buffer.from(base64, "base64");
+  const form = new FormData();
+  form.append("document", new Blob([bytes], { type: "image/jpeg" }), "receipt.jpg");
+
+  const res = await fetch(
+    "https://api.mindee.net/v1/products/mindee/expense_receipts/v5/predict",
+    { method: "POST", headers: { Authorization: `Token ${key}` }, body: form },
+  );
+  if (!res.ok) throw new Error(`Mindee HTTP ${res.status}`);
+
+  // Defensive parsing — field names per Mindee Expense-Receipts v5.
+  const json = (await res.json()) as Record<string, unknown>;
+  const doc = json?.document as { inference?: { prediction?: Record<string, unknown> } } | undefined;
+  const p = (doc?.inference?.prediction ?? {}) as Record<string, unknown>;
+  const field = (k: string) => p[k] as { value?: unknown } | undefined;
+  const strOf = (k: string): string | null => {
+    const v = field(k)?.value;
+    return v == null || v === "" ? null : String(v);
+  };
+  const numOf = (k: string): number | null => {
+    const v = field(k)?.value;
+    return v == null || v === "" ? null : Number(v);
+  };
+
+  const totalAmount = numOf("total_amount");
+  const taxes = (Array.isArray(p.taxes) ? p.taxes : []) as Array<{ value?: number; rate?: number }>;
+  const firstTax = taxes.find((t) => t && (t.value != null || t.rate != null)) ?? null;
+
+  let vatAmount = numOf("total_tax");
+  if (vatAmount == null && firstTax?.value != null) vatAmount = Number(firstTax.value);
+
+  let vatRate: 6 | 12 | 25 | null = null;
+  const rate = firstTax?.rate != null ? Number(firstTax.rate) : null;
+  if (rate != null) {
+    const nearest = [6, 12, 25].reduce((a, b) => (Math.abs(b - rate) < Math.abs(a - rate) ? b : a));
+    if (Math.abs(nearest - rate) <= 2) vatRate = nearest as 6 | 12 | 25;
+  }
+
+  const regs = (Array.isArray(p.supplier_company_registrations)
+    ? p.supplier_company_registrations
+    : []) as Array<{ value?: string }>;
+
+  return {
+    vendorName: strOf("supplier_name"),
+    orgNumber: regs.length ? (regs[0]?.value ?? null) : null,
+    receiptNumber: strOf("receipt_number"),
+    date: strOf("date"),
+    totalAmount,
+    vatAmount,
+    vatRate,
+    rawText: "",
+    confidence: 0.95,
+  };
+}
