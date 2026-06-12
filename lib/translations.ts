@@ -229,10 +229,62 @@ export interface Translations {
   pricingTableLimits: string;
   pricingTableOnboarding: string;
   pricingTableSupport: string;
+  btnAddRow: string;
+  btnToCompanies: string;
+  btnNewInvoice: string;
+  btnView: string;
+  btnDeleteAccount: string;
+  btnSubmitApproval: string;
+  btnHistory: string;
+  btnApprove: string;
+  btnReject: string;
+  btnExportCsv: string;
+  btnExportPdf: string;
+  btnExportSie: string;
+  btnConnectFortnox: string;
+  btnCreateCompany: string;
+  btnDelete: string;
+  btnInviteColleague: string;
+  btnSendInvite: string;
+  btnLightMode: string;
+  btnDarkMode: string;
+  btnSave: string;
+  btnSaveTrip: string;
+  btnCancel: string;
+  btnSaveInvoice: string;
+  btnDeleteAccountPermanent: string;
+  stSaving: string;
+  stSubmitting: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    btnSaveInvoice: "Spara faktura",
+    btnDeleteAccountPermanent: "Radera konto permanent",
+    stSaving: "Sparar…",
+    stSubmitting: "Skickar…",
+    btnAddRow: "+ Lägg till rad",
+    btnToCompanies: "Till företag",
+    btnNewInvoice: "Ny faktura",
+    btnView: "Visa",
+    btnDeleteAccount: "Radera konto",
+    btnSubmitApproval: "Skicka för attest",
+    btnHistory: "Historik",
+    btnApprove: "Godkänn",
+    btnReject: "Avslå",
+    btnExportCsv: "Exportera CSV",
+    btnExportPdf: "Exportera PDF",
+    btnExportSie: "Exportera SIE (bokföring)",
+    btnConnectFortnox: "Koppla Fortnox",
+    btnCreateCompany: "Skapa företag",
+    btnDelete: "Ta bort",
+    btnInviteColleague: "Bjud in kollega",
+    btnSendInvite: "Skicka inbjudan",
+    btnLightMode: "Ljust läge",
+    btnDarkMode: "Mörkt läge",
+    btnSave: "Spara",
+    btnSaveTrip: "Spara resa",
+    btnCancel: "Avbryt",
     subManageDesc: "Hantera din plan och fakturering",
     subCurrentPlan: "Nuvarande plan",
     subYouAreOnPre: "Du är på ",
@@ -486,6 +538,32 @@ export const strings: Record<Lang, Translations> = {
     pricingTableSupport: "Prioriterad support",
   },
   en: {
+    btnSaveInvoice: "Save invoice",
+    btnDeleteAccountPermanent: "Delete account permanently",
+    stSaving: "Saving…",
+    stSubmitting: "Submitting…",
+    btnAddRow: "+ Add row",
+    btnToCompanies: "To companies",
+    btnNewInvoice: "New invoice",
+    btnView: "View",
+    btnDeleteAccount: "Delete account",
+    btnSubmitApproval: "Submit for approval",
+    btnHistory: "History",
+    btnApprove: "Approve",
+    btnReject: "Reject",
+    btnExportCsv: "Export CSV",
+    btnExportPdf: "Export PDF",
+    btnExportSie: "Export SIE (accounting)",
+    btnConnectFortnox: "Connect Fortnox",
+    btnCreateCompany: "Create company",
+    btnDelete: "Delete",
+    btnInviteColleague: "Invite colleague",
+    btnSendInvite: "Send invitation",
+    btnLightMode: "Light mode",
+    btnDarkMode: "Dark mode",
+    btnSave: "Save",
+    btnSaveTrip: "Save trip",
+    btnCancel: "Cancel",
     subManageDesc: "Manage your plan and billing",
     subCurrentPlan: "Current plan",
     subYouAreOnPre: "You're on the ",

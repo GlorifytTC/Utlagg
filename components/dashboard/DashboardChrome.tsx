@@ -52,7 +52,7 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
         </Link>
         <p className="text-sm text-gray-500 dark:text-gray-400">Expense Management</p>
       </div>
-      <nav className="flex-1 space-y-1 px-4">
+      <nav className="flex-1 min-h-0 overflow-y-auto space-y-1 px-4">
         {nav.map((item) => {
           const Icon = item.icon;
           const active = isActive(pathname, item.href);
@@ -83,7 +83,7 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
         </button>
         <button onClick={toggleTheme} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800">
           {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          <span>{dark ? "Ljust läge" : "Mörkt läge"}</span>
+          <span>{dark ? t.btnLightMode : t.btnDarkMode}</span>
         </button>
         <button onClick={() => signOut({ callbackUrl: "/" })} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
           <LogOut className="h-5 w-5" /> <span>{t.navLogout}</span>

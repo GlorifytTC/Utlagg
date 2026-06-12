@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UpsellCard } from "@/components/UpsellCard";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Entry {
   id: string;
@@ -19,6 +20,7 @@ interface Entry {
 }
 
 export default function MileagePage() {
+  const { t } = useLanguage();
   const [rate, setRate] = useState(2.5);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [form, setForm] = useState({
@@ -136,14 +138,14 @@ export default function MileagePage() {
               <p className="flex h-10 items-center text-lg font-semibold">{preview} kr</p>
             </div>
           </div>
-          <Button onClick={save} disabled={loading}>{loading ? "Sparar…" : "Spara resa"}</Button>
+          <Button onClick={save} disabled={loading}>{loading ? t.stSaving : t.btnSaveTrip}</Button>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0">
           <CardTitle>Körjournal</CardTitle>
-          <a href="/api/mileage/export"><Button variant="outline">Exportera CSV</Button></a>
+          <a href="/api/mileage/export"><Button variant="outline">{t.btnExportCsv}</Button></a>
         </CardHeader>
         <CardContent>
           {entries.length === 0 ? (
@@ -165,7 +167,7 @@ export default function MileagePage() {
                       <td>{Number(e.distanceKm).toFixed(0)}</td>
                       <td>{Number(e.amount).toFixed(2).replace(".", ",")} kr</td>
                       <td>{e.purpose === "business" ? "Tjänst" : "Privat"}</td>
-                      <td><button onClick={() => remove(e.id)} className="text-red-600 hover:underline">Ta bort</button></td>
+                      <td><button onClick={() => remove(e.id)} className="text-red-600 hover:underline">{t.btnDelete}</button></td>
                     </tr>
                   ))}
                 </tbody>

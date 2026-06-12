@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Req {
   id: string;
@@ -15,6 +16,7 @@ interface Req {
 }
 
 export default function ApprovalsPage() {
+  const { t } = useLanguage();
   const [reqs, setReqs] = useState<Req[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -44,8 +46,8 @@ export default function ApprovalsPage() {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Attest</h1>
         <div className="flex gap-2">
-          <Link href="/dashboard/approvals/submit"><Button variant="outline">Skicka för attest</Button></Link>
-          <Link href="/dashboard/approvals/history"><Button variant="outline">Historik</Button></Link>
+          <Link href="/dashboard/approvals/submit"><Button variant="outline">{t.btnSubmitApproval}</Button></Link>
+          <Link href="/dashboard/approvals/history"><Button variant="outline">{t.btnHistory}</Button></Link>
         </div>
       </div>
 
@@ -67,8 +69,8 @@ export default function ApprovalsPage() {
                     <p className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString("sv-SE")}</p>
                   </div>
                   <div className="flex gap-2">
-                    <Button disabled={busy === r.id} onClick={() => decide(r.id, "approved")}>Godkänn</Button>
-                    <Button variant="destructive" disabled={busy === r.id} onClick={() => decide(r.id, "rejected")}>Avslå</Button>
+                    <Button disabled={busy === r.id} onClick={() => decide(r.id, "approved")}>{t.btnApprove}</Button>
+                    <Button variant="destructive" disabled={busy === r.id} onClick={() => decide(r.id, "rejected")}>{t.btnReject}</Button>
                   </div>
                 </li>
               ))}

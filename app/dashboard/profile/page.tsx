@@ -7,8 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function ProfilePage() {
+  const { t } = useLanguage();
   const { data: session, update } = useSession();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState(session?.user?.name ?? "");
@@ -118,14 +120,14 @@ export default function ProfilePage() {
 
       <Card className="border-red-200 dark:border-red-900/50">
         <CardHeader>
-          <CardTitle className="text-red-600">Radera konto</CardTitle>
+          <CardTitle className="text-red-600">{t.btnDeleteAccount}</CardTitle>
           <CardDescription>
             När du raderar ditt konto försvinner dina kvitton och data permanent.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Button variant="destructive" onClick={() => setConfirmOpen(true)}>
-            Radera konto permanent
+            {t.btnDeleteAccountPermanent}
           </Button>
         </CardContent>
       </Card>

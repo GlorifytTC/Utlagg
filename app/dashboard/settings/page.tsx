@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 import { useTheme } from "@/components/ThemeProvider";
 import { SkatteverketExport } from "@/components/SkatteverketExport";
 import { CsvRangeExport } from "@/components/dashboard/CsvRangeExport";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function SettingsPage() {
+  const { t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const [company, setCompany] = useState("");
   const [loading, setLoading] = useState(false);
@@ -67,16 +69,16 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           <a href="/api/export/csv">
-            <Button variant="outline">Exportera CSV</Button>
+            <Button variant="outline">{t.btnExportCsv}</Button>
           </a>
           <a href="/api/export/pdf">
-            <Button variant="outline">Exportera PDF</Button>
+            <Button variant="outline">{t.btnExportPdf}</Button>
           </a>
           <a href="/api/export/sie">
-            <Button variant="outline">Exportera SIE (bokföring)</Button>
+            <Button variant="outline">{t.btnExportSie}</Button>
           </a>
           <a href="/api/integrations/fortnox/auth">
-            <Button variant="outline">Koppla Fortnox</Button>
+            <Button variant="outline">{t.btnConnectFortnox}</Button>
           </a>
         </CardContent>
       </Card>

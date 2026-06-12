@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UpsellCard } from "@/components/UpsellCard";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Receipt { id: string; vendorName: string | null; totalAmount: string | null; }
 
 export default function SubmitApprovalPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const [receipts, setReceipts] = useState<Receipt[]>([]);
   const [receiptId, setReceiptId] = useState("");
@@ -49,7 +51,7 @@ export default function SubmitApprovalPage() {
   if (allowed === false) {
     return (
       <div className="max-w-xl space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Skicka för attest</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
         <UpsellCard
           title="Attestflöden"
           requiredPlan="Företag"
@@ -61,7 +63,7 @@ export default function SubmitApprovalPage() {
 
   return (
     <div className="max-w-xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Skicka för attest</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
       <Card>
         <CardHeader>
           <CardTitle>Förfrågan</CardTitle>
@@ -87,7 +89,7 @@ export default function SubmitApprovalPage() {
             <Label htmlFor="comment">Kommentar</Label>
             <Input id="comment" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Valfritt" />
           </div>
-          <Button onClick={submit} disabled={loading}>{loading ? "Skickar…" : "Skicka för attest"}</Button>
+          <Button onClick={submit} disabled={loading}>{loading ? t.stSubmitting : t.btnSubmitApproval}</Button>
         </CardContent>
       </Card>
       <p className="text-xs text-gray-400">

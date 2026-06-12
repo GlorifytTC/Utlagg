@@ -8,6 +8,7 @@ import { customerInvoices } from "@/db/schema";
 import { currentTier } from "@/lib/entitlements";
 import { hasFeature } from "@/lib/features";
 import { getUserCompany } from "@/lib/company";
+import { getT } from "@/lib/i18n-server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UpsellCard } from "@/components/UpsellCard";
@@ -18,6 +19,7 @@ export const dynamic = "force-dynamic";
 export default async function InvoicesPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
+  const t = getT();
 
   const ctx = await currentTier();
   if (!ctx || !hasFeature(ctx.tier, "invoicing")) {
@@ -44,7 +46,7 @@ export default async function InvoicesPage() {
             <CardDescription>Säljaruppgifterna (namn, organisationsnummer) på fakturan hämtas från ditt företag.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/dashboard/company"><Button>Till företag</Button></Link>
+            <Link href="/dashboard/company"><Button>{t.btnToCompanies}</Button></Link>
           </CardContent>
         </Card>
       </div>
@@ -61,7 +63,7 @@ export default async function InvoicesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Fakturor</h1>
-        <Link href="/dashboard/invoices/new"><Button>Ny faktura</Button></Link>
+        <Link href="/dashboard/invoices/new"><Button>{t.btnNewInvoice}</Button></Link>
       </div>
       <Card>
         <CardContent className="p-0">
@@ -82,7 +84,7 @@ export default async function InvoicesPage() {
                       <td>{Number(r.total).toFixed(2).replace(".", ",")} kr</td>
                       <td>{(r.reverseCharge as boolean) ? "Omvänd" : `${Number(r.vatTotal).toFixed(2).replace(".", ",")} kr`}</td>
                       <td className="px-4 py-3 text-right">
-                        <Link href={`/dashboard/invoices/${r.id}`} className="text-nordic-600 underline">Visa</Link>
+                        <Link href={`/dashboard/invoices/${r.id}`} className="text-nordic-600 underline">{t.btnView}</Link>
                       </td>
                     </tr>
                   ))}

@@ -6,11 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Company { id: string; name: string; orgNumber?: string; vatNumber?: string; }
 interface Member { id: string; userId: string; role: string; email: string | null; name: string | null; }
 
 export default function CompanyPage() {
+  const { t } = useLanguage();
   const [company, setCompany] = useState<Company | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
@@ -84,7 +86,7 @@ export default function CompanyPage() {
               <Input value={form.orgNumber} onChange={(e) => setForm({ ...form, orgNumber: e.target.value })} placeholder="556677-8899" /></div>
             <div className="space-y-2"><Label>Momsregistreringsnummer</Label>
               <Input value={form.vatNumber} onChange={(e) => setForm({ ...form, vatNumber: e.target.value })} placeholder="SE556677889901" /></div>
-            <Button onClick={createCompany}>Skapa företag</Button>
+            <Button onClick={createCompany}>{t.btnCreateCompany}</Button>
           </CardContent>
         </Card>
       </div>
@@ -115,7 +117,7 @@ export default function CompanyPage() {
                     </select>
                   ) : (<span className="text-sm text-gray-500">{m.role}</span>)}
                   {canManage && m.role !== "owner" && (
-                    <button onClick={() => removeMember(m.id)} className="text-sm text-red-600 hover:underline">Ta bort</button>
+                    <button onClick={() => removeMember(m.id)} className="text-sm text-red-600 hover:underline">{t.btnDelete}</button>
                   )}
                 </div>
               </li>
@@ -126,7 +128,7 @@ export default function CompanyPage() {
 
       {canManage && (
         <Card>
-          <CardHeader><CardTitle>Bjud in kollega</CardTitle><CardDescription>Skickar en inbjudan via e-post (gäller 7 dagar).</CardDescription></CardHeader>
+          <CardHeader><CardTitle>{t.btnInviteColleague}</CardTitle><CardDescription>Skickar en inbjudan via e-post (gäller 7 dagar).</CardDescription></CardHeader>
           <CardContent className="flex flex-wrap items-end gap-2">
             <div className="space-y-2"><Label>E-post</Label>
               <Input type="email" value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} placeholder="kollega@foretag.se" /></div>
@@ -137,7 +139,7 @@ export default function CompanyPage() {
                 <option value="approver">Attestant</option>
                 <option value="admin">Admin</option>
               </select></div>
-            <Button onClick={sendInvite}>Skicka inbjudan</Button>
+            <Button onClick={sendInvite}>{t.btnSendInvite}</Button>
           </CardContent>
         </Card>
       )}

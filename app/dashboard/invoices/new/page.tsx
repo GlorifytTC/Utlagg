@@ -8,11 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { computeInvoiceTotals, REVERSE_CHARGE_TEXT, type InvoiceLine } from "@/lib/invoice";
+import { useLanguage } from "@/context/LanguageContext";
 
 const emptyLine = (): InvoiceLine => ({ description: "", quantity: 1, unitPrice: 0, vatRate: 25 });
 const kr = (n: number) => n.toFixed(2).replace(".", ",");
 
 export default function NewInvoicePage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [reverseCharge, setReverseCharge] = useState(false);
@@ -102,7 +104,7 @@ export default function NewInvoicePage() {
               <button className="col-span-1 text-red-600" onClick={() => setLines((ls) => ls.length > 1 ? ls.filter((_, idx) => idx !== i) : ls)} aria-label="Ta bort rad">×</button>
             </div>
           ))}
-          <Button variant="outline" onClick={() => setLines((ls) => [...ls, emptyLine()])}>+ Lägg till rad</Button>
+          <Button variant="outline" onClick={() => setLines((ls) => [...ls, emptyLine()])}>{t.btnAddRow}</Button>
         </CardContent>
       </Card>
 
@@ -118,7 +120,7 @@ export default function NewInvoicePage() {
             <div className="flex justify-between"><span>Moms</span><span>{reverseCharge ? "0,00 kr (omvänd)" : `${kr(totals.vatTotal)} kr`}</span></div>
             <div className="flex justify-between font-semibold"><span>Att betala</span><span>{kr(totals.total)} kr</span></div>
           </div>
-          <Button onClick={save} disabled={loading}>{loading ? "Sparar…" : "Spara faktura"}</Button>
+          <Button onClick={save} disabled={loading}>{loading ? t.stSaving : t.btnSaveInvoice}</Button>
         </CardContent>
       </Card>
     </div>
