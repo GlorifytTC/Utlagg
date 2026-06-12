@@ -228,6 +228,7 @@ export interface Translations {
   pricingTableRoles: string;
   pricingTableLimits: string;
   pricingTableOnboarding: string;
+  pricingTableSupport: string;
 }
 
 export const strings: Record<Lang, Translations> = {
