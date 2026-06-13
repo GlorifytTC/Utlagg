@@ -5,6 +5,7 @@ import Link from "next/link";
 import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+import { AmbientBackground } from "@/components/landing/AmbientBackground";
 
 const COMPARISON_ROWS = [
   {
@@ -47,7 +48,8 @@ function FeaturesPageContent() {
   ];
 
   return (
-    <div className="bg-paper">
+    <div className="relative">
+      <AmbientBackground />
       <Navbar />
 
       <main>
