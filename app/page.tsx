@@ -9,6 +9,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { StructuredData } from "@/components/StructuredData";
 import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
+import { ChatBox } from "@/components/ChatBox";
 
 const TEASER_FEATURES = [
   { key: "feature1" },
@@ -139,6 +140,7 @@ function HomeContent() {
       </main>
 
       <Footer />
+      <ChatBox />
     </div>
   );
 }

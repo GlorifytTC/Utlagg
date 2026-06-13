@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+import { ChatBox } from "@/components/ChatBox";
 
 const PRICING_TABLE_ROWS = [
   { labelKey: "pricingTableReceipts", free: "50", pro: "500", business: "2,500", enterprise: "∞" },
@@ -263,6 +264,7 @@ function PricingPageContent() {
       </main>
 
       <Footer />
+      <ChatBox />
     </div>
   );
 }

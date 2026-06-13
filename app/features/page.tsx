@@ -6,6 +6,7 @@ import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
+import { ChatBox } from "@/components/ChatBox";
 
 const COMPARISON_ROWS = [
   {
@@ -166,6 +167,7 @@ function FeaturesPageContent() {
       </main>
 
       <Footer />
+      <ChatBox />
     </div>
   );
 }

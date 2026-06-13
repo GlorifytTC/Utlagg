@@ -6,6 +6,7 @@ import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
+import { ChatBox } from "@/components/ChatBox";
 
 function AboutContent() {
   const { t } = useLanguage();
@@ -121,6 +122,7 @@ function AboutContent() {
         </section>
       </main>
       <Footer />
+      <ChatBox />
     </div>
   );
 }

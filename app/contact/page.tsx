@@ -6,6 +6,7 @@ import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
+import { ChatBox } from "@/components/ChatBox";
 
 const SUPPORT_EMAIL = "hej@utlagg.se";
 const SALES_EMAIL = "sales@utlagg.se";
@@ -115,6 +116,7 @@ function ContactContent() {
         </div>
       </main>
       <Footer />
+      <ChatBox />
     </div>
   );
 }
