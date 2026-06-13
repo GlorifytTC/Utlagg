@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Schibsted_Grotesk } from "next/font/google";
 import { Providers } from "@/components/Providers";
+import { CookieConsent } from "@/components/CookieConsent";
 // @ts-ignore: CSS side-effect import without type declarations
 import "./globals.css";
 
@@ -63,6 +64,7 @@ export default function RootLayout({
     <html lang="sv" className={`${fraunces.variable} ${schibsted.variable}`}>
       <body className="bg-paper text-ink font-sans antialiased">
         <Providers>{children}</Providers>
+        <CookieConsent />
       </body>
     </html>
   );
