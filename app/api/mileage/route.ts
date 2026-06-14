@@ -79,21 +79,30 @@ export async function POST(req: NextRequest) {
   }
   const amount = Math.round(km * ratePerKm * 100) / 100;
 
-  const [entry] = await db
-    .insert(mileageEntries)
-    .values({
-      userId,
-      startAddress: parsed.data.startAddress,
-      endAddress: parsed.data.endAddress,
-      distanceKm: km.toFixed(2),
-      ratePerKm: ratePerKm.toFixed(2),
-      amount: amount.toFixed(2),
-      date: new Date(parsed.data.date),
-      purpose: parsed.data.purpose,
-      note: parsed.data.note,
-      vehicleId,
-    })
-    .returning();
+  let entry;
+  try {
+    [entry] = await db
+      .insert(mileageEntries)
+      .values({
+        userId,
+        startAddress: parsed.data.startAddress,
+        endAddress: parsed.data.endAddress,
+        distanceKm: km.toFixed(2),
+        ratePerKm: ratePerKm.toFixed(2),
+        amount: amount.toFixed(2),
+        date: new Date(parsed.data.date),
+        purpose: parsed.data.purpose,
+        note: parsed.data.note,
+        vehicleId,
+      })
+      .returning();
+  } catch (e) {
+    console.error("mileage POST insert failed (run migrations?):", e);
+    return NextResponse.json(
+      { error: "Kunde inte spara. Databasen kan behöva uppdateras (kör senaste SQL-migrationen)." },
+      { status: 500 },
+    );
+  }
 
   await logAudit({
     userId,
