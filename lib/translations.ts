@@ -474,10 +474,16 @@ export interface Translations {
   annFieldDate: string;
   annFieldVendor: string;
   annFieldVatRate: string;
+  annModeMark: string;
+  annModeMove: string;
+  annTip: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    annModeMark: "Markera",
+    annModeMove: "Panorera",
+    annTip: "Tips: zooma in för att enklare träffa små fält på mobilen.",
     annFieldVatRate: "Momssats",
     annTitle: "Fel värde? Peka på kvittot",
     annDesc: "Välj ett fält och dra en ruta över värdet på bilden. AI:n läser just det området — och vi sparar din markering för att träna modellen på svenska kvitton.",
@@ -976,6 +982,9 @@ export const strings: Record<Lang, Translations> = {
     pricingTableSupport: "Prioriterad support",
   },
   en: {
+    annModeMark: "Mark",
+    annModeMove: "Pan",
+    annTip: "Tip: zoom in to hit small fields more easily on mobile.",
     annFieldVatRate: "VAT rate",
     annTitle: "Wrong value? Point at the receipt",
     annDesc: "Pick a field and drag a box over the value on the image. The AI reads just that area — and we store your markup to train the model on Swedish receipts.",
