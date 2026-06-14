@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   Home, Receipt, CreditCard, BarChart3, Settings, User,
-  LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug, Lock, Building2, FileText,
+  LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug, Lock, Building2, FileText, TrainFront,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { IdleLogout } from "@/components/IdleLogout";
@@ -20,6 +20,7 @@ const nav = [
   { key: "navOverview", href: "/dashboard", icon: Home },
   { key: "navReceipts", href: "/dashboard/receipts", icon: Receipt },
   { key: "navMileage", href: "/dashboard/mileage", icon: Car, feature: "mileage" as Feature },
+  { key: "navTransport", href: "/dashboard/transport", icon: TrainFront },
   { key: "navApprovals", href: "/dashboard/approvals", icon: CheckSquare, feature: "approvals" as Feature },
   { key: "navIntegrations", href: "/dashboard/integrations", icon: Plug, feature: "fortnox" as Feature },
   { key: "navSubscription", href: "/dashboard/subscription", icon: CreditCard },

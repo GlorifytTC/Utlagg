@@ -477,10 +477,116 @@ export interface Translations {
   annModeMark: string;
   annModeMove: string;
   annTip: string;
+  navTransport: string;
+  trTitle: string;
+  trSubtitle: string;
+  trQuickTitle: string;
+  trQuickDesc: string;
+  trQuickBtn: string;
+  trNewTitle: string;
+  trType: string;
+  trTypeMonthly: string;
+  trTypeYearly: string;
+  trTypeSingle: string;
+  trProvider: string;
+  trProviderOtherLabel: string;
+  trAmount: string;
+  trValidFrom: string;
+  trValidTo: string;
+  trRecurring: string;
+  trSave: string;
+  trSaved: string;
+  trSaveFail: string;
+  trListTitle: string;
+  trColPeriod: string;
+  trColProvider: string;
+  trColAmount: string;
+  trColVat: string;
+  trColStatus: string;
+  trRecurringTag: string;
+  trOnceTag: string;
+  trEmpty: string;
+  trExportTitle: string;
+  trExportDesc: string;
+  trExportBtn: string;
+  trVatNote: string;
+  milVehicle: string;
+  milPrivateCar: string;
+  milVehicleNote: string;
+  milManageVehicles: string;
+  milAddVehicle: string;
+  milRegNr: string;
+  milModel: string;
+  milFuel: string;
+  milFuelPetrol: string;
+  milFuelDiesel: string;
+  milFuelHybrid: string;
+  milFuelElectric: string;
+  milVehicleAdded: string;
+  milVehicleFail: string;
+  milElectricTag: string;
+  milAdminOnly: string;
+  annArm: string;
+  annArmed: string;
+  annCancel: string;
+  annScroll: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    annArm: "Markera fält",
+    annArmed: "Rita en ruta över: {field}",
+    annCancel: "Avbryt",
+    annScroll: "Bläddra fritt. Tryck “Markera fält” för att rätta ett värde.",
+    navTransport: "Kollektivtrafik",
+    trTitle: "Kollektivtrafik",
+    trSubtitle: "Spara månadskort och periodbiljetter — logga inte varje resa.",
+    trQuickTitle: "Lägg till denna månads kort",
+    trQuickDesc: "Har du ett månadskort som återkommer? Lägg till det för innevarande månad med ett klick.",
+    trQuickBtn: "Lägg till för {month}",
+    trNewTitle: "Nytt månadskort / periodbiljett",
+    trType: "Typ av biljett",
+    trTypeMonthly: "Månadskort",
+    trTypeYearly: "Årskort",
+    trTypeSingle: "Enkelbiljett",
+    trProvider: "Trafikhuvudman",
+    trProviderOtherLabel: "Annat — ange namn",
+    trAmount: "Belopp (SEK)",
+    trValidFrom: "Giltig från",
+    trValidTo: "Giltig till",
+    trRecurring: "Återkommande varje månad",
+    trSave: "Spara periodbiljett",
+    trSaved: "Periodbiljett sparad",
+    trSaveFail: "Kunde inte spara",
+    trListTitle: "Mina periodbiljetter",
+    trColPeriod: "Period",
+    trColProvider: "Trafikhuvudman",
+    trColAmount: "Belopp",
+    trColVat: "Moms",
+    trColStatus: "Status",
+    trRecurringTag: "Återkommande",
+    trOnceTag: "Engång",
+    trEmpty: "Inga periodbiljetter ännu.",
+    trExportTitle: "Export för Skatteverket",
+    trExportDesc: "Alla periodbiljetter för året, redo för deklarationen.",
+    trExportBtn: "Exportera (CSV)",
+    trVatNote: "Kollektivtrafik har 6 % moms — beräknas automatiskt.",
+    milVehicle: "Fordon",
+    milPrivateCar: "Privat bil",
+    milVehicleNote: "Privat bil: 2,50 kr/km · Företagsbil: 1,20 kr/km · Elbil (företag): 0,95 kr/km",
+    milManageVehicles: "Hantera företagsfordon",
+    milAddVehicle: "Lägg till fordon",
+    milRegNr: "Registreringsnummer",
+    milModel: "Modell",
+    milFuel: "Drivmedel",
+    milFuelPetrol: "Bensin",
+    milFuelDiesel: "Diesel",
+    milFuelHybrid: "Hybrid",
+    milFuelElectric: "El",
+    milVehicleAdded: "Fordon tillagt",
+    milVehicleFail: "Kunde inte lägga till fordon",
+    milElectricTag: "Elbil",
+    milAdminOnly: "Endast administratörer kan lägga till fordon.",
     annModeMark: "Markera",
     annModeMove: "Panorera",
     annTip: "Tips: zooma in för att enklare träffa små fält på mobilen.",
@@ -982,6 +1088,59 @@ export const strings: Record<Lang, Translations> = {
     pricingTableSupport: "Prioriterad support",
   },
   en: {
+    annArm: "Mark a field",
+    annArmed: "Draw a box over: {field}",
+    annCancel: "Cancel",
+    annScroll: "Scroll freely. Tap “Mark a field” to fix a value.",
+    navTransport: "Public transport",
+    trTitle: "Public transport",
+    trSubtitle: "Save monthly and period passes — no need to log every trip.",
+    trQuickTitle: "Add this month's pass",
+    trQuickDesc: "Got a recurring monthly pass? Add it for this month with one click.",
+    trQuickBtn: "Add for {month}",
+    trNewTitle: "New monthly / period pass",
+    trType: "Pass type",
+    trTypeMonthly: "Monthly",
+    trTypeYearly: "Yearly",
+    trTypeSingle: "Single",
+    trProvider: "Transit operator",
+    trProviderOtherLabel: "Other — name",
+    trAmount: "Amount (SEK)",
+    trValidFrom: "Valid from",
+    trValidTo: "Valid to",
+    trRecurring: "Recurring every month",
+    trSave: "Save pass",
+    trSaved: "Pass saved",
+    trSaveFail: "Could not save",
+    trListTitle: "My passes",
+    trColPeriod: "Period",
+    trColProvider: "Operator",
+    trColAmount: "Amount",
+    trColVat: "VAT",
+    trColStatus: "Status",
+    trRecurringTag: "Recurring",
+    trOnceTag: "One-off",
+    trEmpty: "No passes yet.",
+    trExportTitle: "Export for the Tax Agency",
+    trExportDesc: "All passes for the year, ready for your tax return.",
+    trExportBtn: "Export (CSV)",
+    trVatNote: "Public transport carries 6% VAT — calculated automatically.",
+    milVehicle: "Vehicle",
+    milPrivateCar: "Private car",
+    milVehicleNote: "Private car: 2.50 kr/km · Company car: 1.20 kr/km · Electric (company): 0.95 kr/km",
+    milManageVehicles: "Manage company vehicles",
+    milAddVehicle: "Add vehicle",
+    milRegNr: "Registration number",
+    milModel: "Model",
+    milFuel: "Fuel",
+    milFuelPetrol: "Petrol",
+    milFuelDiesel: "Diesel",
+    milFuelHybrid: "Hybrid",
+    milFuelElectric: "Electric",
+    milVehicleAdded: "Vehicle added",
+    milVehicleFail: "Could not add vehicle",
+    milElectricTag: "Electric",
+    milAdminOnly: "Only admins can add vehicles.",
     annModeMark: "Mark",
     annModeMove: "Pan",
     annTip: "Tip: zoom in to hit small fields more easily on mobile.",

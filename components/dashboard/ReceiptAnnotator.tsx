@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Loader2, ZoomIn, ZoomOut, Maximize2, Move, SquareDashedMousePointer } from "lucide-react";
+import { Loader2, ZoomIn, ZoomOut, Maximize2, SquareDashedMousePointer, X } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -32,7 +32,7 @@ export function ReceiptAnnotator({
   const wrapRef = useRef<HTMLDivElement>(null);
 
   const [field, setField] = useState<AnnField>("vendorName");
-  const [mode, setMode] = useState<"mark" | "move">("mark");
+  const [armed, setArmed] = useState(false); // when true, the next drag draws a box
   const [zoom, setZoom] = useState(1);
   const [stageW, setStageW] = useState(360);
   const [start, setStart] = useState<{ x: number; y: number } | null>(null);
@@ -57,7 +57,7 @@ export function ReceiptAnnotator({
     { key: "totalAmount", label: t.annFieldTotal },
     { key: "date", label: t.annFieldDate },
   ];
-
+  const fieldLabel = fields.find((f) => f.key === field)?.label ?? "";
   const imgWidth = Math.round(stageW * zoom);
 
   function rel(e: React.PointerEvent) {
@@ -69,13 +69,13 @@ export function ReceiptAnnotator({
   }
 
   function onDown(e: React.PointerEvent) {
-    if (busy || mode !== "mark") return;
+    if (busy || !armed) return; // not armed → let the page scroll normally
     const p = rel(e);
     setStart({ x: p.x, y: p.y });
     setBox({ x: p.x, y: p.y, w: 0, h: 0 });
   }
   function onMove(e: React.PointerEvent) {
-    if (!start || mode !== "mark") return;
+    if (!start || !armed) return;
     const p = rel(e);
     setBox({
       x: Math.min(start.x, p.x),
@@ -89,6 +89,7 @@ export function ReceiptAnnotator({
     const r = wrapRef.current!.getBoundingClientRect();
     const b = box;
     setStart(null);
+    setArmed(false); // one-shot: always return to scroll mode
     if (!b || b.w < 8 || b.h < 8) { setBox(null); return; }
     await readBox({ x: b.x / r.width, y: b.y / r.height, w: b.w / r.width, h: b.h / r.height });
   }
@@ -150,6 +151,7 @@ export function ReceiptAnnotator({
       <p className="font-display text-base">{t.annTitle}</p>
       <p className="mt-1 text-xs leading-relaxed text-ink/55">{t.annDesc}</p>
 
+      {/* Field picker */}
       <div className="mt-3 flex flex-wrap gap-2">
         {fields.map((f) => (
           <button
@@ -167,21 +169,23 @@ export function ReceiptAnnotator({
         ))}
       </div>
 
+      {/* Action row: arm button (or armed banner) + zoom */}
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="inline-flex overflow-hidden rounded-full border hairline">
+        {armed ? (
           <button
-            onClick={() => setMode("mark")}
-            className={cn("flex min-h-[40px] items-center gap-1.5 px-3 text-sm transition", mode === "mark" ? "bg-ink text-paper" : "text-ink/60")}
+            onClick={() => { setArmed(false); setBox(null); setStart(null); }}
+            className="flex min-h-[40px] items-center gap-1.5 rounded-full border border-ink/20 px-4 text-sm text-ink/70"
           >
-            <SquareDashedMousePointer className="h-4 w-4" /> {t.annModeMark}
+            <X className="h-4 w-4" /> {t.annCancel}
           </button>
+        ) : (
           <button
-            onClick={() => setMode("move")}
-            className={cn("flex min-h-[40px] items-center gap-1.5 px-3 text-sm transition", mode === "move" ? "bg-ink text-paper" : "text-ink/60")}
+            onClick={() => setArmed(true)}
+            className="flex min-h-[40px] items-center gap-1.5 rounded-full bg-ink px-4 text-sm font-medium text-paper transition hover:bg-nordic-900"
           >
-            <Move className="h-4 w-4" /> {t.annModeMove}
+            <SquareDashedMousePointer className="h-4 w-4" /> {t.annArm}
           </button>
-        </div>
+        )}
         <div className="inline-flex items-center gap-1">
           <button onClick={zoomOut} aria-label="Zoom out" disabled={zoom === ZOOMS[0]} className="flex h-10 w-10 items-center justify-center rounded-full border hairline text-ink/70 disabled:opacity-30">
             <ZoomOut className="h-4 w-4" />
@@ -196,19 +200,25 @@ export function ReceiptAnnotator({
         </div>
       </div>
 
-      <p className="mt-2 text-xs text-ink/50">{mode === "mark" ? t.annHint : t.annTip}</p>
+      <p className={cn("mt-2 text-xs", armed ? "font-medium text-nordic-600" : "text-ink/50")}>
+        {armed ? t.annArmed.replace("{field}", fieldLabel) : t.annScroll}
+      </p>
 
+      {/* Stage: scrolls normally unless armed */}
       <div
         ref={stageRef}
-        className="relative mt-2 max-h-[62vh] overflow-auto rounded-lg border hairline bg-paper"
-        style={{ touchAction: mode === "move" ? "auto" : "none" }}
+        className={cn(
+          "relative mt-2 max-h-[62vh] overflow-auto rounded-lg border bg-paper transition",
+          armed ? "border-nordic-600 ring-2 ring-nordic-400/40" : "hairline",
+        )}
+        style={{ touchAction: armed ? "none" : "auto" }}
       >
         <div
           ref={wrapRef}
           onPointerDown={onDown}
           onPointerMove={onMove}
           onPointerUp={onUp}
-          className={cn("relative inline-block select-none", mode === "mark" ? "cursor-crosshair" : "cursor-grab")}
+          className={cn("relative inline-block select-none", armed && "cursor-crosshair")}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={image} alt="" draggable={false} style={{ width: imgWidth, height: "auto", display: "block", maxWidth: "none" }} />

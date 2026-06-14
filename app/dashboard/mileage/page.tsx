@@ -19,6 +19,13 @@ interface Entry {
   purpose: string;
 }
 
+interface Vehicle {
+  id: string;
+  registrationNumber: string;
+  model: string | null;
+  isElectric: boolean;
+}
+
 export default function MileagePage() {
   const { t } = useLanguage();
   const [rate, setRate] = useState(2.5);
@@ -33,6 +40,10 @@ export default function MileagePage() {
   });
   const [loading, setLoading] = useState(false);
   const [allowed, setAllowed] = useState<boolean | null>(null);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [vehicleId, setVehicleId] = useState("");
+  const [vForm, setVForm] = useState({ registrationNumber: "", model: "", fuelType: "petrol" });
 
   useEffect(() => {
     fetch("/api/me")
@@ -40,6 +51,15 @@ export default function MileagePage() {
       .then((d) => setAllowed(d ? Boolean(d.features?.mileage) : false))
       .catch(() => setAllowed(false));
   }, []);
+
+  const loadVehicles = useCallback(async () => {
+    const r = await fetch("/api/company/vehicles");
+    if (!r.ok) return;
+    const d = await r.json();
+    setVehicles(d.vehicles ?? []);
+    setIsAdmin(Boolean(d.isAdmin));
+  }, []);
+  useEffect(() => { loadVehicles(); }, [loadVehicles]);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/mileage");
@@ -52,7 +72,9 @@ export default function MileagePage() {
   useEffect(() => { load(); }, [load]);
 
   const km = Number(form.distanceKm) || 0;
-  const preview = (km * rate).toFixed(2).replace(".", ",");
+  const selectedVehicle = vehicles.find((v) => v.id === vehicleId) || null;
+  const effectiveRate = !selectedVehicle ? rate : selectedVehicle.isElectric ? 0.95 : 1.2;
+  const preview = (km * effectiveRate).toFixed(2).replace(".", ",");
 
   async function save() {
     if (!form.startAddress || !form.endAddress || km <= 0) {
@@ -63,7 +85,7 @@ export default function MileagePage() {
     const res = await fetch("/api/mileage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, distanceKm: km }),
+      body: JSON.stringify({ ...form, distanceKm: km, vehicleId: vehicleId || undefined }),
     });
     setLoading(false);
     if (res.ok) {
@@ -73,6 +95,23 @@ export default function MileagePage() {
     } else {
       const e = await res.json().catch(() => ({}));
       toast.error(e.error ?? t.toastSaveFail);
+    }
+  }
+
+  async function addVehicle() {
+    if (!vForm.registrationNumber.trim()) return;
+    const res = await fetch("/api/company/vehicles", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(vForm),
+    });
+    if (res.ok) {
+      toast.success(t.milVehicleAdded);
+      setVForm({ registrationNumber: "", model: "", fuelType: "petrol" });
+      loadVehicles();
+    } else {
+      const e = await res.json().catch(() => ({}));
+      toast.error(e.error ?? t.milVehicleFail);
     }
   }
 
@@ -134,13 +173,98 @@ export default function MileagePage() {
               </select>
             </div>
             <div className="space-y-2">
+              <Label htmlFor="vehicle">{t.milVehicle}</Label>
+              <select
+                id="vehicle"
+                value={vehicleId}
+                onChange={(e) => setVehicleId(e.target.value)}
+                className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-950"
+              >
+                <option value="">{t.milPrivateCar} (2,50 kr/km)</option>
+                {vehicles.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.registrationNumber}
+                    {v.model ? ` · ${v.model}` : ""}
+                    {v.isElectric ? ` · ${t.milElectricTag}` : ""} (
+                    {(v.isElectric ? 0.95 : 1.2).toFixed(2).replace(".", ",")} kr/km)
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
               <Label>{t.fldAmount}</Label>
               <p className="flex h-10 items-center text-lg font-semibold">{preview} kr</p>
             </div>
           </div>
+          <p className="text-xs text-gray-500">{t.milVehicleNote}</p>
           <Button onClick={save} disabled={loading}>{loading ? t.stSaving : t.btnSaveTrip}</Button>
         </CardContent>
       </Card>
+
+      {isAdmin && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t.milManageVehicles}</CardTitle>
+            <CardDescription>{t.milVehicleNote}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {vehicles.length > 0 && (
+              <ul className="divide-y text-sm">
+                {vehicles.map((v) => (
+                  <li key={v.id} className="flex items-center justify-between py-2">
+                    <span>
+                      <span className="font-medium">{v.registrationNumber}</span>
+                      {v.model ? ` · ${v.model}` : ""}
+                      {v.isElectric ? ` · ${t.milElectricTag}` : ""}
+                    </span>
+                    <button
+                      onClick={async () => {
+                        const r = await fetch(`/api/company/vehicles/${v.id}`, { method: "DELETE" });
+                        if (r.ok) loadVehicles();
+                      }}
+                      className="text-xs text-red-600 hover:underline"
+                    >
+                      ✕
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="space-y-2">
+                <Label>{t.milRegNr}</Label>
+                <Input
+                  value={vForm.registrationNumber}
+                  onChange={(e) => setVForm({ ...vForm, registrationNumber: e.target.value })}
+                  placeholder="ABC123"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{t.milModel}</Label>
+                <Input
+                  value={vForm.model}
+                  onChange={(e) => setVForm({ ...vForm, model: e.target.value })}
+                  placeholder="Volvo V60"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{t.milFuel}</Label>
+                <select
+                  value={vForm.fuelType}
+                  onChange={(e) => setVForm({ ...vForm, fuelType: e.target.value })}
+                  className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-950"
+                >
+                  <option value="petrol">{t.milFuelPetrol}</option>
+                  <option value="diesel">{t.milFuelDiesel}</option>
+                  <option value="hybrid">{t.milFuelHybrid}</option>
+                  <option value="electric">{t.milFuelElectric}</option>
+                </select>
+              </div>
+            </div>
+            <Button variant="outline" onClick={addVehicle}>{t.milAddVehicle}</Button>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0">

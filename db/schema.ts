@@ -361,6 +361,9 @@ export const mileageEntries = pgTable(
     date: timestamp("date", { withTimezone: true }).notNull(),
     purpose: varchar("purpose", { length: 20 }).notNull().default("business"),
     note: text("note"),
+    vehicleId: uuid("vehicle_id").references(() => companyVehicles.id, {
+      onDelete: "set null",
+    }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -477,3 +480,72 @@ export const ocrSamples = pgTable("ocr_samples", {
   source: varchar("source", { length: 20 }).default("manual"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
+
+/* ------------------------------------------------------------------ */
+/* Mileage rates (Skatteverket schablon 2026, unchanged from 2025)     */
+/*  - Own/private car (any fuel): 25 kr/mil  = 2.50 kr/km              */
+/*  - Company car (förmånsbil) fossil/hybrid: 12 kr/mil = 1.20 kr/km   */
+/*  - Company car (förmånsbil) fully electric: 9.50 kr/mil = 0.95/km   */
+/* ------------------------------------------------------------------ */
+export const COMPANY_CAR_RATE_FOSSIL = 1.2;
+export const COMPANY_CAR_RATE_ELECTRIC = 0.95;
+
+/* Public transport in Sweden carries 6% VAT (moms). */
+export const TRANSPORT_VAT_RATE = 6;
+
+/* ------------------------------------------------------------------ */
+/* company_vehicles (Företagsfordon / flotta)                          */
+/* ------------------------------------------------------------------ */
+export const companyVehicles = pgTable(
+  "company_vehicles",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    registrationNumber: varchar("registration_number", { length: 10 }).notNull(),
+    model: varchar("model", { length: 100 }),
+    fuelType: varchar("fuel_type", { length: 20 }).notNull().default("petrol"), // petrol|diesel|hybrid|electric
+    isElectric: boolean("is_electric").notNull().default(false),
+    assignedToUserId: uuid("assigned_to_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({ companyIdx: index("company_vehicles_company_idx").on(t.companyId) }),
+);
+
+/* ------------------------------------------------------------------ */
+/* transport_passes (Periodbiljetter — månadskort etc.)                */
+/* ------------------------------------------------------------------ */
+export const transportPasses = pgTable(
+  "transport_passes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // Optional: a company-paid pass (visible to the company).
+    companyId: uuid("company_id").references(() => companies.id, {
+      onDelete: "set null",
+    }),
+    passType: varchar("pass_type", { length: 20 }).notNull().default("monthly"), // monthly|yearly|single
+    provider: varchar("provider", { length: 50 }).notNull().default("SL"),
+    providerOther: varchar("provider_other", { length: 100 }),
+    amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
+    vatRate: integer("vat_rate").notNull().default(TRANSPORT_VAT_RATE),
+    vatAmount: numeric("vat_amount", { precision: 12, scale: 2 }),
+    validFrom: timestamp("valid_from", { withTimezone: true }).notNull(),
+    validTo: timestamp("valid_to", { withTimezone: true }).notNull(),
+    isRecurring: boolean("is_recurring").notNull().default(false),
+    receiptImageUrl: text("receipt_image_url"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    userIdx: index("transport_passes_user_idx").on(t.userId),
+    companyIdx: index("transport_passes_company_idx").on(t.companyId),
+  }),
+);
+
+export type CompanyVehicle = typeof companyVehicles.$inferSelect;
+export type TransportPass = typeof transportPasses.$inferSelect;

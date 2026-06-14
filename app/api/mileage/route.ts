@@ -3,7 +3,13 @@ import { getServerSession } from "next-auth";
 import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { mileageEntries, MILEAGE_RATE_PER_KM } from "@/db/schema";
+import {
+  mileageEntries,
+  companyVehicles,
+  MILEAGE_RATE_PER_KM,
+  COMPANY_CAR_RATE_FOSSIL,
+  COMPANY_CAR_RATE_ELECTRIC,
+} from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
 import { requireFeature } from "@/lib/entitlements";
@@ -17,6 +23,7 @@ const schema = z.object({
   date: z.string().refine((s) => !Number.isNaN(Date.parse(s)), "Ogiltigt datum"),
   purpose: z.enum(["business", "private"]).default("business"),
   note: z.string().max(500).optional(),
+  vehicleId: z.string().uuid().optional(),
 });
 
 export async function GET() {
@@ -48,7 +55,24 @@ export async function POST(req: NextRequest) {
     );
   }
   const km = Math.round(parsed.data.distanceKm * 100) / 100;
-  const amount = Math.round(km * MILEAGE_RATE_PER_KM * 100) / 100;
+
+  // Determine the correct Skatteverket rate. Own/private car = 2.50 kr/km
+  // (any fuel). A selected company vehicle uses the förmånsbil rate:
+  // 0.95 kr/km if fully electric, otherwise 1.20 kr/km.
+  let ratePerKm = MILEAGE_RATE_PER_KM;
+  let vehicleId: string | null = null;
+  if (parsed.data.vehicleId) {
+    const [v] = await db
+      .select()
+      .from(companyVehicles)
+      .where(eq(companyVehicles.id, parsed.data.vehicleId))
+      .limit(1);
+    if (v) {
+      vehicleId = v.id;
+      ratePerKm = v.isElectric ? COMPANY_CAR_RATE_ELECTRIC : COMPANY_CAR_RATE_FOSSIL;
+    }
+  }
+  const amount = Math.round(km * ratePerKm * 100) / 100;
 
   const [entry] = await db
     .insert(mileageEntries)
@@ -57,11 +81,12 @@ export async function POST(req: NextRequest) {
       startAddress: parsed.data.startAddress,
       endAddress: parsed.data.endAddress,
       distanceKm: km.toFixed(2),
-      ratePerKm: MILEAGE_RATE_PER_KM.toFixed(2),
+      ratePerKm: ratePerKm.toFixed(2),
       amount: amount.toFixed(2),
       date: new Date(parsed.data.date),
       purpose: parsed.data.purpose,
       note: parsed.data.note,
+      vehicleId,
     })
     .returning();
 
