@@ -29,12 +29,17 @@ const schema = z.object({
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
-  const rows = await db
-    .select()
-    .from(mileageEntries)
-    .where(eq(mileageEntries.userId, session.user.id))
-    .orderBy(desc(mileageEntries.date));
-  return NextResponse.json({ entries: rows, ratePerKm: MILEAGE_RATE_PER_KM });
+  try {
+    const rows = await db
+      .select()
+      .from(mileageEntries)
+      .where(eq(mileageEntries.userId, session.user.id))
+      .orderBy(desc(mileageEntries.date));
+    return NextResponse.json({ entries: rows, ratePerKm: MILEAGE_RATE_PER_KM });
+  } catch (e) {
+    console.error("mileage GET failed (run migrations?):", e);
+    return NextResponse.json({ entries: [], ratePerKm: MILEAGE_RATE_PER_KM });
+  }
 }
 
 export async function POST(req: NextRequest) {

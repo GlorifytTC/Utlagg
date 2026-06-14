@@ -20,13 +20,18 @@ async function membership(userId: string) {
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
-  const m = await membership(session.user.id);
-  if (!m) return NextResponse.json({ vehicles: [], isAdmin: false });
-  const vehicles = await db
-    .select()
-    .from(companyVehicles)
-    .where(eq(companyVehicles.companyId, m.companyId));
-  return NextResponse.json({ vehicles, isAdmin: m.role === "owner" || m.role === "admin" });
+  try {
+    const m = await membership(session.user.id);
+    if (!m) return NextResponse.json({ vehicles: [], isAdmin: false });
+    const vehicles = await db
+      .select()
+      .from(companyVehicles)
+      .where(eq(companyVehicles.companyId, m.companyId));
+    return NextResponse.json({ vehicles, isAdmin: m.role === "owner" || m.role === "admin" });
+  } catch (e) {
+    console.error("vehicles GET failed (run migrations?):", e);
+    return NextResponse.json({ vehicles: [], isAdmin: false });
+  }
 }
 
 const schema = z.object({

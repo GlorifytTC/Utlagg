@@ -11,12 +11,17 @@ export const runtime = "nodejs";
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
-  const passes = await db
-    .select()
-    .from(transportPasses)
-    .where(eq(transportPasses.userId, session.user.id))
-    .orderBy(desc(transportPasses.validFrom));
-  return NextResponse.json({ passes });
+  try {
+    const passes = await db
+      .select()
+      .from(transportPasses)
+      .where(eq(transportPasses.userId, session.user.id))
+      .orderBy(desc(transportPasses.validFrom));
+    return NextResponse.json({ passes });
+  } catch (e) {
+    console.error("transport GET failed (run migrations?):", e);
+    return NextResponse.json({ passes: [] });
+  }
 }
 
 const schema = z.object({
