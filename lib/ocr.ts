@@ -440,3 +440,53 @@ Use a dot as the decimal separator. Return null for anything not clearly printed
     confidence: 0.97,
   };
 }
+
+/**
+ * Read a SINGLE field from a small cropped region the user pointed to.
+ * Uses the vision LLM when configured (most accurate on a tight crop),
+ * otherwise OCR.space. Returns the best-effort plain-text value.
+ */
+const FIELD_HINTS: Record<string, string> = {
+  receiptNumber: "the receipt or invoice number (kvittonummer / fakturanummer / bong)",
+  vendorName: "the store or company name",
+  date: "the date, formatted as YYYY-MM-DD",
+  totalAmount: "the total amount paid, digits only with a dot decimal",
+  vatAmount: "the VAT (moms) amount in kronor, digits only with a dot decimal",
+  vatRate: "the VAT (moms) percentage, just the number (6, 12 or 25)",
+};
+
+export async function readRegion(crop: string, field: string): Promise<string> {
+  const hint = FIELD_HINTS[field] ?? "the value";
+  const key = process.env.OPENAI_API_KEY;
+
+  if (key) {
+    const dataUrl = crop.startsWith("data:") ? crop : `data:image/jpeg;base64,${crop}`;
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model: process.env.OPENAI_VISION_MODEL || "gpt-4o-mini",
+        max_tokens: 60,
+        temperature: 0,
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `This is a small cropped region of a Swedish receipt. Read ${hint}. Reply with ONLY the value, no labels, no quotes. If nothing is readable, reply with an empty response.`,
+              },
+              { type: "image_url", image_url: { url: dataUrl } },
+            ],
+          },
+        ],
+      }),
+    });
+    if (!res.ok) throw new Error(`OpenAI HTTP ${res.status}`);
+    const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+    return (json?.choices?.[0]?.message?.content ?? "").trim();
+  }
+
+  const r = await runOcrSpace(crop);
+  return (r.rawText ?? "").split(/\r?\n/).map((l) => l.trim()).filter(Boolean)[0] ?? "";
+}

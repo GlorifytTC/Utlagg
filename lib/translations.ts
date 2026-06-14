@@ -462,10 +462,32 @@ export interface Translations {
   contactMessagePh: string;
   contactSend: string;
   contactSubject: string;
+  annTitle: string;
+  annDesc: string;
+  annHint: string;
+  annReading: string;
+  annReadFail: string;
+  annSaved: string;
+  annFieldReceiptNo: string;
+  annFieldVat: string;
+  annFieldTotal: string;
+  annFieldDate: string;
+  annFieldVendor: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    annTitle: "Fel värde? Peka på kvittot",
+    annDesc: "Välj ett fält och dra en ruta över värdet på bilden. AI:n läser just det området — och vi sparar din markering för att träna modellen på svenska kvitton.",
+    annHint: "Dra en ruta över värdet på bilden",
+    annReading: "Läser området…",
+    annReadFail: "Kunde inte läsa området",
+    annSaved: "Inläst och sparat för träning",
+    annFieldReceiptNo: "Fakturanr",
+    annFieldVat: "Moms",
+    annFieldTotal: "Belopp",
+    annFieldDate: "Datum",
+    annFieldVendor: "Leverantör",
     about: "Om oss",
     contact: "Kontakt",
     navMenu: "Meny",
@@ -952,6 +974,17 @@ export const strings: Record<Lang, Translations> = {
     pricingTableSupport: "Prioriterad support",
   },
   en: {
+    annTitle: "Wrong value? Point at the receipt",
+    annDesc: "Pick a field and drag a box over the value on the image. The AI reads just that area — and we store your markup to train the model on Swedish receipts.",
+    annHint: "Drag a box over the value on the image",
+    annReading: "Reading the area…",
+    annReadFail: "Could not read the area",
+    annSaved: "Read and saved for training",
+    annFieldReceiptNo: "Invoice no",
+    annFieldVat: "VAT",
+    annFieldTotal: "Amount",
+    annFieldDate: "Date",
+    annFieldVendor: "Supplier",
     about: "About",
     contact: "Contact",
     navMenu: "Menu",

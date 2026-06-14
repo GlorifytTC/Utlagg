@@ -6,6 +6,7 @@ import { BasSelect } from "./BasSelect";
 import { getBasAccount } from "@/lib/bas";
 import { resolveVatRate, vatFromGross, type VatRate } from "@/lib/vat";
 import { useLanguage } from "@/context/LanguageContext";
+import { ReceiptAnnotator } from "@/components/dashboard/ReceiptAnnotator";
 
 interface Draft {
   vendorName: string;
@@ -341,6 +342,13 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
               <p className="text-xs text-ink/50">
                 AI-träffsäkerhet: {Math.round(draft.aiConfidence * 100)}%
               </p>
+            )}
+            {draft.image && (
+              <ReceiptAnnotator
+                image={draft.image}
+                vendor={draft.vendorName || null}
+                onValue={(f, v) => setDraft((d) => ({ ...d, [f]: v }))}
+              />
             )}
             <Field label="Leverantör">
               <input

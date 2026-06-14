@@ -459,3 +459,21 @@ export type MileageEntry = typeof mileageEntries.$inferSelect;
 export type ApprovalRequest = typeof approvalRequests.$inferSelect;
 export type Company = typeof companies.$inferSelect;
 export type CompanyMember = typeof companyMembers.$inferSelect;
+
+/* OCR training samples — manual field annotations for future model training. */
+export const ocrSamples = pgTable("ocr_samples", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  field: varchar("field", { length: 40 }).notNull(),
+  value: text("value"),
+  vendor: varchar("vendor", { length: 300 }),
+  bboxX: real("bbox_x"),
+  bboxY: real("bbox_y"),
+  bboxW: real("bbox_w"),
+  bboxH: real("bbox_h"),
+  crop: text("crop"),
+  source: varchar("source", { length: 20 }).default("manual"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
