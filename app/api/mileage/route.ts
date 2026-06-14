@@ -97,9 +97,10 @@ export async function POST(req: NextRequest) {
       })
       .returning();
   } catch (e) {
-    console.error("mileage POST insert failed (run migrations?):", e);
+    console.error("mileage POST insert failed:", e);
+    const detail = e instanceof Error ? e.message : String(e);
     return NextResponse.json(
-      { error: "Kunde inte spara. Databasen kan behöva uppdateras (kör senaste SQL-migrationen)." },
+      { error: `Kunde inte spara: ${detail}` },
       { status: 500 },
     );
   }
