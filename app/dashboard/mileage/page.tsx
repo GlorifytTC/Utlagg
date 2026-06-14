@@ -26,6 +26,16 @@ interface Vehicle {
   isElectric: boolean;
 }
 
+interface Route {
+  id: string;
+  label: string;
+  startAddress: string;
+  endAddress: string;
+  distanceKm: string;
+  purpose: string;
+  vehicleId: string | null;
+}
+
 export default function MileagePage() {
   const { t } = useLanguage();
   const [rate, setRate] = useState(2.5);
@@ -44,6 +54,15 @@ export default function MileagePage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [vehicleId, setVehicleId] = useState("");
   const [vForm, setVForm] = useState({ registrationNumber: "", model: "", fuelType: "petrol" });
+  const [routes, setRoutes] = useState<Route[]>([]);
+  const [routeLabel, setRouteLabel] = useState("");
+  const [periodFor, setPeriodFor] = useState<string | null>(null);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const [period, setPeriod] = useState<{ from: string; to: string; dows: boolean[] }>({
+    from: todayStr,
+    to: todayStr,
+    dows: [true, true, true, true, true, false, false], // Mon..Sun
+  });
 
   useEffect(() => {
     fetch("/api/me")
@@ -60,6 +79,12 @@ export default function MileagePage() {
     setIsAdmin(Boolean(d.isAdmin));
   }, []);
   useEffect(() => { loadVehicles(); }, [loadVehicles]);
+
+  const loadRoutes = useCallback(async () => {
+    const r = await fetch("/api/mileage/routes");
+    if (r.ok) setRoutes((await r.json()).routes ?? []);
+  }, []);
+  useEffect(() => { loadRoutes(); }, [loadRoutes]);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/mileage");
@@ -113,6 +138,82 @@ export default function MileagePage() {
       const e = await res.json().catch(() => ({}));
       toast.error(e.error ?? t.milVehicleFail);
     }
+  }
+
+  async function saveRoute() {
+    if (!form.startAddress || !form.endAddress || km <= 0 || !routeLabel.trim()) {
+      toast.error(t.milRouteNeedTrip);
+      return;
+    }
+    const res = await fetch("/api/mileage/routes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        label: routeLabel.trim(),
+        startAddress: form.startAddress,
+        endAddress: form.endAddress,
+        distanceKm: km,
+        purpose: form.purpose,
+        vehicleId: vehicleId || undefined,
+      }),
+    });
+    if (res.ok) { toast.success(t.milRouteSaved); setRouteLabel(""); loadRoutes(); }
+  }
+
+  async function logToday(r: Route) {
+    const res = await fetch("/api/mileage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        startAddress: r.startAddress,
+        endAddress: r.endAddress,
+        distanceKm: Number(r.distanceKm),
+        date: new Date().toISOString().slice(0, 10),
+        purpose: r.purpose,
+        vehicleId: r.vehicleId || undefined,
+      }),
+    });
+    if (res.ok) { toast.success(t.milTripsLogged); load(); }
+  }
+
+  function datesInPeriod(): string[] {
+    const out: string[] = [];
+    const from = new Date(period.from);
+    const to = new Date(period.to);
+    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()) || from > to) return out;
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      const dow = (d.getDay() + 6) % 7; // 0 = Mon
+      if (period.dows[dow]) out.push(d.toISOString().slice(0, 10));
+    }
+    return out;
+  }
+
+  async function logPeriod(r: Route) {
+    const dates = datesInPeriod();
+    if (dates.length === 0) { toast.error(t.milNoDates); return; }
+    const res = await fetch("/api/mileage/bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        startAddress: r.startAddress,
+        endAddress: r.endAddress,
+        distanceKm: Number(r.distanceKm),
+        purpose: r.purpose,
+        vehicleId: r.vehicleId || undefined,
+        dates,
+      }),
+    });
+    if (res.ok) {
+      const d = await res.json();
+      toast.success(t.milLoggedN.replace("{n}", String(d.created)));
+      setPeriodFor(null);
+      load();
+    }
+  }
+
+  async function deleteRoute(id: string) {
+    const res = await fetch(`/api/mileage/routes/${id}`, { method: "DELETE" });
+    if (res.ok) loadRoutes();
   }
 
   async function remove(id: string) {
@@ -198,6 +299,104 @@ export default function MileagePage() {
           </div>
           <p className="text-xs text-gray-500">{t.milVehicleNote}</p>
           <Button onClick={save} disabled={loading}>{loading ? t.stSaving : t.btnSaveTrip}</Button>
+        </CardContent>
+      </Card>
+
+      {/* Recurring / saved routes */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t.milRoutesTitle}</CardTitle>
+          <CardDescription>{t.milRoutesDesc}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+            <div className="flex-1 space-y-2">
+              <Label>{t.milRouteLabel}</Label>
+              <Input
+                value={routeLabel}
+                onChange={(e) => setRouteLabel(e.target.value)}
+                placeholder={t.milRouteLabelPh}
+              />
+            </div>
+            <Button variant="outline" onClick={saveRoute}>{t.milSaveRoute}</Button>
+          </div>
+
+          {routes.length === 0 ? (
+            <p className="text-sm text-gray-500">{t.milNoRoutes}</p>
+          ) : (
+            <ul className="space-y-3">
+              {routes.map((r) => {
+                const v = vehicles.find((x) => x.id === r.vehicleId) || null;
+                const rRate = !v ? 2.5 : v.isElectric ? 0.95 : 1.2;
+                const dowLabels = [t.milDowMon, t.milDowTue, t.milDowWed, t.milDowThu, t.milDowFri, t.milDowSat, t.milDowSun];
+                const count = periodFor === r.id ? datesInPeriod().length : 0;
+                return (
+                  <li key={r.id} className="rounded-lg border hairline p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="font-medium">{r.label}</p>
+                        <p className="text-xs text-gray-500">
+                          {r.startAddress} → {r.endAddress} · {Number(r.distanceKm).toFixed(1)} km ·{" "}
+                          {rRate.toFixed(2).replace(".", ",")} kr/km
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button onClick={() => logToday(r)}>{t.milLogToday}</Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => setPeriodFor(periodFor === r.id ? null : r.id)}
+                        >
+                          {t.milLogPeriod}
+                        </Button>
+                        <button onClick={() => deleteRoute(r.id)} className="text-xs text-red-600 hover:underline">✕</button>
+                      </div>
+                    </div>
+
+                    {periodFor === r.id && (
+                      <div className="mt-3 space-y-3 border-t hairline pt-3">
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="space-y-1">
+                            <Label>{t.milPeriodFrom}</Label>
+                            <Input type="date" value={period.from} onChange={(e) => setPeriod({ ...period, from: e.target.value })} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label>{t.milPeriodTo}</Label>
+                            <Input type="date" value={period.to} onChange={(e) => setPeriod({ ...period, to: e.target.value })} />
+                          </div>
+                        </div>
+                        <div>
+                          <Label>{t.milWeekdays}</Label>
+                          <div className="mt-1 flex flex-wrap gap-1.5">
+                            {dowLabels.map((d, i) => (
+                              <button
+                                key={i}
+                                onClick={() => {
+                                  const dows = [...period.dows];
+                                  dows[i] = !dows[i];
+                                  setPeriod({ ...period, dows });
+                                }}
+                                className={
+                                  "h-9 w-9 rounded-full border text-xs transition " +
+                                  (period.dows[i]
+                                    ? "border-nordic-600 bg-nordic-600 text-white"
+                                    : "border-gray-300 text-gray-500 dark:border-gray-700")
+                                }
+                              >
+                                {d}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <Button onClick={() => logPeriod(r)} disabled={count === 0}>
+                          {t.milLogN.replace("{n}", String(count))}
+                        </Button>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </CardContent>
       </Card>
 

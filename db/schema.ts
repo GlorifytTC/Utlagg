@@ -549,3 +549,29 @@ export const transportPasses = pgTable(
 
 export type CompanyVehicle = typeof companyVehicles.$inferSelect;
 export type TransportPass = typeof transportPasses.$inferSelect;
+
+/* ------------------------------------------------------------------ */
+/* mileage_routes — saved/recurring trips (daily commute, fixed runs)  */
+/* so users don't retype the same trip every day.                      */
+/* ------------------------------------------------------------------ */
+export const mileageRoutes = pgTable(
+  "mileage_routes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    label: varchar("label", { length: 120 }).notNull(),
+    startAddress: varchar("start_address", { length: 300 }).notNull(),
+    endAddress: varchar("end_address", { length: 300 }).notNull(),
+    distanceKm: numeric("distance_km", { precision: 10, scale: 2 }).notNull(),
+    purpose: varchar("purpose", { length: 20 }).notNull().default("business"),
+    vehicleId: uuid("vehicle_id").references(() => companyVehicles.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({ userIdx: index("mileage_routes_user_idx").on(t.userId) }),
+);
+
+export type MileageRoute = typeof mileageRoutes.$inferSelect;

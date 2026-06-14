@@ -530,10 +530,58 @@ export interface Translations {
   annArmed: string;
   annCancel: string;
   annScroll: string;
+  milRoutesTitle: string;
+  milRoutesDesc: string;
+  milRouteLabel: string;
+  milRouteLabelPh: string;
+  milSaveRoute: string;
+  milRouteSaved: string;
+  milRouteNeedTrip: string;
+  milNoRoutes: string;
+  milLogToday: string;
+  milLogPeriod: string;
+  milPeriodFrom: string;
+  milPeriodTo: string;
+  milWeekdays: string;
+  milLogN: string;
+  milLoggedN: string;
+  milNoDates: string;
+  milDowMon: string;
+  milDowTue: string;
+  milDowWed: string;
+  milDowThu: string;
+  milDowFri: string;
+  milDowSat: string;
+  milDowSun: string;
+  milTripsLogged: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    milRoutesTitle: "Återkommande resor",
+    milRoutesDesc: "Spara en rutt du kör ofta och logga den med ett klick — eller för en hel period.",
+    milRouteLabel: "Namn på rutt",
+    milRouteLabelPh: "T.ex. Hem–Kontor",
+    milSaveRoute: "Spara nuvarande som rutt",
+    milRouteSaved: "Rutt sparad",
+    milRouteNeedTrip: "Fyll i från, till, sträcka och namn först.",
+    milNoRoutes: "Inga sparade rutter ännu.",
+    milLogToday: "Logga idag",
+    milLogPeriod: "Period…",
+    milPeriodFrom: "Från",
+    milPeriodTo: "Till",
+    milWeekdays: "Veckodagar",
+    milLogN: "Logga {n} resor",
+    milLoggedN: "{n} resor loggade",
+    milNoDates: "Inga datum valda",
+    milDowMon: "Må",
+    milDowTue: "Ti",
+    milDowWed: "On",
+    milDowThu: "To",
+    milDowFri: "Fr",
+    milDowSat: "Lö",
+    milDowSun: "Sö",
+    milTripsLogged: "Resa loggad",
     annArm: "Markera fält",
     annArmed: "Rita en ruta över: {field}",
     annCancel: "Avbryt",
@@ -1088,6 +1136,30 @@ export const strings: Record<Lang, Translations> = {
     pricingTableSupport: "Prioriterad support",
   },
   en: {
+    milRoutesTitle: "Recurring trips",
+    milRoutesDesc: "Save a route you drive often and log it in one click — or for a whole period.",
+    milRouteLabel: "Route name",
+    milRouteLabelPh: "e.g. Home–Office",
+    milSaveRoute: "Save current as route",
+    milRouteSaved: "Route saved",
+    milRouteNeedTrip: "Fill in from, to, distance and a name first.",
+    milNoRoutes: "No saved routes yet.",
+    milLogToday: "Log today",
+    milLogPeriod: "Period…",
+    milPeriodFrom: "From",
+    milPeriodTo: "To",
+    milWeekdays: "Weekdays",
+    milLogN: "Log {n} trips",
+    milLoggedN: "{n} trips logged",
+    milNoDates: "No dates selected",
+    milDowMon: "Mo",
+    milDowTue: "Tu",
+    milDowWed: "We",
+    milDowThu: "Th",
+    milDowFri: "Fr",
+    milDowSat: "Sa",
+    milDowSun: "Su",
+    milTripsLogged: "Trip logged",
     annArm: "Mark a field",
     annArmed: "Draw a box over: {field}",
     annCancel: "Cancel",
