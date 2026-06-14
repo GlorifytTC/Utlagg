@@ -137,6 +137,7 @@ function allAmounts(text: string): number[] {
 }
 
 const KNOWN_MERCHANTS: Array<[RegExp, string]> = [
+  [/biltema/i, "Biltema"],
   [/bauhaus/i, "Bauhaus"],
   [/willy.?s|willy/i, "Willys"],
   [/\bica\b/i, "ICA"],
@@ -144,15 +145,38 @@ const KNOWN_MERCHANTS: Array<[RegExp, string]> = [
   [/hemköp|hemkop/i, "Hemköp"],
   [/citygross|city gross/i, "City Gross"],
   [/lidl/i, "Lidl"],
+  [/\btempo\b/i, "Tempo"],
   [/\bk-?rauta|krauta/i, "K-Rauta"],
   [/byggmax/i, "Byggmax"],
-  [/jula\b/i, "Jula"],
+  [/\bjula\b/i, "Jula"],
+  [/\brusta\b/i, "Rusta"],
+  [/dollarstore|dollar store/i, "DollarStore"],
+  [/\bikea\b/i, "IKEA"],
+  [/\bjysk\b/i, "Jysk"],
+  [/ahlsell/i, "Ahlsell"],
+  [/beijer/i, "Beijer"],
+  [/granngård|granngard/i, "Granngården"],
+  [/mekonomen/i, "Mekonomen"],
+  [/plantagen/i, "Plantagen"],
+  [/blomsterland/i, "Blomsterlandet"],
+  [/systembolaget/i, "Systembolaget"],
   [/clas ohlson/i, "Clas Ohlson"],
-  [/circle ?k|statoil|preem|\bokq8\b|shell/i, "Drivmedel"],
+  [/kjell ?(&|och)? ?company|kjell\.com/i, "Kjell & Company"],
+  [/teknikmagasinet/i, "Teknikmagasinet"],
+  [/\bxxl\b/i, "XXL"],
+  [/stadium/i, "Stadium"],
+  [/intersport/i, "Intersport"],
+  [/åhléns|ahlens/i, "Åhléns"],
+  [/\bgekås|gekas\b/i, "Gekås"],
+  [/h\s?&\s?m|hennes ?&? ?mauritz/i, "H&M"],
+  [/kappahl/i, "KappAhl"],
+  [/lindex/i, "Lindex"],
+  [/\bnormal\b/i, "Normal"],
+  [/circle ?k|statoil|preem|\bokq8\b|shell|ingo\b|\bst1\b/i, "Drivmedel"],
   [/pressbyrån|pressbyran|7-?eleven/i, "Pressbyrån"],
   [/espresso house|wayne|starbucks/i, "Café"],
-  [/elgiganten|media ?markt|power\b|netonnet/i, "Elektronik"],
-  [/apoteket|apotek hjärtat|kronans/i, "Apotek"],
+  [/elgiganten|media ?markt|power\b|netonnet|webhallen/i, "Elektronik"],
+  [/apoteket|apotek hjärtat|kronans|apotea/i, "Apotek"],
   [/\bsj\b|\bvy\b|\bsl\b|taxi|uber|bolt/i, "Resa"],
 ];
 
@@ -204,6 +228,19 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
     if (dom) vendorName = dom[1].charAt(0).toUpperCase() + dom[1].slice(1);
   }
   if (!vendorName) {
+    // Company line near the top: "X SWEDEN AB" / "X Aktiebolag".
+    const abLine = lines.slice(0, 8).find(
+      (l) => /\b(aktiebolag|AB|HB|KB)\b/.test(l) && !looksLikePhoneOrgOrUrl(l) && /[A-Za-zÅÄÖåäö]{3,}/.test(l),
+    );
+    if (abLine) {
+      vendorName = abLine
+        .replace(/\b(sweden|sverige|norge|nordic)\b/gi, "")
+        .replace(/\b(aktiebolag|AB|HB|KB)\b\.?/gi, "")
+        .replace(/\s{2,}/g, " ")
+        .trim();
+    }
+  }
+  if (!vendorName) {
     vendorName =
       lines.find(
         (l) =>
@@ -212,6 +249,10 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
           !looksLikePhoneOrgOrUrl(l) &&
           !/\b\d{4,}\b/.test(l), // skip lines dominated by long numbers
       ) ?? lines[0] ?? null;
+  }
+  // Clean leading junk (e.g. a misread "*" from a logo) and trailing noise.
+  if (vendorName) {
+    vendorName = vendorName.replace(/^[^A-Za-zÅÄÖåäö0-9]+/, "").trim() || vendorName;
   }
   if (vendorName) confidenceHits++;
 
