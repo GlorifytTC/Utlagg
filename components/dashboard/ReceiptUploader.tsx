@@ -347,7 +347,19 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
               <ReceiptAnnotator
                 image={draft.image}
                 vendor={draft.vendorName || null}
-                onValue={(f, v) => setDraft((d) => ({ ...d, [f]: v }))}
+                onValue={(f, v) =>
+                  setDraft((d) => {
+                    if (f === "vatRate") {
+                      const nums = (v.replace(",", ".").match(/\d+/g) ?? []).map(Number);
+                      const rate = ([6, 12, 25] as const).find((r) => nums.includes(r)) ?? d.vatRate;
+                      return { ...d, vatRate: rate as VatRate };
+                    }
+                    if (f === "vatAmount" || f === "totalAmount") {
+                      return { ...d, [f]: v.replace(/[^\d.,-]/g, "").replace(",", ".") };
+                    }
+                    return { ...d, [f]: v.trim() };
+                  })
+                }
               />
             )}
             <Field label="Leverantör">

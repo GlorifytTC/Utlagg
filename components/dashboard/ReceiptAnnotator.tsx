@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 export type AnnField =
   | "receiptNumber"
   | "vatAmount"
+  | "vatRate"
   | "totalAmount"
   | "date"
   | "vendorName";
@@ -37,11 +38,12 @@ export function ReceiptAnnotator({
   const [busy, setBusy] = useState(false);
 
   const fields: { key: AnnField; label: string }[] = [
+    { key: "vendorName", label: t.annFieldVendor },
     { key: "receiptNumber", label: t.annFieldReceiptNo },
+    { key: "vatRate", label: t.annFieldVatRate },
     { key: "vatAmount", label: t.annFieldVat },
     { key: "totalAmount", label: t.annFieldTotal },
     { key: "date", label: t.annFieldDate },
-    { key: "vendorName", label: t.annFieldVendor },
   ];
 
   function rel(e: React.PointerEvent) {
