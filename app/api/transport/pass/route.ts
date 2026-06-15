@@ -50,21 +50,28 @@ export async function POST(req: NextRequest) {
     .where(eq(companyMembers.userId, session.user.id))
     .limit(1);
 
-  const [pass] = await db
-    .insert(transportPasses)
-    .values({
-      userId: session.user.id,
-      companyId: m?.companyId ?? null,
-      passType: d.passType,
-      provider: d.provider,
-      providerOther: d.provider === "Other" ? d.providerOther : null,
-      amount: d.amount.toFixed(2),
-      vatRate: TRANSPORT_VAT_RATE,
-      vatAmount: vatAmount.toFixed(2),
-      validFrom: new Date(d.validFrom),
-      validTo: new Date(d.validTo),
-      isRecurring: d.isRecurring,
-    })
-    .returning();
+  let pass;
+  try {
+    [pass] = await db
+      .insert(transportPasses)
+      .values({
+        userId: session.user.id,
+        companyId: m?.companyId ?? null,
+        passType: d.passType,
+        provider: d.provider,
+        providerOther: d.provider === "Other" ? d.providerOther : null,
+        amount: d.amount.toFixed(2),
+        vatRate: TRANSPORT_VAT_RATE,
+        vatAmount: vatAmount.toFixed(2),
+        validFrom: new Date(d.validFrom),
+        validTo: new Date(d.validTo),
+        isRecurring: d.isRecurring,
+      })
+      .returning();
+  } catch (e) {
+    console.error("transport POST insert failed:", e);
+    const detail = e instanceof Error ? e.message : String(e);
+    return NextResponse.json({ error: `Kunde inte spara: ${detail}` }, { status: 500 });
+  }
   return NextResponse.json({ pass }, { status: 201 });
 }

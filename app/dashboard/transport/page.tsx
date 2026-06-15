@@ -67,7 +67,8 @@ export default function TransportPage() {
       toast.success(t.trSaved);
       fetchPasses();
     } else {
-      toast.error(t.trSaveFail);
+      const e = await res.json().catch(() => ({}));
+      toast.error(e.error ?? t.trSaveFail);
     }
   }
 
