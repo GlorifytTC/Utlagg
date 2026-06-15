@@ -322,7 +322,26 @@ export default function MileagePage() {
           </div>
 
           {routes.length === 0 ? (
-            <p className="text-sm text-gray-500">{t.milNoRoutes}</p>
+            <div className="space-y-2">
+              <div className="relative rounded-lg border border-dashed border-gray-300 p-3 opacity-70 dark:border-gray-700">
+                <span className="absolute right-2 top-2 rounded-full bg-ink/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-ink/50">
+                  {t.milExample}
+                </span>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="font-medium">{t.milExampleLabel}</p>
+                    <p className="text-xs text-gray-500">
+                      {t.milExampleFrom} → {t.milExampleTo} · 18,4 km · 2,50 kr/km
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button disabled>{t.milLogToday}</Button>
+                    <Button variant="outline" disabled>{t.milLogPeriod}</Button>
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-500">{t.milExampleHint}</p>
+            </div>
           ) : (
             <ul className="space-y-3">
               {routes.map((r) => {
