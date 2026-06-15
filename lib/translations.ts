@@ -554,10 +554,20 @@ export interface Translations {
   milDowSat: string;
   milDowSun: string;
   milTripsLogged: string;
+  milExample: string;
+  milExampleHint: string;
+  milExampleLabel: string;
+  milExampleFrom: string;
+  milExampleTo: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    milExample: "Exempel",
+    milExampleHint: "Så här ser en sparad rutt ut — spara din första ovan.",
+    milExampleLabel: "Hem–Kontor",
+    milExampleFrom: "Hemadress 1",
+    milExampleTo: "Kontoret",
     milRoutesTitle: "Återkommande resor",
     milRoutesDesc: "Spara en rutt du kör ofta och logga den med ett klick — eller för en hel period.",
     milRouteLabel: "Namn på rutt",
@@ -1136,6 +1146,11 @@ export const strings: Record<Lang, Translations> = {
     pricingTableSupport: "Prioriterad support",
   },
   en: {
+    milExample: "Example",
+    milExampleHint: "This is what a saved route looks like — save your first one above.",
+    milExampleLabel: "Home–Office",
+    milExampleFrom: "Home address 1",
+    milExampleTo: "The office",
     milRoutesTitle: "Recurring trips",
     milRoutesDesc: "Save a route you drive often and log it in one click — or for a whole period.",
     milRouteLabel: "Route name",
