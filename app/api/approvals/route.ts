@@ -3,11 +3,12 @@ import { getServerSession } from "next-auth";
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { approvalRequests, receipts, mileageEntries } from "@/db/schema";
+import { approvalRequests, receipts, mileageEntries, users } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
 import { requireFeature } from "@/lib/entitlements";
 import { getUserCompany } from "@/lib/company";
+import { sendApprovalRequestEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -104,6 +105,37 @@ export async function POST(req: NextRequest) {
       .update(receipts)
       .set({ status: "approved" })
       .where(eq(receipts.id, parsed.data.receiptId));
+  }
+
+  // Notify the approver when a real (member) request was created.
+  if (!autoApprove) {
+    try {
+      const [u] = await db
+        .select({ name: users.name, email: users.email })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+      let vendor: string | null = null;
+      let date: string | null = null;
+      let vatRate: number | null = null;
+      if (parsed.data.receiptId) {
+        const [r2] = await db
+          .select()
+          .from(receipts)
+          .where(eq(receipts.id, parsed.data.receiptId))
+          .limit(1);
+        vendor = r2?.vendorName ?? null;
+        date = r2?.date ? new Date(r2.date).toISOString() : null;
+        vatRate = r2?.vatRate ?? null;
+      }
+      await sendApprovalRequestEmail(
+        parsed.data.approverEmail.toLowerCase(),
+        { vendor, amount, date, vatRate },
+        u?.name ?? u?.email ?? "En medarbetare",
+      );
+    } catch (e) {
+      console.error("approval email failed (non-blocking):", e);
+    }
   }
 
   await logAudit({

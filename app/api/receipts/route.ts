@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray, ne } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { receipts, users } from "@/db/schema";
+import { receipts, users, companyMembers } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
 import { getUserCompany } from "@/lib/company";
@@ -78,6 +78,22 @@ export async function POST(req: NextRequest) {
 
     const d = parsed.data;
     const membership = await getUserCompany(userId);
+    // Members need approval only if the company actually has an approver
+    // (owner/admin/approver besides them). Otherwise auto-approve.
+    let receiptStatus: "pending" | "approved" = "approved";
+    if (membership && membership.role === "member") {
+      const approvers = await db
+        .select({ id: companyMembers.id })
+        .from(companyMembers)
+        .where(
+          and(
+            eq(companyMembers.companyId, membership.companyId),
+            ne(companyMembers.userId, userId),
+            inArray(companyMembers.role, ["owner", "admin", "approver"]),
+          ),
+        );
+      if (approvers.length > 0) receiptStatus = "pending";
+    }
     const [created] = await db
       .insert(receipts)
       .values({
@@ -96,7 +112,7 @@ export async function POST(req: NextRequest) {
         receiptText: d.receiptText,
         // Only regular employees (member) need manager approval; owners,
         // admins, approvers and solo users (no company) are auto-approved.
-        status: membership && membership.role === "member" ? "pending" : "approved",
+        status: receiptStatus,
       })
       .returning();
 

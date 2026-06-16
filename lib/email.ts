@@ -103,3 +103,27 @@ export function sendPasswordResetEmail(to: string, token: string) {
     ),
   );
 }
+
+/** Notify an approver that an employee submitted an expense for approval. */
+export function sendApprovalRequestEmail(
+  approverEmail: string,
+  details: { vendor?: string | null; amount: string; date?: string | null; vatRate?: number | null },
+  requesterName: string,
+): Promise<boolean> {
+  const appUrl = process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const subject = `Godkännande av utlägg: ${details.vendor ?? "kvitto"} · ${details.amount} kr`;
+  const body = `
+    <p>${requesterName} har skickat ett utlägg för godkännande.</p>
+    <div style="background:#F4F1EA;border-radius:8px;padding:16px;margin:16px 0">
+      ${details.vendor ? `<p style="margin:4px 0"><strong>Leverantör:</strong> ${details.vendor}</p>` : ""}
+      <p style="margin:4px 0"><strong>Belopp:</strong> ${details.amount} kr</p>
+      ${details.date ? `<p style="margin:4px 0"><strong>Datum:</strong> ${new Date(details.date).toLocaleDateString("sv-SE")}</p>` : ""}
+      ${details.vatRate ? `<p style="margin:4px 0"><strong>Moms:</strong> ${details.vatRate}%</p>` : ""}
+    </div>
+    <p style="margin-top:20px">
+      <a href="${appUrl}/dashboard/approvals" style="background:#2F6079;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block">
+        Gå till godkännanden
+      </a>
+    </p>`;
+  return send(approverEmail, subject, layout("Utlägg väntar på ditt godkännande", body));
+}
