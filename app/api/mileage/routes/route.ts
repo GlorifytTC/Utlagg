@@ -41,17 +41,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Ogiltiga fält" }, { status: 400 });
   }
   const d = parsed.data;
-  const [route] = await db
-    .insert(mileageRoutes)
-    .values({
-      userId: session.user.id,
-      label: d.label,
-      startAddress: d.startAddress,
-      endAddress: d.endAddress,
-      distanceKm: d.distanceKm.toFixed(2),
-      purpose: d.purpose,
-      vehicleId: d.vehicleId ?? null,
-    })
-    .returning();
+  let route;
+  try {
+    [route] = await db
+      .insert(mileageRoutes)
+      .values({
+        userId: session.user.id,
+        label: d.label,
+        startAddress: d.startAddress,
+        endAddress: d.endAddress,
+        distanceKm: d.distanceKm.toFixed(2),
+        purpose: d.purpose,
+        vehicleId: d.vehicleId ?? null,
+      })
+      .returning();
+  } catch (e) {
+    console.error("route POST insert failed:", e);
+    const detail = e instanceof Error ? e.message : String(e);
+    return NextResponse.json({ error: `Kunde inte spara: ${detail}` }, { status: 500 });
+  }
   return NextResponse.json({ route }, { status: 201 });
 }

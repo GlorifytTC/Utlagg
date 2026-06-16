@@ -94,7 +94,9 @@ export async function POST(req: NextRequest) {
         basCode: d.basCode,
         aiConfidence: d.aiConfidence,
         receiptText: d.receiptText,
-        status: "pending",
+        // Only regular employees (member) need manager approval; owners,
+        // admins, approvers and solo users (no company) are auto-approved.
+        status: membership && membership.role === "member" ? "pending" : "approved",
       })
       .returning();
 

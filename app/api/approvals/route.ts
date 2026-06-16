@@ -7,6 +7,7 @@ import { approvalRequests, receipts, mileageEntries } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
 import { requireFeature } from "@/lib/entitlements";
+import { getUserCompany } from "@/lib/company";
 
 export const runtime = "nodejs";
 
@@ -75,6 +76,13 @@ export async function POST(req: NextRequest) {
     amount = String(m.amount);
   }
 
+  // Owners, admins and approvers don't need anyone to approve them — the
+  // request is recorded already-approved instead of sitting pending (which
+  // would otherwise mean approving your own expense). Only 'member' employees
+  // create a pending request for a manager.
+  const membership = await getUserCompany(userId);
+  const autoApprove = !membership || membership.role !== "member";
+
   const [created] = await db
     .insert(approvalRequests)
     .values({
@@ -84,8 +92,19 @@ export async function POST(req: NextRequest) {
       mileageId: parsed.data.mileageId,
       amount,
       requesterComment: parsed.data.requesterComment,
+      status: autoApprove ? "approved" : "pending",
+      approverComment: autoApprove ? "Auto-godkänd (ägare/administratör)" : undefined,
+      decidedAt: autoApprove ? new Date() : undefined,
     })
     .returning();
+
+  // Reflect an auto-approval on the receipt itself.
+  if (autoApprove && parsed.data.receiptId) {
+    await db
+      .update(receipts)
+      .set({ status: "approved" })
+      .where(eq(receipts.id, parsed.data.receiptId));
+  }
 
   await logAudit({
     userId,

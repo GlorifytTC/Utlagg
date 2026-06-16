@@ -157,7 +157,14 @@ export default function MileagePage() {
         vehicleId: vehicleId || undefined,
       }),
     });
-    if (res.ok) { toast.success(t.milRouteSaved); setRouteLabel(""); loadRoutes(); }
+    if (res.ok) {
+      toast.success(t.milRouteSaved);
+      setRouteLabel("");
+      loadRoutes();
+    } else {
+      const e = await res.json().catch(() => ({}));
+      toast.error(e.error ?? t.toastSaveFail);
+    }
   }
 
   async function logToday(r: Route) {
@@ -173,7 +180,13 @@ export default function MileagePage() {
         vehicleId: r.vehicleId || undefined,
       }),
     });
-    if (res.ok) { toast.success(t.milTripsLogged); load(); }
+    if (res.ok) {
+      toast.success(t.milTripsLogged);
+      load();
+    } else {
+      const e = await res.json().catch(() => ({}));
+      toast.error(e.error ?? t.toastSaveFail);
+    }
   }
 
   function datesInPeriod(): string[] {

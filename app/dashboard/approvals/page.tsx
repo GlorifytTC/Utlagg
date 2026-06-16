@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
+import { UpsellCard } from "@/components/UpsellCard";
 
 interface Req {
   id: string;
@@ -19,12 +20,20 @@ export default function ApprovalsPage() {
   const { t } = useLanguage();
   const [reqs, setReqs] = useState<Req[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
+  const [allowed, setAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setAllowed(d ? Boolean(d.features?.approvals) : false))
+      .catch(() => setAllowed(false));
+  }, []);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/approvals?type=incoming");
     if (res.ok) setReqs((await res.json()).requests);
   }, []);
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (allowed) load(); }, [load, allowed]);
 
   async function decide(id: string, decision: "approved" | "rejected") {
     const comment = window.prompt(decision === "approved" ? t.promptComment : t.promptReason) ?? "";
@@ -40,6 +49,15 @@ export default function ApprovalsPage() {
   }
 
   const pending = reqs.filter((r) => r.status === "pending");
+
+  if (allowed === false) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navApprovals}</h1>
+        <UpsellCard title={t.navApprovals} requiredPlan="Företag" description={t.apUpsellDesc} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
