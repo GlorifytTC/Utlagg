@@ -43,6 +43,13 @@
       "when": 1781038030936,
       "tag": "0005_admin_subscription_control",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1781676755063,
+      "tag": "0006_catchup_missing_schema",
+      "breakpoints": true
     }
   ]
 }

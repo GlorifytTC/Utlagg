@@ -23,21 +23,28 @@ export default async function DashboardPage() {
   if (!user) redirect("/login");
   const t = getT();
 
-  const [stats] = await db
-    .select({
-      total: sql<number>`count(*)::int`,
-      thisMonth: sql<number>`count(case when date_trunc('month', ${receipts.createdAt}) = date_trunc('month', now()) then 1 end)::int`,
-      totalAmount: sql<number>`coalesce(sum(${receipts.totalAmount}), 0)::float`,
-    })
-    .from(receipts)
-    .where(eq(receipts.userId, userId));
+  let stats: { total: number; thisMonth: number; totalAmount: number } | undefined;
+  let recent: Receipt[] = [];
+  try {
+    [stats] = await db
+      .select({
+        total: sql<number>`count(*)::int`,
+        thisMonth: sql<number>`count(case when date_trunc('month', ${receipts.createdAt}) = date_trunc('month', now()) then 1 end)::int`,
+        totalAmount: sql<number>`coalesce(sum(${receipts.totalAmount}), 0)::float`,
+      })
+      .from(receipts)
+      .where(eq(receipts.userId, userId));
 
-  const recent = (await db
-    .select()
-    .from(receipts)
-    .where(eq(receipts.userId, userId))
-    .orderBy(desc(receipts.createdAt))
-    .limit(5)) as Receipt[];
+    recent = (await db
+      .select()
+      .from(receipts)
+      .where(eq(receipts.userId, userId))
+      .orderBy(desc(receipts.createdAt))
+      .limit(5)) as Receipt[];
+  } catch (e) {
+    // Don't let a transient DB/schema issue crash the whole dashboard render.
+    console.error("dashboard overview query failed:", e);
+  }
 
   const limit = user.scanLimit as number;
   const used = user.scansUsedThisMonth as number;
