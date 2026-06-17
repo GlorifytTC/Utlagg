@@ -16,71 +16,116 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { cn } from "@/lib/utils";
+import type { Tier } from "@/lib/plans";
 
-const navItems = [
+const NAV_ITEMS = [
   { name: "Översikt", href: "/dashboard", icon: Home },
   { name: "Kvitton", href: "/dashboard/receipts", icon: Receipt },
   { name: "Prenumeration", href: "/dashboard/subscription", icon: CreditCard },
   { name: "Statistik", href: "/dashboard/stats", icon: BarChart3 },
   { name: "Inställningar", href: "/dashboard/settings", icon: Settings },
   { name: "Profil", href: "/dashboard/profile", icon: User },
-];
+] as const;
 
-export function Sidebar() {
+const TIER_LABEL: Partial<Record<Tier, string>> = {
+  pro: "Pro",
+  business: "Business",
+};
+
+export function Sidebar({ tier }: { tier: Tier }) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const dark = theme === "dark";
 
   return (
-    <aside className="fixed left-0 top-0 flex h-full w-64 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-      <div className="p-6">
-        <Link href="/" className="font-display text-xl font-semibold text-gray-900 dark:text-white">
-          Utlagg
+    <aside className="fixed inset-y-0 left-0 z-20 flex w-60 flex-col border-r border-gray-900/[0.07] bg-white/75 backdrop-blur-xl dark:border-white/[0.07] dark:bg-gray-950/80">
+      {/* Brand header */}
+      <div className="px-5 pb-5 pt-6">
+        <Link 
+          href="/" 
+          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 focus-visible:rounded-md"
+        >
+          <span className="font-display text-[17px] font-semibold tracking-tight text-gray-900 dark:text-white">
+            Utlägg
+          </span>
         </Link>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Expense Management</p>
+        <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-600">
+          Expense Management
+        </p>
+        {TIER_LABEL[tier] && (
+          <span className="mt-2.5 inline-flex items-center rounded-full border border-gray-200 px-2 py-0.5 text-[9.5px] uppercase tracking-widest text-gray-500 dark:border-gray-800 dark:text-gray-500">
+            {TIER_LABEL[tier]}
+          </span>
+        )}
       </div>
 
-      <nav className="flex-1 space-y-1 px-4">
-        {navItems.map((item) => {
-          const isActive =
-            item.href === "/dashboard"
-              ? pathname === "/dashboard"
+      <div className="mx-5 h-px bg-gray-900/[0.06] dark:bg-white/[0.06]" />
+
+      {/* Navigation menu */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
+        <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-600">
+          Menu
+        </p>
+        <ul className="space-y-px">
+          {NAV_ITEMS.map((item) => {
+            const isActive = item.href === "/dashboard" 
+              ? pathname === "/dashboard" 
               : pathname.startsWith(item.href);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-colors",
-                isActive
-                  ? "bg-nordic-50 text-nordic-600 dark:bg-nordic-900/30 dark:text-nordic-400"
-                  : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800",
-              )}
-            >
-              <Icon className="h-5 w-5" />
-              <span>{item.name}</span>
-            </Link>
-          );
-        })}
+            const Icon = item.icon;
+
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "group flex items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm transition-colors duration-150",
+                    isActive
+                      ? "bg-gray-900/[0.07] text-gray-900 dark:bg-white/[0.07] dark:text-white"
+                      : "text-gray-500 hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-500 dark:hover:bg-white/[0.04] dark:hover:text-gray-300",
+                  )}
+                >
+                  <Icon 
+                    className={cn(
+                      "h-[15px] w-[15px] shrink-0 transition-opacity",
+                      isActive ? "opacity-90" : "opacity-40 group-hover:opacity-60",
+                    )}
+                    strokeWidth={1.75}
+                  />
+                  <span className={cn("flex-1", isActive ? "font-medium" : "font-normal")}>
+                    {item.name}
+                  </span>
+                  {isActive && (
+                    <span className="h-1 w-1 rounded-full bg-gray-600 dark:bg-gray-400" />
+                  )}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
 
-      <div className="space-y-2 border-t border-gray-200 p-4 dark:border-gray-800">
-        <button
-          onClick={toggleTheme}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800"
-        >
-          {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          <span>{dark ? "Ljust läge" : "Mörkt läge"}</span>
-        </button>
-
-        <button
-          onClick={() => signOut({ callbackUrl: "/" })}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-        >
-          <LogOut className="h-5 w-5" />
-          <span>Logga ut</span>
-        </button>
+      {/* Bottom actions */}
+      <div className="px-3 pb-4">
+        <div className="space-y-px border-t border-gray-900/[0.06] pt-3 dark:border-white/[0.06]">
+          <button
+            onClick={toggleTheme}
+            className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-500 transition-colors hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-500 dark:hover:bg-white/[0.04] dark:hover:text-gray-300"
+          >
+            {dark ? (
+              <Sun className="h-[15px] w-[15px]" strokeWidth={1.75} />
+            ) : (
+              <Moon className="h-[15px] w-[15px]" strokeWidth={1.75} />
+            )}
+            <span>{dark ? "Ljust läge" : "Mörkt läge"}</span>
+          </button>
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-400 transition-colors hover:bg-red-50/70 hover:text-red-600 dark:text-gray-600 dark:hover:bg-red-950/25 dark:hover:text-red-400"
+          >
+            <LogOut className="h-[15px] w-[15px]" strokeWidth={1.75} />
+            <span>Logga ut</span>
+          </button>
+        </div>
       </div>
     </aside>
   );

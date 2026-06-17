@@ -7,18 +7,19 @@ import { getBasAccount } from "@/lib/bas";
 import { resolveVatRate, vatFromGross, type VatRate } from "@/lib/vat";
 import { useLanguage } from "@/context/LanguageContext";
 import { ReceiptAnnotator } from "@/components/dashboard/ReceiptAnnotator";
+import { cn } from "@/lib/utils";
 
 interface Draft {
   vendorName: string;
   receiptNumber: string;
-  date: string; // yyyy-mm-dd
+  date: string;
   totalAmount: string;
   vatAmount: string;
   vatRate: VatRate;
   basCode: string | null;
   aiConfidence: number | null;
   receiptText: string;
-  image: string; // data URL of the (compressed) receipt photo
+  image: string;
 }
 
 const emptyDraft = (): Draft => ({
@@ -34,10 +35,6 @@ const emptyDraft = (): Draft => ({
   image: "",
 });
 
-/**
- * Downscale + re-encode an image to keep stored receipts small (max ~1500px,
- * JPEG ~0.6). Falls back to the original data URL if anything goes wrong.
- */
 async function compressImage(file: File, maxDim = 1500, quality = 0.6): Promise<string> {
   const dataUrl = await new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -78,27 +75,19 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [showCamera, setShowCamera] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleFile = useCallback(async (file: File) => {
     setError(null);
     setStage("scanning");
     try {
       const base64 = await compressImage(file);
-
-      // OCR runs on the SERVER now (no browser worker → no CSP issues).
-      const res = await fetch("/api/ocr", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64 }),
-      });
+      const res = await fetch("/api/ocr", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64 }) });
       const data = await res.json();
-
       if (!res.ok) {
-        // Fall back to manual entry rather than blocking the user.
         setDraft(emptyDraft());
         setError(data.error ?? "OCR misslyckades — ange manuellt.");
       } else {
-        // Auto-fill Moms: use the read amount, else compute from total + rate.
         let vat = data.vatAmount as number | null;
         const total = data.totalAmount as number | null;
         const rate = data.vatRate as number | null;
@@ -117,9 +106,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
           receiptText: data.rawText ?? "",
           image: base64,
         });
-        if (data.needsManualReview) {
-          setError("Låg träffsäkerhet — kontrollera fälten innan du sparar.");
-        }
+        if (data.needsManualReview) setError("Låg träffsäkerhet — kontrollera fälten innan du sparar.");
       }
       setStage("review");
     } catch (err) {
@@ -131,13 +118,9 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
 
   async function openCamera() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-        audio: false,
-      });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
       streamRef.current = stream;
       setShowCamera(true);
-      // Attach after the modal mounts.
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -145,8 +128,6 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
         }
       }, 50);
     } catch {
-      // No webcam / permission denied (common on desktop) — fall back to the
-      // file/camera input so mobile still gets the native camera.
       cameraRef.current?.click();
     }
   }
@@ -164,17 +145,13 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     canvas.getContext("2d")?.drawImage(video, 0, 0);
-    canvas.toBlob(
-      (blob) => {
-        if (blob) {
-          const file = new File([blob], `kvitto-${Date.now()}.jpg`, { type: "image/jpeg" });
-          handleFile(file);
-        }
-        closeCamera();
-      },
-      "image/jpeg",
-      0.85,
-    );
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const file = new File([blob], `kvitto-${Date.now()}.jpg`, { type: "image/jpeg" });
+        handleFile(file);
+      }
+      closeCamera();
+    }, "image/jpeg", 0.85);
   }
 
   function onBasChange(code: string) {
@@ -182,22 +159,18 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
     setDraft((d) => ({
       ...d,
       basCode: code,
-      // Suggest a VAT rate based on the account's category + the receipt date.
-      vatRate: account
-        ? resolveVatRate(account.vatCategory, new Date(d.date))
-        : d.vatRate,
+      vatRate: account ? resolveVatRate(account.vatCategory, new Date(d.date)) : d.vatRate,
     }));
   }
 
   function recalcVat(total: string, rate: VatRate) {
     const n = Number(total);
-    if (Number.isFinite(n) && n > 0) {
-      return vatFromGross(n, rate).vat.toString();
-    }
+    if (Number.isFinite(n) && n > 0) return vatFromGross(n, rate).vat.toString();
     return "";
   }
 
   async function save() {
+    setIsSaving(true);
     setError(null);
     try {
       const res = await fetch("/api/receipts", {
@@ -212,9 +185,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
           vatAmount: draft.vatAmount ? Number(draft.vatAmount) : undefined,
           vatRate: draft.vatRate,
           basCode: draft.basCode ?? undefined,
-          category: draft.basCode
-            ? getBasAccount(draft.basCode)?.name
-            : undefined,
+          category: draft.basCode ? getBasAccount(draft.basCode)?.name : undefined,
           aiConfidence: draft.aiConfidence ?? undefined,
           receiptText: draft.receiptText || undefined,
         }),
@@ -222,6 +193,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "Kunde inte spara.");
+        setIsSaving(false);
         return;
       }
       setDraft(emptyDraft());
@@ -229,33 +201,43 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       onSaved();
     } catch {
       setError("Något gick fel vid sparande.");
+    } finally {
+      setIsSaving(false);
     }
   }
 
   return (
-    <div className="rounded-2xl border hairline bg-white/60 p-6">
-      {showCamera && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-black/80 p-4">
-          <video ref={videoRef} playsInline muted className="max-h-[70vh] w-full max-w-lg rounded-xl bg-black" />
-          <div className="flex gap-3">
-            <button onClick={capturePhoto} className="rounded-full bg-white px-6 py-2.5 text-sm font-medium text-ink">
-              {t.receiptTakePhoto}
-            </button>
-            <button onClick={closeCamera} className="rounded-full border border-white/40 px-6 py-2.5 text-sm text-white">
-              {t.receiptCancel}
-            </button>
-          </div>
-        </div>
-      )}
-      <h2 className="font-display text-xl">{t.receiptNewTitle}</h2>
+    <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-gray-950/60">
+      <AnimatePresence>
+        {showCamera && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-black/80 p-4"
+          >
+            <video ref={videoRef} playsInline muted className="max-h-[70vh] w-full max-w-lg rounded-xl bg-black" />
+            <div className="flex gap-3">
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={capturePhoto} className="rounded-full bg-white px-6 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
+                {t.receiptTakePhoto}
+              </motion.button>
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={closeCamera} className="rounded-full border border-white/40 px-6 py-2.5 text-sm text-white hover:bg-white/10">
+                {t.receiptCancel}
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <h2 className="font-display text-xl text-gray-900 dark:text-white">{t.receiptNewTitle}</h2>
 
       <AnimatePresence mode="wait">
         {stage === "idle" && (
           <motion.div
             key="drop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
             onDragOver={(e) => {
               e.preventDefault();
               setDragging(true);
@@ -267,66 +249,40 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
               const f = e.dataTransfer.files?.[0];
               if (f) handleFile(f);
             }}
-            className={`mt-4 flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-10 text-center transition ${
-              dragging ? "border-nordic-600 bg-nordic-50" : "hairline"
-            }`}
+            className={cn(
+              "mt-4 flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-10 text-center transition",
+              dragging ? "border-sky-600 bg-sky-50/60" : "border-gray-900/[0.15] bg-white/40 dark:border-white/[0.15] dark:bg-gray-950/40",
+            )}
           >
-            <p className="text-sm text-ink/70">
-              {t.receiptDragDrop}
-            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">{t.receiptDragDrop}</p>
             <div className="mt-3 flex flex-wrap justify-center gap-3">
-              <button
-                onClick={() => inputRef.current?.click()}
-                className="rounded-full bg-ink px-5 py-2.5 text-sm text-paper hover:bg-nordic-900"
-              >
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => inputRef.current?.click()} className="rounded-full bg-gray-900 px-5 py-2.5 text-sm text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
                 {t.receiptChooseImage}
-              </button>
-              <button
-                onClick={openCamera}
-                className="rounded-full border border-ink/20 px-5 py-2.5 text-sm text-ink hover:bg-ink/5"
-              >
+              </motion.button>
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={openCamera} className="rounded-full border border-gray-900/[0.15] px-5 py-2.5 text-sm text-gray-600 hover:border-gray-900/40 dark:border-white/[0.15] dark:text-gray-300 dark:hover:border-white/40">
                 {t.receiptTakePhoto}
-              </button>
+              </motion.button>
             </div>
-            {/* Gallery / file picker (no capture). */}
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) handleFile(f);
-              }}
-            />
-            {/* Camera (capture forces the rear camera on mobile). */}
-            <input
-              ref={cameraRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) handleFile(f);
-              }}
-            />
-            <p className="mt-3 text-xs text-ink/40">
-              {t.receiptCameraHint}
-            </p>
+            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+            <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+            <p className="mt-3 text-xs text-gray-400 dark:text-gray-500">{t.receiptCameraHint}</p>
           </motion.div>
         )}
 
         {stage === "scanning" && (
           <motion.div
             key="scanning"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
             className="mt-4 flex flex-col items-center justify-center gap-4 p-12"
           >
-            <div className="h-10 w-10 animate-spin rounded-full border-2 border-nordic-600 border-t-transparent" />
-            <p className="text-sm text-ink/70">AI analyserar kvitto…</p>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="h-10 w-10 rounded-full border-2 border-sky-600 border-t-transparent"
+            />
+            <p className="text-sm text-gray-600 dark:text-gray-300">AI analyserar kvitto…</p>
           </motion.div>
         )}
 
@@ -335,13 +291,18 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             key="review"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: 0, y: -8 }}
             className="mt-4 space-y-4"
           >
             {draft.aiConfidence != null && (
-              <p className="text-xs text-ink/50">
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-xs text-gray-500 dark:text-gray-400"
+              >
                 AI-träffsäkerhet: {Math.round(draft.aiConfidence * 100)}%
-              </p>
+              </motion.p>
             )}
             {draft.image && (
               <ReceiptAnnotator
@@ -362,31 +323,35 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 }
               />
             )}
-            <Field label="Leverantör">
-              <input
-                value={draft.vendorName}
-                onChange={(e) => setDraft({ ...draft, vendorName: e.target.value })}
-                className="input"
-              />
-            </Field>
-            <Field label="Kvittonummer">
-              <input
-                value={draft.receiptNumber}
-                onChange={(e) => setDraft({ ...draft, receiptNumber: e.target.value })}
-                className="input"
-                placeholder="Valfritt"
-              />
-            </Field>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Datum">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Leverantör</label>
+                <input
+                  value={draft.vendorName}
+                  onChange={(e) => setDraft({ ...draft, vendorName: e.target.value })}
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
+                />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Kvittonummer</label>
+                <input
+                  value={draft.receiptNumber}
+                  onChange={(e) => setDraft({ ...draft, receiptNumber: e.target.value })}
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
+                  placeholder="Valfritt"
+                />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Datum</label>
                 <input
                   type="date"
                   value={draft.date}
                   onChange={(e) => setDraft({ ...draft, date: e.target.value })}
-                  className="input"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
                 />
-              </Field>
-              <Field label="Belopp (SEK)">
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Belopp (SEK)</label>
                 <input
                   inputMode="decimal"
                   value={draft.totalAmount}
@@ -398,12 +363,11 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                       vatAmount: recalcVat(total, d.vatRate),
                     }));
                   }}
-                  className="input"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
                 />
-              </Field>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Momssats">
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Momssats</label>
                 <select
                   value={draft.vatRate}
                   onChange={(e) => {
@@ -414,81 +378,83 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                       vatAmount: recalcVat(d.totalAmount, rate),
                     }));
                   }}
-                  className="input"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
                 >
                   <option value={6}>6 %</option>
                   <option value={12}>12 %</option>
                   <option value={25}>25 %</option>
                 </select>
-              </Field>
-              <Field label="Moms (SEK)">
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Moms (SEK)</label>
                 <input
                   inputMode="decimal"
                   value={draft.vatAmount}
                   onChange={(e) => setDraft({ ...draft, vatAmount: e.target.value })}
-                  className="input"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
                 />
-              </Field>
+              </div>
             </div>
-            <Field label="BAS-konto">
+            
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">BAS-konto</label>
               <BasSelect value={draft.basCode} onChange={onBasChange} />
-            </Field>
+            </div>
 
-            {error && <p className="text-sm text-amber">{error}</p>}
+            <AnimatePresence>
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  className="text-sm text-amber-600 dark:text-amber-400"
+                >
+                  {error}
+                </motion.p>
+              )}
+            </AnimatePresence>
 
             <div className="flex gap-3 pt-2">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={save}
-                className="rounded-full bg-ink px-6 py-2.5 text-sm text-paper hover:bg-nordic-900"
+                disabled={isSaving}
+                className={cn(
+                  "rounded-full bg-gray-900 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100",
+                  isSaving && "opacity-70 cursor-not-allowed",
+                )}
               >
-                Spara kvitto
-              </button>
-              <button
+                {isSaving ? (
+                  <span className="inline-flex items-center gap-2">
+                    <motion.span
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    >
+                      <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent dark:border-gray-900 dark:border-t-transparent" />
+                    </motion.span>
+                    Sparar...
+                  </span>
+                ) : (
+                  "Spara kvitto"
+                )}
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   setDraft(emptyDraft());
                   setStage("idle");
                   setError(null);
                 }}
-                className="rounded-full border hairline px-6 py-2.5 text-sm hover:border-ink/40"
+                className="rounded-full border border-gray-900/[0.15] px-6 py-2.5 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40"
               >
                 Avbryt
-              </button>
+              </motion.button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      <style jsx>{`
-        :global(.input) {
-          width: 100%;
-          border-radius: 0.5rem;
-          border: 1px solid rgba(22, 24, 29, 0.12);
-          background: #fff;
-          padding: 0.625rem 0.75rem;
-          font-size: 0.875rem;
-          outline: none;
-        }
-        :global(.input:focus) {
-          border-color: #2f6079;
-        }
-      `}</style>
     </div>
-  );
-}
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-xs font-medium text-ink/60">
-        {label}
-      </span>
-      {children}
-    </label>
   );
 }

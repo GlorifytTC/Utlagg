@@ -11,30 +11,42 @@ export function UsageChart({
   const t = getT();
   const unlimited = limit === -1;
   const pct = unlimited ? 0 : Math.min(100, Math.round((used / Math.max(1, limit)) * 100));
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t.scansThisMonth}</CardTitle>
-        <CardDescription>
-          {unlimited ? t.usageUnlimitedPlan : `${used} ${t.usageOf} ${limit} ${t.usageUsedWord}`}
+    <Card className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-gray-950/60">
+      <CardHeader className="pb-4">
+        <CardTitle className="font-display text-lg text-gray-900 dark:text-white">
+          {t.scansThisMonth}
+        </CardTitle>
+        <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
+          {unlimited
+            ? t.usageUnlimitedPlan
+            : `${used} ${t.usageOf} ${limit} ${t.usageUsedWord}`}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {unlimited ? (
-          <p className="text-3xl font-semibold text-nordic-600 dark:text-nordic-400">{used}</p>
+          <p className="text-3xl font-semibold text-sky-600 dark:text-sky-400">
+            {used}
+          </p>
         ) : (
-          <>
+          <div>
             <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
               <div
-                className={
-                  "h-full rounded-full transition-all " +
-                  (pct >= 100 ? "bg-red-500" : pct >= 80 ? "bg-amber" : "bg-nordic-600")
-                }
+                className={`h-full rounded-full transition-all duration-700 ease-out ${
+                  pct >= 100
+                    ? "bg-red-500"
+                    : pct >= 80
+                    ? "bg-amber-500"
+                    : "bg-sky-600"
+                }`}
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{pct}% {t.usagePercentUsed}</p>
-          </>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              {pct}% {t.usagePercentUsed}
+            </p>
+          </div>
         )}
       </CardContent>
     </Card>

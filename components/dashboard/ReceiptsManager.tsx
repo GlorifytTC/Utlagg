@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { ReceiptUploader } from "@/components/dashboard/ReceiptUploader";
 import { ReceiptTable } from "@/components/dashboard/ReceiptTable";
 import { UsageMeter } from "@/components/dashboard/UsageMeter";
@@ -23,12 +24,17 @@ export function ReceiptsManager({
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.1 }}
+      className="space-y-6"
+    >
       <div className="grid gap-6 md:grid-cols-[1fr_320px]">
         <ReceiptUploader onSaved={handleSaved} />
         <UsageMeter used={scansUsed} limit={limit} tier={tier} />
       </div>
       <ReceiptTable refreshKey={refreshKey} />
-    </div>
+    </motion.div>
   );
 }
