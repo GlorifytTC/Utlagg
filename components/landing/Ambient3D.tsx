@@ -1,3 +1,4 @@
+// components/landing/Ambient3D.tsx
 "use client";
 
 import { useRef } from "react";
@@ -26,12 +27,10 @@ function BgReceipt({
       floatIntensity={animated ? 1.4 : 0}
     >
       <group position={position} scale={scale} rotation={tilt}>
-        {/* paper */}
         <mesh>
           <boxGeometry args={[2.2, 4, 0.04]} />
           <meshStandardMaterial color="#FBF9F4" roughness={0.9} transparent opacity={0.95} />
         </mesh>
-        {/* header bar */}
         <mesh position={[0, 1.85, 0.06]}>
           <boxGeometry args={[1.4, 0.16, 0.01]} />
           <meshStandardMaterial color="#2F6079" />
@@ -42,7 +41,6 @@ function BgReceipt({
             <meshStandardMaterial color="#C7C0B0" />
           </mesh>
         ))}
-        {/* total bar */}
         <mesh position={[0, -0.75, 0.06]}>
           <boxGeometry args={[1.6, 0.12, 0.01]} />
           <meshStandardMaterial color="#16181D" />
@@ -60,8 +58,6 @@ function Scene({ animated }: { animated: boolean }) {
     }
   });
 
-  // Receipts drift toward the edges and are pushed back so they never sit
-  // behind body copy in the centre.
   return (
     <group ref={group}>
       <BgReceipt position={[-4.6, -0.4, -3]} scale={0.5} speed={1.0} tilt={[0.1, -0.4, 0.12]} animated={animated} />

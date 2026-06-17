@@ -21,6 +21,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1060.0",
     "@react-three/drei": "^9.114.0",
     "@react-three/fiber": "^8.17.10",
+    "@react-three/postprocessing": "^2.19.1",
     "@upstash/qstash": "^2.11.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
