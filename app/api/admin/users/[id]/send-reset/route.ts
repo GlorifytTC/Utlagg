@@ -27,7 +27,7 @@ export async function POST(
       passwordResetTokenExpires: new Date(Date.now() + 60 * 60 * 1000),
     })
     .where(eq(users.id, user.id));
-  await sendPasswordResetEmail(user.email, raw);
+  await sendPasswordResetEmail(user.email, user.name ?? "Användare", raw);
   await logAuditEvent({
     userId: session.user!.id,
     action: "admin.user.send_reset",
