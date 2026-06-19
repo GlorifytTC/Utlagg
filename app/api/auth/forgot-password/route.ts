@@ -1,3 +1,5 @@
+// app/api/auth/forgot-password/route.ts
+
 import { NextResponse, type NextRequest } from "next/server";
 import crypto from "node:crypto";
 import { eq } from "drizzle-orm";
@@ -42,7 +44,10 @@ export async function POST(req: NextRequest) {
         passwordResetTokenExpires: expires,
       })
       .where(eq(users.id, user.id));
-    await sendPasswordResetEmail(user.email, raw);
+    
+    // ✅ FIXED: Pass 3 arguments (email, token, name)
+    await sendPasswordResetEmail(user.email, raw, user.name || 'Användare');
+    
     await logAudit({ userId: user.id, action: "auth.password.reset_requested", ipAddress: ip });
     logger.info({ userId: user.id }, "password reset requested");
   }
