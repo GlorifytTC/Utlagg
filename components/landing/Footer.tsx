@@ -44,7 +44,6 @@ export function Footer() {
             <div className="mt-6 flex flex-wrap gap-2 text-xs text-ink/70">
               <span className="rounded-full border hairline px-3 py-1">{t.footerGDPR}</span>
               <span className="rounded-full border hairline px-3 py-1">{t.footerAudit}</span>
-              <span className="rounded-full border hairline px-3 py-1">{t.footerBankID}</span>
             </div>
           </div>
 

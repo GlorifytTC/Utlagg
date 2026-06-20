@@ -25,11 +25,6 @@ const COMPARISON_ROWS = [
     tradKey: "featuresCompareVatTraditional",
   },
   {
-    labelKey: "featuresCompareBankidLabel",
-    utlaggKey: "featuresCompareBankidUtlagg",
-    tradKey: "featuresCompareBankidTraditional",
-  },
-  {
     labelKey: "featuresCompareDataLabel",
     utlaggKey: "featuresCompareDataUtlagg",
     tradKey: "featuresCompareDataTraditional",

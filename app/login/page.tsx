@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { BankIDLogin } from "@/components/auth/BankIDLogin";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -57,7 +56,6 @@ export default function LoginPage() {
           >
             {loading ? "Loggar in…" : "Logga in"}
           </button>
-          <BankIDLogin callbackUrl="/dashboard" />
         </div>
         <p className="mt-6 text-sm text-ink/60">
           Inget konto?{" "}

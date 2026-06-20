@@ -58,7 +58,6 @@ export interface Translations {
   footerDescription: string;
   footerGDPR: string;
   footerAudit: string;
-  footerBankID: string;
   footerCopyright: string;
   footerDisclaimer: string;
   // Dashboard navigation
@@ -195,9 +194,6 @@ export interface Translations {
   featuresCompareVatLabel: string;
   featuresCompareVatUtlagg: string;
   featuresCompareVatTraditional: string;
-  featuresCompareBankidLabel: string;
-  featuresCompareBankidUtlagg: string;
-  featuresCompareBankidTraditional: string;
   featuresCompareDataLabel: string;
   featuresCompareDataUtlagg: string;
   featuresCompareDataTraditional: string;
@@ -224,7 +220,6 @@ export interface Translations {
   pricingTableCurrency: string;
   pricingTableSie4: string;
   pricingTableSync: string;
-  pricingTableBankid: string;
   pricingTableRoles: string;
   pricingTableLimits: string;
   pricingTableOnboarding: string;
@@ -688,7 +683,7 @@ export const strings: Record<Lang, Translations> = {
     aboutVal2Title: "Inga överraskningar",
     aboutVal2Body: "Tydlig prissättning, ingen bindningstid och din data är din. Du kan exportera allt och säga upp när du vill.",
     aboutVal3Title: "Integritet på riktigt",
-    aboutVal3Body: "GDPR-säker hantering, kryptering och BankID-inloggning. Dina kvitton lämnar aldrig din kontroll i onödan.",
+    aboutVal3Body: "GDPR-säker hantering och kryptering. Dina kvitton lämnar aldrig din kontroll i onödan.",
     aboutStatsTitle: "Byggt för svensk bokföring",
     aboutStat1Val: "6/12/25 %",
     aboutStat1Label: "Svenska momssatser, datumstyrda",
@@ -1048,9 +1043,9 @@ export const strings: Record<Lang, Translations> = {
     feature5Title: "Export till Skatteverket",
     feature5Body:
       "Ladda ner som CSV eller PDF — redo för din revisor eller bokföring.",
-    feature6Title: "BankID-redo",
+    feature6Title: "Kollektivtrafik & ersättning",
     feature6Body:
-      "Förberedd för inloggning och attest med BankID (lanseras i fas 2).",
+      "Registrera resor med kollektivtrafik och beräkna ersättning automatiskt enligt företagets regler eller Skatteverkets schabloner.",
 
     // Pricing
     pricingTagline: "Priser",
@@ -1077,7 +1072,6 @@ export const strings: Record<Lang, Translations> = {
     planBusinessFeatures: [
       "Allt i Pro",
       "Attestflöden",
-      "BankID",
       "Milersättning",
       "Koldioxidavtryck",
     ],
@@ -1089,7 +1083,6 @@ export const strings: Record<Lang, Translations> = {
       "AI-driven kvittohantering byggd för svenska moms- och bokföringsregler.",
     footerGDPR: "GDPR-säker",
     footerAudit: "7-årig revisionslogg",
-    footerBankID: "BankID-redo",
     footerCopyright: "© {year} GlorifyTC.",
     footerDisclaimer:
       "Detta är en startmall — verifiera moms- och bokföringsregler med din revisor innan produktion.",
@@ -1110,9 +1103,6 @@ export const strings: Record<Lang, Translations> = {
     featuresCompareVatLabel: "Svensk moms",
     featuresCompareVatUtlagg: "6 / 12 / 25 % identifieras automatiskt",
     featuresCompareVatTraditional: "Ofta konfigurerat per leverantör",
-    featuresCompareBankidLabel: "BankID-attestering",
-    featuresCompareBankidUtlagg: "Inbyggt",
-    featuresCompareBankidTraditional: "Separat identitetsleverantör",
     featuresCompareDataLabel: "Datalagring",
     featuresCompareDataUtlagg: "Sverige",
     featuresCompareDataTraditional: "EU eller USA",
@@ -1139,7 +1129,6 @@ export const strings: Record<Lang, Translations> = {
     pricingTableCurrency: "Flera valutor",
     pricingTableSie4: "SIE4-export",
     pricingTableSync: "Fortnox / Visma / Bokio-synk",
-    pricingTableBankid: "BankID-attestering",
     pricingTableRoles: "Rollbaserad åtkomst",
     pricingTableLimits: "Beloppsgränser",
     pricingTableOnboarding: "Anpassad onboarding",
@@ -1271,7 +1260,7 @@ export const strings: Record<Lang, Translations> = {
     aboutVal2Title: "No surprises",
     aboutVal2Body: "Clear pricing, no lock-in, and your data is yours. Export everything and cancel whenever you like.",
     aboutVal3Title: "Real privacy",
-    aboutVal3Body: "GDPR-safe handling, encryption and BankID login. Your receipts never leave your control unnecessarily.",
+    aboutVal3Body: "GDPR-safe handling and encryption. Your receipts never leave your control unnecessarily.",
     aboutStatsTitle: "Built for Swedish bookkeeping",
     aboutStat1Val: "6/12/25%",
     aboutStat1Label: "Swedish VAT rates, date-aware",
@@ -1632,9 +1621,9 @@ export const strings: Record<Lang, Translations> = {
     feature5Title: "Export to Swedish Tax Agency",
     feature5Body:
       "Download as CSV or PDF — ready for your accountant or bookkeeping.",
-    feature6Title: "BankID ready",
+    feature6Title: "Public transport & reimbursement",
     feature6Body:
-      "Prepared for login and approval with BankID (launching in phase 2).",
+      "Track public transport trips and automatically calculate reimbursements based on company policies or Swedish Tax Agency standards",
 
     // Pricing
     pricingTagline: "Pricing",
@@ -1657,7 +1646,6 @@ export const strings: Record<Lang, Translations> = {
     planBusinessFeatures: [
       "Everything in Pro",
       "Approval flows",
-      "BankID",
       "Mileage allowance",
       "Carbon footprint",
     ],
@@ -1674,7 +1662,6 @@ export const strings: Record<Lang, Translations> = {
       "AI-driven receipt management built for Swedish VAT and bookkeeping regulations.",
     footerGDPR: "GDPR-safe",
     footerAudit: "7-year audit log",
-    footerBankID: "BankID ready",
     footerCopyright: "© {year} GlorifyTC.",
     footerDisclaimer:
       "This is a starter template — verify VAT and bookkeeping rules with your accountant before production.",
@@ -1694,9 +1681,6 @@ export const strings: Record<Lang, Translations> = {
     featuresCompareVatLabel: "Swedish VAT handling",
     featuresCompareVatUtlagg: "6 / 12 / 25 % auto-detected",
     featuresCompareVatTraditional: "Often configured per-vendor",
-    featuresCompareBankidLabel: "BankID sign-off",
-    featuresCompareBankidUtlagg: "Built-in",
-    featuresCompareBankidTraditional: "Separate identity provider",
     featuresCompareDataLabel: "Data residency",
     featuresCompareDataUtlagg: "Sweden",
     featuresCompareDataTraditional: "EU or US",
@@ -1723,7 +1707,6 @@ export const strings: Record<Lang, Translations> = {
     pricingTableCurrency: "Multi-currency",
     pricingTableSie4: "SIE4 export",
     pricingTableSync: "Fortnox / Visma / Bokio sync",
-    pricingTableBankid: "BankID sign-off",
     pricingTableRoles: "Role-based access",
     pricingTableLimits: "Spending limits",
     pricingTableOnboarding: "Custom onboarding",

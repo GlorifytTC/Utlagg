@@ -26,7 +26,6 @@ const PRICING_TABLE_ROWS = [
     business: "✓",
     enterprise: "✓",
   },
-  { labelKey: "pricingTableBankid", free: "✓", pro: "✓", business: "✓", enterprise: "✓" },
   { labelKey: "pricingTableRoles", free: "—", pro: "—", business: "✓", enterprise: "✓" },
   { labelKey: "pricingTableLimits", free: "—", pro: "—", business: "✓", enterprise: "✓" },
   { labelKey: "pricingTableOnboarding", free: "—", pro: "—", business: "—", enterprise: "✓" },
