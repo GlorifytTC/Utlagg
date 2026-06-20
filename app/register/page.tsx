@@ -2,15 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { BankIDLogin } from "@/components/auth/BankIDLogin";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [form, setForm] = useState({ name: "", companyName: "", email: "", password: "" });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sentTo, setSentTo] = useState<string | null>(null);
 
   function update(key: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -31,16 +29,36 @@ export default function RegisterPage() {
         setError(data.error ?? "Något gick fel");
         return;
       }
-      // Auto sign-in after registration.
-      await signIn("credentials", {
-        email: form.email,
-        password: form.password,
-        redirect: false,
-      });
-      router.push("/dashboard");
+      // No auto sign-in: the account isn't active until the email link is
+      // clicked, so we show a "check your inbox" screen instead.
+      setSentTo(form.email);
     } finally {
       setLoading(false);
     }
+  }
+
+  if (sentTo) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-paper px-6 py-12">
+        <div className="w-full max-w-sm text-center">
+          <Link href="/" className="font-display text-xl font-semibold">
+            Utlagg
+          </Link>
+          <h1 className="mt-8 font-display text-3xl">Kolla din inkorg</h1>
+          <p className="mt-4 text-sm text-ink/70">
+            Vi har skickat en bekräftelselänk till <strong>{sentTo}</strong>. Klicka på
+            länken i mejlet för att aktivera kontot och komma till din instrumentpanel.
+          </p>
+          <p className="mt-6 text-sm text-ink/60">
+            Inget mejl efter några minuter? Kolla skräpposten, eller{" "}
+            <Link href="/login" className="text-nordic-600 underline">
+              logga in
+            </Link>{" "}
+            när du har klickat på länken.
+          </p>
+        </div>
+      </main>
+    );
   }
 
   return (

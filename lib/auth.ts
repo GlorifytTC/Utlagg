@@ -40,6 +40,15 @@ export const authOptions: NextAuthOptions = {
         );
         if (!valid) return null;
 
+        // Account exists and password is correct, but the email link was
+        // never clicked — don't open the dashboard for this person.
+        // (NextAuth v4 swallows thrown messages into a generic
+        // "CredentialsSignin" error, so the client checks verification
+        // status itself via /api/auth/check-verified before/after this.)
+        if (!user.emailVerified) {
+          return null;
+        }
+
         return {
           id: user.id,
           email: user.email,

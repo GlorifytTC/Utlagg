@@ -1,10 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
+import crypto from "node:crypto";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { logAudit, clientIp } from "@/lib/audit";
+import { sendVerificationEmail } from "@/lib/email";
 
 const schema = z.object({
   email: z.string().email(),
@@ -40,6 +42,11 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(parsed.data.password, 12);
 
+    // Account is created but stays unverified — emailVerified is null until
+    // they click the link, and login is blocked until then (see lib/auth.ts).
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+
     const [user] = await db
       .insert(users)
       .values({
@@ -49,17 +56,28 @@ export async function POST(req: NextRequest) {
         companyName: parsed.data.companyName,
         subscriptionTier: "free",
         scanLimit: 25,
+        emailVerificationToken: tokenHash,
+        emailVerificationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
       })
       .returning({ id: users.id, email: users.email });
 
     await logAudit({
       userId: user.id,
       action: "user.register",
-      details: `New account: ${email}`,
+      details: `New account (pending verification): ${email}`,
       ipAddress: clientIp(req),
     });
 
-    return NextResponse.json({ id: user.id, email: user.email }, { status: 201 });
+    const emailSent = await sendVerificationEmail(
+      user.email,
+      parsed.data.name ?? "där",
+      rawToken,
+    );
+
+    return NextResponse.json(
+      { id: user.id, email: user.email, verificationEmailSent: emailSent },
+      { status: 201 },
+    );
   } catch (err) {
     console.error("register error:", err);
     return NextResponse.json(
