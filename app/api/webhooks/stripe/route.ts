@@ -51,7 +51,8 @@ export async function POST(req: NextRequest) {
           sessionObj.customer_email ??
           null;
         if (email) {
-          await sendWelcomeEmail(email);
+          const name = sessionObj.customer_details?.name ?? "där";
+          await sendWelcomeEmail(email, name);
         }
         break;
       }

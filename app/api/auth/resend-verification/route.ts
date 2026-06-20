@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       emailVerificationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     })
     .where(eq(users.id, user.id));
-  await sendVerificationEmail(user.email, raw);
+  await sendVerificationEmail(user.email, user.name ?? "där", raw);
 
   return NextResponse.json({ ok: true });
 }

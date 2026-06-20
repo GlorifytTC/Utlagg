@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       .where(eq(users.id, user.id));
     
     // ✅ FIXED: Pass 3 arguments (email, token, name)
-    await sendPasswordResetEmail(user.email, raw, user.name || 'Användare');
+    await sendPasswordResetEmail(user.email, user.name || 'Användare', raw);
     
     await logAudit({ userId: user.id, action: "auth.password.reset_requested", ipAddress: ip });
     logger.info({ userId: user.id }, "password reset requested");
