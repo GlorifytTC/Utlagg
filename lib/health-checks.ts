@@ -3,6 +3,7 @@ import { S3Client, HeadBucketCommand } from "@aws-sdk/client-s3";
 import { db } from "@/db";
 import { stripe } from "@/lib/stripe";
 import { isStorageConfigured } from "@/lib/storage";
+import { isEmailConfigured } from "@/lib/email";
 
 export interface HealthStatus {
   name: string;
@@ -76,7 +77,7 @@ export async function checkAll(): Promise<HealthStatus[]> {
     redis,
     stripeh,
     r2,
-    configured("E-post (Resend)", Boolean(process.env.RESEND_API_KEY)),
+    configured("E-post (Brevo)", isEmailConfigured()),
     configured("OCR (Google Vision)", Boolean(process.env.GOOGLE_CLOUD_API_KEY)),
     configured("Kö (QStash)", Boolean(process.env.QSTASH_TOKEN)),
   ];

@@ -1,14 +1,28 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-const apiKey = process.env.RESEND_API_KEY || undefined;
-const FROM = process.env.RESEND_FROM_EMAIL || "Utlagg <noreply@utlagg.se>";
+const transporter = nodemailer.createTransport({
+  host: process.env.BREVO_SMTP_HOST || "",
+  port: Number(process.env.BREVO_SMTP_PORT) || 587,
+  auth: {
+    user: process.env.BREVO_SMTP_LOGIN || "",
+    pass: process.env.BREVO_API_KEY || "",
+  },
+});
+
+const FROM_EMAIL =
+  process.env.BREVO_FROM_EMAIL || "noreply@utlagg.se";
+const FROM_NAME = process.env.BREVO_FROM_NAME || "Utlagg";
 const APP_NAME = "Utlagg";
-const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || "support@utlagg.se";
-
-const resend = apiKey ? new Resend(apiKey) : null;
+const SUPPORT_EMAIL =
+  process.env.SUPPORT_EMAIL || "support@utlagg.se";
 
 export function isEmailConfigured(): boolean {
-  return resend !== null;
+  return Boolean(
+    process.env.BREVO_API_KEY &&
+      process.env.BREVO_SMTP_HOST &&
+      process.env.BREVO_SMTP_LOGIN &&
+      process.env.BREVO_FROM_EMAIL,
+  );
 }
 
 async function send(
@@ -16,18 +30,24 @@ async function send(
   subject: string,
   html: string,
 ): Promise<boolean> {
-  if (!resend) {
+  if (!isEmailConfigured()) {
     console.warn(
-      `[email] RESEND_API_KEY not set — skipped "${subject}" to ${to}`,
+      `[email] Brevo not configured — skipped "${subject}" to ${to}`,
     );
     return false;
   }
-  const { error } = await resend.emails.send({ from: FROM, to, subject, html });
-  if (error) {
-    console.error("[email] send failed:", error);
+  try {
+    await transporter.sendMail({
+      from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
+      to,
+      subject,
+      html,
+    });
+    return true;
+  } catch (err) {
+    console.error("[email] send failed:", err);
     return false;
   }
-  return true;
 }
 
 function layout(body: string): string {
@@ -44,6 +64,10 @@ function escapeHtml(s: string): string {
     .replace(/'/g, "&#039;");
 }
 
+function escapeRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function renderTemplate(
   template: string,
   params: Record<string, string>,
@@ -56,10 +80,6 @@ function renderTemplate(
     );
   }
   return result;
-}
-
-function escapeRegex(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function lineToHtml(text: string): string {
@@ -218,7 +238,8 @@ export function sendWelcomeEmail(to: string, userName: string) {
   const html = buildEmailHtml(WELCOME_TEMPLATE, {
     user_name: userName,
     app_name: APP_NAME,
-    action_url: process.env.NEXTAUTH_URL || "http://localhost:3000",
+    action_url:
+      process.env.NEXTAUTH_URL || "http://localhost:3000",
     support_email: SUPPORT_EMAIL,
   });
   return send(to, `Välkommen till ${APP_NAME}`, html);
@@ -258,7 +279,10 @@ export function sendPasswordResetEmail(
   return send(to, "Återställ ditt lösenord", html);
 }
 
-export function sendPasswordChangedEmail(to: string, userName: string) {
+export function sendPasswordChangedEmail(
+  to: string,
+  userName: string,
+) {
   const html = buildEmailHtml(PASSWORD_CHANGED_TEMPLATE, {
     user_name: userName,
     app_name: APP_NAME,
@@ -331,7 +355,10 @@ export function sendSubscriptionCanceled(
 
 // ─── Legacy compatibility wrappers ───────────────────────────
 
-export function sendCompanyInviteEmail(to: string, token: string) {
+export function sendCompanyInviteEmail(
+  to: string,
+  token: string,
+) {
   const url = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/accept-invite?token=${encodeURIComponent(token)}`;
   const body = `# Inbjudan till ${APP_NAME}
 
@@ -348,7 +375,11 @@ ${url}
     support_email: SUPPORT_EMAIL,
     expiration_minutes: "10080",
   });
-  return send(to, `Du har bjudits in till ett företag på ${APP_NAME}`, html);
+  return send(
+    to,
+    `Du har bjudits in till ett företag på ${APP_NAME}`,
+    html,
+  );
 }
 
 export function sendEnterpriseInquiry(
@@ -371,7 +402,11 @@ Svara dem direkt för att komma överens om pris, och sätt sedan deras plan til
     action_url: "",
     support_email: SUPPORT_EMAIL,
   });
-  return send(ownerEmail, `Enterprise-förfrågan från ${fromEmail}`, html);
+  return send(
+    ownerEmail,
+    `Enterprise-förfrågan från ${fromEmail}`,
+    html,
+  );
 }
 
 export function sendApprovalRequestEmail(
