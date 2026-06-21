@@ -70,12 +70,13 @@ async function send(
 
   // Masked config dump — safe to leave in logs, never prints the secret itself.
   const apiKey = process.env.BREVO_API_KEY || "";
-  console.log(
-    `[email] attempting send → to=${to} subject="${subject}" ` +
-      `host=${process.env.BREVO_SMTP_HOST} port=${Number(process.env.BREVO_SMTP_PORT) || 587} ` +
-      `login=${process.env.BREVO_SMTP_LOGIN} from="${FROM_NAME}" <${FROM_EMAIL}> ` +
-      `keyPrefix=${apiKey.slice(0, 8)}... keyLen=${apiKey.length}`,
-  );
+  console.log("=".repeat(70));
+  console.log(`[EMAIL] >>> ATTEMPTING SEND to=${to}`);
+  console.log(`[EMAIL]     subject = "${subject}"`);
+  console.log(`[EMAIL]     host=${process.env.BREVO_SMTP_HOST} port=${Number(process.env.BREVO_SMTP_PORT) || 587}`);
+  console.log(`[EMAIL]     login=${process.env.BREVO_SMTP_LOGIN}`);
+  console.log(`[EMAIL]     from="${FROM_NAME}" <${FROM_EMAIL}>`);
+  console.log(`[EMAIL]     apiKey prefix=${apiKey.slice(0, 8)}... len=${apiKey.length}`);
 
   const startedAt = Date.now();
   try {
@@ -85,11 +86,11 @@ async function send(
       subject,
       html,
     });
-    console.log(
-      `[email] SENT ok in ${Date.now() - startedAt}ms → messageId=${info.messageId} ` +
-        `accepted=${JSON.stringify(info.accepted)} rejected=${JSON.stringify(info.rejected)} ` +
-        `response="${info.response}"`,
-    );
+    console.log(`[EMAIL] <<< SENT OK in ${Date.now() - startedAt}ms`);
+    console.log(`[EMAIL]     messageId=${info.messageId}`);
+    console.log(`[EMAIL]     accepted=${JSON.stringify(info.accepted)} rejected=${JSON.stringify(info.rejected)}`);
+    console.log(`[EMAIL]     response="${info.response}"`);
+    console.log("=".repeat(70));
     return true;
   } catch (err) {
     const e = err as NodeJS.ErrnoException & {
@@ -97,15 +98,14 @@ async function send(
       response?: string;
       command?: string;
     };
-    console.error(
-      `[email] SEND FAILED after ${Date.now() - startedAt}ms → to=${to} subject="${subject}"\n` +
-        `  name: ${e.name}\n` +
-        `  message: ${e.message}\n` +
-        `  code: ${e.code ?? "(none)"}\n` +
-        `  responseCode: ${e.responseCode ?? "(none)"}\n` +
-        `  response: ${e.response ?? "(none)"}\n` +
-        `  command: ${e.command ?? "(none)"}`,
-    );
+    console.log(`[EMAIL] <<< SEND FAILED after ${Date.now() - startedAt}ms`);
+    console.log(`[EMAIL]     name: ${e.name}`);
+    console.log(`[EMAIL]     message: ${e.message}`);
+    console.log(`[EMAIL]     code: ${e.code ?? "(none)"}`);
+    console.log(`[EMAIL]     responseCode: ${e.responseCode ?? "(none)"}`);
+    console.log(`[EMAIL]     response: ${e.response ?? "(none)"}`);
+    console.log(`[EMAIL]     command: ${e.command ?? "(none)"}`);
+    console.log("=".repeat(70));
     return false;
   }
 }
