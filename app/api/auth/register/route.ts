@@ -28,16 +28,49 @@ export async function POST(req: NextRequest) {
 
     const email = parsed.data.email.toLowerCase();
     const [existing] = await db
-      .select({ id: users.id })
+      .select({
+        id: users.id,
+        emailVerified: users.emailVerified,
+        emailVerificationTokenExpires: users.emailVerificationTokenExpires,
+      })
       .from(users)
       .where(eq(users.email, email))
       .limit(1);
 
     if (existing) {
-      return NextResponse.json(
-        { error: "E-postadressen är redan registrerad" },
-        { status: 409 },
-      );
+      if (existing.emailVerified) {
+        // A real, active account — this email is genuinely taken.
+        return NextResponse.json(
+          { error: "E-postadressen är redan registrerad" },
+          { status: 409 },
+        );
+      }
+      const expired =
+        !existing.emailVerificationTokenExpires ||
+        existing.emailVerificationTokenExpires < new Date();
+      if (!expired) {
+        // They registered minutes ago and the link is still valid — don't
+        // silently delete a pending registration, but don't leave them
+        // stuck either: tell them what's actually going on.
+        return NextResponse.json(
+          {
+            error:
+              "Ett konto med den här e-postadressen väntar redan på bekräftelse. Kolla din inkorg, eller använd \"Skicka länken igen\" på inloggningssidan.",
+          },
+          { status: 409 },
+        );
+      }
+      // Never verified and the 24h window has passed: this row is dead
+      // weight, not a real account. Remove it so the email can be reused —
+      // this is what actually unblocks "I never got the email, now I'm
+      // stuck" instead of leaving an orphaned unverified row forever.
+      await db.delete(users).where(eq(users.id, existing.id));
+      await logAudit({
+        userId: existing.id,
+        action: "user.register.expired_cleanup",
+        details: `Removed never-verified expired registration: ${email}`,
+        ipAddress: clientIp(req),
+      });
     }
 
     const hashedPassword = await bcrypt.hash(parsed.data.password, 12);
