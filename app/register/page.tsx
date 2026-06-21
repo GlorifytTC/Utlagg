@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
+  const [emailFailed, setEmailFailed] = useState(false);
 
   function update(key: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -31,6 +32,7 @@ export default function RegisterPage() {
       }
       // No auto sign-in: the account isn't active until the email link is
       // clicked, so we show a "check your inbox" screen instead.
+      setEmailFailed(data.verificationEmailSent === false);
       setSentTo(form.email);
     } finally {
       setLoading(false);
@@ -45,10 +47,31 @@ export default function RegisterPage() {
             Utlagg
           </Link>
           <h1 className="mt-8 font-display text-3xl">Kolla din inkorg</h1>
-          <p className="mt-4 text-sm text-ink/70">
-            Vi har skickat en bekräftelselänk till <strong>{sentTo}</strong>. Klicka på
-            länken i mejlet för att aktivera kontot och komma till din instrumentpanel.
-          </p>
+          {emailFailed ? (
+            <>
+              <p className="mt-4 text-sm text-red-600">
+                Ditt konto skapades, men vi kunde tyvärr inte skicka bekräftelsemejlet
+                till <strong>{sentTo}</strong> just nu. Det är ett tillfälligt problem
+                med e-postutskick på vår sida — inte med din adress.
+              </p>
+              <p className="mt-4 text-sm text-ink/70">
+                Försök igen om en stund via{" "}
+                <Link href="/login" className="text-nordic-600 underline">
+                  inloggningssidan
+                </Link>{" "}
+                (knappen för att skicka länken igen finns där), eller kontakta{" "}
+                <a href="mailto:support@utlagg.se" className="text-nordic-600 underline">
+                  support@utlagg.se
+                </a>{" "}
+                om det inte fungerar.
+              </p>
+            </>
+          ) : (
+            <p className="mt-4 text-sm text-ink/70">
+              Vi har skickat en bekräftelselänk till <strong>{sentTo}</strong>. Klicka på
+              länken i mejlet för att aktivera kontot och komma till din instrumentpanel.
+            </p>
+          )}
           <p className="mt-6 text-sm text-ink/60">
             Inget mejl efter några minuter? Kolla skräpposten, eller{" "}
             <Link href="/login" className="text-nordic-600 underline">

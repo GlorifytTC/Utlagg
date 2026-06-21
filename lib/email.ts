@@ -9,9 +9,19 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const FROM_EMAIL =
-  process.env.BREVO_FROM_EMAIL || "noreply@utlagg.se";
-const FROM_NAME = process.env.BREVO_FROM_NAME || "Utlagg";
+/**
+ * Env vars pasted with surrounding quotes (a common copy/paste mistake in
+ * Railway's variable editor) end up baked into the string itself — e.g.
+ * BREVO_FROM_EMAIL="noreply@utlagg.se\"\"" becomes the literal value
+ * noreply@utlagg.se"" . Strip stray quotes/backslashes so a malformed
+ * env var can't silently break every outgoing email.
+ */
+function clean(v: string): string {
+  return v.replace(/["'\\]/g, "").trim();
+}
+
+const FROM_EMAIL = clean(process.env.BREVO_FROM_EMAIL || "noreply@utlagg.se");
+const FROM_NAME = clean(process.env.BREVO_FROM_NAME || "Utlagg");
 const APP_NAME = "Utlagg";
 const SUPPORT_EMAIL =
   process.env.SUPPORT_EMAIL || "support@utlagg.se";
