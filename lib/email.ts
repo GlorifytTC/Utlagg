@@ -35,27 +35,77 @@ export function isEmailConfigured(): boolean {
   );
 }
 
+/**
+ * Checks the SMTP connection + auth WITHOUT sending an email, by talking to
+ * Brevo and doing the EHLO/AUTH handshake only. Much faster to iterate on
+ * than a full register-and-wait cycle, and tells you immediately whether
+ * the problem is credentials/connectivity vs. something with the send itself.
+ */
+export async function verifyEmailConnection(): Promise<
+  { ok: true } | { ok: false; error: string }
+> {
+  try {
+    await transporter.verify();
+    return { ok: true };
+  } catch (err) {
+    const e = err as NodeJS.ErrnoException & { responseCode?: number; response?: string };
+    return {
+      ok: false,
+      error: `${e.name}: ${e.message} (code=${e.code ?? "?"} responseCode=${e.responseCode ?? "?"} response=${e.response ?? "?"})`,
+    };
+  }
+}
+
 async function send(
   to: string,
   subject: string,
   html: string,
 ): Promise<boolean> {
   if (!isEmailConfigured()) {
-    console.warn(
-      `[email] Brevo not configured — skipped "${subject}" to ${to}`,
+    console.error(
+      `[email] NOT CONFIGURED — missing one of BREVO_API_KEY / BREVO_SMTP_HOST / BREVO_SMTP_LOGIN / BREVO_FROM_EMAIL. Skipped "${subject}" to ${to}.`,
     );
     return false;
   }
+
+  // Masked config dump — safe to leave in logs, never prints the secret itself.
+  const apiKey = process.env.BREVO_API_KEY || "";
+  console.log(
+    `[email] attempting send → to=${to} subject="${subject}" ` +
+      `host=${process.env.BREVO_SMTP_HOST} port=${Number(process.env.BREVO_SMTP_PORT) || 587} ` +
+      `login=${process.env.BREVO_SMTP_LOGIN} from="${FROM_NAME}" <${FROM_EMAIL}> ` +
+      `keyPrefix=${apiKey.slice(0, 8)}... keyLen=${apiKey.length}`,
+  );
+
+  const startedAt = Date.now();
   try {
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
       to,
       subject,
       html,
     });
+    console.log(
+      `[email] SENT ok in ${Date.now() - startedAt}ms → messageId=${info.messageId} ` +
+        `accepted=${JSON.stringify(info.accepted)} rejected=${JSON.stringify(info.rejected)} ` +
+        `response="${info.response}"`,
+    );
     return true;
   } catch (err) {
-    console.error("[email] send failed:", err);
+    const e = err as NodeJS.ErrnoException & {
+      responseCode?: number;
+      response?: string;
+      command?: string;
+    };
+    console.error(
+      `[email] SEND FAILED after ${Date.now() - startedAt}ms → to=${to} subject="${subject}"\n` +
+        `  name: ${e.name}\n` +
+        `  message: ${e.message}\n` +
+        `  code: ${e.code ?? "(none)"}\n` +
+        `  responseCode: ${e.responseCode ?? "(none)"}\n` +
+        `  response: ${e.response ?? "(none)"}\n` +
+        `  command: ${e.command ?? "(none)"}`,
+    );
     return false;
   }
 }
@@ -459,4 +509,42 @@ export function sendApprovalRequestEmail(
     `Godkännande av utlägg: ${details.vendor ?? "kvitto"} · ${details.amount} kr`,
     html,
   );
+}
+/**
+ * Sends a real test email and returns full diagnostic detail (rather than
+ * just true/false like the normal send helpers) for the admin debug route.
+ */
+export async function sendTestEmail(
+  to: string,
+): Promise<{ ok: boolean; detail: string; config: { from: string; host: string; login: string } }> {
+  const config = {
+    from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
+    host: process.env.BREVO_SMTP_HOST || "(not set)",
+    login: process.env.BREVO_SMTP_LOGIN || "(not set)",
+  };
+  if (!isEmailConfigured()) {
+    return { ok: false, detail: "Not configured (missing env var)", config };
+  }
+  try {
+    const info = await transporter.sendMail({
+      from: config.from,
+      to,
+      subject: "Utlagg — testmejl",
+      html: layout(
+        "<h2>Testmejl</h2><p>Det här är ett testmejl från Utlagg's e-postdebug-endpoint. Om du ser det fungerar SMTP-konfigurationen.</p>",
+      ),
+    });
+    return {
+      ok: true,
+      detail: `messageId=${info.messageId} accepted=${JSON.stringify(info.accepted)} rejected=${JSON.stringify(info.rejected)} response="${info.response}"`,
+      config,
+    };
+  } catch (err) {
+    const e = err as NodeJS.ErrnoException & { responseCode?: number; response?: string; command?: string };
+    return {
+      ok: false,
+      detail: `${e.name}: ${e.message} | code=${e.code ?? "?"} responseCode=${e.responseCode ?? "?"} response=${e.response ?? "?"} command=${e.command ?? "?"}`,
+      config,
+    };
+  }
 }
