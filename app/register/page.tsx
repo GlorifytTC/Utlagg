@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { BankIDLogin } from "@/components/auth/BankIDLogin";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: "", companyName: "", email: "", password: "" });
@@ -110,7 +109,6 @@ export default function RegisterPage() {
           <div className="flex items-center gap-3 text-xs text-ink/40">
             <span className="h-px flex-1 bg-ink/10" /> eller <span className="h-px flex-1 bg-ink/10" />
           </div>
-          <BankIDLogin callbackUrl="/dashboard" />
         </div>
         <p className="mt-6 text-sm text-ink/60">
           Har du redan konto?{" "}
