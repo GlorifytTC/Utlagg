@@ -27,8 +27,7 @@ function clean(v: string): string {
 const FROM_EMAIL = clean(process.env.BREVO_FROM_EMAIL || "noreply@utlagg.se");
 const FROM_NAME = clean(process.env.BREVO_FROM_NAME || "Utlagg");
 const APP_NAME = "Utlagg";
-const SUPPORT_EMAIL =
-  process.env.SUPPORT_EMAIL || "support@utlagg.se";
+const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || "support@utlagg.se";
 
 export function isEmailConfigured(): boolean {
   return Boolean(process.env.BREVO_API_KEY && process.env.BREVO_FROM_EMAIL);
@@ -38,7 +37,11 @@ type BrevoSendResult =
   | { ok: true; messageId: string }
   | { ok: false; status: number; error: string };
 
-async function brevoSend(to: string, subject: string, html: string): Promise<BrevoSendResult> {
+async function brevoSend(
+  to: string,
+  subject: string,
+  html: string,
+): Promise<BrevoSendResult> {
   const apiKey = process.env.BREVO_API_KEY || "";
   try {
     const res = await fetch(BREVO_API_URL, {
@@ -60,7 +63,10 @@ async function brevoSend(to: string, subject: string, html: string): Promise<Bre
       return {
         ok: false,
         status: res.status,
-        error: typeof body?.message === "string" ? body.message : JSON.stringify(body),
+        error:
+          typeof body?.message === "string"
+            ? body.message
+            : JSON.stringify(body),
       };
     }
     return { ok: true, messageId: body?.messageId ?? "(none returned)" };
@@ -88,7 +94,10 @@ export async function verifyEmailConnection(): Promise<
     const body = await res.json().catch(() => ({}));
     return {
       ok: false,
-      error: `HTTP ${res.status}: ${typeof body?.message === "string" ? body.message : JSON.stringify(body)}`,
+      error: `HTTP ${res.status}: ${typeof body?.message === "string"
+        ? body.message
+        : JSON.stringify(body)
+        }`,
     };
   } catch (err) {
     return { ok: false, error: (err as Error).message };
@@ -112,16 +121,22 @@ async function send(
   console.log(`[EMAIL] >>> ATTEMPTING SEND (Brevo HTTP API) to=${to}`);
   console.log(`[EMAIL]     subject = "${subject}"`);
   console.log(`[EMAIL]     from="${FROM_NAME}" <${FROM_EMAIL}>`);
-  console.log(`[EMAIL]     apiKey prefix=${apiKey.slice(0, 8)}... len=${apiKey.length}`);
+  console.log(
+    `[EMAIL]     apiKey prefix=${apiKey.slice(0, 8)}... len=${apiKey.length}`,
+  );
 
   const startedAt = Date.now();
   const result = await brevoSend(to, subject, html);
   if (result.ok) {
-    console.log(`[EMAIL] <<< SENT OK in ${Date.now() - startedAt}ms — messageId=${result.messageId}`);
+    console.log(
+      `[EMAIL] <<< SENT OK in ${Date.now() - startedAt}ms — messageId=${result.messageId}`,
+    );
     console.log("=".repeat(70));
     return true;
   }
-  console.log(`[EMAIL] <<< SEND FAILED after ${Date.now() - startedAt}ms`);
+  console.log(
+    `[EMAIL] <<< SEND FAILED after ${Date.now() - startedAt}ms`,
+  );
   console.log(`[EMAIL]     status: ${result.status}`);
   console.log(`[EMAIL]     error: ${result.error}`);
   console.log("=".repeat(70));
@@ -146,6 +161,30 @@ function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/**
+ * Wraps http/https URLs in anchor tags so they are clickable in all email
+ * clients. Input must already be HTML-escaped; & in query strings will be
+ * &amp; at this point, which is correct inside an href attribute.
+ */
+function linkify(escaped: string): string {
+  return escaped.replace(
+    /(https?:\/\/[^\s<"]+)/g,
+    '<a href="$1" style="color:#4F46E5;word-break:break-all">$1</a>',
+  );
+}
+
+/**
+ * Renders a prominent CTA button. Use instead of a bare action_url line
+ * for primary actions (password reset, verification, etc.).
+ */
+function actionButton(url: string, label: string = "Öppna"): string {
+  return `<p style="margin:20px 0;text-align:center">
+    <a href="${escapeHtml(url)}" style="background:#4F46E5;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">
+      ${escapeHtml(label)}
+    </a>
+  </p>`;
+}
+
 function renderTemplate(
   template: string,
   params: Record<string, string>,
@@ -163,7 +202,7 @@ function renderTemplate(
 function lineToHtml(text: string): string {
   const escaped = escapeHtml(text);
   if (escaped.trim() === "") return "<br>";
-  return `<p style="margin:8px 0;line-height:1.6">${escaped}</p>`;
+  return `<p style="margin:8px 0;line-height:1.6">${linkify(escaped)}</p>`;
 }
 
 function buildEmailHtml(
@@ -199,6 +238,11 @@ function buildEmailHtml(
       bodyHtml += `<h3 style="font-size:15px;margin:12px 0 8px">${escapeHtml(line.trim().slice(4))}</h3>`;
     } else if (line.trim().startsWith("- ")) {
       bodyHtml += `<p style="margin:4px 0 4px 16px;line-height:1.6">– ${escapeHtml(line.trim().slice(2))}</p>`;
+    } else if (line.trim().startsWith("[button]")) {
+      // Syntax: [button] url | Label text
+      const rest = line.trim().slice(8).trim();
+      const [url, label] = rest.split("|").map((s) => s.trim());
+      if (url) bodyHtml += actionButton(url, label || "Öppna");
     } else {
       bodyHtml += lineToHtml(line);
     }
@@ -220,8 +264,7 @@ Hej {{ user_name }},
 
 Ditt konto har skapats.
 
-Gå till ditt konto:
-{{ action_url }}
+[button] {{ action_url }} | Gå till ditt konto
 
 Om du inte skapade detta konto, kontakta {{ support_email }}.
 
@@ -232,7 +275,8 @@ const VERIFY_TEMPLATE = `# Verifiera din e-postadress
 Hej {{ user_name }},
 
 Bekräfta din e-postadress:
-{{ action_url }}
+
+[button] {{ action_url }} | Verifiera e-post
 
 Länken gäller i {{ expiration_minutes }} minuter.
 
@@ -246,8 +290,7 @@ Hej {{ user_name }},
 
 En begäran om att återställa ditt lösenord har gjorts.
 
-Sätt ett nytt lösenord:
-{{ action_url }}
+[button] {{ action_url }} | Sätt nytt lösenord
 
 Länken gäller i {{ expiration_minutes }} minuter.
 
@@ -273,8 +316,7 @@ Din prenumeration på {{ plan_name }} är nu aktiv.
 
 Nästa debiteringsdatum: {{ billing_date }}
 
-Hantera din prenumeration:
-{{ action_url }}
+[button] {{ action_url }} | Hantera prenumeration
 
 Frågor: {{ support_email }}
 
@@ -290,8 +332,7 @@ Plan: {{ plan_name }}
 Belopp: {{ amount }}
 Datum: {{ billing_date }}
 
-Se dina betalningsuppgifter:
-{{ action_url }}
+[button] {{ action_url }} | Se betalningsuppgifter
 
 — ${APP_NAME}`;
 
@@ -303,8 +344,7 @@ Din prenumeration på {{ plan_name }} har avslutats.
 
 Du har tillgång fram till {{ billing_date }}.
 
-Återaktivera här:
-{{ action_url }}
+[button] {{ action_url }} | Återaktivera
 
 För hjälp, kontakta {{ support_email }}.
 
@@ -316,8 +356,7 @@ export function sendWelcomeEmail(to: string, userName: string) {
   const html = buildEmailHtml(WELCOME_TEMPLATE, {
     user_name: userName,
     app_name: APP_NAME,
-    action_url:
-      process.env.NEXTAUTH_URL || "http://localhost:3000",
+    action_url: process.env.NEXTAUTH_URL || "http://localhost:3000",
     support_email: SUPPORT_EMAIL,
   });
   return send(to, `Välkommen till ${APP_NAME}`, html);
@@ -357,10 +396,7 @@ export function sendPasswordResetEmail(
   return send(to, "Återställ ditt lösenord", html);
 }
 
-export function sendPasswordChangedEmail(
-  to: string,
-  userName: string,
-) {
+export function sendPasswordChangedEmail(to: string, userName: string) {
   const html = buildEmailHtml(PASSWORD_CHANGED_TEMPLATE, {
     user_name: userName,
     app_name: APP_NAME,
@@ -433,17 +469,13 @@ export function sendSubscriptionCanceled(
 
 // ─── Legacy compatibility wrappers ───────────────────────────
 
-export function sendCompanyInviteEmail(
-  to: string,
-  token: string,
-) {
+export function sendCompanyInviteEmail(to: string, token: string) {
   const url = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/accept-invite?token=${encodeURIComponent(token)}`;
   const body = `# Inbjudan till ${APP_NAME}
 
 Du har blivit inbjuden att gå med i ett företag på ${APP_NAME}. Logga in eller skapa ett konto och acceptera inbjudan. Länken gäller i 7 dagar.
 
-Acceptera inbjudan:
-${url}
+[button] ${url} | Acceptera inbjudan
 
 — ${APP_NAME}`;
   const html = buildEmailHtml(body, {
@@ -480,11 +512,7 @@ Svara dem direkt för att komma överens om pris, och sätt sedan deras plan til
     action_url: "",
     support_email: SUPPORT_EMAIL,
   });
-  return send(
-    ownerEmail,
-    `Enterprise-förfrågan från ${fromEmail}`,
-    html,
-  );
+  return send(ownerEmail, `Enterprise-förfrågan från ${fromEmail}`, html);
 }
 
 export function sendApprovalRequestEmail(
@@ -502,9 +530,7 @@ export function sendApprovalRequestEmail(
   const lines: string[] = [];
   lines.push(`# Utlägg väntar på ditt godkännande`);
   lines.push("");
-  lines.push(
-    `${requesterName} har skickat ett utlägg för godkännande.`,
-  );
+  lines.push(`${requesterName} har skickat ett utlägg för godkännande.`);
   if (details.vendor) lines.push(`- Leverantör: ${details.vendor}`);
   lines.push(`- Belopp: ${details.amount} kr`);
   if (details.date)
@@ -513,8 +539,7 @@ export function sendApprovalRequestEmail(
     );
   if (details.vatRate) lines.push(`- Moms: ${details.vatRate}%`);
   lines.push("");
-  lines.push(`Gå till godkännanden:`);
-  lines.push(`${appUrl}/dashboard/approvals`);
+  lines.push(`[button] ${appUrl}/dashboard/approvals | Granska godkännanden`);
 
   const html = buildEmailHtml(lines.join("\n"), {
     user_name: "",
@@ -528,6 +553,7 @@ export function sendApprovalRequestEmail(
     html,
   );
 }
+
 /**
  * Sends a real test email and returns full diagnostic detail (rather than
  * just true/false like the normal send helpers) for the admin debug route.
@@ -537,7 +563,12 @@ export async function sendTestEmail(
 ): Promise<{ ok: boolean; detail: string; config: { from: string } }> {
   const config = { from: `"${FROM_NAME}" <${FROM_EMAIL}>` };
   if (!isEmailConfigured()) {
-    return { ok: false, detail: "Not configured (missing BREVO_API_KEY or BREVO_FROM_EMAIL)", config };
+    return {
+      ok: false,
+      detail:
+        "Not configured (missing BREVO_API_KEY or BREVO_FROM_EMAIL)",
+      config,
+    };
   }
   const result = await brevoSend(
     to,
@@ -549,5 +580,9 @@ export async function sendTestEmail(
   if (result.ok) {
     return { ok: true, detail: `messageId=${result.messageId}`, config };
   }
-  return { ok: false, detail: `HTTP ${result.status}: ${result.error}`, config };
+  return {
+    ok: false,
+    detail: `HTTP ${result.status}: ${result.error}`,
+    config,
+  };
 }
