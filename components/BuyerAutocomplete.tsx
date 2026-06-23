@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 
-interface Buyer {
+export interface Buyer {
   name: string;
   orgNumber?: string | null;
   vatNumber?: string | null;
@@ -20,28 +20,30 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
   const [suggestions, setSuggestions] = useState<Buyer[]>([]);
   const [open, setOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
+  const [fetchedOnce, setFetchedOnce] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const fetchBuyers = useCallback(async (q: string) => {
+    const res = await fetch(`/api/buyers?q=${encodeURIComponent(q)}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    setSuggestions(data.buyers ?? []);
+    setHighlightIndex(-1);
+    setFetchedOnce(true);
+  }, []);
+
+  // debounced fetch on query change
   useEffect(() => {
-    if (!query) {
-      setSuggestions([]);
-      return;
-    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchBuyers(query), 250);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [query, fetchBuyers]);
 
-    const timer = setTimeout(async () => {
-      const res = await fetch(`/api/buyers?q=${encodeURIComponent(query)}`);
-      if (res.ok) {
-        const data = await res.json();
-        setSuggestions(data.buyers);
-        setOpen(true);
-        setHighlightIndex(-1);
-      }
-    }, 250);
-
-    return () => clearTimeout(timer);
-  }, [query]);
-
+  // close dropdown on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -63,7 +65,6 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!open || suggestions.length === 0) return;
-
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setHighlightIndex((prev) =>
@@ -76,13 +77,18 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
       );
     } else if (e.key === "Enter") {
       e.preventDefault();
-      if (highlightIndex >= 0 && highlightIndex < suggestions.length) {
-        selectItem(suggestions[highlightIndex]);
-      }
+      if (highlightIndex >= 0) selectItem(suggestions[highlightIndex]);
     } else if (e.key === "Escape") {
       setOpen(false);
-      inputRef.current?.blur();
     }
+  };
+
+  const handleFocus = async () => {
+    // fetch all buyers on first focus if query is empty
+    if (!fetchedOnce) {
+      await fetchBuyers("");
+    }
+    setOpen(true);
   };
 
   return (
@@ -93,22 +99,21 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
         onChange={(e) => {
           setQuery(e.target.value);
           onInputChange?.(e.target.value);
+          setOpen(true);
         }}
+        onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         placeholder="Företagsnamn"
         role="combobox"
         aria-autocomplete="list"
         aria-expanded={open && suggestions.length > 0}
         aria-controls="buyer-listbox"
-        onFocus={() => {
-          if (suggestions.length > 0) setOpen(true);
-        }}
       />
       {open && suggestions.length > 0 && (
         <ul
           id="buyer-listbox"
           role="listbox"
-          className="absolute z-10 mt-1 w-full rounded-md border border-gray-200 bg-white shadow-lg"
+          className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-md border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900"
         >
           {suggestions.map((buyer, idx) => (
             <li
@@ -116,7 +121,9 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
               role="option"
               aria-selected={idx === highlightIndex}
               className={`cursor-pointer px-3 py-2 text-sm ${
-                idx === highlightIndex ? "bg-gray-100" : "hover:bg-gray-50"
+                idx === highlightIndex
+                  ? "bg-gray-100 dark:bg-gray-800"
+                  : "hover:bg-gray-50 dark:hover:bg-gray-800"
               }`}
               onMouseDown={(e) => {
                 e.preventDefault();
@@ -124,7 +131,9 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
               }}
               onMouseEnter={() => setHighlightIndex(idx)}
             >
-              <span className="font-medium">{buyer.name}</span>
+              <span className="font-medium text-gray-900 dark:text-white">
+                {buyer.name}
+              </span>
               {buyer.orgNumber && (
                 <span className="ml-2 text-xs text-gray-500">
                   {buyer.orgNumber}
