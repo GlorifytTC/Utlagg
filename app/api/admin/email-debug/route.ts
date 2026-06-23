@@ -5,8 +5,8 @@ import { isEmailConfigured, verifyEmailConnection, sendTestEmail } from "@/lib/e
 export const runtime = "nodejs";
 
 /**
- * Admin-only diagnostic for the Brevo SMTP setup. Visit GET to check config
- * + connection without sending anything; POST { "to": "you@example.com" }
+ * Admin-only diagnostic for the Brevo HTTP API setup. Visit GET to check
+ * config + connection without sending anything; POST { "to": "you@example.com" }
  * to actually send a test email and see the full result. This avoids the
  * register → wait → check-logs cycle while debugging delivery problems.
  *
@@ -27,15 +27,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  // Only BREVO_API_KEY + BREVO_FROM_EMAIL/NAME are used now (HTTP API, not
+  // SMTP) — BREVO_SMTP_HOST/LOGIN/PORT are vestigial and ignored.
   const masked = {
     BREVO_API_KEY: process.env.BREVO_API_KEY
       ? `${process.env.BREVO_API_KEY.slice(0, 8)}... (len ${process.env.BREVO_API_KEY.length})`
       : "(not set)",
     BREVO_FROM_EMAIL: process.env.BREVO_FROM_EMAIL ?? "(not set)",
     BREVO_FROM_NAME: process.env.BREVO_FROM_NAME ?? "(not set)",
-    BREVO_SMTP_HOST: process.env.BREVO_SMTP_HOST ?? "(not set)",
-    BREVO_SMTP_LOGIN: process.env.BREVO_SMTP_LOGIN ?? "(not set)",
-    BREVO_SMTP_PORT: process.env.BREVO_SMTP_PORT ?? "(not set, defaults to 587)",
   };
 
   const configured = isEmailConfigured();

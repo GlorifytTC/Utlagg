@@ -1,18 +1,22 @@
-import nodemailer from "nodemailer";
+/**
+ * Sends transactional email via Brevo's HTTP API (api.brevo.com), the same
+ * approach used by the working TaskBridge project — NOT SMTP/nodemailer.
+ * Brevo issues two different secrets: an API key (used here, as the
+ * `api-key` header) and a separate SMTP key (for port 587 SMTP auth). This
+ * project was previously using the API key as an SMTP password, which
+ * Brevo's mail relay correctly rejects with a generic 535 — the two are
+ * not interchangeable. Switching to the HTTP API sidesteps SMTP entirely:
+ * no STARTTLS handshake, no SMTP-specific credential, just a normal
+ * authenticated HTTPS POST, with a clear JSON error body on failure
+ * instead of an opaque SMTP response code.
+ */
 
-const transporter = nodemailer.createTransport({
-  host: process.env.BREVO_SMTP_HOST || "",
-  port: Number(process.env.BREVO_SMTP_PORT) || 587,
-  auth: {
-    user: process.env.BREVO_SMTP_LOGIN || "",
-    pass: process.env.BREVO_API_KEY || "",
-  },
-});
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
 /**
  * Env vars pasted with surrounding quotes (a common copy/paste mistake in
- * Railway's variable editor) end up baked into the string itself — e.g.
- * BREVO_FROM_EMAIL="noreply@utlagg.se\"\"" becomes the literal value
+ * Railway's/Vercel's variable editor) end up baked into the string itself —
+ * e.g. BREVO_FROM_EMAIL="noreply@utlagg.se\"\"" becomes the literal value
  * noreply@utlagg.se"" . Strip stray quotes/backslashes so a malformed
  * env var can't silently break every outgoing email.
  */
@@ -27,32 +31,67 @@ const SUPPORT_EMAIL =
   process.env.SUPPORT_EMAIL || "support@utlagg.se";
 
 export function isEmailConfigured(): boolean {
-  return Boolean(
-    process.env.BREVO_API_KEY &&
-      process.env.BREVO_SMTP_HOST &&
-      process.env.BREVO_SMTP_LOGIN &&
-      process.env.BREVO_FROM_EMAIL,
-  );
+  return Boolean(process.env.BREVO_API_KEY && process.env.BREVO_FROM_EMAIL);
+}
+
+type BrevoSendResult =
+  | { ok: true; messageId: string }
+  | { ok: false; status: number; error: string };
+
+async function brevoSend(to: string, subject: string, html: string): Promise<BrevoSendResult> {
+  const apiKey = process.env.BREVO_API_KEY || "";
+  try {
+    const res = await fetch(BREVO_API_URL, {
+      method: "POST",
+      headers: {
+        "api-key": apiKey,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        sender: { email: FROM_EMAIL, name: FROM_NAME },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+      }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      return {
+        ok: false,
+        status: res.status,
+        error: typeof body?.message === "string" ? body.message : JSON.stringify(body),
+      };
+    }
+    return { ok: true, messageId: body?.messageId ?? "(none returned)" };
+  } catch (err) {
+    return { ok: false, status: 0, error: (err as Error).message };
+  }
 }
 
 /**
- * Checks the SMTP connection + auth WITHOUT sending an email, by talking to
- * Brevo and doing the EHLO/AUTH handshake only. Much faster to iterate on
- * than a full register-and-wait cycle, and tells you immediately whether
- * the problem is credentials/connectivity vs. something with the send itself.
+ * Checks that Brevo's API actually accepts this key, without sending an
+ * email — calls the lightweight /account endpoint, which requires the same
+ * api-key header as a real send and fails the same way (401/403) if the
+ * key is wrong, but performs no side effects.
  */
 export async function verifyEmailConnection(): Promise<
   { ok: true } | { ok: false; error: string }
 > {
+  const apiKey = process.env.BREVO_API_KEY || "";
+  if (!apiKey) return { ok: false, error: "BREVO_API_KEY is not set" };
   try {
-    await transporter.verify();
-    return { ok: true };
-  } catch (err) {
-    const e = err as NodeJS.ErrnoException & { responseCode?: number; response?: string };
+    const res = await fetch("https://api.brevo.com/v3/account", {
+      headers: { "api-key": apiKey, Accept: "application/json" },
+    });
+    if (res.ok) return { ok: true };
+    const body = await res.json().catch(() => ({}));
     return {
       ok: false,
-      error: `${e.name}: ${e.message} (code=${e.code ?? "?"} responseCode=${e.responseCode ?? "?"} response=${e.response ?? "?"})`,
+      error: `HTTP ${res.status}: ${typeof body?.message === "string" ? body.message : JSON.stringify(body)}`,
     };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
   }
 }
 
@@ -63,51 +102,30 @@ async function send(
 ): Promise<boolean> {
   if (!isEmailConfigured()) {
     console.error(
-      `[email] NOT CONFIGURED — missing one of BREVO_API_KEY / BREVO_SMTP_HOST / BREVO_SMTP_LOGIN / BREVO_FROM_EMAIL. Skipped "${subject}" to ${to}.`,
+      `[email] NOT CONFIGURED — missing BREVO_API_KEY or BREVO_FROM_EMAIL. Skipped "${subject}" to ${to}.`,
     );
     return false;
   }
 
-  // Masked config dump — safe to leave in logs, never prints the secret itself.
   const apiKey = process.env.BREVO_API_KEY || "";
   console.log("=".repeat(70));
-  console.log(`[EMAIL] >>> ATTEMPTING SEND to=${to}`);
+  console.log(`[EMAIL] >>> ATTEMPTING SEND (Brevo HTTP API) to=${to}`);
   console.log(`[EMAIL]     subject = "${subject}"`);
-  console.log(`[EMAIL]     host=${process.env.BREVO_SMTP_HOST} port=${Number(process.env.BREVO_SMTP_PORT) || 587}`);
-  console.log(`[EMAIL]     login=${process.env.BREVO_SMTP_LOGIN}`);
   console.log(`[EMAIL]     from="${FROM_NAME}" <${FROM_EMAIL}>`);
   console.log(`[EMAIL]     apiKey prefix=${apiKey.slice(0, 8)}... len=${apiKey.length}`);
 
   const startedAt = Date.now();
-  try {
-    const info = await transporter.sendMail({
-      from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
-      to,
-      subject,
-      html,
-    });
-    console.log(`[EMAIL] <<< SENT OK in ${Date.now() - startedAt}ms`);
-    console.log(`[EMAIL]     messageId=${info.messageId}`);
-    console.log(`[EMAIL]     accepted=${JSON.stringify(info.accepted)} rejected=${JSON.stringify(info.rejected)}`);
-    console.log(`[EMAIL]     response="${info.response}"`);
+  const result = await brevoSend(to, subject, html);
+  if (result.ok) {
+    console.log(`[EMAIL] <<< SENT OK in ${Date.now() - startedAt}ms — messageId=${result.messageId}`);
     console.log("=".repeat(70));
     return true;
-  } catch (err) {
-    const e = err as NodeJS.ErrnoException & {
-      responseCode?: number;
-      response?: string;
-      command?: string;
-    };
-    console.log(`[EMAIL] <<< SEND FAILED after ${Date.now() - startedAt}ms`);
-    console.log(`[EMAIL]     name: ${e.name}`);
-    console.log(`[EMAIL]     message: ${e.message}`);
-    console.log(`[EMAIL]     code: ${e.code ?? "(none)"}`);
-    console.log(`[EMAIL]     responseCode: ${e.responseCode ?? "(none)"}`);
-    console.log(`[EMAIL]     response: ${e.response ?? "(none)"}`);
-    console.log(`[EMAIL]     command: ${e.command ?? "(none)"}`);
-    console.log("=".repeat(70));
-    return false;
   }
+  console.log(`[EMAIL] <<< SEND FAILED after ${Date.now() - startedAt}ms`);
+  console.log(`[EMAIL]     status: ${result.status}`);
+  console.log(`[EMAIL]     error: ${result.error}`);
+  console.log("=".repeat(70));
+  return false;
 }
 
 function layout(body: string): string {
@@ -516,35 +534,20 @@ export function sendApprovalRequestEmail(
  */
 export async function sendTestEmail(
   to: string,
-): Promise<{ ok: boolean; detail: string; config: { from: string; host: string; login: string } }> {
-  const config = {
-    from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
-    host: process.env.BREVO_SMTP_HOST || "(not set)",
-    login: process.env.BREVO_SMTP_LOGIN || "(not set)",
-  };
+): Promise<{ ok: boolean; detail: string; config: { from: string } }> {
+  const config = { from: `"${FROM_NAME}" <${FROM_EMAIL}>` };
   if (!isEmailConfigured()) {
-    return { ok: false, detail: "Not configured (missing env var)", config };
+    return { ok: false, detail: "Not configured (missing BREVO_API_KEY or BREVO_FROM_EMAIL)", config };
   }
-  try {
-    const info = await transporter.sendMail({
-      from: config.from,
-      to,
-      subject: "Utlagg — testmejl",
-      html: layout(
-        "<h2>Testmejl</h2><p>Det här är ett testmejl från Utlagg's e-postdebug-endpoint. Om du ser det fungerar SMTP-konfigurationen.</p>",
-      ),
-    });
-    return {
-      ok: true,
-      detail: `messageId=${info.messageId} accepted=${JSON.stringify(info.accepted)} rejected=${JSON.stringify(info.rejected)} response="${info.response}"`,
-      config,
-    };
-  } catch (err) {
-    const e = err as NodeJS.ErrnoException & { responseCode?: number; response?: string; command?: string };
-    return {
-      ok: false,
-      detail: `${e.name}: ${e.message} | code=${e.code ?? "?"} responseCode=${e.responseCode ?? "?"} response=${e.response ?? "?"} command=${e.command ?? "?"}`,
-      config,
-    };
+  const result = await brevoSend(
+    to,
+    "Utlagg — testmejl",
+    layout(
+      "<h2>Testmejl</h2><p>Det här är ett testmejl från Utlagg's e-postdebug-endpoint. Om du ser det fungerar Brevo-konfigurationen.</p>",
+    ),
+  );
+  if (result.ok) {
+    return { ok: true, detail: `messageId=${result.messageId}`, config };
   }
+  return { ok: false, detail: `HTTP ${result.status}: ${result.error}`, config };
 }
