@@ -26,7 +26,7 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchBuyers = useCallback(async (q: string) => {
-    const res = await fetch(`/api/admin/buyers?q=${encodeURIComponent(q)}`);
+    const res = await fetch(`/api/buyers?q=${encodeURIComponent(q)}`);
     if (!res.ok) return;
     const data = await res.json();
     setSuggestions(data.buyers ?? []);
@@ -120,10 +120,11 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
               key={`${buyer.name}-${buyer.orgNumber ?? ""}`}
               role="option"
               aria-selected={idx === highlightIndex}
-              className={`cursor-pointer px-3 py-2 text-sm ${idx === highlightIndex
+              className={`cursor-pointer px-3 py-2 text-sm ${
+                idx === highlightIndex
                   ? "bg-gray-100 dark:bg-gray-800"
                   : "hover:bg-gray-50 dark:hover:bg-gray-800"
-                }`}
+              }`}
               onMouseDown={(e) => {
                 e.preventDefault();
                 selectItem(buyer);

@@ -554,10 +554,44 @@ export interface Translations {
   milExampleLabel: string;
   milExampleFrom: string;
   milExampleTo: string;
+  stRangeMonth: string;
+  stRangeYear: string;
+  stAvgPerReceipt: string;
+  stTopCategory: string;
+  stByCategory: string;
+  stTrend: string;
+  stTheme: string;
+  stNoCategoryData: string;
+  stBucketFood: string;
+  stBucketTravel: string;
+  stBucketOffice: string;
+  stBucketIt: string;
+  stBucketMarketing: string;
+  stBucketProfessional: string;
+  stBucketOther: string;
+  stShareOfTotal: string;
+  rcCategoryAutoDetected: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    rcCategoryAutoDetected: "Auto-identifierad",
+    stRangeMonth: "Månad",
+    stRangeYear: "År",
+    stAvgPerReceipt: "Snitt per kvitto",
+    stTopCategory: "Största kategori",
+    stByCategory: "Utgifter per kategori",
+    stTrend: "Trend över tid",
+    stTheme: "Färgtema",
+    stNoCategoryData: "Inga kategoriserade kvitton än",
+    stBucketFood: "Mat & representation",
+    stBucketTravel: "Resor & transport",
+    stBucketOffice: "Kontor & lokal",
+    stBucketIt: "IT & programvara",
+    stBucketMarketing: "Marknadsföring",
+    stBucketProfessional: "Konsulter & utbildning",
+    stBucketOther: "Övrigt",
+    stShareOfTotal: "andel av totalen",
     milExample: "Exempel",
     milExampleHint: "Så här ser en sparad rutt ut — spara din första ovan.",
     milExampleLabel: "Hem–Kontor",
@@ -1135,6 +1169,23 @@ export const strings: Record<Lang, Translations> = {
     pricingTableSupport: "Prioriterad support",
   },
   en: {
+    rcCategoryAutoDetected: "Auto-detected",
+    stRangeMonth: "Month",
+    stRangeYear: "Year",
+    stAvgPerReceipt: "Avg per receipt",
+    stTopCategory: "Top category",
+    stByCategory: "Spending by category",
+    stTrend: "Trend over time",
+    stTheme: "Color theme",
+    stNoCategoryData: "No categorized receipts yet",
+    stBucketFood: "Food & dining",
+    stBucketTravel: "Travel & transport",
+    stBucketOffice: "Office & premises",
+    stBucketIt: "IT & software",
+    stBucketMarketing: "Marketing",
+    stBucketProfessional: "Professional services",
+    stBucketOther: "Other",
+    stShareOfTotal: "of total spend",
     milExample: "Example",
     milExampleHint: "This is what a saved route looks like — save your first one above.",
     milExampleLabel: "Home–Office",

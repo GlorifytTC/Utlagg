@@ -7,6 +7,8 @@ import { receipts, users, companyMembers } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
 import { getUserCompany } from "@/lib/company";
+import { suggestBasCode } from "@/lib/auto-categorize";
+import { getBasAccount } from "@/lib/bas";
 
 export const runtime = "nodejs";
 
@@ -94,6 +96,13 @@ export async function POST(req: NextRequest) {
         );
       if (approvers.length > 0) receiptStatus = "pending";
     }
+    // Safety net: if the client didn't send a category (e.g. an older app
+    // build, or a direct API call), suggest one from the vendor name here
+    // too, so receipts never silently land in "no category" when a known
+    // merchant was recognized.
+    const basCode = d.basCode ?? suggestBasCode(d.vendorName) ?? undefined;
+    const category = d.category ?? (basCode ? getBasAccount(basCode)?.name : undefined);
+
     const [created] = await db
       .insert(receipts)
       .values({
@@ -106,8 +115,8 @@ export async function POST(req: NextRequest) {
         totalAmount: d.totalAmount?.toFixed(2),
         vatAmount: d.vatAmount?.toFixed(2),
         vatRate: d.vatRate,
-        category: d.category,
-        basCode: d.basCode,
+        category,
+        basCode,
         aiConfidence: d.aiConfidence,
         receiptText: d.receiptText,
         // Only regular employees (member) need manager approval; owners,

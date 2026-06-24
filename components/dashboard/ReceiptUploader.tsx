@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BasSelect } from "./BasSelect";
 import { getBasAccount } from "@/lib/bas";
+import { suggestBasCode } from "@/lib/auto-categorize";
 import { resolveVatRate, vatFromGross, type VatRate } from "@/lib/vat";
 import { useLanguage } from "@/context/LanguageContext";
 import { ReceiptAnnotator } from "@/components/dashboard/ReceiptAnnotator";
@@ -17,6 +18,10 @@ interface Draft {
   vatAmount: string;
   vatRate: VatRate;
   basCode: string | null;
+  // True only when basCode was filled in automatically from the vendor
+  // name (not picked by the person) — drives the "auto-detected" hint and
+  // is cleared the moment they touch the category selector themselves.
+  basCodeAutoDetected: boolean;
   aiConfidence: number | null;
   receiptText: string;
   image: string;
@@ -30,6 +35,7 @@ const emptyDraft = (): Draft => ({
   vatAmount: "",
   vatRate: 25,
   basCode: null,
+  basCodeAutoDetected: false,
   aiConfidence: null,
   receiptText: "",
   image: "",
@@ -94,14 +100,23 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
         if ((vat == null || vat === 0) && total && rate) {
           vat = Math.round((total - total / (1 + rate / 100)) * 100) / 100;
         }
+        const suggestedBasCode = suggestBasCode(data.vendorName);
+        const suggestedAccount = suggestedBasCode ? getBasAccount(suggestedBasCode) : undefined;
         setDraft({
           vendorName: data.vendorName ?? "",
           receiptNumber: data.receiptNumber ?? "",
           date: data.date ?? new Date().toISOString().slice(0, 10),
           totalAmount: data.totalAmount?.toString() ?? "",
           vatAmount: vat != null ? vat.toString() : "",
-          vatRate: (data.vatRate as VatRate) ?? 25,
-          basCode: null,
+          // Prefer the VAT rate OCR actually read off the receipt; only
+          // fall back to the category's typical rate when OCR found none.
+          vatRate:
+            (data.vatRate as VatRate | undefined) ??
+            (suggestedAccount
+              ? resolveVatRate(suggestedAccount.vatCategory, new Date(data.date ?? new Date()))
+              : 25),
+          basCode: suggestedBasCode,
+          basCodeAutoDetected: Boolean(suggestedBasCode),
           aiConfidence: data.confidence ?? null,
           receiptText: data.rawText ?? "",
           image: base64,
@@ -159,6 +174,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
     setDraft((d) => ({
       ...d,
       basCode: code,
+      basCodeAutoDetected: false, // person took over — no longer "just a guess"
       vatRate: account ? resolveVatRate(account.vatCategory, new Date(d.date)) : d.vatRate,
     }));
   }
@@ -397,7 +413,14 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             </div>
             
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">BAS-konto</label>
+              <label className="mb-1.5 flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                BAS-konto
+                {draft.basCodeAutoDetected && (
+                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                    {t.rcCategoryAutoDetected}
+                  </span>
+                )}
+              </label>
               <BasSelect value={draft.basCode} onChange={onBasChange} />
             </div>
 
