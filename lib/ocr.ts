@@ -210,7 +210,14 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   const totalSignals = 4;
 
   // --- Receipt / kvitto number (only when clearly labelled) ---
-  const recM = rawText.match(/(?:kvitto\s*(?:nr|nummer)?|kvittonr|bong|kassakvitto|receipt|kassa\s*nr)\s*[:.#]?\s*(\d{2,})/i);
+  // Real receipts vary a lot in how this is printed: "Bongnr", "Bong nr:",
+  // "Kvittonummer", "Ordernr", "Transaktion", "Receipt No." — the label and
+  // the digits can also land on separate lines after OCR. This matches the
+  // label word(s) first, then allows an optional second word (nr/nummer/no),
+  // then any punctuation/whitespace (including a line break), then digits.
+  const recM = rawText.match(
+    /(?:kvitto|bong|kassakvitto|transaktion|order|receipt)\s*(?:nr|nummer|no)?\.?\s*[:.#]?\s*(\d{2,})/i,
+  );
   const receiptNumber = recM ? recM[1] : null;
 
   // --- Org number (Swedish): 6 digits - 4 digits ---

@@ -587,10 +587,26 @@ export interface Translations {
   expDownloadAll: string;
   navExport: string;
   dashExportHint: string;
+  fortnoxReviewTitle: string;
+  fortnoxReviewDesc: string;
+  fortnoxSelectAll: string;
+  fortnoxDeselectAll: string;
+  fortnoxNoneSelected: string;
+  fortnoxNonePending: string;
+  fortnoxSyncSelected: string;
+  fortnoxSelectedCount: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    fortnoxReviewTitle: "Granska innan synk",
+    fortnoxReviewDesc: "Välj vilka godkända kvitton som ska skickas till Fortnox. Inget skickas automatiskt.",
+    fortnoxSelectAll: "Markera alla",
+    fortnoxDeselectAll: "Avmarkera alla",
+    fortnoxNoneSelected: "Inga kvitton markerade",
+    fortnoxNonePending: "Inga godkända kvitton väntar på att synkas",
+    fortnoxSyncSelected: "Skicka markerade",
+    fortnoxSelectedCount: "markerade",
     dashExportHint: "Ladda ner kvitton, körjournal och periodbiljetter för en period",
     navExport: "Exportera",
     expPeriodTitle: "Period för export",
@@ -1201,6 +1217,14 @@ export const strings: Record<Lang, Translations> = {
     pricingTableSupport: "Prioriterad support",
   },
   en: {
+    fortnoxReviewTitle: "Review before syncing",
+    fortnoxReviewDesc: "Choose which approved receipts to send to Fortnox. Nothing is sent automatically.",
+    fortnoxSelectAll: "Select all",
+    fortnoxDeselectAll: "Deselect all",
+    fortnoxNoneSelected: "No receipts selected",
+    fortnoxNonePending: "No approved receipts waiting to sync",
+    fortnoxSyncSelected: "Send selected",
+    fortnoxSelectedCount: "selected",
     dashExportHint: "Download receipts, mileage and transport passes for a period",
     navExport: "Export",
     expPeriodTitle: "Export period",
