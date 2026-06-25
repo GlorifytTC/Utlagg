@@ -1,5 +1,6 @@
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { db } from "@/db";
 import { transportPasses, type TransportPass } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
@@ -11,13 +12,30 @@ function csvCell(v: string | number | null): string {
   return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-export async function GET() {
+/** Optional ?from=&to= (YYYY-MM-DD). A pass counts if its validity period
+ * overlaps the requested range at all — e.g. a March–April pass should
+ * still show up in a March-only export, not just an April one. */
+export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return new Response("Ej inloggad", { status: 401 });
+
+  const from = req.nextUrl.searchParams.get("from");
+  const to = req.nextUrl.searchParams.get("to");
+  const conds = [eq(transportPasses.userId, session.user.id)];
+  // overlap test: pass.validFrom <= rangeEnd AND pass.validTo >= rangeStart
+  if (to && !Number.isNaN(Date.parse(to))) {
+    const end = new Date(to);
+    end.setHours(23, 59, 59, 999);
+    conds.push(lte(transportPasses.validFrom, end));
+  }
+  if (from && !Number.isNaN(Date.parse(from))) {
+    conds.push(gte(transportPasses.validTo, new Date(from)));
+  }
+
   const rows = await db
     .select()
     .from(transportPasses)
-    .where(eq(transportPasses.userId, session.user.id))
+    .where(and(...conds))
     .orderBy(desc(transportPasses.validFrom));
 
   const header = ["Giltig från", "Giltig till", "Typ", "Trafikhuvudman", "Belopp (SEK)", "Moms %", "Moms (SEK)", "Återkommande"];

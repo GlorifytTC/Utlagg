@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Download } from "lucide-react";
 import { getT } from "@/lib/i18n-server";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -92,6 +93,27 @@ export default async function DashboardPage() {
           {t.dashWelcome}, {firstName}
         </h1>
       </div>
+
+      {/* Export quick action — the one thing people come back for every
+          VAT period, so it gets a direct link right on the landing page
+          instead of being buried two clicks deep in Settings. */}
+      <Link
+        href="/dashboard/export"
+        className="group flex items-center justify-between rounded-2xl border border-gray-900/[0.07] bg-[#F5F4F0] px-6 py-4 transition-colors hover:border-nordic-600/30 hover:bg-nordic-50/40 dark:border-white/[0.07] dark:bg-[#0C0D0F] dark:hover:bg-nordic-950/20"
+      >
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-nordic-600/10 text-nordic-700 dark:bg-nordic-400/10 dark:text-nordic-300">
+            <Download className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="text-sm font-medium text-gray-900 dark:text-white">{t.navExport}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t.dashExportHint}</p>
+          </div>
+        </div>
+        <span className="text-sm font-medium text-nordic-700 transition-transform group-hover:translate-x-0.5 dark:text-nordic-300">
+          →
+        </span>
+      </Link>
 
       {/* Stats grid */}
       <StatsCards

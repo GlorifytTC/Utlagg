@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Download } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
-import { SkatteverketExport } from "@/components/SkatteverketExport";
-import { CsvRangeExport } from "@/components/dashboard/CsvRangeExport";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function SettingsPage() {
@@ -68,29 +68,15 @@ export default function SettingsPage() {
           <CardDescription>{t.setExportDesc}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
-          <a href="/api/export/csv">
-            <Button variant="outline">{t.btnExportCsv}</Button>
-          </a>
-          <a href="/api/export/pdf">
-            <Button variant="outline">{t.btnExportPdf}</Button>
-          </a>
-          <a href="/api/export/sie">
-            <Button variant="outline">{t.btnExportSie}</Button>
-          </a>
+          <Link href="/dashboard/export">
+            <Button className="gap-2">
+              <Download className="h-4 w-4" />
+              {t.navExport}
+            </Button>
+          </Link>
           <a href="/api/integrations/fortnox/auth">
             <Button variant="outline">{t.btnConnectFortnox}</Button>
           </a>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t.setSkvTitle}</CardTitle>
-          <CardDescription>{t.setSkvDesc}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CsvRangeExport />
-          <SkatteverketExport />
         </CardContent>
       </Card>
     </div>

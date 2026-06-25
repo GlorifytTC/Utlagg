@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { db } from "@/db";
 import { receipts } from "@/db/schema";
@@ -23,16 +23,27 @@ function kr(amount: string | number | null): string {
   return n.toFixed(2).replace(".", ",") + " kr";
 }
 
-export async function GET() {
+/** Optional ?from=&to= (YYYY-MM-DD, inclusive) to match the other exports. */
+export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   }
 
+  const from = req.nextUrl.searchParams.get("from");
+  const to = req.nextUrl.searchParams.get("to");
+  const conds = [eq(receipts.userId, session.user.id)];
+  if (from && !Number.isNaN(Date.parse(from))) conds.push(gte(receipts.date, new Date(from)));
+  if (to && !Number.isNaN(Date.parse(to))) {
+    const end = new Date(to);
+    end.setHours(23, 59, 59, 999);
+    conds.push(lte(receipts.date, end));
+  }
+
   const rows = await db
     .select()
     .from(receipts)
-    .where(eq(receipts.userId, session.user.id))
+    .where(and(...conds))
     .orderBy(desc(receipts.date));
 
   const pdf = await PDFDocument.create();

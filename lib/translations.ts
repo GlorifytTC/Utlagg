@@ -571,10 +571,42 @@ export interface Translations {
   stBucketOther: string;
   stShareOfTotal: string;
   rcCategoryAutoDetected: string;
+  expPeriodTitle: string;
+  expPeriodDesc: string;
+  expThisMonth: string;
+  expLastMonth: string;
+  expThisQuarter: string;
+  expLastQuarter: string;
+  expThisYear: string;
+  expCustom: string;
+  expFrom: string;
+  expTo: string;
+  expDownloadReceipts: string;
+  expDownloadMileage: string;
+  expDownloadTransport: string;
+  expDownloadAll: string;
+  navExport: string;
+  dashExportHint: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    dashExportHint: "Ladda ner kvitton, körjournal och periodbiljetter för en period",
+    navExport: "Exportera",
+    expPeriodTitle: "Period för export",
+    expPeriodDesc: "Välj perioden Skatteverket vill ha — t.ex. en momsmånad eller ett kvartal — och exportera kvitton, körjournal och periodbiljetter för samma period.",
+    expThisMonth: "Denna månad",
+    expLastMonth: "Förra månaden",
+    expThisQuarter: "Detta kvartal",
+    expLastQuarter: "Förra kvartalet",
+    expThisYear: "Detta år",
+    expCustom: "Anpassad period",
+    expFrom: "Från",
+    expTo: "Till",
+    expDownloadReceipts: "Kvitton",
+    expDownloadMileage: "Körjournal",
+    expDownloadTransport: "Periodbiljetter",
+    expDownloadAll: "Ladda ner allt för perioden",
     rcCategoryAutoDetected: "Auto-identifierad",
     stRangeMonth: "Månad",
     stRangeYear: "År",
@@ -1169,6 +1201,22 @@ export const strings: Record<Lang, Translations> = {
     pricingTableSupport: "Prioriterad support",
   },
   en: {
+    dashExportHint: "Download receipts, mileage and transport passes for a period",
+    navExport: "Export",
+    expPeriodTitle: "Export period",
+    expPeriodDesc: "Choose the period the Tax Agency wants — e.g. a VAT month or quarter — and export receipts, mileage and transport passes for that same period.",
+    expThisMonth: "This month",
+    expLastMonth: "Last month",
+    expThisQuarter: "This quarter",
+    expLastQuarter: "Last quarter",
+    expThisYear: "This year",
+    expCustom: "Custom period",
+    expFrom: "From",
+    expTo: "To",
+    expDownloadReceipts: "Receipts",
+    expDownloadMileage: "Mileage log",
+    expDownloadTransport: "Transport passes",
+    expDownloadAll: "Download everything for this period",
     rcCategoryAutoDetected: "Auto-detected",
     stRangeMonth: "Month",
     stRangeYear: "Year",

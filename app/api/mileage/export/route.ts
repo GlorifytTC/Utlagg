@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { db } from "@/db";
 import { mileageEntries } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
@@ -16,15 +16,25 @@ const esc = (v: unknown) => {
   return /[",;\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 };
 
-/** Körjournal / mileage CSV in Swedish format. */
-export async function GET() {
+/** Körjournal / mileage CSV in Swedish format. Optional ?from=&to= (YYYY-MM-DD, inclusive). */
+export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+
+  const from = req.nextUrl.searchParams.get("from");
+  const to = req.nextUrl.searchParams.get("to");
+  const conds = [eq(mileageEntries.userId, session.user.id)];
+  if (from && !Number.isNaN(Date.parse(from))) conds.push(gte(mileageEntries.date, new Date(from)));
+  if (to && !Number.isNaN(Date.parse(to))) {
+    const end = new Date(to);
+    end.setHours(23, 59, 59, 999);
+    conds.push(lte(mileageEntries.date, end));
+  }
 
   const rows = await db
     .select()
     .from(mileageEntries)
-    .where(eq(mileageEntries.userId, session.user.id))
+    .where(and(...conds))
     .orderBy(desc(mileageEntries.date));
 
   const header = ["Datum", "Från", "Till", "Sträcka (km)", "Sats (kr/km)", "Belopp (SEK)", "Syfte", "Notering"];
