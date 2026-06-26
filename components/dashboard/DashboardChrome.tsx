@@ -104,17 +104,17 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
   const pathname = usePathname();
 
   return (
-    <div className="relative min-h-screen bg-[#F5F4F0] dark:bg-[#0C0D0F]">
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 opacity-[0.035] dark:opacity-[0.055]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+    <div className="relative min-h-screen bg-[#F5F4F0] dark:bg-[#0C0D0F] print:bg-white print:min-h-0">
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 opacity-[0.035] dark:opacity-[0.055] print:hidden" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden print:hidden">
         <div className="absolute -top-24 left-[22%] h-[440px] w-[440px] rounded-full bg-sky-200/20 blur-[110px] dark:bg-sky-950/35" />
         <div className="absolute bottom-0 right-[12%] h-80 w-80 rounded-full bg-stone-300/20 blur-[90px] dark:bg-slate-800/25" />
       </div>
       <IdleLogout />
-      <aside className="fixed left-0 top-0 hidden h-full w-60 border-r border-gray-900/[0.07] bg-white/75 backdrop-blur-xl dark:border-white/[0.07] dark:bg-gray-950/80 lg:block">
+      <aside className="fixed left-0 top-0 hidden h-full w-60 border-r border-gray-900/[0.07] bg-white/75 backdrop-blur-xl dark:border-white/[0.07] dark:bg-gray-950/80 lg:block print:hidden">
         <NavList tier={tier} />
       </aside>
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-900/[0.07] bg-white/75 px-4 py-3 backdrop-blur-xl dark:border-white/[0.07] dark:bg-gray-950/80 lg:hidden">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-900/[0.07] bg-white/75 px-4 py-3 backdrop-blur-xl dark:border-white/[0.07] dark:bg-gray-950/80 lg:hidden print:hidden">
         <div className="flex items-center gap-2">
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setOpen(true)} aria-label="Öppna meny" className="rounded-lg p-2 hover:bg-gray-900/[0.04] dark:hover:bg-white/[0.04]">
             <Menu className="h-6 w-6" />
@@ -132,7 +132,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 lg:hidden"
+            className="fixed inset-0 z-40 lg:hidden print:hidden"
           >
             <motion.div
               initial={{ opacity: 0 }}
@@ -156,8 +156,8 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
           </motion.div>
         )}
       </AnimatePresence>
-      <main className="min-h-screen p-4 pb-24 sm:p-6 md:pb-8 lg:ml-64 lg:p-8">{children}</main>
-      <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-5 border-t border-gray-900/[0.07] bg-white/75 backdrop-blur-xl dark:border-white/[0.07] dark:bg-gray-950/80 md:hidden">
+      <main className="min-h-screen p-4 pb-24 sm:p-6 md:pb-8 lg:ml-64 lg:p-8 print:ml-0 print:min-h-0 print:p-0">{children}</main>
+      <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-5 border-t border-gray-900/[0.07] bg-white/75 backdrop-blur-xl dark:border-white/[0.07] dark:bg-gray-950/80 md:hidden print:hidden">
         {bottomNav.map((item) => {
           const Icon = item.icon;
           const active = isActive(pathname, item.href);

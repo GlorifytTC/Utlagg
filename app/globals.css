@@ -107,3 +107,15 @@ body {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+@media print {
+  body {
+    background: white !important;
+  }
+
+  /* Remove rounded corners and shadow from the invoice card */
+  .rounded-2xl {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+}
