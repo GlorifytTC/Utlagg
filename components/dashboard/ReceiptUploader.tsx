@@ -234,10 +234,10 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-black/80 p-4"
+            className="fixed inset-0 z-50 flex flex-col items-center bg-black/80 p-4"
           >
-            <video ref={videoRef} playsInline muted className="max-h-[70vh] w-full max-w-lg rounded-xl bg-black" />
-            <div className="flex gap-3">
+            <video ref={videoRef} playsInline muted className="min-h-0 w-full max-w-lg flex-1 rounded-xl bg-black object-contain" />
+            <div className="flex shrink-0 gap-3 py-4">
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={capturePhoto} className="rounded-full bg-white px-6 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
                 {t.receiptTakePhoto}
               </motion.button>
