@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BasSelect } from "./BasSelect";
 import { getBasAccount } from "@/lib/bas";
@@ -131,17 +131,18 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
     }
   }, []);
 
+  useEffect(() => {
+    if (showCamera && streamRef.current && videoRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [showCamera]);
+
   async function openCamera() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
       streamRef.current = stream;
       setShowCamera(true);
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play().catch(() => {});
-        }
-      }, 50);
     } catch {
       cameraRef.current?.click();
     }
@@ -155,17 +156,20 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
 
   function capturePhoto() {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !video.videoWidth || !video.videoHeight) {
+      closeCamera();
+      return;
+    }
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     canvas.getContext("2d")?.drawImage(video, 0, 0);
     canvas.toBlob((blob) => {
+      closeCamera();
       if (blob) {
         const file = new File([blob], `kvitto-${Date.now()}.jpg`, { type: "image/jpeg" });
         handleFile(file);
       }
-      closeCamera();
     }, "image/jpeg", 0.85);
   }
 
