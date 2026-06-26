@@ -6,6 +6,8 @@ import { BasSelect } from "./BasSelect";
 import { getBasAccount } from "@/lib/bas";
 import { suggestBasCode } from "@/lib/auto-categorize";
 import { resolveVatRate, vatFromGross, type VatRate } from "@/lib/vat";
+import { recognizeReceiptLocally } from "@/lib/ocr-client";
+import { parseReceiptText } from "@/lib/ocr";
 import { useLanguage } from "@/context/LanguageContext";
 import { ReceiptAnnotator } from "@/components/dashboard/ReceiptAnnotator";
 import { cn } from "@/lib/utils";
@@ -83,53 +85,143 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   const [showCamera, setShowCamera] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleFile = useCallback(async (file: File) => {
-    setError(null);
-    setStage("scanning");
-    try {
-      const base64 = await compressImage(file);
-      const res = await fetch("/api/ocr", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64 }) });
-      const data = await res.json();
-      if (!res.ok) {
-        setDraft(emptyDraft());
-        setError(data.error ?? "OCR misslyckades — ange manuellt.");
-      } else {
-        let vat = data.vatAmount as number | null;
-        const total = data.totalAmount as number | null;
-        const rate = data.vatRate as number | null;
-        if ((vat == null || vat === 0) && total && rate) {
-          vat = Math.round((total - total / (1 + rate / 100)) * 100) / 100;
-        }
-        const suggestedBasCode = suggestBasCode(data.vendorName);
-        const suggestedAccount = suggestedBasCode ? getBasAccount(suggestedBasCode) : undefined;
-        setDraft({
-          vendorName: data.vendorName ?? "",
-          receiptNumber: data.receiptNumber ?? "",
-          date: data.date ?? new Date().toISOString().slice(0, 10),
-          totalAmount: data.totalAmount?.toString() ?? "",
-          vatAmount: vat != null ? vat.toString() : "",
-          // Prefer the VAT rate OCR actually read off the receipt; only
-          // fall back to the category's typical rate when OCR found none.
-          vatRate:
-            (data.vatRate as VatRate | undefined) ??
-            (suggestedAccount
-              ? resolveVatRate(suggestedAccount.vatCategory, new Date(data.date ?? new Date()))
-              : 25),
-          basCode: suggestedBasCode,
-          basCodeAutoDetected: Boolean(suggestedBasCode),
-          aiConfidence: data.confidence ?? null,
-          receiptText: data.rawText ?? "",
-          image: base64,
-        });
-        if (data.needsManualReview) setError("Låg träffsäkerhet — kontrollera fälten innan du sparar.");
+  const [scanStatus, setScanStatus] = useState<string>("");
+
+  const applyExtractedData = useCallback(
+    (
+      data: {
+        vendorName?: string | null;
+        receiptNumber?: string | null;
+        date?: string | null;
+        totalAmount?: number | null;
+        vatAmount?: number | null;
+        vatRate?: number | null;
+        rawText?: string | null;
+      },
+      base64: string,
+    ) => {
+      let vat = data.vatAmount ?? null;
+      const total = data.totalAmount ?? null;
+      const rate = data.vatRate ?? null;
+      if ((vat == null || vat === 0) && total && rate) {
+        vat = Math.round((total - total / (1 + rate / 100)) * 100) / 100;
       }
-      setStage("review");
-    } catch (err) {
-      console.error(err);
-      setError("Kunde inte läsa filen.");
-      setStage("review");
-    }
-  }, []);
+      const suggestedBasCode = suggestBasCode(data.vendorName);
+      const suggestedAccount = suggestedBasCode ? getBasAccount(suggestedBasCode) : undefined;
+      setDraft({
+        vendorName: data.vendorName ?? "",
+        receiptNumber: data.receiptNumber ?? "",
+        date: data.date ?? new Date().toISOString().slice(0, 10),
+        totalAmount: total?.toString() ?? "",
+        vatAmount: vat != null ? vat.toString() : "",
+        // Prefer the VAT rate OCR actually read off the receipt; only fall
+        // back to the category's typical rate when OCR found none.
+        vatRate:
+          (rate as VatRate | undefined) ??
+          (suggestedAccount
+            ? resolveVatRate(suggestedAccount.vatCategory, new Date(data.date ?? new Date()))
+            : 25),
+        basCode: suggestedBasCode,
+        basCodeAutoDetected: Boolean(suggestedBasCode),
+        aiConfidence: null,
+        receiptText: data.rawText ?? "",
+        image: base64,
+      });
+    },
+    [],
+  );
+
+  const handleFile = useCallback(
+    async (file: File) => {
+      setError(null);
+      setStage("scanning");
+      setScanStatus(t.rcScanningLocally);
+      try {
+        const base64 = await compressImage(file);
+
+        // Step 1: free, local OCR in the browser — no API key, no cost,
+        // runs even with zero AI keys configured anywhere. Default path.
+        let localText = "";
+        let localConfidence = 0;
+        try {
+          const local = await recognizeReceiptLocally(base64, (status, progress) => {
+            setScanStatus(`${status} ${Math.round(progress * 100)}%`);
+          });
+          localText = local.text;
+          localConfidence = local.confidence;
+        } catch (e) {
+          console.error("local OCR failed, will rely on server fallback:", e);
+        }
+
+        const localParsed = localText ? parseReceiptText(localText) : null;
+        // Tesseract found real Swedish-receipt fields with reasonable
+        // confidence — use it directly, no server call, no AI cost at all.
+        const localLooksGood =
+          localParsed &&
+          localConfidence >= 60 &&
+          (localParsed.totalAmount != null || localParsed.vendorName != null);
+
+        if (localLooksGood && localParsed) {
+          applyExtractedData(
+            {
+              vendorName: localParsed.vendorName,
+              receiptNumber: localParsed.receiptNumber,
+              date: localParsed.date,
+              totalAmount: localParsed.totalAmount,
+              vatAmount: localParsed.vatAmount,
+              vatRate: localParsed.vatRate,
+              rawText: localParsed.rawText,
+            },
+            base64,
+          );
+          if (localConfidence < 80) {
+            setError(t.rcLocalLowConfidence);
+          }
+          setStage("review");
+          return;
+        }
+
+        // Step 2: local OCR found little/nothing — fall back to the server
+        // route, which uses a paid AI vision model IF one is configured
+        // (otherwise it itself falls back to free server-side OCR, same as
+        // before this change).
+        setScanStatus(t.rcScanningServer);
+        const res = await fetch("/api/ocr", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64 }) });
+        const data = await res.json();
+        if (!res.ok) {
+          // Server fallback also failed — if local OCR got at least some
+          // raw text, still hand it to the person instead of a blank form.
+          if (localParsed) {
+            applyExtractedData(
+              {
+                vendorName: localParsed.vendorName,
+                receiptNumber: localParsed.receiptNumber,
+                date: localParsed.date,
+                totalAmount: localParsed.totalAmount,
+                vatAmount: localParsed.vatAmount,
+                vatRate: localParsed.vatRate,
+                rawText: localParsed.rawText,
+              },
+              base64,
+            );
+            setError(t.rcLocalLowConfidence);
+          } else {
+            setDraft(emptyDraft());
+            setError(data.error ?? "OCR misslyckades — ange manuellt.");
+          }
+        } else {
+          applyExtractedData(data, base64);
+          if (data.needsManualReview) setError(t.rcLowConfidence);
+        }
+        setStage("review");
+      } catch (err) {
+        console.error(err);
+        setError("Kunde inte läsa filen.");
+        setStage("review");
+      }
+    },
+    [applyExtractedData, t],
+  );
 
   useEffect(() => {
     if (showCamera && streamRef.current && videoRef.current) {

@@ -595,10 +595,18 @@ export interface Translations {
   fortnoxNonePending: string;
   fortnoxSyncSelected: string;
   fortnoxSelectedCount: string;
+  rcScanningLocally: string;
+  rcScanningServer: string;
+  rcLocalLowConfidence: string;
+  rcLowConfidence: string;
 }
 
 export const strings: Record<Lang, Translations> = {
   sv: {
+    rcScanningLocally: "Läser kvittot lokalt…",
+    rcScanningServer: "Försöker med bättre läsning…",
+    rcLocalLowConfidence: "Läst lokalt med viss osäkerhet — kontrollera fälten.",
+    rcLowConfidence: "Låg träffsäkerhet — kontrollera fälten innan du sparar.",
     fortnoxReviewTitle: "Granska innan synk",
     fortnoxReviewDesc: "Välj vilka godkända kvitton som ska skickas till Fortnox. Inget skickas automatiskt.",
     fortnoxSelectAll: "Markera alla",
@@ -1217,6 +1225,10 @@ export const strings: Record<Lang, Translations> = {
     pricingTableSupport: "Prioriterad support",
   },
   en: {
+    rcScanningLocally: "Reading receipt locally…",
+    rcScanningServer: "Trying a more accurate read…",
+    rcLocalLowConfidence: "Read locally with some uncertainty — please check the fields.",
+    rcLowConfidence: "Low confidence — please check the fields before saving.",
     fortnoxReviewTitle: "Review before syncing",
     fortnoxReviewDesc: "Choose which approved receipts to send to Fortnox. Nothing is sent automatically.",
     fortnoxSelectAll: "Select all",

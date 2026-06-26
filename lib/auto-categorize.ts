@@ -24,6 +24,19 @@ const VENDOR_TO_BAS: Array<[RegExp, string]> = [
   // Travel & transport
   [/^resa$/i, "5800"],
   [/^drivmedel$/i, "5611"],
+  [/^parkering$/i, "5800"], // parking while traveling on business
+  [/^biluthyrning$/i, "5800"],
+
+  // Hotels / lodging — domestic by default; the person can switch to the
+  // "abroad" account (5832) themselves if it was an international trip,
+  // since OCR alone can't reliably tell domestic vs. foreign.
+  [/^hotell$/i, "5831"],
+
+  // Restaurants / fast food — representation, deductible by default.
+  [/^restaurang$/i, "6071"],
+
+  // Courier / postage.
+  [/^frakt$/i, "6250"],
 
   // Hardware / building / office supplies
   [/^(biltema|bauhaus|k-rauta|byggmax|jula|rusta|ahlsell|beijer|mekonomen|clas ohlson)$/i, "6110"],
