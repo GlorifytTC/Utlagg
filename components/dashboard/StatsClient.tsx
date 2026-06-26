@@ -188,26 +188,26 @@ export function StatsClient() {
 
       {/* KPI cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[0]}, ${theme.colors[0]}cc)` }}>
-          <CardContent className="p-5 text-white">
+        <Card className="flex flex-col overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[0]}, ${theme.colors[0]}cc)` }}>
+          <CardContent className="flex flex-1 flex-col justify-center p-5 pt-5 text-white">
             <p className="text-sm opacity-90">{t.statTotalAmount}</p>
             <p className="mt-1 text-3xl font-bold">{formatSek(data?.kpi.totalAmount ?? 0)}</p>
           </CardContent>
         </Card>
-        <Card className="overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[1]}, ${theme.colors[1]}cc)` }}>
-          <CardContent className="p-5 text-white">
+        <Card className="flex flex-col overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[1]}, ${theme.colors[1]}cc)` }}>
+          <CardContent className="flex flex-1 flex-col justify-center p-5 pt-5 text-white">
             <p className="text-sm opacity-90">{t.statTotalReceipts}</p>
             <p className="mt-1 text-3xl font-bold">{data?.kpi.count ?? 0}</p>
           </CardContent>
         </Card>
-        <Card className="overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[2]}, ${theme.colors[2]}cc)` }}>
-          <CardContent className="p-5 text-white">
+        <Card className="flex flex-col overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[2]}, ${theme.colors[2]}cc)` }}>
+          <CardContent className="flex flex-1 flex-col justify-center p-5 pt-5 text-white">
             <p className="text-sm opacity-90">{t.stAvgPerReceipt}</p>
             <p className="mt-1 text-3xl font-bold">{formatSek(data?.kpi.avgPerReceipt ?? 0)}</p>
           </CardContent>
         </Card>
-        <Card className="overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[3]}, ${theme.colors[3]}cc)` }}>
-          <CardContent className="p-5 text-white">
+        <Card className="flex flex-col overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[3]}, ${theme.colors[3]}cc)` }}>
+          <CardContent className="flex flex-1 flex-col justify-center p-5 pt-5 text-white">
             <p className="text-sm opacity-90">{t.stTopCategory}</p>
             <p className="mt-1 truncate text-2xl font-bold">
               {data?.kpi.topCategory ? (t[BUCKET_KEYS[data.kpi.topCategory.bucket] as keyof typeof t] as string) : "—"}
