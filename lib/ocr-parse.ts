@@ -91,6 +91,8 @@ const KNOWN_MERCHANTS: Array<[RegExp, string]> = [
   [/h\s?&\s?m|hennes ?&? ?mauritz/i, "H&M"],
   [/kappahl/i, "KappAhl"],
   [/lindex/i, "Lindex"],
+  [/\bzara\b/i, "Zara"],
+  [/\bzara home\b/i, "Zara"],
   [/\bnormal\b/i, "Normal"],
   [/circle ?k|statoil|preem|\bokq8\b|shell|ingo\b|\bst1\b/i, "Drivmedel"],
   [/pressbyrån|pressbyran|7-?eleven/i, "Pressbyrån"],
@@ -135,6 +137,33 @@ function decimalAmountOnLine(line: string): number | null {
   if (!matches) return null;
   const nums = matches.map(toNumber).filter((n): n is number => n != null);
   return nums.length ? Math.max(...nums) : null;
+}
+
+// For lines starting with a total/summa label, Swedish receipts often
+// format the line as "TOTALT <item count> <amount>,<öre>" (e.g. "TOTALT 3
+// 640,00" = 3 items, 640 kr). Plain digit-amount matching reads "3
+// 640,00" as ONE number (3640), because Sweden ALSO writes large amounts
+// with a space as the thousands separator (e.g. "1 234,56 kr") — the two
+// conventions are genuinely ambiguous from the digits alone. This resolves
+// it the way a person reading the receipt would: a lone 1-2 digit integer
+// immediately after the label, followed by a separate properly-formatted
+// amount, is the item count, not part of the price — so it's stripped
+// before the amount is extracted.
+function totalLineReadings(line: string, totalRe: RegExp): number[] {
+  const stripped = line.replace(totalRe, "").trim();
+  const leadingCount = stripped.match(/^(\d{1,2})\s+(?=\d)/);
+  const readings: number[] = [];
+  // Reading A: treat a leading 1-2 digit number as an item count and
+  // strip it before reading the amount (handles "TOTALT 3 640,00").
+  if (leadingCount) {
+    const withoutCount = decimalAmountOnLine(stripped.slice(leadingCount[0].length));
+    if (withoutCount != null) readings.push(withoutCount);
+  }
+  // Reading B: take the line at face value, no stripping (handles a
+  // genuine large total like "TOTALT 1 234,56" with no item count at all).
+  const direct = decimalAmountOnLine(stripped);
+  if (direct != null) readings.push(direct);
+  return readings;
 }
 
 export function parseReceiptText(rawText: string): ExtractedReceipt {
@@ -228,11 +257,32 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
     /moms|netto|brutto|mottaget|kontant|\båter\b|\bater\b|växel|vaxel|change|tillbaka|retur|öresavrund|oresavrund|avrund|dragning|växelpengar/i;
   // A line carrying a negative amount is change/refund, never the total.
   const isNegative = (l: string) => /[-−]\s*\d/.test(l);
-  const totalCandidates = lines.filter(
-    (l) => TOTAL_RE.test(l) && !EXCLUDE_RE.test(l) && !isNegative(l) && decimalAmountOnLine(l) != null,
-  );
-  if (totalCandidates.length) {
-    totalAmount = Math.max(...totalCandidates.map((l) => decimalAmountOnLine(l)!));
+
+  // The net subtotal ("Totalsumma netto", "Netto", etc.) has no item-count
+  // ambiguity — it's used below to pick the right reading of a TOTALT line
+  // when "<item count> <amount>" vs. a genuine 4+ digit total can't be
+  // told apart from the digits alone (see totalLineAmount's comment).
+  const nettoLine = lines.find((l) => /netto|nettobelopp/i.test(l) && !isNegative(l));
+  const nettoAmount = nettoLine ? decimalAmountOnLine(nettoLine) : null;
+
+  const totalLines = lines.filter((l) => TOTAL_RE.test(l) && !EXCLUDE_RE.test(l) && !isNegative(l));
+  const readings = totalLines.flatMap((l) => totalLineReadings(l, TOTAL_RE));
+  if (readings.length) {
+    if (nettoAmount != null) {
+      // The real total (incl. VAT) is always >= netto and normally within
+      // ~50% of it (VAT in Sweden tops out at 25%) — a reading that's
+      // wildly larger is almost certainly the item-count-merge artefact
+      // (e.g. "TOTALT 3 640,00" misread as 3640), so prefer the smallest
+      // reading that still clears the netto bar.
+      const plausible = readings.filter((n) => n >= nettoAmount * 0.99);
+      totalAmount = plausible.length ? Math.min(...plausible) : Math.max(...readings);
+    } else {
+      // No netto line to cross-check against — fall back to the largest
+      // reading, same as the original behavior (covers "Totalsumma netto"
+      // AND "TOTALT" both matching TOTAL_RE, where the real total is the
+      // bigger one).
+      totalAmount = Math.max(...readings);
+    }
   }
   if (totalAmount == null) {
     // Fallback: largest decimal amount on a line that isn't a phone/org row,

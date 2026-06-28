@@ -111,7 +111,10 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       setDraft({
         vendorName: data.vendorName ?? "",
         receiptNumber: data.receiptNumber ?? "",
-        date: data.date ?? new Date().toISOString().slice(0, 10),
+        // Leave blank rather than silently defaulting to today — a wrong
+        // date that LOOKS correct (e.g. today's date on a 2022 receipt) is
+        // worse than an empty field the person notices and fills in.
+        date: data.date ?? "",
         totalAmount: total?.toString() ?? "",
         vatAmount: vat != null ? vat.toString() : "",
         // Prefer the VAT rate OCR actually read off the receipt; only fall
@@ -154,14 +157,13 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
         }
 
         const localParsed = localText ? parseReceiptText(localText) : null;
-        // Tesseract found real Swedish-receipt fields with reasonable
-        // confidence — use it directly, no server call, no AI cost at all.
-        const localLooksGood =
-          localParsed &&
-          localConfidence >= 60 &&
-          (localParsed.totalAmount != null || localParsed.vendorName != null);
 
-        if (localLooksGood && localParsed) {
+        if (localParsed) {
+          // Always use what Tesseract found — even a low-confidence local
+          // read is more honest than OCR.space's free demo key, which is
+          // shared, rate-limited, and has produced garbage results (e.g.
+          // "net te" for a ZARA receipt). No paid API is used as a
+          // fallback here by design — see the decision recorded below.
           applyExtractedData(
             {
               vendorName: localParsed.vendorName,
@@ -174,46 +176,23 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             },
             base64,
           );
-          if (localConfidence < 80) {
+          const looksGood =
+            localConfidence >= 60 && (localParsed.totalAmount != null || localParsed.vendorName != null);
+          if (!looksGood) {
+            setError(t.rcLowConfidence);
+          } else if (localConfidence < 80) {
             setError(t.rcLocalLowConfidence);
-          }
-          setStage("review");
-          return;
-        }
-
-        // Step 2: local OCR found little/nothing — fall back to the server
-        // route, which uses a paid AI vision model IF one is configured
-        // (otherwise it itself falls back to free server-side OCR, same as
-        // before this change).
-        setScanStatus(t.rcScanningServer);
-        const res = await fetch("/api/ocr", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64 }) });
-        const data = await res.json();
-        if (!res.ok) {
-          // Server fallback also failed — if local OCR got at least some
-          // raw text, still hand it to the person instead of a blank form.
-          if (localParsed) {
-            applyExtractedData(
-              {
-                vendorName: localParsed.vendorName,
-                receiptNumber: localParsed.receiptNumber,
-                date: localParsed.date,
-                totalAmount: localParsed.totalAmount,
-                vatAmount: localParsed.vatAmount,
-                vatRate: localParsed.vatRate,
-                rawText: localParsed.rawText,
-              },
-              base64,
-            );
-            setError(t.rcLocalLowConfidence);
-          } else {
-            setDraft(emptyDraft());
-            setError(data.error ?? "OCR misslyckades — ange manuellt.");
           }
         } else {
-          applyExtractedData(data, base64);
-          if (data.needsManualReview) setError(t.rcLowConfidence);
+          // Tesseract found literally no text at all (blurry photo, OCR
+          // worker failed to load, etc.) — don't silently call a paid API
+          // or the free-but-unreliable OCR.space fallback; ask the person
+          // to fill it in by hand instead, with an honest explanation.
+          setDraft(emptyDraft());
+          setError(t.rcLowConfidence);
         }
         setStage("review");
+        return;
       } catch (err) {
         console.error(err);
         setError("Kunde inte läsa filen.");
