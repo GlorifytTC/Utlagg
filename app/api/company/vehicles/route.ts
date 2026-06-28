@@ -34,8 +34,18 @@ export async function GET() {
   }
 }
 
+const SWEDISH_PLATE = /^[A-Z]{3}\d{3}$|^[A-Z]{3}\d{2}[A-Z]$/;
+
 const schema = z.object({
-  registrationNumber: z.string().trim().min(1).max(10),
+  registrationNumber: z
+    .string()
+    .trim()
+    .min(1)
+    .max(10)
+    .transform((v) => v.toUpperCase().replace(/\s+/g, ""))
+    .refine((v) => SWEDISH_PLATE.test(v), {
+      message: "Ogiltigt registreringsnummer – ange ABC123 eller ABC12A",
+    }),
   model: z.string().trim().max(100).optional(),
   fuelType: z.enum(["petrol", "diesel", "hybrid", "electric"]).default("petrol"),
   assignedToUserId: z.string().uuid().optional(),
@@ -57,7 +67,7 @@ export async function POST(req: NextRequest) {
     .insert(companyVehicles)
     .values({
       companyId: m.companyId,
-      registrationNumber: d.registrationNumber.toUpperCase().replace(/\s+/g, ""),
+      registrationNumber: d.registrationNumber,
       model: d.model,
       fuelType: d.fuelType,
       isElectric: d.fuelType === "electric",

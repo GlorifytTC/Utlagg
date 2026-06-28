@@ -123,8 +123,17 @@ export default function MileagePage() {
     }
   }
 
+  function isValidSwedishPlate(value: string): boolean {
+    const normalized = value.toUpperCase().replace(/\s+/g, "");
+    return /^[A-Z]{3}\d{3}$/.test(normalized) || /^[A-Z]{3}\d{2}[A-Z]$/.test(normalized);
+  }
+
   async function addVehicle() {
     if (!vForm.registrationNumber.trim()) return;
+    if (!isValidSwedishPlate(vForm.registrationNumber)) {
+      toast.error(t.milRegNrInvalid);
+      return;
+    }
     const res = await fetch("/api/company/vehicles", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -466,7 +475,7 @@ export default function MileagePage() {
                 <Label>{t.milRegNr}</Label>
                 <Input
                   value={vForm.registrationNumber}
-                  onChange={(e) => setVForm({ ...vForm, registrationNumber: e.target.value })}
+                  onChange={(e) => setVForm({ ...vForm, registrationNumber: e.target.value.toUpperCase().replace(/\s+/g, "") })}
                   placeholder="ABC123"
                 />
               </div>

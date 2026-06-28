@@ -519,6 +519,7 @@ export interface Translations {
   milFuelElectric: string;
   milVehicleAdded: string;
   milVehicleFail: string;
+  milRegNrInvalid: string;
   milElectricTag: string;
   milAdminOnly: string;
   annArm: string;
@@ -728,6 +729,7 @@ export const strings: Record<Lang, Translations> = {
     milFuelElectric: "El",
     milVehicleAdded: "Fordon tillagt",
     milVehicleFail: "Kunde inte lägga till fordon",
+    milRegNrInvalid: "Ogiltigt registreringsnummer – ange ABC123 eller ABC12A",
     milElectricTag: "Elbil",
     milAdminOnly: "Endast administratörer kan lägga till fordon.",
     annModeMark: "Markera",
@@ -1350,6 +1352,7 @@ export const strings: Record<Lang, Translations> = {
     milFuelElectric: "Electric",
     milVehicleAdded: "Vehicle added",
     milVehicleFail: "Could not add vehicle",
+    milRegNrInvalid: "Invalid registration number – use ABC123 or ABC12A",
     milElectricTag: "Electric",
     milAdminOnly: "Only admins can add vehicles.",
     annModeMark: "Mark",
