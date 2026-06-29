@@ -322,7 +322,7 @@ export function StatsClient() {
       )}
 
       <Card>
-        <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
+        <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5 pt-5">
           <div>
             <p className="text-sm text-gray-500 dark:text-gray-400">{t.stTotalVat}</p>
             <p className="text-xl font-semibold">{formatSek(data?.kpi.totalVat ?? 0)}</p>

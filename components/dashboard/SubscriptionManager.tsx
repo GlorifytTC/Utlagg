@@ -159,11 +159,11 @@ export function SubscriptionManager({
               transition={{ delay: index * 0.05 }}
               whileHover={{ scale: 1.02 }}
               className={cn(
-                "rounded-2xl border bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:bg-gray-950/60",
+                "flex flex-col rounded-2xl border bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:bg-gray-950/60",
                 isCurrent ? "ring-2 ring-sky-500" : "border-gray-900/[0.07] dark:border-white/[0.07]",
               )}
             >
-              <Card>
+              <Card className="flex flex-1 flex-col border-0 bg-transparent shadow-none">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="font-display text-lg text-gray-900 dark:text-white">{planName(plan.name)}</CardTitle>
@@ -171,7 +171,7 @@ export function SubscriptionManager({
                   </div>
                   <CardDescription className="text-lg font-semibold text-gray-900 dark:text-white">{priceLbl(plan.priceLabel)}</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="flex flex-1 flex-col space-y-4">
                   <ul className="space-y-2 text-sm">
                     {plan.features.map((f, i) => (
                       <motion.li
