@@ -99,7 +99,7 @@ export function SubscriptionManager({
               initial={{ y: 20 }}
               animate={{ y: 0 }}
               exit={{ y: 20 }}
-              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900"
+              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-[#111]"
             >
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.cancelTitle}</h2>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{t.cancelIntro}</p>
@@ -128,7 +128,7 @@ export function SubscriptionManager({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-gray-950/60"
+        className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]"
       >
         <CardHeader>
           <CardTitle className="font-display text-lg text-gray-900 dark:text-white">{t.subCurrentPlan}</CardTitle>
@@ -159,7 +159,7 @@ export function SubscriptionManager({
               transition={{ delay: index * 0.05 }}
               whileHover={{ scale: 1.02 }}
               className={cn(
-                "flex flex-col rounded-2xl border bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:bg-gray-950/60",
+                "flex flex-col rounded-2xl border bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:bg-[#0D0D0D]",
                 isCurrent ? "ring-2 ring-sky-500" : "border-gray-900/[0.07] dark:border-white/[0.07]",
               )}
             >

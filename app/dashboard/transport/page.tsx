@@ -116,7 +116,7 @@ export default function TransportPage() {
             <div>
               <Label>{t.trType}</Label>
               <select
-                className="mt-1 w-full rounded-md border border-gray-300 bg-transparent p-2 dark:border-gray-700"
+                className="mt-1 w-full rounded-md border border-gray-300 bg-transparent p-2 dark:border-white/[0.10]"
                 value={form.passType}
                 onChange={(e) => setForm({ ...form, passType: e.target.value })}
               >
@@ -128,7 +128,7 @@ export default function TransportPage() {
             <div>
               <Label>{t.trProvider}</Label>
               <select
-                className="mt-1 w-full rounded-md border border-gray-300 bg-transparent p-2 dark:border-gray-700"
+                className="mt-1 w-full rounded-md border border-gray-300 bg-transparent p-2 dark:border-white/[0.10]"
                 value={form.provider}
                 onChange={(e) => setForm({ ...form, provider: e.target.value })}
               >

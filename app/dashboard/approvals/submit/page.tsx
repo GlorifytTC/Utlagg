@@ -72,7 +72,7 @@ export default function SubmitApprovalPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="receipt">{t.fldReceipt}</Label>
-            <select id="receipt" value={receiptId} onChange={(e) => setReceiptId(e.target.value)} className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-950">
+            <select id="receipt" value={receiptId} onChange={(e) => setReceiptId(e.target.value)} className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111]">
               <option value="">{t.phSelectReceipt}</option>
               {receipts.map((r) => (
                 <option key={r.id} value={r.id}>

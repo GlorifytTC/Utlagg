@@ -73,10 +73,10 @@ export default async function InvoicesPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[560px] text-sm">
-                <thead className="bg-gray-50 text-left text-gray-500 dark:bg-gray-900">
+                <thead className="bg-gray-50 text-left text-gray-500 dark:bg-[#111]">
                   <tr><th className="px-4 py-3">{t.invColNr}</th><th>{t.invColCustomer}</th><th>{t.invColDate}</th><th>{t.invColAmount}</th><th>{t.invColVat}</th><th></th></tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                <tbody className="divide-y divide-gray-100 dark:divide-white/[0.07]">
                   {rows.map((r: Record<string, unknown>) => (
                     <tr key={r.id as string}>
                       <td className="px-4 py-3 font-medium">{r.invoiceNumber as string}</td>

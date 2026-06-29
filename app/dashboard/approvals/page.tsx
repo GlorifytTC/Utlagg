@@ -78,7 +78,7 @@ export default function ApprovalsPage() {
           {pending.length === 0 ? (
             <p className="text-sm text-gray-500">{t.apNoneWaiting}</p>
           ) : (
-            <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+            <ul className="divide-y divide-gray-100 dark:divide-white/[0.07]">
               {pending.map((r) => (
                 <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                   <div>

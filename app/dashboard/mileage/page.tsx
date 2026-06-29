@@ -290,7 +290,7 @@ export default function MileagePage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="purpose">{t.fldPurpose}</Label>
-              <select id="purpose" value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-950">
+              <select id="purpose" value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111]">
                 <option value="business">{t.purposeBusiness}</option>
                 <option value="private">{t.purposePrivate}</option>
               </select>
@@ -301,7 +301,7 @@ export default function MileagePage() {
                 id="vehicle"
                 value={vehicleId}
                 onChange={(e) => setVehicleId(e.target.value)}
-                className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-950"
+                className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111]"
               >
                 <option value="">{t.milPrivateCar} (2,50 kr/km)</option>
                 {vehicles.map((v) => (
@@ -345,7 +345,7 @@ export default function MileagePage() {
 
           {routes.length === 0 ? (
             <div className="space-y-2">
-              <div className="relative rounded-lg border border-dashed border-gray-300 p-3 opacity-70 dark:border-gray-700">
+              <div className="relative rounded-lg border border-dashed border-gray-300 p-3 opacity-70 dark:border-white/[0.10]">
                 <span className="absolute right-2 top-2 rounded-full bg-ink/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-ink/50">
                   {t.milExample}
                 </span>
@@ -420,7 +420,7 @@ export default function MileagePage() {
                                   "h-9 w-9 rounded-full border text-xs transition " +
                                   (period.dows[i]
                                     ? "border-nordic-600 bg-nordic-600 text-white"
-                                    : "border-gray-300 text-gray-500 dark:border-gray-700")
+                                    : "border-gray-300 text-gray-500 dark:border-white/[0.10]")
                                 }
                               >
                                 {d}
@@ -492,7 +492,7 @@ export default function MileagePage() {
                 <select
                   value={vForm.fuelType}
                   onChange={(e) => setVForm({ ...vForm, fuelType: e.target.value })}
-                  className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-950"
+                  className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111]"
                 >
                   <option value="petrol">{t.milFuelPetrol}</option>
                   <option value="diesel">{t.milFuelDiesel}</option>
@@ -522,7 +522,7 @@ export default function MileagePage() {
                     <th className="py-2">{t.fldDate}</th><th>{t.fldFrom}</th><th>{t.fldTo}</th><th>{t.milKm}</th><th>{t.fldAmount}</th><th>{t.fldPurpose}</th><th></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                <tbody className="divide-y divide-gray-100 dark:divide-white/[0.07]">
                   {entries.map((e) => (
                     <tr key={e.id}>
                       <td className="py-2">{new Date(e.date).toLocaleDateString("sv-SE")}</td>

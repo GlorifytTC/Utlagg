@@ -20,7 +20,7 @@ export function RecentReceipts({ receipts }: { receipts: Receipt[] }) {
   };
 
   return (
-    <Card className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-gray-950/60">
+    <Card className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
       <CardHeader className="pb-4">
         <CardTitle className="font-display text-lg text-gray-900 dark:text-white">
           {t.recentTitle}
@@ -42,7 +42,7 @@ export function RecentReceipts({ receipts }: { receipts: Receipt[] }) {
             .
           </p>
         ) : (
-          <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+          <ul className="divide-y divide-gray-100 dark:divide-white/[0.06]">
             {receipts.map((r, i) => (
               <li
                 key={r.id}

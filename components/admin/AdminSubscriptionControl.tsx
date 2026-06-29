@@ -50,7 +50,7 @@ export function AdminSubscriptionControl({ userId, current }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg bg-gray-50 p-3 text-sm dark:bg-gray-800/50">
+      <div className="rounded-lg bg-gray-50 p-3 text-sm dark:bg-white/[0.08]/50">
         <p>
           Nu: <strong>{current.tier}</strong> · {current.status}
           {current.source ? ` · ${current.source === "manual" ? "manuell (comp)" : current.source}` : ""}
@@ -63,7 +63,7 @@ export function AdminSubscriptionControl({ userId, current }: Props) {
         <div>
           <label className="mb-1 block text-xs text-gray-500">Plan</label>
           <select value={tier} onChange={(e) => setTier(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-950">
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-white/[0.10] dark:bg-[#111]">
             {TIERS.map((t) => <option key={t.v} value={t.v}>{t.label}</option>)}
           </select>
         </div>
@@ -71,7 +71,7 @@ export function AdminSubscriptionControl({ userId, current }: Props) {
           <label className="mb-1 block text-xs text-gray-500">Provdagar</label>
           <input type="number" min="1" value={days} disabled={unlimited}
             onChange={(e) => setDays(e.target.value)}
-            className="w-24 rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:opacity-50 dark:border-gray-700 dark:bg-gray-950" />
+            className="w-24 rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:opacity-50 dark:border-white/[0.10] dark:bg-[#111]" />
         </div>
         <label className="flex items-center gap-1 pb-2 text-sm">
           <input type="checkbox" checked={unlimited} onChange={(e) => setUnlimited(e.target.checked)} /> Obegränsat

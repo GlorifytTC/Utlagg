@@ -19,7 +19,7 @@ export function UsageMeter({
   const { t } = useLanguage();
 
   return (
-    <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-gray-950/60">
+    <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]">
       <div className="flex items-baseline justify-between">
         <p className="text-sm text-gray-500 dark:text-gray-400">{t.scansThisMonth}</p>
         <motion.span
@@ -45,7 +45,7 @@ export function UsageMeter({
       </motion.p>
       {!unlimited && (
         <>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.08]">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}

@@ -100,7 +100,7 @@ export default function CompanyPage() {
       <Card>
         <CardHeader><CardTitle>{t.coMembers}</CardTitle><CardDescription>{t.coYourRole} {role}</CardDescription></CardHeader>
         <CardContent>
-          <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+          <ul className="divide-y divide-gray-100 dark:divide-white/[0.07]">
             {members.map((m) => (
               <li key={m.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
                 <div>
@@ -110,7 +110,7 @@ export default function CompanyPage() {
                 <div className="flex items-center gap-2">
                   {canManage && m.role !== "owner" ? (
                     <select value={m.role} onChange={(e) => changeRole(m.id, e.target.value)}
-                      className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-700 dark:bg-gray-950">
+                      className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-white/[0.10] dark:bg-[#111]">
                       <option value="member">{t.roleMember}</option>
                       <option value="approver">{t.roleApprover}</option>
                       <option value="admin">{t.roleAdmin}</option>
@@ -134,7 +134,7 @@ export default function CompanyPage() {
               <Input type="email" value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} placeholder="kollega@foretag.se" /></div>
             <div className="space-y-2"><Label>{t.fldRole}</Label>
               <select value={invite.role} onChange={(e) => setInvite({ ...invite, role: e.target.value })}
-                className="flex h-10 rounded-lg border border-gray-300 px-3 text-sm dark:border-gray-700 dark:bg-gray-950">
+                className="flex h-10 rounded-lg border border-gray-300 px-3 text-sm dark:border-white/[0.10] dark:bg-[#111]">
                 <option value="member">{t.roleMember}</option>
                 <option value="approver">{t.roleApprover}</option>
                 <option value="admin">{t.roleAdmin}</option>

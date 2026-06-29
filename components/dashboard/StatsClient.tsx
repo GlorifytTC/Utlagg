@@ -137,7 +137,7 @@ export function StatsClient() {
         </div>
         <div className="flex items-center gap-2">
           {/* Month / Year toggle */}
-          <div className="flex rounded-full border border-gray-200 bg-white p-1 dark:border-gray-800 dark:bg-gray-900">
+          <div className="flex rounded-full border border-gray-200 bg-white p-1 dark:border-white/[0.08] dark:bg-[#111]">
             {(["month", "year"] as Range[]).map((r) => (
               <button
                 key={r}
@@ -156,20 +156,20 @@ export function StatsClient() {
           <div className="relative">
             <button
               onClick={() => setPickerOpen((o) => !o)}
-              className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-700 hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200"
+              className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-700 hover:border-gray-300 dark:border-white/[0.08] dark:bg-[#111] dark:text-gray-200"
             >
               <Palette className="h-4 w-4" />
               {theme.name}
             </button>
             {pickerOpen && (
-              <div className="absolute right-0 z-10 mt-2 w-44 rounded-xl border border-gray-200 bg-white p-2 shadow-lg dark:border-gray-800 dark:bg-gray-900">
+              <div className="absolute right-0 z-10 mt-2 w-44 rounded-xl border border-gray-200 bg-white p-2 shadow-lg dark:border-white/[0.08] dark:bg-[#111]">
                 <p className="px-2 pb-1 pt-1 text-xs font-medium text-gray-400">{t.stTheme}</p>
                 {Object.entries(THEMES).map(([key, th]) => (
                   <button
                     key={key}
                     onClick={() => chooseTheme(key as keyof typeof THEMES)}
                     className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 ${
-                      key === themeKey ? "bg-gray-50 dark:bg-gray-800" : ""
+                      key === themeKey ? "bg-gray-50 dark:bg-white/[0.08]" : ""
                     }`}
                   >
                     <span className="flex gap-0.5">
@@ -308,7 +308,7 @@ export function StatsClient() {
                         {formatSek(p.value)} · {pct.toFixed(0)}% {t.stShareOfTotal}
                       </span>
                     </div>
-                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.08]">
                       <div
                         className="h-full rounded-full transition-all"
                         style={{ width: `${pct}%`, background: p.color }}

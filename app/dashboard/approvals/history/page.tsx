@@ -30,7 +30,7 @@ export default function ApprovalHistoryPage() {
           {reqs.length === 0 ? (
             <p className="text-sm text-gray-500">{t.apNoneYet}</p>
           ) : (
-            <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+            <ul className="divide-y divide-gray-100 dark:divide-white/[0.07]">
               {reqs.map((r) => (
                 <li key={r.id} className="flex items-center justify-between py-3">
                   <div>

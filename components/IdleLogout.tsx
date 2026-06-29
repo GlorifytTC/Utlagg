@@ -69,7 +69,7 @@ export function IdleLogout() {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-[#111]">
         <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-white">
           {t.idleTitle}
         </h2>
@@ -83,7 +83,7 @@ export function IdleLogout() {
           </button>
           <button
             onClick={doLogout}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-white/[0.10] dark:text-gray-300 dark:hover:bg-gray-800"
           >
             {t.idleLogout}
           </button>

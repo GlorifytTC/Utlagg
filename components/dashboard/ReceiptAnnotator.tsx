@@ -125,7 +125,7 @@ export function ReceiptAnnotator({
   const fit = () => setZoom(1);
 
   return (
-    <div className="rounded-2xl border border-gray-900/[0.07] bg-[#F5F4F0]/60 p-4 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0C0D0F]/60">
+    <div className="rounded-2xl border border-gray-900/[0.07] bg-[#F5F4F0]/60 p-4 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]">
       <p className="font-display text-base text-gray-900 dark:text-white">{t.annTitle}</p>
       <p className="mt-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{t.annDesc}</p>
       
@@ -198,7 +198,7 @@ export function ReceiptAnnotator({
       <div
         ref={stageRef}
         className={cn(
-          "relative mt-2 max-h-[62vh] overflow-auto rounded-lg border bg-white/60 transition dark:bg-gray-950/60",
+          "relative mt-2 max-h-[62vh] overflow-auto rounded-lg border bg-white/60 transition dark:bg-[#0D0D0D]",
           armed ? "border-sky-600 ring-2 ring-sky-400/40" : "border-gray-900/[0.07] dark:border-white/[0.07]",
         )}
         style={{ touchAction: armed ? "none" : "auto" }}

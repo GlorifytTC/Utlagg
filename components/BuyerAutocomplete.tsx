@@ -113,7 +113,7 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
         <ul
           id="buyer-listbox"
           role="listbox"
-          className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-md border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900"
+          className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-md border border-gray-200 bg-white shadow-lg dark:border-white/[0.10] dark:bg-[#111]"
         >
           {suggestions.map((buyer, idx) => (
             <li
@@ -122,7 +122,7 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
               aria-selected={idx === highlightIndex}
               className={`cursor-pointer px-3 py-2 text-sm ${
                 idx === highlightIndex
-                  ? "bg-gray-100 dark:bg-gray-800"
+                  ? "bg-gray-100 dark:bg-white/[0.08]"
                   : "hover:bg-gray-50 dark:hover:bg-gray-800"
               }`}
               onMouseDown={(e) => {

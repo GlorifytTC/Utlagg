@@ -13,16 +13,16 @@ function StatCell({
   icon: LucideIcon;
 }) {
   return (
-    <div className="group bg-[#F5F4F0] p-5 transition-colors hover:bg-gray-900/[0.03] dark:bg-[#0C0D0F] dark:hover:bg-white/[0.03]">
-      <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-600">
+    <div className="group bg-[#F5F4F0] p-5 transition-colors hover:bg-gray-900/[0.03] dark:bg-[#0D0D0D] dark:hover:bg-white/[0.04]">
+      <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
         {label}
       </p>
       <div className="flex items-end justify-between gap-2">
         <p className="font-display text-[22px] font-semibold leading-none tracking-tight text-gray-900 transition-colors group-hover:text-gray-800 dark:text-white dark:group-hover:text-gray-100">
           {value}
         </p>
-        <Icon 
-          className="mb-0.5 h-4 w-4 shrink-0 text-gray-300 transition-colors group-hover:text-gray-400 dark:text-gray-700 dark:group-hover:text-gray-600" 
+        <Icon
+          className="mb-0.5 h-4 w-4 shrink-0 text-gray-300 transition-colors group-hover:text-gray-400 dark:text-gray-600 dark:group-hover:text-gray-500"
           strokeWidth={1.5}
         />
       </div>

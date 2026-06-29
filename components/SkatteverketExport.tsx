@@ -37,7 +37,7 @@ export function SkatteverketExport({
   }
 
   const sel =
-    "rounded-lg border border-gray-300 px-2 py-2 text-sm dark:border-gray-700 dark:bg-gray-950";
+    "rounded-lg border border-gray-300 px-2 py-2 text-sm dark:border-white/[0.10] dark:bg-[#111]";
 
   return (
     <div className="space-y-3">

@@ -41,7 +41,7 @@ export function CsvRangeExport() {
   }
 
   return (
-    <Card className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-gray-950/60">
+    <Card className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]">
       <CardHeader className="pb-4">
         <CardTitle className="font-display text-lg text-gray-900 dark:text-white">Exportera kvitton (CSV)</CardTitle>
         <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
@@ -69,11 +69,11 @@ export function CsvRangeExport() {
         <div className="flex flex-wrap items-end gap-3">
           <div className="space-y-1">
             <Label className="text-xs text-gray-500 dark:text-gray-400">Från</Label>
-            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950" />
+            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111]" />
           </div>
           <div className="space-y-1">
             <Label className="text-xs text-gray-500 dark:text-gray-400">Till</Label>
-            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950" />
+            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111]" />
           </div>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button 

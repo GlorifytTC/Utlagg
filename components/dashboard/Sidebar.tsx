@@ -38,7 +38,7 @@ export function Sidebar({ tier }: { tier: Tier }) {
   const dark = theme === "dark";
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-20 flex w-60 flex-col border-r border-gray-900/[0.07] bg-white/75 backdrop-blur-xl dark:border-white/[0.07] dark:bg-gray-950/80">
+    <aside className="fixed inset-y-0 left-0 z-20 flex w-60 flex-col border-r border-gray-900/[0.07] bg-white/75 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#0A0A0A]">
       {/* Brand header */}
       <div className="px-5 pb-5 pt-6">
         <Link 
@@ -49,11 +49,11 @@ export function Sidebar({ tier }: { tier: Tier }) {
             Utlägg
           </span>
         </Link>
-        <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-600">
+        <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-500">
           Expense Management
         </p>
         {TIER_LABEL[tier] && (
-          <span className="mt-2.5 inline-flex items-center rounded-full border border-gray-200 px-2 py-0.5 text-[9.5px] uppercase tracking-widest text-gray-500 dark:border-gray-800 dark:text-gray-500">
+          <span className="mt-2.5 inline-flex items-center rounded-full border border-gray-200 px-2 py-0.5 text-[9.5px] uppercase tracking-widest text-gray-500 dark:border-white/[0.10] dark:text-gray-400">
             {TIER_LABEL[tier]}
           </span>
         )}
@@ -63,7 +63,7 @@ export function Sidebar({ tier }: { tier: Tier }) {
 
       {/* Navigation menu */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
-        <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-600">
+        <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">
           Menu
         </p>
         <ul className="space-y-px">
@@ -81,7 +81,7 @@ export function Sidebar({ tier }: { tier: Tier }) {
                     "group flex items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm transition-colors duration-150",
                     isActive
                       ? "bg-gray-900/[0.07] text-gray-900 dark:bg-white/[0.07] dark:text-white"
-                      : "text-gray-500 hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-500 dark:hover:bg-white/[0.04] dark:hover:text-gray-300",
+                      : "text-gray-500 hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white",
                   )}
                 >
                   <Icon 
@@ -109,7 +109,7 @@ export function Sidebar({ tier }: { tier: Tier }) {
         <div className="space-y-px border-t border-gray-900/[0.06] pt-3 dark:border-white/[0.06]">
           <button
             onClick={toggleTheme}
-            className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-500 transition-colors hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-500 dark:hover:bg-white/[0.04] dark:hover:text-gray-300"
+            className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-500 transition-colors hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
           >
             {dark ? (
               <Sun className="h-[15px] w-[15px]" strokeWidth={1.75} />
@@ -120,7 +120,7 @@ export function Sidebar({ tier }: { tier: Tier }) {
           </button>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-400 transition-colors hover:bg-red-50/70 hover:text-red-600 dark:text-gray-600 dark:hover:bg-red-950/25 dark:hover:text-red-400"
+            className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-400 transition-colors hover:bg-red-50/70 hover:text-red-600 dark:text-gray-500 dark:hover:bg-red-950/30 dark:hover:text-red-400"
           >
             <LogOut className="h-[15px] w-[15px]" strokeWidth={1.75} />
             <span>Logga ut</span>

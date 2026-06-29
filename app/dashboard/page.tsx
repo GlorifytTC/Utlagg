@@ -86,7 +86,7 @@ export default async function DashboardPage() {
 
       {/* Page header */}
       <div>
-        <p className="mb-1 text-[9.5px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-600">
+        <p className="mb-1 text-[9.5px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">
           {t.navOverview}
         </p>
         <h1 className="font-display text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
@@ -99,7 +99,7 @@ export default async function DashboardPage() {
           instead of being buried two clicks deep in Settings. */}
       <Link
         href="/dashboard/export"
-        className="group flex items-center justify-between rounded-2xl border border-gray-900/[0.07] bg-[#F5F4F0] px-6 py-4 transition-colors hover:border-nordic-600/30 hover:bg-nordic-50/40 dark:border-white/[0.07] dark:bg-[#0C0D0F] dark:hover:bg-nordic-950/20"
+        className="group flex items-center justify-between rounded-2xl border border-gray-900/[0.07] bg-[#F5F4F0] px-6 py-4 transition-colors hover:border-nordic-600/30 hover:bg-nordic-50/40 dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:hover:bg-white/[0.04]"
       >
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-nordic-600/10 text-nordic-700 dark:bg-nordic-400/10 dark:text-nordic-300">
@@ -125,16 +125,16 @@ export default async function DashboardPage() {
       />
 
       {/* Charts and recent receipts */}
-      <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] transition-shadow hover:shadow-sm dark:border-white/[0.07]">
+      <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] transition-shadow hover:shadow-sm dark:border-white/[0.08]">
         <div className="grid grid-cols-1 gap-px bg-gray-900/[0.07] lg:grid-cols-2 dark:bg-white/[0.07]">
-          <div className="bg-[#F5F4F0] px-6 py-5 transition-colors hover:bg-gray-900/[0.02] dark:bg-[#0C0D0F] dark:hover:bg-white/[0.02]">
-            <p className="mb-4 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-600">
+          <div className="bg-[#F5F4F0] px-6 py-5 transition-colors hover:bg-gray-900/[0.02] dark:bg-[#0D0D0D] dark:hover:bg-white/[0.03]">
+            <p className="mb-4 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
               Användning
             </p>
             <UsageChart used={used} limit={limit} />
           </div>
-          <div className="bg-[#F5F4F0] px-6 py-5 transition-colors hover:bg-gray-900/[0.02] dark:bg-[#0C0D0F] dark:hover:bg-white/[0.02]">
-            <p className="mb-4 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-600">
+          <div className="bg-[#F5F4F0] px-6 py-5 transition-colors hover:bg-gray-900/[0.02] dark:bg-[#0D0D0D] dark:hover:bg-white/[0.03]">
+            <p className="mb-4 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
               Senaste kvitton
             </p>
             <RecentReceipts receipts={recent} />

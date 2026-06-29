@@ -95,7 +95,7 @@ export function ExportPanel() {
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 preset === p.key
                   ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                  : "border border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:text-gray-300"
+                  : "border border-gray-200 text-gray-600 hover:border-gray-300 dark:border-white/[0.10] dark:text-gray-300"
               }`}
             >
               {p.label}
@@ -113,7 +113,7 @@ export function ExportPanel() {
                 setFrom(e.target.value);
                 setPreset("custom");
               }}
-              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900"
+              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-white/[0.10] dark:bg-[#111]"
             />
           </div>
           <div>
@@ -125,7 +125,7 @@ export function ExportPanel() {
                 setTo(e.target.value);
                 setPreset("custom");
               }}
-              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900"
+              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-white/[0.10] dark:bg-[#111]"
             />
           </div>
         </div>

@@ -361,7 +361,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   }
 
   return (
-    <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-gray-950/60">
+    <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]">
       <AnimatePresence>
         {showCamera && (
           <motion.div
@@ -372,7 +372,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
           >
             <video ref={videoRef} playsInline muted className="min-h-0 w-full max-w-lg flex-1 rounded-xl bg-black object-contain" />
             <div className="flex shrink-0 gap-3 py-4">
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={capturePhoto} className="rounded-full bg-white px-6 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={capturePhoto} className="rounded-full bg-white px-6 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 dark:bg-white/[0.12] dark:text-white dark:hover:bg-white/[0.18]">
                 {t.receiptTakePhoto}
               </motion.button>
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={closeCamera} className="rounded-full border border-white/40 px-6 py-2.5 text-sm text-white hover:bg-white/10">
@@ -405,7 +405,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             }}
             className={cn(
               "mt-4 flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-10 text-center transition",
-              dragging ? "border-sky-600 bg-sky-50/60" : "border-gray-900/[0.15] bg-white/40 dark:border-white/[0.15] dark:bg-gray-950/40",
+              dragging ? "border-sky-600 bg-sky-50/60" : "border-gray-900/[0.15] bg-white/40 dark:border-white/[0.15] dark:bg-black/30",
             )}
           >
             <p className="text-sm text-gray-600 dark:text-gray-300">{t.receiptDragDrop}</p>
@@ -483,7 +483,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 <input
                   value={draft.vendorName}
                   onChange={(e) => setDraft({ ...draft, vendorName: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                 />
               </div>
               <div>
@@ -491,7 +491,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 <input
                   value={draft.receiptNumber}
                   onChange={(e) => setDraft({ ...draft, receiptNumber: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                   placeholder="Valfritt"
                 />
               </div>
@@ -501,7 +501,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                   type="date"
                   value={draft.date}
                   onChange={(e) => setDraft({ ...draft, date: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                 />
               </div>
               <div>
@@ -517,7 +517,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                       vatAmount: recalcVat(total, d.vatRate),
                     }));
                   }}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                 />
               </div>
               <div>
@@ -532,7 +532,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                       vatAmount: recalcVat(d.totalAmount, rate),
                     }));
                   }}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                 >
                   <option value={6}>6 %</option>
                   <option value={12}>12 %</option>
@@ -545,7 +545,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                   inputMode="decimal"
                   value={draft.vatAmount}
                   onChange={(e) => setDraft({ ...draft, vatAmount: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                 />
               </div>
             </div>

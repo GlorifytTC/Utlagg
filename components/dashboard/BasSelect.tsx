@@ -77,13 +77,13 @@ export function BasSelect({
           setOpen(true);
         }}
         onKeyDown={handleKeyDown}
-        className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2.5 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
+        className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2.5 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
       />
       
       {/* Dropdown */}
       <div
         className={cn(
-          "absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-gray-900/[0.07] bg-white/60 backdrop-blur-xl shadow-lg transition-all duration-200 dark:border-white/[0.07] dark:bg-gray-950/80",
+          "absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-gray-900/[0.07] bg-white/60 backdrop-blur-xl shadow-lg transition-all duration-200 dark:border-white/[0.07] dark:bg-[#0A0A0A]",
           open && results.length > 0 ? "opacity-100 translate-y-0" : "pointer-events-none -translate-y-1 opacity-0",
         )}
       >

@@ -205,7 +205,7 @@ export default function NewInvoicePage() {
               />
               <select
                 disabled={reverseCharge}
-                className="col-span-2 rounded-lg border border-gray-300 px-2 text-sm disabled:opacity-50 dark:border-gray-700 dark:bg-gray-950"
+                className="col-span-2 rounded-lg border border-gray-300 px-2 text-sm disabled:opacity-50 dark:border-white/[0.10] dark:bg-[#111]"
                 value={l.vatRate}
                 onChange={(e) =>
                   setLine(i, { vatRate: Number(e.target.value) })

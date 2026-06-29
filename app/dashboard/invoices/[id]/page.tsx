@@ -38,7 +38,7 @@ export default async function InvoiceView({ params }: { params: { id: string } }
         <PrintButton />
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-8 text-sm text-gray-900 dark:border-gray-800 dark:bg-white">
+      <div className="rounded-2xl border border-gray-200 bg-white p-8 text-sm text-gray-900 dark:border-white/[0.08] dark:bg-white">
         <div className="flex justify-between">
           <div>
             <p className="text-lg font-bold">{inv.sellerName}</p>

@@ -81,7 +81,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
   }
 
   return (
-    <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-gray-950/60">
+    <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
       <AnimatePresence>
         {preview && (
           <motion.div
@@ -112,16 +112,16 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t.receiptSearch}
-            className="min-w-[200px] flex-1 rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-gray-950"
+            className="min-w-[200px] flex-1 rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
           />
           <div className="flex items-end gap-2">
             <label className="text-xs text-gray-500 dark:text-gray-400">
               {t.receiptFrom}
-              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="mt-0.5 block rounded-lg border border-gray-900/[0.12] bg-white px-2 py-1.5 text-sm dark:border-white/[0.12] dark:bg-gray-950" />
+              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="mt-0.5 block rounded-lg border border-gray-900/[0.12] bg-white px-2 py-1.5 text-sm dark:border-white/[0.12] dark:bg-[#111] dark:text-white" />
             </label>
             <label className="text-xs text-gray-500 dark:text-gray-400">
               {t.receiptTo}
-              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="mt-0.5 block rounded-lg border border-gray-900/[0.12] bg-white px-2 py-1.5 text-sm dark:border-white/[0.12] dark:bg-gray-950" />
+              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="mt-0.5 block rounded-lg border border-gray-900/[0.12] bg-white px-2 py-1.5 text-sm dark:border-white/[0.12] dark:bg-[#111] dark:text-white" />
             </label>
             <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <button onClick={exportCsv} className="rounded-full border border-gray-900/[0.15] px-4 py-2 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40">
@@ -164,7 +164,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
           >
             <table className="w-full min-w-[640px] text-sm">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-gray-400 dark:text-gray-600">
+                <tr className="text-left text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">
                   <th className="px-5 py-3 font-medium">{t.colDate}</th>
                   <th className="px-5 py-3 font-medium">{t.colVendor}</th>
                   <th className="px-5 py-3 font-medium">{t.colBas}</th>
@@ -199,7 +199,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                     </td>
                     <td className="px-5 py-3 font-mono text-gray-500 dark:text-gray-400">{r.basCode ?? "—"}</td>
                     <td className="px-5 py-3">
-                      {r.vatRate ? `${r.vatRate}%` : "—"} <span className="text-gray-400 dark:text-gray-600">{formatSek(r.vatAmount)}</span>
+                      {r.vatRate ? `${r.vatRate}%` : "—"} <span className="text-gray-400 dark:text-gray-500">{formatSek(r.vatAmount)}</span>
                     </td>
                     <td className="px-5 py-3">{formatSek(r.totalAmount)}</td>
                     <td className="px-5 py-3">
