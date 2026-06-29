@@ -12,6 +12,7 @@ import { getT } from "@/lib/i18n-server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UpsellCard } from "@/components/UpsellCard";
+import { DeleteInvoiceButton } from "@/components/dashboard/DeleteInvoiceButton";
 
 export const metadata = { title: "Fakturor" };
 export const dynamic = "force-dynamic";
@@ -84,7 +85,14 @@ export default async function InvoicesPage() {
                       <td>{Number(r.total).toFixed(2).replace(".", ",")} kr</td>
                       <td>{(r.reverseCharge as boolean) ? t.invReverse : `${Number(r.vatTotal).toFixed(2).replace(".", ",")} kr`}</td>
                       <td className="px-4 py-3 text-right">
-                        <Link href={`/dashboard/invoices/${r.id}`} className="text-nordic-600 underline">{t.btnView}</Link>
+                        <div className="flex items-center justify-end gap-2">
+                          <Link href={`/dashboard/invoices/${r.id}`} className="text-nordic-600 underline text-sm">{t.btnView}</Link>
+                          <DeleteInvoiceButton
+                            id={r.id as string}
+                            confirmText={t.invDeleteConfirm}
+                            label={t.btnDelete}
+                          />
+                        </div>
                       </td>
                     </tr>
                   ))}

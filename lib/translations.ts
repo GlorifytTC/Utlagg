@@ -298,6 +298,7 @@ export interface Translations {
   invColVat: string;
   invReverse: string;
   invDisclaimer: string;
+  invDeleteConfirm: string;
   toastFillCustomerRows: string;
   toastReverseNeedsVat: string;
   toastInvoiceSaved: string;
@@ -931,6 +932,7 @@ export const strings: Record<Lang, Translations> = {
     invColVat: "Moms",
     invReverse: "Omvänd",
     invDisclaimer: "Du ansvarar själv för att uppgifterna på fakturan är korrekta. Utlagg tillhandahåller mallen och sparar fakturan.",
+    invDeleteConfirm: "Ta bort denna faktura? Detta går inte att ångra.",
     toastFillCustomerRows: "Fyll i kund och alla rader",
     toastReverseNeedsVat: "Vid omvänd skattskyldighet krävs köparens moms-/org.nummer",
     toastInvoiceSaved: "Faktura sparad",
@@ -1554,6 +1556,7 @@ export const strings: Record<Lang, Translations> = {
     invColVat: "VAT",
     invReverse: "Reverse",
     invDisclaimer: "You are responsible for ensuring the invoice details are correct. Utlagg provides the template and stores the invoice.",
+    invDeleteConfirm: "Delete this invoice? This cannot be undone.",
     toastFillCustomerRows: "Fill in the customer and all rows",
     toastReverseNeedsVat: "Reverse charge requires the buyer's VAT/registration number",
     toastInvoiceSaved: "Invoice saved",
