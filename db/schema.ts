@@ -554,6 +554,41 @@ export type TransportPass = typeof transportPasses.$inferSelect;
 /* mileage_routes — saved/recurring trips (daily commute, fixed runs)  */
 /* so users don't retype the same trip every day.                      */
 /* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* Shared OCR vendor-name learning                                    */
+/* When ANY user corrects a vendor name OCR got wrong, that correction*/
+/* is recorded here keyed on the Swedish org number (556677-8899 style)*/
+/* read off the same receipt — org numbers are fixed-format and OCR   */
+/* reads them far more reliably than a store's stylized logo/name, so */
+/* they survive across different photos of the same chain far better */
+/* than trying to fuzzy-match the garbled vendor text itself. Once a  */
+/* correction exists for an org number, EVERY user's future receipts  */
+/* from that same company get the right name automatically — this is */
+/* what makes the system improve across the whole user base rather    */
+/* than relearning the same store separately for every person.        */
+/* ------------------------------------------------------------------ */
+export const vendorCorrections = pgTable(
+  "vendor_corrections",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // Swedish org number, "556677-8899" format — the stable lookup key.
+    orgNumber: varchar("org_number", { length: 11 }),
+    // What OCR actually produced before correction (kept for the
+    // text-similarity fallback when no org number was readable).
+    ocrText: varchar("ocr_text", { length: 300 }),
+    // The corrected, canonical vendor name.
+    correctVendor: varchar("correct_vendor", { length: 300 }).notNull(),
+    // BAS account the corrected vendor should map to, if known.
+    basCode: varchar("bas_code", { length: 10 }),
+    timesConfirmed: integer("times_confirmed").notNull().default(1),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => ({
+    orgNumberIdx: index("vendor_corrections_org_idx").on(t.orgNumber),
+  }),
+);
+
 export const mileageRoutes = pgTable(
   "mileage_routes",
   {
@@ -575,3 +610,4 @@ export const mileageRoutes = pgTable(
 );
 
 export type MileageRoute = typeof mileageRoutes.$inferSelect;
+export type VendorCorrection = typeof vendorCorrections.$inferSelect;

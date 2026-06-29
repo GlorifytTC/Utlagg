@@ -117,7 +117,59 @@ const KNOWN_MERCHANTS: Array<[RegExp, string]> = [
 
   // Fast food / restaurant chains (representation-style spend, distinct
   // from grocery shopping).
-  [/max hamburgare|\bmax\b restaurang|burger king|mcdonald|sibylla|o'?learys/i, "Restaurang"],
+  [/max hamburgare|\bmax\b restaurang|burger king|mcdonald|sibylla|o'?learys|subway\b/i, "Restaurang"],
+
+  // Office supplies / print / stationery — frequent for B2B expense receipts.
+  [/staples|kontorsexpressen|svensk\s*kontorsservice/i, "Kontorsmateriel"],
+
+  // Telecom / mobile / broadband — recurring B2B expenses.
+  [/\btelia\b/i, "Telia"],
+  [/\btele2\b/i, "Tele2"],
+  [/\bthree\b|\b3\s*sverige/i, "Tre"],
+  [/telenor/i, "Telenor"],
+  [/halebop/i, "Halebop"],
+  [/comviq/i, "Comviq"],
+
+  // Banking / financial fees — appear on B2B statements as line items.
+  [/swedbank/i, "Swedbank"],
+  [/handelsbanken/i, "Handelsbanken"],
+  [/seb\b|skandinaviska enskilda banken/i, "SEB"],
+  [/nordea/i, "Nordea"],
+  [/danske bank/i, "Danske Bank"],
+  [/klarna/i, "Klarna"],
+
+  // More grocery / discount chains.
+  [/willys hemma/i, "Willys"],
+  [/matöppet|matoppet/i, "Matöppet"],
+  [/city ?gross/i, "City Gross"],
+  [/coop ?nära|coopnara/i, "Coop"],
+
+  // More home/DIY/garden — common B2B premises-maintenance spend.
+  [/optimera/i, "Optimera"],
+  [/woody bygghandel|woody\b/i, "Woody"],
+  [/cervera/i, "Cervera"],
+  [/granit\b/i, "Granit"],
+  [/rusta garden|hornbach/i, "Hornbach"],
+
+  // More electronics / IT hardware retailers.
+  [/inet\.se|\binet\b/i, "Inet"],
+  [/komplett\.se|\bkomplett\b/i, "Komplett"],
+  [/dustin\.se|\bdustin\b/i, "Dustin"],
+
+  // Pharmacy / health, beyond the existing apoteket group.
+  [/lloyds apotek/i, "Apotek"],
+  [/doktor\.se|doktor24|kry\b/i, "Vårdtjänst"],
+
+  // Co-working / office space — common modern B2B expense.
+  [/regus\b|wework\b|convendum/i, "Kontorshyra"],
+
+  // More cafés / bakeries / lunch chains common on Swedish receipts.
+  [/vetekatten|johan ?&? olof|lantis|bageri/i, "Café"],
+  [/wokas|sallad\s*stop|salladsbaren/i, "Restaurang"],
+
+  // Postal / printing services beyond courier companies.
+  [/posten\b|postombud/i, "Frakt"],
+  [/copysam|printon|tryckeri/i, "Tryck"],
 ];
 
 // A token that is clearly a phone number / org number / postcode, not money.

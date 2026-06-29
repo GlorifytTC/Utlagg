@@ -50,6 +50,23 @@ const VENDOR_TO_BAS: Array<[RegExp, string]> = [
 
   // Pharmacy / health
   [/^apotek$/i, "6990"],
+  [/^vårdtjänst$/i, "6990"],
+
+  // Office supplies (exact match to the real BAS account name/spelling).
+  [/^kontorsmateriel$/i, "6110"],
+
+  // Telecom / mobile — recognized merchants map to mobile phone cost;
+  // generic operators without a brand match fall through to "other".
+  [/^(telia|tele2|tre|telenor|halebop|comviq)$/i, "6212"],
+
+  // Banking fees and similar recurring financial-service line items.
+  [/^(swedbank|handelsbanken|seb|nordea|danske bank|klarna)$/i, "6990"],
+
+  // Office/co-working rent.
+  [/^kontorshyra$/i, "5010"],
+
+  // Printing services.
+  [/^tryck$/i, "6110"],
 
   // Software / subscriptions (rarely OCR'd from a paper receipt, but
   // covers manually-typed vendor names for SaaS invoices).

@@ -86,11 +86,21 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   const [isSaving, setIsSaving] = useState(false);
 
   const [scanStatus, setScanStatus] = useState<string>("");
+  // Snapshot of exactly what OCR originally guessed, kept around so save()
+  // can detect which fields the person actually corrected — those
+  // corrections are the real "self-learning" signal (see lib/ocr-learn.ts).
+  const [ocrSnapshot, setOcrSnapshot] = useState<{
+    vendorName: string | null;
+    orgNumber: string | null;
+    totalAmount: number | null;
+    basCode: string | null;
+  } | null>(null);
 
   const applyExtractedData = useCallback(
     (
       data: {
         vendorName?: string | null;
+        orgNumber?: string | null;
         receiptNumber?: string | null;
         date?: string | null;
         totalAmount?: number | null;
@@ -108,6 +118,12 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       }
       const suggestedBasCode = suggestBasCode(data.vendorName);
       const suggestedAccount = suggestedBasCode ? getBasAccount(suggestedBasCode) : undefined;
+      setOcrSnapshot({
+        vendorName: data.vendorName ?? null,
+        orgNumber: data.orgNumber ?? null,
+        totalAmount: total,
+        basCode: suggestedBasCode,
+      });
       setDraft({
         vendorName: data.vendorName ?? "",
         receiptNumber: data.receiptNumber ?? "",
@@ -139,6 +155,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       setError(null);
       setStage("scanning");
       setScanStatus(t.rcScanningLocally);
+      setOcrSnapshot(null);
       try {
         const base64 = await compressImage(file);
 
@@ -159,6 +176,29 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
         const localParsed = localText ? parseReceiptText(localText) : null;
 
         if (localParsed) {
+          // Before showing OCR's guess, check whether ANY user has
+          // already corrected this exact vendor before (matched by org
+          // number — reliable — or, failing that, the same garbled OCR
+          // text). If so, use the crowd-corrected name/category instead
+          // of repeating the same mistake. Best-effort: a failed lookup
+          // (network hiccup, not logged in yet, etc.) just falls through
+          // to OCR's own guess, same as before this existed.
+          let vendorOverride: { vendorName: string; basCode: string | null } | null = null;
+          try {
+            const qs = new URLSearchParams();
+            if (localParsed.orgNumber) qs.set("orgNumber", localParsed.orgNumber);
+            if (localParsed.vendorName) qs.set("ocrGuess", localParsed.vendorName);
+            if (qs.toString()) {
+              const lookupRes = await fetch(`/api/ocr/vendor-lookup?${qs.toString()}`);
+              if (lookupRes.ok) {
+                const { correction } = await lookupRes.json();
+                if (correction) vendorOverride = correction;
+              }
+            }
+          } catch (e) {
+            console.error("vendor correction lookup failed (non-blocking):", e);
+          }
+
           // Always use what Tesseract found — even a low-confidence local
           // read is more honest than OCR.space's free demo key, which is
           // shared, rate-limited, and has produced garbage results (e.g.
@@ -166,7 +206,8 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
           // fallback here by design — see the decision recorded below.
           applyExtractedData(
             {
-              vendorName: localParsed.vendorName,
+              vendorName: vendorOverride?.vendorName ?? localParsed.vendorName,
+              orgNumber: localParsed.orgNumber,
               receiptNumber: localParsed.receiptNumber,
               date: localParsed.date,
               totalAmount: localParsed.totalAmount,
@@ -176,11 +217,18 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             },
             base64,
           );
+          if (vendorOverride?.basCode) {
+            // applyExtractedData already auto-suggests a basCode from the
+            // vendor name, but the crowd-learned one (tied to this exact
+            // org number) is more specific than the generic name-pattern
+            // guess, so it takes precedence.
+            setDraft((d) => ({ ...d, basCode: vendorOverride!.basCode, basCodeAutoDetected: true }));
+          }
           const looksGood =
             localConfidence >= 60 && (localParsed.totalAmount != null || localParsed.vendorName != null);
-          if (!looksGood) {
+          if (!looksGood && !vendorOverride) {
             setError(t.rcLowConfidence);
-          } else if (localConfidence < 80) {
+          } else if (localConfidence < 80 && !vendorOverride) {
             setError(t.rcLocalLowConfidence);
           }
         } else {
@@ -286,6 +334,21 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
         setError(data.error ?? "Kunde inte spara.");
         setIsSaving(false);
         return;
+      }
+      // Teach the shared correction history if the person changed the
+      // vendor name from what OCR guessed — best-effort, never blocks the
+      // save that just succeeded above.
+      if (ocrSnapshot && draft.vendorName && draft.vendorName !== ocrSnapshot.vendorName) {
+        fetch("/api/ocr/vendor-lookup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orgNumber: ocrSnapshot.orgNumber ?? undefined,
+            ocrGuess: ocrSnapshot.vendorName ?? undefined,
+            correctVendor: draft.vendorName,
+            basCode: draft.basCode ?? undefined,
+          }),
+        }).catch(() => {});
       }
       setDraft(emptyDraft());
       setStage("idle");
