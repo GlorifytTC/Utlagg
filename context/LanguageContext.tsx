@@ -14,18 +14,43 @@ interface LanguageContextType {
 const STORAGE_KEY = "utlagg_lang";
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+/**
+ * Reads the language the SERVER used to render this page. The server picks
+ * it from the `utlagg_lang` cookie (see lib/i18n-server.ts), so the client's
+ * very first render MUST start from that same cookie — otherwise a user who
+ * chose English gets server HTML in English but a client first-render in
+ * Swedish, which is a hydration mismatch (React #418/#423) on every
+ * translated string. The cookie is readable synchronously, so unlike
+ * localStorage it's safe to use for the initial state.
+ */
+function initialLangFromCookie(): Lang {
+  if (typeof document === "undefined") return "sv"; // server: matches getServerLang default
+  const m = document.cookie.match(/(?:^|;\s*)utlagg_lang=(sv|en)\b/);
+  return m ? (m[1] as Lang) : "sv";
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  // Start with "sv" on both server and first client render to avoid a hydration
-  // mismatch, then adopt the stored choice on mount.
-  const [lang, setLang] = useState<Lang>("sv");
+  // Initialise from the cookie so server and client agree on the first
+  // render. (On the server `document` is undefined and we return "sv",
+  // exactly matching getServerLang()'s default for a cookieless request.)
+  const [lang, setLang] = useState<Lang>(initialLangFromCookie);
 
   useEffect(() => {
+    // localStorage is the legacy store; reconcile it with the cookie in case
+    // they ever diverge, and migrate it forward. Cookie is the source of
+    // truth since the server can read it.
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY) as Lang | null;
-      if (stored === "sv" || stored === "en") setLang(stored);
+      const cookieLang = initialLangFromCookie();
+      if (cookieLang !== lang) {
+        setLang(cookieLang);
+      } else if ((stored === "sv" || stored === "en") && stored !== lang) {
+        setLang(stored);
+      }
     } catch {
       /* ignore */
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function setLanguage(next: Lang) {
