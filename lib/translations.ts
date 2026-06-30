@@ -598,6 +598,7 @@ export interface Translations {
   fortnoxSyncSelected: string;
   fortnoxSelectedCount: string;
   rcScanningLocally: string;
+  rcScanningAi: string;
   rcScanningServer: string;
   rcLocalLowConfidence: string;
   rcLowConfidence: string;
@@ -606,6 +607,7 @@ export interface Translations {
 export const strings: Record<Lang, Translations> = {
   sv: {
     rcScanningLocally: "Läser kvittot lokalt…",
+    rcScanningAi: "Läser kvittot med AI…",
     rcScanningServer: "Försöker med bättre läsning…",
     rcLocalLowConfidence: "Läst lokalt med viss osäkerhet — kontrollera fälten.",
     rcLowConfidence: "Låg träffsäkerhet — kontrollera fälten innan du sparar.",
@@ -1230,6 +1232,7 @@ export const strings: Record<Lang, Translations> = {
   },
   en: {
     rcScanningLocally: "Reading receipt locally…",
+    rcScanningAi: "Reading receipt with AI…",
     rcScanningServer: "Trying a more accurate read…",
     rcLocalLowConfidence: "Read locally with some uncertainty — please check the fields.",
     rcLowConfidence: "Low confidence — please check the fields before saving.",

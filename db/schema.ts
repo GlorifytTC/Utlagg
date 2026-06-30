@@ -589,6 +589,49 @@ export const vendorCorrections = pgTable(
   }),
 );
 
+/* ------------------------------------------------------------------ */
+/* Receipt training data                                              */
+/* Every receipt read by the AI (Gemini) is captured here: the image, */
+/* exactly what the AI returned, and what the user finally confirmed   */
+/* after any manual edits. This is a labeled dataset of real Swedish   */
+/* receipts — the raw material needed if/when the operator later wants */
+/* to train their own receipt-reading model and reduce reliance on the */
+/* paid/free Gemini API. NOTE: accumulating this data is step one of   */
+/* training a model; turning it into a working model is a separate     */
+/* future ML step, not something that happens automatically here.      */
+/* ------------------------------------------------------------------ */
+export const receiptTrainingData = pgTable(
+  "receipt_training_data",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    // The receipt image (base64 data URL) that was read. Nullable so the
+    // operator can purge images later for storage/privacy while keeping
+    // the structured labels.
+    imageData: text("image_data"),
+    // What the AI returned, verbatim (JSON string of the structured fields).
+    aiResult: jsonb("ai_result"),
+    // Which engine produced aiResult ("gemini" | "tesseract").
+    source: varchar("source", { length: 20 }).notNull().default("gemini"),
+    // What the user actually saved after reviewing/correcting (the "label").
+    confirmedVendor: varchar("confirmed_vendor", { length: 300 }),
+    confirmedOrgNumber: varchar("confirmed_org_number", { length: 11 }),
+    confirmedDate: varchar("confirmed_date", { length: 10 }),
+    confirmedTotal: numeric("confirmed_total", { precision: 12, scale: 2 }),
+    confirmedVat: numeric("confirmed_vat", { precision: 12, scale: 2 }),
+    confirmedVatRate: integer("confirmed_vat_rate"),
+    // True if the user changed anything the AI proposed — the most
+    // valuable training signal (these are the AI's mistakes).
+    wasCorrected: boolean("was_corrected").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => ({
+    userIdx: index("receipt_training_user_idx").on(t.userId),
+    correctedIdx: index("receipt_training_corrected_idx").on(t.wasCorrected),
+  }),
+);
+export type ReceiptTrainingRow = typeof receiptTrainingData.$inferSelect;
+
 export const mileageRoutes = pgTable(
   "mileage_routes",
   {

@@ -98,6 +98,9 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
     totalAmount: number | null;
     basCode: string | null;
   } | null>(null);
+  // ID of the training-data row created when Gemini read this receipt, so
+  // the user's final confirmed values can be attached on save (the label).
+  const [trainingId, setTrainingId] = useState<string | null>(null);
 
   const applyExtractedData = useCallback(
     (
@@ -159,11 +162,52 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       setStage("scanning");
       setScanStatus(t.rcScanningLocally);
       setOcrSnapshot(null);
+      setTrainingId(null);
       try {
         const base64 = await compressImage(file);
 
+        // Step 0: AI reading via Gemini (free-tier vision). This understands
+        // ANY receipt/format directly, and every read is saved server-side
+        // as labeled training data. If it fails (no key, daily quota hit,
+        // network error) we fall through to free local Tesseract below, so
+        // the app keeps working regardless.
+        setScanStatus(t.rcScanningAi ?? t.rcScanningLocally);
+        try {
+          const aiRes = await fetch("/api/ocr/ai", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ image: base64 }),
+          });
+          if (aiRes.ok) {
+            const ai = await aiRes.json();
+            // Only accept the AI result if it actually found something.
+            if (ai.vendorName || ai.totalAmount != null) {
+              setTrainingId(ai.trainingId ?? null);
+              applyExtractedData(
+                {
+                  vendorName: ai.vendorName,
+                  orgNumber: ai.orgNumber,
+                  receiptNumber: ai.receiptNumber,
+                  date: ai.date,
+                  totalAmount: ai.totalAmount,
+                  vatAmount: ai.vatAmount,
+                  vatRate: ai.vatRate,
+                  rawText: ai.rawText ?? "",
+                },
+                base64,
+              );
+              setStage("review");
+              return;
+            }
+          }
+          // Non-OK (e.g. 502 fallback flag) or empty result: fall through.
+        } catch (e) {
+          console.error("AI OCR unavailable, falling back to local:", e);
+        }
+
         // Step 1: free, local OCR in the browser — no API key, no cost,
         // runs even with zero AI keys configured anywhere. Default path.
+        setScanStatus(t.rcScanningLocally);
         let localText = "";
         let localConfidence = 0;
         try {
@@ -350,6 +394,29 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             ocrGuess: ocrSnapshot.vendorName ?? undefined,
             correctVendor: draft.vendorName,
             basCode: draft.basCode ?? undefined,
+          }),
+        }).catch(() => {});
+      }
+      // Attach the final confirmed values as the training label for the row
+      // Gemini created when it read this receipt. wasCorrected flags whether
+      // the user changed what the AI proposed — the highest-value examples.
+      if (trainingId) {
+        const wasCorrected =
+          !!ocrSnapshot &&
+          (draft.vendorName !== (ocrSnapshot.vendorName ?? "") ||
+            (draft.totalAmount !== "" &&
+              Number(draft.totalAmount) !== (ocrSnapshot.totalAmount ?? NaN)));
+        fetch("/api/ocr/ai/confirm", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            trainingId,
+            confirmedVendor: draft.vendorName || undefined,
+            confirmedDate: draft.date || undefined,
+            confirmedTotal: draft.totalAmount !== "" ? Number(draft.totalAmount) : undefined,
+            confirmedVat: draft.vatAmount !== "" ? Number(draft.vatAmount) : undefined,
+            confirmedVatRate: draft.vatRate ?? undefined,
+            wasCorrected,
           }),
         }).catch(() => {});
       }
