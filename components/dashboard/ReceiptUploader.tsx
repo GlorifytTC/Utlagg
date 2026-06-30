@@ -32,7 +32,10 @@ interface Draft {
 const emptyDraft = (): Draft => ({
   vendorName: "",
   receiptNumber: "",
-  date: new Date().toISOString().slice(0, 10),
+  // Empty rather than new Date(): a non-deterministic value in the initial
+  // form state is a hydration-mismatch risk, and a blank date the person
+  // fills in is more honest than a defaulted "today" that may be wrong.
+  date: "",
   totalAmount: "",
   vatAmount: "",
   vatRate: 25,

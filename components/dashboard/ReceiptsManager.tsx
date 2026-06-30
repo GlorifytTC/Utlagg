@@ -1,8 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { ReceiptUploader } from "@/components/dashboard/ReceiptUploader";
+// The uploader is heavily browser-dependent (Tesseract Web Worker, camera,
+// File API) and seeds its initial form state from `new Date()`. Server-
+// rendering it and then hydrating produced React hydration mismatches
+// (#418/#423) once Tesseract started running. It has zero SSR benefit, so
+// render it client-only — this removes the entire mismatch class cleanly.
+const ReceiptUploader = dynamic(
+  () => import("@/components/dashboard/ReceiptUploader").then((m) => m.ReceiptUploader),
+  { ssr: false },
+);
 import { ReceiptTable } from "@/components/dashboard/ReceiptTable";
 import { UsageMeter } from "@/components/dashboard/UsageMeter";
 
