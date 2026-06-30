@@ -29,28 +29,63 @@ let workerPromise: Promise<import("tesseract.js").Worker> | null = null;
 // routed through a mutable callback slot instead of recreating workers.
 let currentProgressCallback: ((status: string, progress: number) => void) | null = null;
 
+/**
+ * Wraps a promise with a hard timeout. Without this, a blocked CDN request
+ * (e.g. the Content-Security-Policy blocking Tesseract's worker/language
+ * files) can leave the worker's setup promise unresolved forever in some
+ * browsers — worker.onerror doesn't always fire promptly for a CSP block,
+ * so try/catch around an un-timed-out await can hang the UI indefinitely
+ * with zero error shown. This guarantees the caller always gets a result,
+ * one way or the other.
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    promise.then(
+      (v) => {
+        clearTimeout(timer);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(timer);
+        reject(e);
+      },
+    );
+  });
+}
+
 async function getWorker() {
   if (!workerPromise) {
-    workerPromise = (async () => {
-      const { createWorker, PSM } = await import("tesseract.js");
-      // 'swe' covers Swedish business receipts; 'eng' is included too since
-      // brand names, English loanwords, and some chains print in English.
-      const worker = await createWorker("swe+eng", undefined, {
-        logger: (m) => {
-          if (m.status && typeof m.progress === "number") {
-            currentProgressCallback?.(m.status, m.progress);
-          }
-        },
-      });
-      // Tesseract's default page-segmentation mode assumes a document with
-      // multiple paragraphs/columns. A receipt is one narrow column of
-      // text, so SINGLE_COLUMN reads it far more reliably — this is the
-      // standard, documented tuning for receipt OCR specifically (not a
-      // guess), and is the single biggest accuracy lever available without
-      // a paid API.
-      await worker.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_COLUMN });
-      return worker;
-    })();
+    workerPromise = withTimeout(
+      (async () => {
+        const { createWorker, PSM } = await import("tesseract.js");
+        // 'swe' covers Swedish business receipts; 'eng' is included too since
+        // brand names, English loanwords, and some chains print in English.
+        const worker = await createWorker("swe+eng", undefined, {
+          logger: (m) => {
+            if (m.status && typeof m.progress === "number") {
+              currentProgressCallback?.(m.status, m.progress);
+            }
+          },
+        });
+        // Tesseract's default page-segmentation mode assumes a document with
+        // multiple paragraphs/columns. A receipt is one narrow column of
+        // text, so SINGLE_COLUMN reads it far more reliably — this is the
+        // standard, documented tuning for receipt OCR specifically (not a
+        // guess), and is the single biggest accuracy lever available without
+        // a paid API.
+        await worker.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_COLUMN });
+        return worker;
+      })(),
+      20000,
+      "Tesseract worker setup",
+    ).catch((e) => {
+      // Don't leave a rejected promise cached — the NEXT upload attempt
+      // should retry from scratch rather than instantly fail forever
+      // because the first attempt's setup failed once.
+      workerPromise = null;
+      throw e;
+    });
   }
   return workerPromise;
 }
@@ -71,7 +106,7 @@ export async function recognizeReceiptLocally(
   const worker = await getWorker();
   currentProgressCallback = onProgress ?? null;
   try {
-    const { data } = await worker.recognize(image);
+    const { data } = await withTimeout(worker.recognize(image), 30000, "Tesseract recognize");
     return { text: data.text ?? "", confidence: data.confidence ?? 0 };
   } finally {
     currentProgressCallback = null;

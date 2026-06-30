@@ -282,13 +282,32 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   }
   if (vendorName) confidenceHits++;
 
-  // --- Date: ISO, dd/mm/yyyy, dd-mm-yyyy, and footer "DD MM YY" ---
+  // --- Date: ISO, dd/mm/yyyy, "DD Mon YYYY" (Swedish or English month
+  // names — needed for international POS templates), footer "DD MM YY" ---
   const pad = (s: string) => s.padStart(2, "0");
   let date: string | null = null;
+  const MONTHS: Record<string, string> = {
+    jan: "01", januari: "01", january: "01",
+    feb: "02", februari: "02", february: "02",
+    mar: "03", mars: "03", march: "03",
+    apr: "04", april: "04",
+    maj: "05", may: "05",
+    jun: "06", juni: "06", june: "06",
+    jul: "07", juli: "07", july: "07",
+    aug: "08", augusti: "08", august: "08",
+    sep: "09", sept: "09", september: "09",
+    okt: "10", oktober: "10", oct: "10", october: "10",
+    nov: "11", november: "11",
+    dec: "12", december: "12",
+  };
   const iso = rawText.match(/(20\d{2})[-/.](\d{1,2})[-/.](\d{1,2})/);
   const dmy = rawText.match(/\b(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})\b/);
+  const monthName = rawText.match(/\b(\d{1,2})\s+([A-Za-zåäöÅÄÖ]{3,9})\.?\s+(\d{2,4})\b/);
   if (iso) {
     date = `${iso[1]}-${pad(iso[2])}-${pad(iso[3])}`;
+  } else if (monthName && MONTHS[monthName[2].toLowerCase()]) {
+    const yr = monthName[3].length === 2 ? `20${monthName[3]}` : monthName[3];
+    date = `${yr}-${MONTHS[monthName[2].toLowerCase()]}-${pad(monthName[1])}`;
   } else if (dmy) {
     const yr = dmy[3].length === 2 ? `20${dmy[3]}` : dmy[3];
     date = `${yr}-${pad(dmy[2])}-${pad(dmy[1])}`;
@@ -304,9 +323,10 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
 
   // --- Total: labelled line with a decimal amount, ignoring change/cash rows ---
   let totalAmount: number | null = null;
-  const TOTAL_RE = /\b(total|totalt|att\s*betala|summa|grand total|amount due|to pay)\b/i;
+  const TOTAL_RE =
+    /\b(total|totalt|att\s*betala|summa|summa\s*att\s*betala|grand\s*total|amount\s*due|balance\s*due|to\s*pay|to\s*be\s*paid)\b/i;
   const EXCLUDE_RE =
-    /moms|netto|brutto|mottaget|kontant|\båter\b|\bater\b|växel|vaxel|change|tillbaka|retur|öresavrund|oresavrund|avrund|dragning|växelpengar/i;
+    /moms|\biva\b|\bvat\b|\btax\b|netto|brutto|subtotal|sub-total|sub total|mottaget|kontant|\båter\b|\bater\b|växel|vaxel|change|tillbaka|retur|öresavrund|oresavrund|avrund|dragning|växelpengar/i;
   // A line carrying a negative amount is change/refund, never the total.
   const isNegative = (l: string) => /[-−]\s*\d/.test(l);
 
@@ -314,7 +334,9 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   // ambiguity — it's used below to pick the right reading of a TOTALT line
   // when "<item count> <amount>" vs. a genuine 4+ digit total can't be
   // told apart from the digits alone (see totalLineAmount's comment).
-  const nettoLine = lines.find((l) => /netto|nettobelopp/i.test(l) && !isNegative(l));
+  const nettoLine = lines.find(
+    (l) => /netto|nettobelopp|subtotal|sub-total|sub total/i.test(l) && !isNegative(l),
+  );
   const nettoAmount = nettoLine ? decimalAmountOnLine(nettoLine) : null;
 
   const totalLines = lines.filter((l) => TOTAL_RE.test(l) && !EXCLUDE_RE.test(l) && !isNegative(l));
@@ -350,14 +372,22 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   if (totalAmount != null) confidenceHits++;
 
   // --- VAT rate + amount ---
+  // "moms" is the Swedish term, but receipts from international chains
+  // (e.g. Zara, H&M) or shared POS software often print "IVA" (Spanish/
+  // Italian/Portuguese), "VAT" (English), or "TAX" — all legally the same
+  // Swedish moms for a Swedish purchase, so treated as equivalent here.
+  const VAT_WORD = "(?:moms|iva|vat|tax)";
   let vatAmount: number | null = null;
   let vatRate: 6 | 12 | 25 | null = null;
-  const rateM = rawText.match(/moms%?\s*[:=]?\s*(\d{1,2})|(\d{1,2})\s*%\s*(?:av|moms|vat)/i);
+  const rateRe = new RegExp(`${VAT_WORD}%?\\s*[:=]?\\s*(\\d{1,2})|(\\d{1,2})\\s*%\\s*(?:av|${VAT_WORD})`, "i");
+  const rateM = rawText.match(rateRe);
   const rawRate = rateM ? Number(rateM[1] ?? rateM[2]) : null;
   if (rawRate === 6 || rawRate === 12 || rawRate === 25) vatRate = rawRate;
-  // VAT amount: a "moms" line (not the "moms%" header) with a decimal amount.
+  // VAT amount: a moms/iva/vat/tax line (not the rate header) with an amount.
+  const vatWordRe = new RegExp(`\\b${VAT_WORD}\\b`, "i");
+  const vatPctRe = new RegExp(`${VAT_WORD}%`, "i");
   const momsLine = lines.find(
-    (l) => /\bmoms\b/i.test(l) && !/moms%/i.test(l) && !/\bav\b/i.test(l) && decimalAmountOnLine(l) != null,
+    (l) => vatWordRe.test(l) && !vatPctRe.test(l) && !/\bav\b/i.test(l) && decimalAmountOnLine(l) != null,
   );
   if (momsLine) vatAmount = decimalAmountOnLine(momsLine);
 
