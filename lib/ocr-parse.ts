@@ -234,8 +234,17 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   // the digits can also land on separate lines after OCR. This matches the
   // label word(s) first, then allows an optional second word (nr/nummer/no),
   // then any punctuation/whitespace (including a line break), then digits.
+  // Receipt/transaction number. Swedish receipts use many labels, and
+  // European ones (common via tourists/online) add more: "Kvittonr",
+  // "Bongnr", "Nota" (restaurant bill), "Faktura"/"Fakturanr" (invoice),
+  // "Verifikationsnr" (accounting), plus German/Swiss "Bon" and "Beleg".
+  // The label and digits can land on separate lines after OCR. We match
+  // the label, an optional nr/nummer/no word, optional punctuation, then
+  // the number (which may contain hyphens, e.g. an invoice "2024-0098").
+  // IMPORTANT: this deliberately excludes "moms"/"MwSt"/"org"/"VAT" labels
+  // so a VAT or org number never lands in the receipt-number field.
   const recM = rawText.match(
-    /(?:kvitto|bong|kassakvitto|transaktion|order|receipt)\s*(?:nr|nummer|no)?\.?\s*[:.#]?\s*(\d{2,})/i,
+    /(?:kvitto|kassakvitto|bong|bon|beleg|nota|faktura|verifikation(?:s)?|ver|transaktion|trans|order|receipt)[\s.-]*(?:nr|nummer|no)?\.?\s*[:.#-]?\s*(\d{2,}(?:-\d{2,})?)/i,
   );
   const receiptNumber = recM ? recM[1] : null;
 
