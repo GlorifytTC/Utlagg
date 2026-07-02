@@ -49,7 +49,7 @@ export function Sidebar({ tier }: { tier: Tier }) {
             Utlägg
           </span>
         </Link>
-        <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-500">
+        <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-400">
           Expense Management
         </p>
         {TIER_LABEL[tier] && (
@@ -63,7 +63,7 @@ export function Sidebar({ tier }: { tier: Tier }) {
 
       {/* Navigation menu */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
-        <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">
+        <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-400">
           Menu
         </p>
         <ul className="space-y-px">
@@ -120,7 +120,7 @@ export function Sidebar({ tier }: { tier: Tier }) {
           </button>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-400 transition-colors hover:bg-red-50/70 hover:text-red-600 dark:text-gray-500 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+            className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-400 transition-colors hover:bg-red-50/70 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-950/30 dark:hover:text-red-400"
           >
             <LogOut className="h-[15px] w-[15px]" strokeWidth={1.75} />
             <span>Logga ut</span>

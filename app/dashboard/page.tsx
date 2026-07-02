@@ -86,7 +86,7 @@ export default async function DashboardPage() {
 
       {/* Page header */}
       <div>
-        <p className="mb-1 text-[9.5px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">
+        <p className="mb-1 text-[9.5px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-400">
           {t.navOverview}
         </p>
         <h1 className="font-display text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
@@ -128,13 +128,13 @@ export default async function DashboardPage() {
       <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] transition-shadow hover:shadow-sm dark:border-white/[0.08]">
         <div className="grid grid-cols-1 gap-px bg-gray-900/[0.07] lg:grid-cols-2 dark:bg-white/[0.07]">
           <div className="bg-[#F5F4F0] px-6 py-5 transition-colors hover:bg-gray-900/[0.02] dark:bg-[#0D0D0D] dark:hover:bg-white/[0.03]">
-            <p className="mb-4 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
+            <p className="mb-4 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-400">
               Användning
             </p>
             <UsageChart used={used} limit={limit} />
           </div>
           <div className="bg-[#F5F4F0] px-6 py-5 transition-colors hover:bg-gray-900/[0.02] dark:bg-[#0D0D0D] dark:hover:bg-white/[0.03]">
-            <p className="mb-4 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
+            <p className="mb-4 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-400">
               Senaste kvitton
             </p>
             <RecentReceipts receipts={recent} />

@@ -489,7 +489,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             </div>
             <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
-            <p className="mt-3 text-xs text-gray-400 dark:text-gray-500">{t.receiptCameraHint}</p>
+            <p className="mt-3 text-xs text-gray-400 dark:text-gray-400">{t.receiptCameraHint}</p>
           </motion.div>
         )}
 

@@ -51,10 +51,10 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
         <Link href="/" className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 focus-visible:rounded-md">
           <span className="font-display text-[17px] font-semibold tracking-tight text-gray-900 dark:text-white">Utlägg</span>
         </Link>
-        <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-500">Expense Management</p>
+        <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-400">Expense Management</p>
       </div>
       <nav className="flex-1 min-h-0 overflow-y-auto px-3 py-4">
-        <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">Menu</p>
+        <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-400">Menu</p>
         <ul className="space-y-px">
           {nav.map((item) => {
             const Icon = item.icon;
@@ -116,10 +116,10 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
       </aside>
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-900/[0.07] bg-white/75 px-4 py-3 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#0A0A0A] lg:hidden print:hidden">
         <div className="flex items-center gap-2">
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setOpen(true)} aria-label="Öppna meny" className="rounded-lg p-2 hover:bg-gray-900/[0.04] dark:hover:bg-white/[0.04]">
+          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setOpen(true)} aria-label="Öppna meny" className="rounded-lg p-2 hover:bg-gray-900/[0.04] dark:text-white dark:hover:bg-white/[0.04]">
             <Menu className="h-6 w-6" />
           </motion.button>
-          <Link href="/" className="font-display text-lg font-semibold">Utlägg</Link>
+          <Link href="/" className="font-display text-lg font-semibold dark:text-white">Utlägg</Link>
         </div>
         <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => signOut({ callbackUrl: "/" })} aria-label={t.navLogout} className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50/70 dark:hover:bg-red-950/25">
           <LogOut className="h-5 w-5" />
@@ -148,7 +148,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
               className="absolute left-0 top-0 h-full w-72 max-w-[80%] bg-white shadow-xl dark:bg-[#0A0A0A]"
             >
-              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setOpen(false)} aria-label="Stäng meny" className="absolute right-3 top-3 rounded-lg p-2 hover:bg-gray-900/[0.04] dark:hover:bg-white/[0.04]">
+              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setOpen(false)} aria-label="Stäng meny" className="absolute right-3 top-3 rounded-lg p-2 hover:bg-gray-900/[0.04] dark:text-white dark:hover:bg-white/[0.04]">
                 <X className="h-5 w-5" />
               </motion.button>
               <NavList onNavigate={() => setOpen(false)} tier={tier} />
@@ -167,7 +167,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
                 href={item.href}
                 className={cn(
                   "flex flex-col items-center gap-1 py-2 text-[10px] transition-colors",
-                  active ? "text-sky-600 dark:text-sky-300" : "text-gray-500 dark:text-gray-500",
+                  active ? "text-sky-600 dark:text-sky-300" : "text-gray-500 dark:text-gray-400",
                 )}
               >
                 <Icon className="h-5 w-5" />

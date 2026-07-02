@@ -164,7 +164,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
           >
             <table className="w-full min-w-[640px] text-sm">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                <tr className="text-left text-xs uppercase tracking-wide text-gray-400 dark:text-gray-400">
                   <th className="px-5 py-3 font-medium">{t.colDate}</th>
                   <th className="px-5 py-3 font-medium">{t.colVendor}</th>
                   <th className="px-5 py-3 font-medium">{t.colBas}</th>
@@ -199,7 +199,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                     </td>
                     <td className="px-5 py-3 font-mono text-gray-500 dark:text-gray-400">{r.basCode ?? "—"}</td>
                     <td className="px-5 py-3">
-                      {r.vatRate ? `${r.vatRate}%` : "—"} <span className="text-gray-400 dark:text-gray-500">{formatSek(r.vatAmount)}</span>
+                      {r.vatRate ? `${r.vatRate}%` : "—"} <span className="text-gray-400 dark:text-gray-400">{formatSek(r.vatAmount)}</span>
                     </td>
                     <td className="px-5 py-3">{formatSek(r.totalAmount)}</td>
                     <td className="px-5 py-3">

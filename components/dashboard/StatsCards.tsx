@@ -14,7 +14,7 @@ function StatCell({
 }) {
   return (
     <div className="group bg-[#F5F4F0] p-5 transition-colors hover:bg-gray-900/[0.03] dark:bg-[#0D0D0D] dark:hover:bg-white/[0.04]">
-      <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
+      <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-400">
         {label}
       </p>
       <div className="flex items-end justify-between gap-2">
@@ -22,7 +22,7 @@ function StatCell({
           {value}
         </p>
         <Icon
-          className="mb-0.5 h-4 w-4 shrink-0 text-gray-300 transition-colors group-hover:text-gray-400 dark:text-gray-600 dark:group-hover:text-gray-500"
+          className="mb-0.5 h-4 w-4 shrink-0 text-gray-300 transition-colors group-hover:text-gray-400 dark:text-gray-500 dark:group-hover:text-gray-400"
           strokeWidth={1.5}
         />
       </div>
