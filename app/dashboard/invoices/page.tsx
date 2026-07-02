@@ -69,16 +69,16 @@ export default async function InvoicesPage() {
       <Card>
         <CardContent className="p-0">
           {rows.length === 0 ? (
-            <p className="p-6 text-sm text-gray-500">{t.invNoneYet}</p>
+            <p className="p-6 text-sm text-gray-500 dark:text-gray-400">{t.invNoneYet}</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[560px] text-sm">
-                <thead className="bg-gray-50 text-left text-gray-500 dark:bg-[#111]">
+                <thead className="bg-gray-50 text-left text-gray-500 dark:bg-[#111] dark:text-gray-400">
                   <tr><th className="px-4 py-3">{t.invColNr}</th><th>{t.invColCustomer}</th><th>{t.invColDate}</th><th>{t.invColAmount}</th><th>{t.invColVat}</th><th></th></tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-white/[0.07]">
                   {rows.map((r: Record<string, unknown>) => (
-                    <tr key={r.id as string}>
+                    <tr key={r.id as string} className="dark:text-gray-100">
                       <td className="px-4 py-3 font-medium">{r.invoiceNumber as string}</td>
                       <td>{r.buyerName as string}</td>
                       <td>{new Date(r.issueDate as string).toLocaleDateString("sv-SE")}</td>
@@ -86,7 +86,7 @@ export default async function InvoicesPage() {
                       <td>{(r.reverseCharge as boolean) ? t.invReverse : `${Number(r.vatTotal).toFixed(2).replace(".", ",")} kr`}</td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Link href={`/dashboard/invoices/${r.id}`} className="text-nordic-600 underline text-sm">{t.btnView}</Link>
+                          <Link href={`/dashboard/invoices/${r.id}`} className="text-nordic-600 underline text-sm dark:text-nordic-300">{t.btnView}</Link>
                           <DeleteInvoiceButton
                             id={r.id as string}
                             confirmText={t.invDeleteConfirm}

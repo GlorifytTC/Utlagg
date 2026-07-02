@@ -290,7 +290,7 @@ export default function MileagePage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="purpose">{t.fldPurpose}</Label>
-              <select id="purpose" value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111]">
+              <select id="purpose" value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111] dark:text-white">
                 <option value="business">{t.purposeBusiness}</option>
                 <option value="private">{t.purposePrivate}</option>
               </select>
@@ -301,7 +301,7 @@ export default function MileagePage() {
                 id="vehicle"
                 value={vehicleId}
                 onChange={(e) => setVehicleId(e.target.value)}
-                className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111]"
+                className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111] dark:text-white"
               >
                 <option value="">{t.milPrivateCar} (2,50 kr/km)</option>
                 {vehicles.map((v) => (
@@ -319,7 +319,7 @@ export default function MileagePage() {
               <p className="flex h-10 items-center text-lg font-semibold">{preview} kr</p>
             </div>
           </div>
-          <p className="text-xs text-gray-500">{t.milVehicleNote}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t.milVehicleNote}</p>
           <Button onClick={save} disabled={loading}>{loading ? t.stSaving : t.btnSaveTrip}</Button>
         </CardContent>
       </Card>
@@ -346,13 +346,13 @@ export default function MileagePage() {
           {routes.length === 0 ? (
             <div className="space-y-2">
               <div className="relative rounded-lg border border-dashed border-gray-300 p-3 opacity-70 dark:border-white/[0.10]">
-                <span className="absolute right-2 top-2 rounded-full bg-ink/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-ink/50">
+                <span className="absolute right-2 top-2 rounded-full bg-ink/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-ink/50 dark:text-gray-500">
                   {t.milExample}
                 </span>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <p className="font-medium">{t.milExampleLabel}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       {t.milExampleFrom} → {t.milExampleTo} · 18,4 km · 2,50 kr/km
                     </p>
                   </div>
@@ -362,7 +362,7 @@ export default function MileagePage() {
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-gray-500">{t.milExampleHint}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t.milExampleHint}</p>
             </div>
           ) : (
             <ul className="space-y-3">
@@ -376,7 +376,7 @@ export default function MileagePage() {
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="min-w-0">
                         <p className="font-medium">{r.label}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {r.startAddress} → {r.endAddress} · {Number(r.distanceKm).toFixed(1)} km ·{" "}
                           {rRate.toFixed(2).replace(".", ",")} kr/km
                         </p>
@@ -420,7 +420,7 @@ export default function MileagePage() {
                                   "h-9 w-9 rounded-full border text-xs transition " +
                                   (period.dows[i]
                                     ? "border-nordic-600 bg-nordic-600 text-white"
-                                    : "border-gray-300 text-gray-500 dark:border-white/[0.10]")
+                                    : "border-gray-300 text-gray-500 dark:border-white/[0.10] dark:text-gray-300")
                                 }
                               >
                                 {d}
@@ -451,7 +451,7 @@ export default function MileagePage() {
             {vehicles.length > 0 && (
               <ul className="divide-y text-sm">
                 {vehicles.map((v) => (
-                  <li key={v.id} className="flex items-center justify-between py-2">
+                  <li key={v.id} className="flex items-center justify-between py-2 dark:text-gray-100">
                     <span>
                       <span className="font-medium">{v.registrationNumber}</span>
                       {v.model ? ` · ${v.model}` : ""}
@@ -492,7 +492,7 @@ export default function MileagePage() {
                 <select
                   value={vForm.fuelType}
                   onChange={(e) => setVForm({ ...vForm, fuelType: e.target.value })}
-                  className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111]"
+                  className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111] dark:text-white"
                 >
                   <option value="petrol">{t.milFuelPetrol}</option>
                   <option value="diesel">{t.milFuelDiesel}</option>
@@ -513,18 +513,18 @@ export default function MileagePage() {
         </CardHeader>
         <CardContent>
           {entries.length === 0 ? (
-            <p className="text-sm text-gray-500">{t.milNoneYet}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t.milNoneYet}</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
-                <thead className="text-left text-gray-500">
+                <thead className="text-left text-gray-500 dark:text-gray-400">
                   <tr>
                     <th className="py-2">{t.fldDate}</th><th>{t.fldFrom}</th><th>{t.fldTo}</th><th>{t.milKm}</th><th>{t.fldAmount}</th><th>{t.fldPurpose}</th><th></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-white/[0.07]">
                   {entries.map((e) => (
-                    <tr key={e.id}>
+                    <tr key={e.id} className="dark:text-gray-100">
                       <td className="py-2">{new Date(e.date).toLocaleDateString("sv-SE")}</td>
                       <td className="max-w-[140px] truncate">{e.startAddress}</td>
                       <td className="max-w-[140px] truncate">{e.endAddress}</td>

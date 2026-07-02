@@ -33,7 +33,7 @@ export function DashboardShell({
           Utlagg 
         </Link>
         <div className="flex items-center gap-4 text-sm">
-          <span className="hidden text-ink/60 sm:block">Hej, {name}</span>
+          <span className="hidden text-ink/60 sm:block dark:text-gray-400">Hej, {name}</span>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
             className="rounded-full border hairline px-4 py-2 hover:border-ink/40"

@@ -116,7 +116,7 @@ export default function TransportPage() {
             <div>
               <Label>{t.trType}</Label>
               <select
-                className="mt-1 w-full rounded-md border border-gray-300 bg-transparent p-2 dark:border-white/[0.10]"
+                className="mt-1 w-full rounded-md border border-gray-300 bg-transparent p-2 dark:border-white/[0.10] dark:bg-[#111] dark:text-white"
                 value={form.passType}
                 onChange={(e) => setForm({ ...form, passType: e.target.value })}
               >
@@ -128,7 +128,7 @@ export default function TransportPage() {
             <div>
               <Label>{t.trProvider}</Label>
               <select
-                className="mt-1 w-full rounded-md border border-gray-300 bg-transparent p-2 dark:border-white/[0.10]"
+                className="mt-1 w-full rounded-md border border-gray-300 bg-transparent p-2 dark:border-white/[0.10] dark:bg-[#111] dark:text-white"
                 value={form.provider}
                 onChange={(e) => setForm({ ...form, provider: e.target.value })}
               >
@@ -201,12 +201,12 @@ export default function TransportPage() {
         </CardHeader>
         <CardContent>
           {passes.length === 0 ? (
-            <p className="text-sm text-gray-500">{t.trEmpty}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t.trEmpty}</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b text-left text-gray-500">
+                  <tr className="border-b text-left text-gray-500 dark:text-gray-400">
                     <th className="p-2">{t.trColPeriod}</th>
                     <th className="p-2">{t.trColProvider}</th>
                     <th className="p-2 text-right">{t.trColAmount}</th>
@@ -217,7 +217,7 @@ export default function TransportPage() {
                 </thead>
                 <tbody>
                   {passes.map((p) => (
-                    <tr key={p.id} className="border-b">
+                    <tr key={p.id} className="border-b dark:border-white/[0.07] dark:text-gray-100">
                       <td className="p-2">
                         {new Date(p.validFrom).toLocaleDateString(locale)} –{" "}
                         {new Date(p.validTo).toLocaleDateString(locale)}
