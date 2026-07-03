@@ -65,18 +65,50 @@ function configured(name: string, ok: boolean): HealthStatus {
   return { name, status: ok ? "up" : "unconfigured" };
 }
 
+/**
+ * Real Gemini probe: doesn't just check the env var exists — it makes the
+ * cheapest possible API call (listing models) to verify the KEY IS VALID.
+ * A wrong-console key (e.g. a Vertex/Cloud key instead of an AI Studio
+ * "AIza..." key) exists as an env var but fails this call, which is
+ * exactly the failure mode worth surfacing on the health page.
+ */
+export async function checkGemini(): Promise<HealthStatus> {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) return { name: "AI-läsning (Gemini)", status: "unconfigured" };
+  return timed("AI-läsning (Gemini)", async () => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${key}&pageSize=1`,
+        { signal: controller.signal },
+      );
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        throw new Error(
+          `Gemini svarade ${res.status}${res.status === 400 || res.status === 403 ? " — nyckeln avvisades (kontrollera att den är aktiv i AI Studio och inte begränsad bort från Gemini API)" : ` — ${body.slice(0, 120)}`}`,
+        );
+      }
+    } finally {
+      clearTimeout(timeout);
+    }
+  });
+}
+
 export async function checkAll(): Promise<HealthStatus[]> {
-  const [dbh, redis, stripeh, r2] = await Promise.all([
+  const [dbh, redis, stripeh, r2, gemini] = await Promise.all([
     checkDatabase(),
     checkRedis(),
     checkStripe(),
     checkR2(),
+    checkGemini(),
   ]);
   return [
     dbh,
     redis,
     stripeh,
     r2,
+    gemini,
     configured("E-post (Brevo)", isEmailConfigured()),
     configured("OCR (Google Vision)", Boolean(process.env.GOOGLE_CLOUD_API_KEY)),
     configured("Kö (QStash)", Boolean(process.env.QSTASH_TOKEN)),
