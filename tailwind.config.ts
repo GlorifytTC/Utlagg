@@ -9,32 +9,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Kvittino palette: warm off-white paper, near-black ink, one terracotta accent.
-        paper: "#FAF8F3",
-        ink: "#1A1A1A",
-        fog: "#F1ECE0",
-        // The former "nordic" blue scale is repointed to the terracotta accent so
-        // every existing `nordic-*` usage becomes the brand accent and picks up the
-        // light/dark value automatically via the CSS variables in globals.css.
+        // Nordic palette: warm paper, deep ink, a single cold-blue accent + amber
+        paper: "#F4F1EA",
+        ink: "#16181D",
+        fog: "#E3DFD4",
         nordic: {
-          50: "rgb(var(--accent-tint) / <alpha-value>)",
-          300: "rgb(var(--accent) / <alpha-value>)",
-          400: "rgb(var(--accent) / <alpha-value>)",
-          500: "rgb(var(--accent) / <alpha-value>)",
-          600: "rgb(var(--accent) / <alpha-value>)",
-          700: "rgb(var(--accent-strong) / <alpha-value>)",
-          900: "rgb(var(--accent-strong) / <alpha-value>)",
+          50: "#EAF1F5",
+          400: "#5B8AA6",
+          600: "#2F6079",
+          900: "#13343F",
         },
-        // Semantic alias for new code — same accent token.
-        accent: "rgb(var(--accent) / <alpha-value>)",
         amber: "#D98A37",
       },
       fontFamily: {
-        // All-sans system per the rebrand — Plus Jakarta Sans replaces the old
-        // serif-display / sans-body pairing. `display` kept as an alias so the
-        // ~100 existing `font-display` headings render in the new sans.
-        display: ["var(--font-jakarta)", "system-ui", "sans-serif"],
-        sans: ["var(--font-jakarta)", "system-ui", "sans-serif"],
+        display: ["var(--font-fraunces)", "Georgia", "serif"],
+        sans: ["var(--font-schibsted)", "system-ui", "sans-serif"],
       },
       keyframes: {
         "fade-up": {
