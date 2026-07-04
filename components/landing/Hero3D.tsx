@@ -85,7 +85,7 @@ function ScanBeam() {
 export default function Hero3D() {
   return (
     <div className="h-[320px] w-full sm:h-[420px] md:h-[520px]">
-      <Canvas camera={{ position: [0, 0, 6], fov: 42 }} dpr={[1, 2]}>
+      <Canvas camera={{ position: [0, 0, 6], fov: 42 }} dpr={[1, 1.5]}>
         <Suspense fallback={null}>
           <ambientLight intensity={0.7} />
           <directionalLight position={[3, 5, 4]} intensity={1.1} />

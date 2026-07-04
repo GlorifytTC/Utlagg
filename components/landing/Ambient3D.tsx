@@ -77,8 +77,8 @@ export default function Ambient3D() {
   return (
     <Canvas
       camera={{ position: [0, 0, 7], fov: 45 }}
-      dpr={[1, 1.5]}
-      gl={{ alpha: true, antialias: true }}
+      dpr={[1, 1]}
+      gl={{ alpha: true, antialias: false }}
       frameloop={animated ? "always" : "demand"}
       style={{ background: "transparent" }}
     >
