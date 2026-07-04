@@ -104,7 +104,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
   const pathname = usePathname();
 
   return (
-    <div className="relative min-h-screen bg-[#F5F4F0] dark:bg-black print:bg-white print:min-h-0">
+    <div className="relative min-h-screen bg-[#F5F4F0] dark:bg-black dark:text-gray-100 print:bg-white print:min-h-0">
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 opacity-[0.035] dark:hidden print:hidden" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden print:hidden dark:hidden">
         <div className="absolute -top-24 left-[22%] h-[440px] w-[440px] rounded-full bg-sky-200/20 blur-[110px]" />

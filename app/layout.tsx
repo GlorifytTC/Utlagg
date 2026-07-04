@@ -62,7 +62,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="sv" className={`${fraunces.variable} ${schibsted.variable}`}>
-      <body className="bg-paper text-ink font-sans antialiased dark:text-gray-100">
+      <body className="bg-paper text-ink font-sans antialiased">
         <Providers>{children}</Providers>
         <CookieConsent />
       </body>
