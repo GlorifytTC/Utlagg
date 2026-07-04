@@ -21,26 +21,133 @@ const transporter = nodemailer.createTransport({
   secure: (Number(process.env.BREVO_SMTP_PORT) || 587) === 465,
   requireTLS: (Number(process.env.BREVO_SMTP_PORT) || 587) !== 465,
   auth: {
-    user: process.env.BREVO_SMTP_LOGIN || "",
-    pass: process.env.BREVO_SMTP_KEY || process.env.BREVO_API_KEY || "",
+    // clean() strips invisible copy/paste corruption (a pasted trailing
+    // newline in the key is a classic source of a generic SMTP 535).
+    user: clean(process.env.BREVO_SMTP_LOGIN || ""),
+    pass: clean(process.env.BREVO_SMTP_KEY || process.env.BREVO_API_KEY || ""),
   },
 });
 
 /**
- * Env vars pasted with surrounding quotes (a common copy/paste mistake in
- * Railway's/Vercel's variable editor) end up baked into the string itself —
- * e.g. BREVO_FROM_EMAIL="noreply@utlagg.se\"\"" becomes the literal value
- * noreply@utlagg.se"" . Strip stray quotes/backslashes so a malformed
- * env var can't silently break every outgoing email.
+ * Normalises an env-var value before use. It targets copy/paste corruption
+ * that is invisible in a hosting dashboard's masked field and has each
+ * broken outgoing mail here before:
+ *
+ *   1. Surrounding quotes/backslashes baked in by Railway's/Vercel's variable
+ *      editor, e.g. BREVO_FROM_EMAIL="noreply@utlagg.se" → the literal value
+ *      including the quotes.
+ *   2. Invisible junk — zero-width spaces, BOMs, non-breaking spaces, control
+ *      characters — and stray surrounding whitespace. A pasted trailing
+ *      newline in an API key produces a generic, hard-to-diagnose SMTP 535.
+ *
+ * It deliberately does NOT strip visible non-ASCII letters (e.g. the "ä" in a
+ * display name like "Utlägg"), which are legitimate in some fields. Those are
+ * reported by nonAsciiReport() instead, so a rogue "ä" in a field that MUST be
+ * ASCII (email address, API key, login) is surfaced rather than silently
+ * mangled — that exact character is what took mail down last time.
  */
 function clean(v: string): string {
-  return v.replace(/["'\\]/g, "").trim();
+  return v
+    .replace(/[\u200B-\u200D\uFEFF]/g, "") // zero-width spaces & BOM
+    .replace(/\u00A0/g, " ") // non-breaking space -> normal space
+    .replace(/[\u0000-\u001F\u007F]/g, "") // control chars (incl. stray \n)
+    .replace(/["'\\]/g, "") // stray quotes/backslashes
+    .trim();
+}
+
+/**
+ * Lists any non-ASCII characters in a value that Brevo requires to be pure
+ * ASCII (the sender email address, the API/SMTP key, the SMTP login). Returns
+ * [] when clean. This is how the recurring "unrecognised ä in the credentials"
+ * outage becomes visible instead of a mystery 535/relay rejection.
+ */
+function nonAsciiReport(
+  value: string,
+): Array<{ index: number; char: string; codePoint: string }> {
+  const out: Array<{ index: number; char: string; codePoint: string }> = [];
+  for (let i = 0; i < value.length; i++) {
+    const code = value.codePointAt(i)!;
+    if (code > 0x7f) {
+      out.push({
+        index: i,
+        char: value[i],
+        codePoint: "U+" + code.toString(16).toUpperCase().padStart(4, "0"),
+      });
+    }
+  }
+  return out;
 }
 
 const FROM_EMAIL = clean(process.env.BREVO_FROM_EMAIL || "noreply@utlagg.se");
 const FROM_NAME = clean(process.env.BREVO_FROM_NAME || "Kvittino");
 const APP_NAME = "Kvittino";
-const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || "support@utlagg.se";
+const SUPPORT_EMAIL = clean(process.env.SUPPORT_EMAIL || "support@utlagg.se");
+
+/**
+ * Per-variable health check for the email credentials, safe to expose to the
+ * admin debug route: never returns the secret itself, only its length, whether
+ * clean() had to strip invisible corruption from it, and any rogue non-ASCII
+ * characters (with code points) in fields that must be ASCII. One call to the
+ * debug endpoint then pinpoints a stray "ä"/newline/zero-width char that a
+ * masked dashboard field would otherwise hide.
+ */
+export function emailConfigDiagnostics(): Record<string, unknown> {
+  const raw: Record<string, string | undefined> = {
+    BREVO_FROM_EMAIL: process.env.BREVO_FROM_EMAIL,
+    BREVO_FROM_NAME: process.env.BREVO_FROM_NAME,
+    BREVO_SMTP_LOGIN: process.env.BREVO_SMTP_LOGIN,
+    BREVO_SMTP_KEY: process.env.BREVO_SMTP_KEY,
+    BREVO_API_KEY: process.env.BREVO_API_KEY,
+  };
+  // BREVO_FROM_NAME is allowed to hold non-ASCII (e.g. "Utlägg"); the rest
+  // must be ASCII, so a non-ASCII finding there is an actionable problem.
+  const asciiRequired = new Set([
+    "BREVO_FROM_EMAIL",
+    "BREVO_SMTP_LOGIN",
+    "BREVO_SMTP_KEY",
+    "BREVO_API_KEY",
+  ]);
+  const report: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (v == null) {
+      report[k] = "(not set)";
+      continue;
+    }
+    const cleaned = clean(v);
+    report[k] = {
+      rawLength: v.length,
+      cleanedLength: cleaned.length,
+      hadInvisibleCorruption: v !== cleaned,
+      nonAscii: asciiRequired.has(k)
+        ? nonAsciiReport(cleaned).length
+          ? nonAsciiReport(cleaned)
+          : "none"
+        : "(non-ASCII allowed here)",
+    };
+  }
+  return report;
+}
+
+// Boot-time warning so the invisible-character failure mode shows up in the
+// deploy logs without waiting for a send to fail with an opaque 535.
+{
+  const suspects: Record<string, string> = {
+    BREVO_FROM_EMAIL: FROM_EMAIL,
+    BREVO_SMTP_LOGIN: clean(process.env.BREVO_SMTP_LOGIN || ""),
+    "BREVO_SMTP_KEY/BREVO_API_KEY": clean(
+      process.env.BREVO_SMTP_KEY || process.env.BREVO_API_KEY || "",
+    ),
+  };
+  for (const [label, value] of Object.entries(suspects)) {
+    const bad = nonAsciiReport(value);
+    if (bad.length) {
+      console.warn(
+        `[email] WARNING: ${label} contains non-ASCII that Brevo may reject: ` +
+          bad.map((b) => `${b.codePoint} '${b.char}' @${b.index}`).join(", "),
+      );
+    }
+  }
+}
 
 export function isEmailConfigured(): boolean {
   return Boolean(

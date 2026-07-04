@@ -1,6 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { requireAdmin } from "@/lib/admin";
-import { isEmailConfigured, verifyEmailConnection, sendTestEmail } from "@/lib/email";
+import {
+  isEmailConfigured,
+  verifyEmailConnection,
+  sendTestEmail,
+  emailConfigDiagnostics,
+} from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -41,12 +46,18 @@ export async function GET(req: NextRequest) {
     BREVO_SMTP_PORT: process.env.BREVO_SMTP_PORT ?? "(not set, defaults to 587)",
   };
 
+  // Per-variable byte-level health: flags invisible corruption (stripped by
+  // clean()) and rogue non-ASCII chars — e.g. a stray "ä" in the credentials —
+  // that a masked dashboard field hides and that Brevo rejects with an opaque
+  // 535. Never includes the secret values themselves.
+  const credentials = emailConfigDiagnostics();
+
   const configured = isEmailConfigured();
   const connection = configured
     ? await verifyEmailConnection()
     : { ok: false as const, error: "Not configured — see env vars above" };
 
-  return NextResponse.json({ configured, env: masked, connection });
+  return NextResponse.json({ configured, env: masked, credentials, connection });
 }
 
 export async function POST(req: NextRequest) {
