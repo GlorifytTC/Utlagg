@@ -160,14 +160,14 @@ export function SubscriptionManager({
               whileHover={{ scale: 1.02 }}
               className={cn(
                 "flex flex-col rounded-2xl border bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:bg-[#0D0D0D]",
-                isCurrent ? "ring-2 ring-sky-500" : "border-gray-900/[0.07] dark:border-white/[0.07]",
+                isCurrent ? "ring-2 ring-nordic-600" : "border-gray-900/[0.07] dark:border-white/[0.07]",
               )}
             >
               <Card className="flex flex-1 flex-col border-0 bg-transparent shadow-none">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="font-display text-lg text-gray-900 dark:text-white">{planName(plan.name)}</CardTitle>
-                    {isCurrent && <Badge className="bg-sky-600 text-white">{t.subCurrentBadge}</Badge>}
+                    {isCurrent && <Badge className="bg-nordic-600 text-white">{t.subCurrentBadge}</Badge>}
                   </div>
                   <CardDescription className="text-lg font-semibold text-gray-900 dark:text-white">{priceLbl(plan.priceLabel)}</CardDescription>
                 </CardHeader>

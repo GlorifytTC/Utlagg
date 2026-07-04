@@ -17,6 +17,7 @@ import {
 import { useTheme } from "@/components/ThemeProvider";
 import { cn } from "@/lib/utils";
 import type { Tier } from "@/lib/plans";
+import { Logo } from "@/components/brand/Logo";
 
 const NAV_ITEMS = [
   { name: "Översikt", href: "/dashboard", icon: Home },
@@ -43,11 +44,9 @@ export function Sidebar({ tier }: { tier: Tier }) {
       <div className="px-5 pb-5 pt-6">
         <Link 
           href="/" 
-          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 focus-visible:rounded-md"
+          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nordic-600/30 focus-visible:rounded-md"
         >
-          <span className="font-display text-[17px] font-semibold tracking-tight text-gray-900 dark:text-white">
-            Utlägg
-          </span>
+          <Logo size={26} wordmarkClassName="text-[17px] text-gray-900 dark:text-white" />
         </Link>
         <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-400">
           Expense Management
@@ -80,7 +79,7 @@ export function Sidebar({ tier }: { tier: Tier }) {
                   className={cn(
                     "group flex items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm transition-colors duration-150",
                     isActive
-                      ? "bg-gray-900/[0.07] text-gray-900 dark:bg-white/[0.07] dark:text-white"
+                      ? "bg-nordic-600/10 text-nordic-600 dark:bg-nordic-600/[0.16] dark:text-nordic-600"
                       : "text-gray-500 hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white",
                   )}
                 >
@@ -95,7 +94,7 @@ export function Sidebar({ tier }: { tier: Tier }) {
                     {item.name}
                   </span>
                   {isActive && (
-                    <span className="h-1 w-1 rounded-full bg-gray-600 dark:bg-gray-400" />
+                    <span className="h-1 w-1 rounded-full bg-nordic-600" />
                   )}
                 </Link>
               </li>

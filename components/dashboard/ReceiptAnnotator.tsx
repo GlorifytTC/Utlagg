@@ -139,7 +139,7 @@ export function ReceiptAnnotator({
             className={cn(
               "min-h-[40px] rounded-full border px-4 text-sm transition",
               field === f.key
-                ? "border-sky-600 bg-sky-600 text-white shadow-sm"
+                ? "border-nordic-600 bg-nordic-600 text-white shadow-sm"
                 : "border-gray-900/[0.15] text-gray-600 hover:border-gray-900/40 dark:border-white/[0.15] dark:text-gray-300 dark:hover:border-white/40",
             )}
           >
@@ -191,7 +191,7 @@ export function ReceiptAnnotator({
         </div>
       </div>
 
-      <p className={cn("mt-2 text-xs", armed ? "font-medium text-sky-600" : "text-gray-500 dark:text-gray-400")}>
+      <p className={cn("mt-2 text-xs", armed ? "font-medium text-nordic-600" : "text-gray-500 dark:text-gray-400")}>
         {armed ? t.annArmed.replace("{field}", fieldLabel) : t.annScroll}
       </p>
 
@@ -199,7 +199,7 @@ export function ReceiptAnnotator({
         ref={stageRef}
         className={cn(
           "relative mt-2 max-h-[62vh] overflow-auto rounded-lg border bg-white/60 transition dark:bg-[#0D0D0D]",
-          armed ? "border-sky-600 ring-2 ring-sky-400/40" : "border-gray-900/[0.07] dark:border-white/[0.07]",
+          armed ? "border-nordic-600 ring-2 ring-nordic-600/40" : "border-gray-900/[0.07] dark:border-white/[0.07]",
         )}
         style={{ touchAction: armed ? "none" : "auto" }}
       >
@@ -211,7 +211,7 @@ export function ReceiptAnnotator({
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="pointer-events-none absolute border-2 border-sky-600 bg-sky-400/25"
+                className="pointer-events-none absolute border-2 border-nordic-600 bg-nordic-600/25"
                 style={{ left: box.x, top: box.y, width: box.w, height: box.h }}
               />
             )}

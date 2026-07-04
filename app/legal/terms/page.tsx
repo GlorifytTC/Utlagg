@@ -1,13 +1,13 @@
 import Link from "next/link";
 
-export const metadata = { title: "Användarvillkor — Utlagg" };
+export const metadata = { title: "Användarvillkor — Kvittino" };
 
 export default function TermsPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
       <h1 className="font-display text-3xl">Användarvillkor</h1>
       <p className="mt-4 text-ink/70">
-        Dessa villkor reglerar din användning av Utlagg — en AI-driven tjänst för
+        Dessa villkor reglerar din användning av Kvittino — en AI-driven tjänst för
         kvittohantering, utläggsredovisning och bokföringsexport anpassad för
         svenska moms- och bokföringsregler.
       </p>
@@ -19,7 +19,7 @@ export default function TermsPage() {
           <h2 className="font-display text-lg">§ 1 Parter</h2>
           <p>
             Tjänsten tillhandahålls av <strong>GlorifyTC</strong> (org.nr [xxxxxx-xxxx]),
-            nedan kallat &ldquo;vi&rdquo;, &ldquo;oss&rdquo; eller &ldquo;Utlagg&rdquo;.
+            nedan kallat &ldquo;vi&rdquo;, &ldquo;oss&rdquo; eller &ldquo;Kvittino&rdquo;.
           </p>
           <p>
             Den fysiska eller juridiska person som registrerar ett konto och godkänner
@@ -45,7 +45,7 @@ export default function TermsPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg">§ 3 Tjänstens omfattning</h2>
           <p>
-            Utlagg är en webbaserad SaaS-tjänst (Software as a Service) för
+            Kvittino är en webbaserad SaaS-tjänst (Software as a Service) för
             skanning och hantering av kvitton, körjournalföring, utläggsattest,
             kollektivtrafikregistrering och fakturahantering — anpassad för
             svenska momssatser (6/12/25&nbsp;%), BAS-kontoplanen och
@@ -87,7 +87,7 @@ export default function TermsPage() {
           <h2 className="font-display text-lg">§ 5 Prenumeration och betalning</h2>
           <p>
             Betalda abonnemang debiteras månadsvis i förskott i SEK. Betalning hanteras
-            av <strong>Stripe, Inc.</strong> Utlagg lagrar inga kortuppgifter.
+            av <strong>Stripe, Inc.</strong> Kvittino lagrar inga kortuppgifter.
           </p>
           <p>
             Prenumerationen förnyas automatiskt tills du avslutar den. Avslutning
@@ -134,7 +134,7 @@ export default function TermsPage() {
           <h2 className="font-display text-lg">§ 7 Lagring av bokföringsunderlag</h2>
           <p>
             Bokföringslagen (SFS 1999:1078) ålägger företag att bevara
-            räkenskapsinformation i <strong>sju (7) år</strong>. Utlagg lagrar dina
+            räkenskapsinformation i <strong>sju (7) år</strong>. Kvittino lagrar dina
             kvitton och underlag under hela din aktiva prenumeration och i upp till
             <strong> ett (1) år</strong> efter din senaste betalning.
           </p>
@@ -145,7 +145,7 @@ export default function TermsPage() {
             <em> innan</em> kontot raderas.
           </p>
           <p>
-            Utlagg kan inte hållas ansvarigt för förlust av bokföringsunderlag till
+            Kvittino kan inte hållas ansvarigt för förlust av bokföringsunderlag till
             följd av att du avslutat prenumerationen eller kontot.
           </p>
         </section>
@@ -153,7 +153,7 @@ export default function TermsPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg">§ 8 Dina uppgifter och äganderätt</h2>
           <p>
-            Du äger all data du laddar upp till Utlagg — kvitton, fakturor, reseuppgifter
+            Du äger all data du laddar upp till Kvittino — kvitton, fakturor, reseuppgifter
             och övriga dokument. Vi gör inte anspråk på äganderätt till ditt innehåll.
           </p>
           <p>
@@ -175,7 +175,7 @@ export default function TermsPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg">§ 9 Immateriella rättigheter</h2>
           <p>
-            Utlagg-plattformen — inklusive programvara, design, grafik, varumärken och
+            Kvittino-plattformen — inklusive programvara, design, grafik, varumärken och
             affärslogik — ägs av GlorifyTC och skyddas av upphovsrätt och andra
             immaterialrättsliga lagar.
           </p>
@@ -188,7 +188,7 @@ export default function TermsPage() {
 
         <section className="space-y-3">
           <h2 className="font-display text-lg">§ 10 Förbjuden användning</h2>
-          <p>Det är förbjudet att använda Utlagg för att:</p>
+          <p>Det är förbjudet att använda Kvittino för att:</p>
           <ul className="ml-4 list-disc space-y-1 text-ink/80">
             <li>lagra, ladda upp eller skapa falska, förfalskade eller missvisande bokföringsunderlag,</li>
             <li>tvätta pengar eller finansiera olaglig verksamhet,</li>
@@ -213,7 +213,7 @@ export default function TermsPage() {
             <Link className="underline underline-offset-2" href="/legal/dpa">
               personuppgiftsbiträdesavtalet (DPA)
             </Link>
-            . Utlagg agerar som personuppgiftsbiträde för de personuppgifter du
+            . Kvittino agerar som personuppgiftsbiträde för de personuppgifter du
             behandlar via tjänsten och som personuppgiftsansvarig för kontorelaterade
             uppgifter.
           </p>
@@ -229,7 +229,7 @@ export default function TermsPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg">§ 12 Ansvarsbegränsning</h2>
           <p>
-            Utlagg tillhandahålls &ldquo;i befintligt skick&rdquo;. Vi lämnar inga
+            Kvittino tillhandahålls &ldquo;i befintligt skick&rdquo;. Vi lämnar inga
             garantier — uttryckliga eller underförstådda — om tjänstens lämplighet
             för ett visst ändamål, avbrottsfrihet eller frihet från fel.
           </p>

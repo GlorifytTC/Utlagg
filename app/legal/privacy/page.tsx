@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const metadata = { title: "Integritetspolicy — Utlagg" };
+export const metadata = { title: "Integritetspolicy — Kvittino" };
 
 export default function PrivacyPage() {
   return (
@@ -8,8 +8,8 @@ export default function PrivacyPage() {
       <h1 className="font-display text-3xl">Integritetspolicy</h1>
       <p className="mt-4 text-ink/70">
         Den här policyn beskriver hur GlorifyTC (&ldquo;vi&rdquo;, &ldquo;oss&rdquo;
-        eller &ldquo;Utlagg&rdquo;) samlar in, använder och skyddar dina
-        personuppgifter när du använder Utlagg. Vi behandlar personuppgifter i
+        eller &ldquo;Kvittino&rdquo;) samlar in, använder och skyddar dina
+        personuppgifter när du använder Kvittino. Vi behandlar personuppgifter i
         enlighet med EU:s dataskyddsförordning (GDPR, EU 2016/679) och
         kompletterande svensk dataskyddslagstiftning.
       </p>
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
           </p>
           <p className="text-ink/60">
             När du som företagsanvändare behandlar tredje parts personuppgifter
-            (t.ex. dina anställdas utlägg) via Utlagg agerar GlorifyTC som ditt
+            (t.ex. dina anställdas utlägg) via Kvittino agerar GlorifyTC som ditt
             personuppgiftsbiträde. Se vårt{" "}
             <Link className="underline underline-offset-2" href="/legal/dpa">
               personuppgiftsbiträdesavtal (DPA)
@@ -291,7 +291,7 @@ export default function PrivacyPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg">10. Cookies och spårning</h2>
           <p>
-            Utlagg använder nödvändiga cookies för att hålla dig inloggad och
+            Kvittino använder nödvändiga cookies för att hålla dig inloggad och
             skydda din session (CSRF-skydd). Vi använder inte spårningscookies för
             reklam.
           </p>
@@ -306,7 +306,7 @@ export default function PrivacyPage() {
           <p>
             Vår OCR-funktion extraherar automatiskt data från kvitton och föreslår
             momssats och BAS-konto. Detta är ett beslutsstöd — du granskar och
-            godkänner alltid resultatet innan det sparas. Utlagg fattar inte
+            godkänner alltid resultatet innan det sparas. Kvittino fattar inte
             automatiserade beslut som producerar rättsliga eller liknande effekter
             för dig i den mening som avses i GDPR art. 22.
           </p>

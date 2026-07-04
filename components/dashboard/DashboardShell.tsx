@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ReceiptUploader } from "@/components/dashboard/ReceiptUploader";
 import { ReceiptTable } from "@/components/dashboard/ReceiptTable";
 import { UsageMeter } from "@/components/dashboard/UsageMeter";
+import { Logo } from "@/components/brand/Logo";
 
 export function DashboardShell({
   name,
@@ -29,8 +30,8 @@ export function DashboardShell({
   return (
     <main className="min-h-screen bg-paper">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
-        <Link href="/" className="font-display text-xl font-semibold">
-          Utlagg 
+        <Link href="/">
+          <Logo size={30} wordmarkClassName="text-xl" />
         </Link>
         <div className="flex items-center gap-4 text-sm">
           <span className="hidden text-ink/60 sm:block dark:text-gray-400">Hej, {name}</span>

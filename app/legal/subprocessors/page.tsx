@@ -1,4 +1,4 @@
-export const metadata = { title: "Underbiträden — Utlagg" };
+export const metadata = { title: "Underbiträden — Kvittino" };
 
 const rows: [string, string, string][] = [
   ["Railway", "Drift & PostgreSQL-databas", "EU"],
@@ -14,7 +14,7 @@ export default function SubprocessorsPage() {
     <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
       <h1 className="font-display text-3xl">Underbiträden</h1>
       <p className="mt-4 text-ink/70">
-        Tredjepartstjänster som kan behandla personuppgifter för Utlaggs räkning.
+        Tredjepartstjänster som kan behandla personuppgifter för Kvittinos räkning.
       </p>
       <table className="mt-8 w-full text-sm">
         <thead className="text-left text-ink/50">

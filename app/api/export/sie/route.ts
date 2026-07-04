@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
   const rows = await db.select().from(receipts).where(and(...conds)).orderBy(desc(receipts.date));
 
   // Company name for the #FNAMN header, if any.
-  let companyName = session.user.name ?? "Utlagg";
+  let companyName = session.user.name ?? "Kvittino";
   let orgNumber: string | null = null;
   const membership = await getUserCompany(session.user.id);
   if (membership) {
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
   return new NextResponse(sie, {
     headers: {
       "Content-Type": "application/octet-stream",
-      "Content-Disposition": `attachment; filename="utlagg-${fromYear}.se"`,
+      "Content-Disposition": `attachment; filename="kvittino-${fromYear}.se"`,
     },
   });
 }

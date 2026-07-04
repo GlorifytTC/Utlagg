@@ -25,7 +25,7 @@ export function UsageMeter({
         <motion.span
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="rounded-full bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-600 capitalize dark:bg-sky-900/30 dark:text-sky-400"
+          className="rounded-full bg-nordic-600/10 px-2.5 py-0.5 text-xs font-medium text-nordic-600 capitalize dark:bg-nordic-600/20 dark:text-nordic-600"
         >
           {tier}
         </motion.span>
@@ -50,7 +50,7 @@ export function UsageMeter({
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className={cn("h-full rounded-full transition-all", near ? "bg-amber-500" : "bg-sky-600")}
+              className={cn("h-full rounded-full transition-all", near ? "bg-amber-500" : "bg-nordic-600")}
             />
           </div>
           <AnimatePresence>

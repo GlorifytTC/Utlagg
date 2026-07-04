@@ -25,8 +25,8 @@ function clean(v: string): string {
 }
 
 const FROM_EMAIL = clean(process.env.BREVO_FROM_EMAIL || "noreply@utlagg.se");
-const FROM_NAME = clean(process.env.BREVO_FROM_NAME || "Utlagg");
-const APP_NAME = "Utlagg";
+const FROM_NAME = clean(process.env.BREVO_FROM_NAME || "Kvittino");
+const APP_NAME = "Kvittino";
 const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || "support@utlagg.se";
 
 export function isEmailConfigured(): boolean {
@@ -572,9 +572,9 @@ export async function sendTestEmail(
   }
   const result = await brevoSend(
     to,
-    "Utlagg — testmejl",
+    "Kvittino — testmejl",
     layout(
-      "<h2>Testmejl</h2><p>Det här är ett testmejl från Utlagg's e-postdebug-endpoint. Om du ser det fungerar Brevo-konfigurationen.</p>",
+      "<h2>Testmejl</h2><p>Det här är ett testmejl från Kvittino's e-postdebug-endpoint. Om du ser det fungerar Brevo-konfigurationen.</p>",
     ),
   );
   if (result.ok) {

@@ -1,4 +1,4 @@
-export const metadata = { title: "Personuppgiftsbiträdesavtal — Utlagg" };
+export const metadata = { title: "Personuppgiftsbiträdesavtal — Kvittino" };
 
 export default function LegalPage() {
   return (
@@ -11,7 +11,7 @@ export default function LegalPage() {
       <h1 className="font-display text-3xl">Personuppgiftsbiträdesavtal</h1>
       <p className="mt-4 text-sm text-ink/60">Senast uppdaterad: [datum]</p>
       <div className="mt-8 space-y-4 text-sm leading-relaxed text-ink/80">
-        <p>[Inledning och omfattning – beskriv tjänsten Utlagg och vem avtalet gäller.]</p>
+        <p>[Inledning och omfattning – beskriv tjänsten Kvittino och vem avtalet gäller.]</p>
         <p>[Parternas åtaganden, behandlade uppgifter, lagringstid (7 år enligt
         Bokföringslagen för bokföringsunderlag), rättslig grund (GDPR), och kontaktuppgifter
         till personuppgiftsansvarig.]</p>

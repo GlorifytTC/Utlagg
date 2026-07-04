@@ -15,6 +15,7 @@ import type { Translations } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 import { hasFeature, type Feature } from "@/lib/features";
 import type { Tier } from "@/lib/plans";
+import { Logo, LogoMark } from "@/components/brand/Logo";
 
 const nav = [
   { key: "navOverview", href: "/dashboard", icon: Home },
@@ -48,8 +49,8 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
   return (
     <div className="flex h-full flex-col">
       <div className="px-5 pb-5 pt-6">
-        <Link href="/" className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 focus-visible:rounded-md">
-          <span className="font-display text-[17px] font-semibold tracking-tight text-gray-900 dark:text-white">Utlägg</span>
+        <Link href="/" className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nordic-600/30 focus-visible:rounded-md">
+          <Logo size={26} wordmarkClassName="text-[17px] text-gray-900 dark:text-white" />
         </Link>
         <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-400">Expense Management</p>
       </div>
@@ -67,7 +68,7 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
                   className={cn(
                     "group flex items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm transition-colors duration-150",
                     active
-                      ? "bg-gray-900/[0.07] text-gray-900 dark:bg-white/[0.07] dark:text-white"
+                      ? "bg-nordic-600/10 text-nordic-600 font-medium dark:bg-nordic-600/[0.16] dark:text-nordic-600"
                       : "text-gray-500 hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white",
                   )}
                 >
@@ -107,7 +108,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
     <div className="relative min-h-screen bg-[#F5F4F0] dark:bg-black dark:text-gray-100 print:bg-white print:min-h-0">
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 opacity-[0.035] dark:hidden print:hidden" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden print:hidden dark:hidden">
-        <div className="absolute -top-24 left-[22%] h-[440px] w-[440px] rounded-full bg-sky-200/20 blur-[110px]" />
+        <div className="absolute -top-24 left-[22%] h-[440px] w-[440px] rounded-full bg-nordic-600/[0.07] blur-[110px]" />
         <div className="absolute bottom-0 right-[12%] h-80 w-80 rounded-full bg-stone-300/20 blur-[90px]" />
       </div>
       <IdleLogout />
@@ -119,7 +120,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setOpen(true)} aria-label="Öppna meny" className="rounded-lg p-2 hover:bg-gray-900/[0.04] dark:text-white dark:hover:bg-white/[0.04]">
             <Menu className="h-6 w-6" />
           </motion.button>
-          <Link href="/" className="font-display text-lg font-semibold dark:text-white">Utlägg</Link>
+          <Link href="/" aria-label="Kvittino"><LogoMark size={26} /></Link>
         </div>
         <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => signOut({ callbackUrl: "/" })} aria-label={t.navLogout} className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50/70 dark:hover:bg-red-950/25">
           <LogOut className="h-5 w-5" />
@@ -167,7 +168,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
                 href={item.href}
                 className={cn(
                   "flex flex-col items-center gap-1 py-2 text-[10px] transition-colors",
-                  active ? "text-sky-600 dark:text-sky-300" : "text-gray-500 dark:text-gray-400",
+                  active ? "text-nordic-600 dark:text-nordic-600" : "text-gray-500 dark:text-gray-400",
                 )}
               >
                 <Icon className="h-5 w-5" />

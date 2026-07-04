@@ -11,13 +11,13 @@ export function StructuredData() {
     "@graph": [
       {
         "@type": "Organization",
-        name: "Utlagg",
+        name: "Kvittino",
         url: base,
         description: "AI-driven kvittohantering för svenska företag.",
       },
       {
         "@type": "SoftwareApplication",
-        name: "Utlagg",
+        name: "Kvittino",
         applicationCategory: "BusinessApplication",
         operatingSystem: "Web",
         offers: {

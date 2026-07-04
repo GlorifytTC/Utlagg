@@ -60,7 +60,7 @@ function makeInitialMessages(): Message[] {
     {
       id: newId(),
       role: "bot",
-      text: "Hi — I can answer common questions about Utlagg. Select one below to get started.",
+      text: "Hi — I can answer common questions about Kvittino. Select one below to get started.",
     },
   ];
 }
@@ -266,7 +266,7 @@ export function ChatBox() {
 
               <div className="min-w-0 flex-1">
                 <p className="font-display text-sm font-semibold leading-tight text-paper">
-                  Utlagg Support
+                  Kvittino Support
                 </p>
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.p
@@ -376,7 +376,7 @@ export function ChatBox() {
                   >
                     <p className="text-xs text-ink/50">All questions answered.</p>
                     <a
-                      href="mailto:sales@Utlagg.se"
+                      href="mailto:sales@Kvittino.se"
                       className="mt-2 inline-block rounded-full border hairline px-4 py-1.5 text-xs font-medium text-nordic-600 transition hover:border-nordic-600/40 hover:bg-paper"
                     >
                       Contact us →

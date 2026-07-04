@@ -23,7 +23,7 @@ export default function ForgotPasswordPage() {
     <main className="flex min-h-screen items-center justify-center bg-paper px-6">
       <div className="w-full max-w-sm">
         <Link href="/" className="font-display text-xl font-semibold">
-          Utlagg
+          Kvittino
         </Link>
         <h1 className="mt-8 font-display text-3xl">Glömt lösenord</h1>
         {sent ? (

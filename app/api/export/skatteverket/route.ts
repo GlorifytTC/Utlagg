@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
   return new NextResponse(csv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="utlagg-skatteverket-${stamp}.csv"`,
+      "Content-Disposition": `attachment; filename="kvittino-skatteverket-${stamp}.csv"`,
     },
   });
 }

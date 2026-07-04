@@ -35,7 +35,7 @@ export function RecentReceipts({ receipts }: { receipts: Receipt[] }) {
             {t.noReceiptsYet}{" "}
             <Link
               href="/dashboard/receipts"
-              className="text-sky-600 underline transition hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
+              className="text-nordic-600 underline transition hover:text-nordic-700 dark:text-nordic-600 dark:hover:text-nordic-700"
             >
               {t.uploadFirst}
             </Link>

@@ -112,7 +112,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t.receiptSearch}
-            className="min-w-[200px] flex-1 rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
+            className="min-w-[200px] flex-1 rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
           />
           <div className="flex items-end gap-2">
             <label className="text-xs text-gray-500 dark:text-gray-400">
@@ -170,7 +170,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                   <th className="px-5 py-3 font-medium">{t.colBas}</th>
                   <th className="px-5 py-3 font-medium">{t.colVat}</th>
                   <th className="px-5 py-3 font-medium">{t.colAmount}</th>
-                  <th className="px-5 py-3 font-medium">{t.colStatus}</th>
+                  <th className="px-5 py-3 font-medium text-nordic-600 dark:text-nordic-600">{t.colStatus}</th>
                   <th className="px-5 py-3 font-medium text-right">{t.colActions}</th>
                 </tr>
               </thead>

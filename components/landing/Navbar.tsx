@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/brand/Logo";
 
 export function Navbar() {
   const { t, lang, toggleLanguage } = useLanguage();
@@ -23,8 +24,8 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b hairline bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="font-display text-xl font-semibold tracking-tight" onClick={() => setOpen(false)}>
-          Utlagg
+        <Link href="/" onClick={() => setOpen(false)}>
+          <Logo size={30} wordmarkClassName="text-xl" />
         </Link>
 
         {/* Desktop nav */}
@@ -56,7 +57,7 @@ export function Navbar() {
           </Link>
           <Link
             href="/register"
-            className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper shadow-sm transition hover:bg-nordic-900"
+            className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-nordic-700"
           >
             {t.startFree}
           </Link>
@@ -107,7 +108,7 @@ export function Navbar() {
             <Link
               href="/register"
               onClick={() => setOpen(false)}
-              className="mt-1 rounded-full bg-ink px-5 py-3 text-center font-medium text-paper transition hover:bg-nordic-900"
+              className="mt-1 rounded-full bg-nordic-600 px-5 py-3 text-center font-medium text-white transition hover:bg-nordic-700"
             >
               {t.startFree}
             </Link>

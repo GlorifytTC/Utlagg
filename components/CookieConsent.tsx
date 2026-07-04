@@ -398,7 +398,7 @@ export function CookieConsent() {
                         <span className="font-medium text-ink/60">
                           Data controller:
                         </span>{" "}
-                        Utlagg AB, Sweden.{" "}
+                        Kvittino AB, Sweden.{" "}
                         <span className="font-medium text-ink/60">
                           Supervisory authority:
                         </span>{" "}

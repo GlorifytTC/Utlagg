@@ -26,7 +26,7 @@ export function UsageChart({
       </CardHeader>
       <CardContent>
         {unlimited ? (
-          <p className="text-3xl font-semibold text-sky-600 dark:text-sky-400">
+          <p className="text-3xl font-semibold text-nordic-600 dark:text-nordic-600">
             {used}
           </p>
         ) : (
@@ -38,7 +38,7 @@ export function UsageChart({
                     ? "bg-red-500"
                     : pct >= 80
                     ? "bg-amber-500"
-                    : "bg-sky-600"
+                    : "bg-nordic-600"
                 }`}
                 style={{ width: `${pct}%` }}
               />

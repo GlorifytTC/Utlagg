@@ -2,16 +2,22 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Utlagg — AI-driven kvittohantering",
-    short_name: "Utlagg",
+    name: "Kvittino — AI-driven kvittohantering",
+    short_name: "Kvittino",
     description:
       "Smart kvittoscanning med AI, svensk momshantering och Fortnox-integration.",
     start_url: "/dashboard",
     display: "standalone",
-    background_color: "#F4F1EA",
-    theme_color: "#16181D",
+    background_color: "#FAF8F3",
+    theme_color: "#C4522F",
     lang: "sv-SE",
-    // Add /icon-192.png and /icon-512.png to public/ then list them here.
-    icons: [],
+    icons: [
+      {
+        src: "/kvittino-mark.svg",
+        sizes: "any",
+        type: "image/svg+xml",
+        purpose: "any",
+      },
+    ],
   };
 }

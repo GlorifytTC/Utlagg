@@ -14,7 +14,7 @@ const schema = z.object({ receiptIds: z.array(z.string().uuid()).min(1).max(200)
 
 /**
  * Pushes ONLY the receipts the person explicitly picked — replaces the old
- * "sync everything unsynced" behavior so nothing leaves Utlagg without the
+ * "sync everything unsynced" behavior so nothing leaves Kvittino without the
  * person reviewing exactly what's being sent first.
  */
 export async function POST(req: NextRequest) {

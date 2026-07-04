@@ -58,7 +58,7 @@ export function HeroSection() {
           >
             <Link
               href="/register"
-              className="rounded-full bg-ink px-7 py-3.5 text-sm font-medium text-paper transition hover:bg-nordic-900"
+              className="rounded-full bg-nordic-600 px-7 py-3.5 text-sm font-medium text-white transition hover:bg-nordic-700"
             >
               {t.heroCtaPrimary}
             </Link>

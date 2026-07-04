@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Kontakt",
   description:
-    "Kontakta Utlagg om AI-driven kvittohantering, priser eller din bokföring. Vi svarar normalt inom en arbetsdag.",
+    "Kontakta Kvittino om AI-driven kvittohantering, priser eller din bokföring. Vi svarar normalt inom en arbetsdag.",
   alternates: { canonical: "/contact" },
   openGraph: {
-    title: "Kontakta Utlagg",
+    title: "Kontakta Kvittino",
     description: "Frågor om produkten, priser eller din bokföring? Hör av dig.",
     type: "website",
   },

@@ -42,7 +42,7 @@ export function buildSie(opts: {
 }): string {
   const lines: string[] = [];
   lines.push("#FLAGGA 0");
-  lines.push('#PROGRAM "Utlagg" 1.0');
+  lines.push('#PROGRAM "Kvittino" 1.0');
   lines.push("#FORMAT PC8");
   lines.push(`#GEN ${sieDate(new Date())}`);
   lines.push("#SIETYP 4");

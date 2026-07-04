@@ -475,12 +475,12 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             }}
             className={cn(
               "mt-4 flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-10 text-center transition",
-              dragging ? "border-sky-600 bg-sky-50/60" : "border-gray-900/[0.15] bg-white/40 dark:border-white/[0.15] dark:bg-black/30",
+              dragging ? "border-nordic-600 bg-nordic-600/[0.08]" : "border-gray-900/[0.15] bg-white/40 dark:border-white/[0.15] dark:bg-black/30",
             )}
           >
             <p className="text-sm text-gray-600 dark:text-gray-300">{t.receiptDragDrop}</p>
             <div className="mt-3 flex flex-wrap justify-center gap-3">
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => inputRef.current?.click()} className="rounded-full bg-gray-900 px-5 py-2.5 text-sm text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => inputRef.current?.click()} className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-nordic-700 dark:text-[#050505]">
                 {t.receiptChooseImage}
               </motion.button>
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={openCamera} className="rounded-full border border-gray-900/[0.15] px-5 py-2.5 text-sm text-gray-600 hover:border-gray-900/40 dark:border-white/[0.15] dark:text-gray-300 dark:hover:border-white/40">
@@ -504,7 +504,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="h-10 w-10 rounded-full border-2 border-sky-600 border-t-transparent"
+              className="h-10 w-10 rounded-full border-2 border-nordic-600 border-t-transparent"
             />
             <p className="text-sm text-gray-600 dark:text-gray-300">AI analyserar kvitto…</p>
           </motion.div>
@@ -553,7 +553,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 <input
                   value={draft.vendorName}
                   onChange={(e) => setDraft({ ...draft, vendorName: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                 />
               </div>
               <div>
@@ -561,7 +561,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 <input
                   value={draft.receiptNumber}
                   onChange={(e) => setDraft({ ...draft, receiptNumber: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                   placeholder="Valfritt"
                 />
               </div>
@@ -571,7 +571,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                   type="date"
                   value={draft.date}
                   onChange={(e) => setDraft({ ...draft, date: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                 />
               </div>
               <div>
@@ -587,7 +587,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                       vatAmount: recalcVat(total, d.vatRate),
                     }));
                   }}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                 />
               </div>
               <div>
@@ -602,7 +602,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                       vatAmount: recalcVat(d.totalAmount, rate),
                     }));
                   }}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                 >
                   <option value={6}>6 %</option>
                   <option value={12}>12 %</option>
@@ -615,7 +615,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                   inputMode="decimal"
                   value={draft.vatAmount}
                   onChange={(e) => setDraft({ ...draft, vatAmount: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
                 />
               </div>
             </div>
@@ -652,7 +652,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 onClick={save}
                 disabled={isSaving}
                 className={cn(
-                  "rounded-full bg-gray-900 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100",
+                  "rounded-full bg-nordic-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-nordic-700 dark:text-[#050505]",
                   isSaving && "opacity-70 cursor-not-allowed",
                 )}
               >

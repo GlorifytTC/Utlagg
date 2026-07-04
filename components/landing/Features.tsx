@@ -30,7 +30,7 @@ export function Features() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="bg-paper p-8"
+              className="border-t-[3px] border-nordic-600 bg-paper p-8"
             >
               <h3 className="font-display text-xl">{f.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-ink/70">

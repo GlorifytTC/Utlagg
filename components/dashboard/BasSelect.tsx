@@ -77,7 +77,7 @@ export function BasSelect({
           setOpen(true);
         }}
         onKeyDown={handleKeyDown}
-        className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2.5 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
+        className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2.5 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
       />
       
       {/* Dropdown */}
@@ -103,7 +103,7 @@ export function BasSelect({
                   index === focusedIndex ? "bg-gray-900/[0.04] dark:bg-white/[0.04]" : "hover:bg-gray-900/[0.04] dark:hover:bg-white/[0.04]",
                 )}
               >
-                <span className="font-mono text-sm text-sky-600">{a.code}</span>
+                <span className="font-mono text-sm text-nordic-600">{a.code}</span>
                 <span className="text-sm text-gray-700 dark:text-gray-300">{a.name}</span>
               </button>
             </li>
