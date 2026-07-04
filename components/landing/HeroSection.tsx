@@ -73,7 +73,7 @@ export function HeroSection() {
         </div>
 
         <div className="relative">
-          <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-nordic-50 blur-3xl" />
+          <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-nordic-600/10 blur-3xl" />
           <Hero3D />
         </div>
       </div>

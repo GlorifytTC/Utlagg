@@ -52,7 +52,7 @@ function Receipt() {
       {/* header bar */}
       <mesh position={[0, 1.85, 0.06]}>
         <boxGeometry args={[1.4, 0.16, 0.01]} />
-        <meshStandardMaterial color="#2F6079" />
+        <meshStandardMaterial color="#C4522F" />
       </mesh>
       {lines.map((l, i) => (
         <ReceiptLine key={i} y={l.y} width={l.width} />
@@ -77,7 +77,7 @@ function ScanBeam() {
   return (
     <mesh ref={beam} position={[0, 0, 0.4]}>
       <planeGeometry args={[3.2, 0.18]} />
-      <meshBasicMaterial color="#5B8AA6" transparent opacity={0.35} />
+      <meshBasicMaterial color="#E2734A" transparent opacity={0.35} />
     </mesh>
   );
 }
@@ -89,7 +89,7 @@ export default function Hero3D() {
         <Suspense fallback={null}>
           <ambientLight intensity={0.7} />
           <directionalLight position={[3, 5, 4]} intensity={1.1} />
-          <directionalLight position={[-4, -2, 2]} intensity={0.3} color="#5B8AA6" />
+          <directionalLight position={[-4, -2, 2]} intensity={0.3} color="#E2734A" />
           <Receipt />
           <ScanBeam />
         </Suspense>

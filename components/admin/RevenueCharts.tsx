@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const COLORS = ["#5B8AA6", "#2F6079", "#D98A37", "#13343F"];
+const COLORS = ["#E2734A", "#C4522F", "#D98A37", "#8F3418"];
 
 export function PlanPie({ byTier }: { byTier: Record<string, number> }) {
   const data = Object.entries(byTier)
@@ -47,7 +47,7 @@ export function MonthlyBars({
         <XAxis dataKey="month" tick={{ fontSize: 11 }} />
         <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
         <Tooltip />
-        <Bar dataKey="count" name={label} fill="#2F6079" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="count" name={label} fill="#C4522F" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

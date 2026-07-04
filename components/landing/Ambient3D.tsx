@@ -33,7 +33,7 @@ function BgReceipt({
         </mesh>
         <mesh position={[0, 1.85, 0.06]}>
           <boxGeometry args={[1.4, 0.16, 0.01]} />
-          <meshStandardMaterial color="#2F6079" />
+          <meshStandardMaterial color="#C4522F" />
         </mesh>
         {lines.map((y, i) => (
           <mesh key={i} position={[-0.35 + ((i * 0.07) % 0.2), y, 0.06]}>
@@ -84,7 +84,7 @@ export default function Ambient3D() {
     >
       <ambientLight intensity={0.85} />
       <directionalLight position={[5, 5, 5]} intensity={0.9} />
-      <directionalLight position={[-5, -3, 2]} intensity={0.4} color="#5B8AA6" />
+      <directionalLight position={[-5, -3, 2]} intensity={0.4} color="#E2734A" />
       <Scene animated={animated} />
     </Canvas>
   );
