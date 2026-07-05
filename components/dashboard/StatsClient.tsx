@@ -59,9 +59,11 @@ const BUCKET_KEYS: Record<Bucket, string> = {
 // the app's restrained nordic theme, since this page only is meant to feel
 // like a colorful BI dashboard. Stored client-side (no account-wide effect).
 const THEMES: Record<string, { name: string; colors: string[] }> = {
-  vivid: {
-    name: "Vivid",
-    colors: ["#3FA7D6", "#E2725B", "#F4B942", "#7B61FF", "#2EC4B6", "#FF6B9D", "#9AA5B1"],
+  // Default: warm terracotta-led palette matching the Kvittino brand accent
+  // (#C4522F). Leads with the brand color, then warm/earthy supporting hues.
+  terracotta: {
+    name: "Terrakotta",
+    colors: ["#C4522F", "#E08A3C", "#D9A441", "#8C6A4A", "#C77B6B", "#B8894F", "#B0A69A"],
   },
   ocean: {
     name: "Ocean",
@@ -83,7 +85,7 @@ export function StatsClient() {
   const [range, setRange] = useState<Range>("month");
   const [data, setData] = useState<Overview | null>(null);
   const [loading, setLoading] = useState(true);
-  const [themeKey, setThemeKey] = useState<keyof typeof THEMES>("vivid");
+  const [themeKey, setThemeKey] = useState<keyof typeof THEMES>("terracotta");
   const [pickerOpen, setPickerOpen] = useState(false);
 
   useEffect(() => {

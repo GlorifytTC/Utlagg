@@ -16,13 +16,16 @@ export type SpendBucket =
   | "other";
 
 export const BUCKET_LABELS: Record<SpendBucket, { sv: string; en: string; color: string }> = {
-  food: { sv: "Mat & representation", en: "Food & dining", color: "#E2725B" },
-  travel: { sv: "Resor & transport", en: "Travel & transport", color: "#3FA7D6" },
-  office: { sv: "Kontor & lokal", en: "Office & premises", color: "#F4B942" },
-  it: { sv: "IT & programvara", en: "IT & software", color: "#7B61FF" },
-  marketing: { sv: "Marknadsföring", en: "Marketing", color: "#2EC4B6" },
-  professional: { sv: "Konsulter & utbildning", en: "Professional services", color: "#FF6B9D" },
-  other: { sv: "Övrigt", en: "Other", color: "#9AA5B1" },
+  // Warm, cohesive palette anchored on the terracotta brand accent. Each
+  // category is a distinct hue but stays in warm/earthy territory (no cool
+  // blues) so the charts match the rest of the rebranded UI.
+  food: { sv: "Mat & representation", en: "Food & dining", color: "#C4522F" },        // terracotta (brand)
+  travel: { sv: "Resor & transport", en: "Travel & transport", color: "#E08A3C" },   // warm amber-orange
+  office: { sv: "Kontor & lokal", en: "Office & premises", color: "#D9A441" },        // ochre/gold
+  it: { sv: "IT & programvara", en: "IT & software", color: "#8C6A4A" },              // warm taupe/brown
+  marketing: { sv: "Marknadsföring", en: "Marketing", color: "#B8894F" },             // muted bronze
+  professional: { sv: "Konsulter & utbildning", en: "Professional services", color: "#9E7B5B" }, // soft mocha
+  other: { sv: "Övrigt", en: "Other", color: "#B0A69A" },                              // warm grey
 };
 
 const CODE_TO_BUCKET: Record<string, SpendBucket> = {
