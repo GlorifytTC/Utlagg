@@ -81,8 +81,21 @@ const THEMES: Record<string, { name: string; colors: string[] }> = {
 const THEME_STORAGE_KEY = "utlagg_stats_theme";
 
 export function StatsClient() {
-  const { t } = useLanguage();
-  const [range, setRange] = useState<Range>("month");
+  const { t, lang } = useLanguage();
+  // Localised month names for the picker (Januari… / January…). Built from
+  // Intl so we never have to hand-maintain 12 translation keys per language.
+  const monthNames = useMemo(() => {
+    const locale = lang === "en" ? "en-US" : "sv-SE";
+    const fmt = new Intl.DateTimeFormat(locale, { month: "long" });
+    return Array.from({ length: 12 }, (_, i) => {
+      const name = fmt.format(new Date(2020, i, 1));
+      return name.charAt(0).toUpperCase() + name.slice(1);
+    });
+  }, [lang]);
+  const now = new Date();
+  const [mode, setMode] = useState<Range>("month");
+  const [selMonth, setSelMonth] = useState<number>(now.getMonth()); // 0-11
+  const [selYear, setSelYear] = useState<number>(now.getFullYear());
   const [data, setData] = useState<Overview | null>(null);
   const [loading, setLoading] = useState(true);
   const [themeKey, setThemeKey] = useState<keyof typeof THEMES>("terracotta");
@@ -102,7 +115,11 @@ export function StatsClient() {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    fetch(`/api/stats/overview?range=${range}`)
+    const qs =
+      mode === "month"
+        ? `month=${selYear}-${String(selMonth + 1).padStart(2, "0")}`
+        : `year=${selYear}`;
+    fetch(`/api/stats/overview?${qs}`)
       .then((r) => r.json())
       .then((d) => {
         if (!cancelled) setData(d);
@@ -113,7 +130,7 @@ export function StatsClient() {
     return () => {
       cancelled = true;
     };
-  }, [range]);
+  }, [mode, selMonth, selYear]);
 
   const theme = THEMES[themeKey];
 
@@ -137,15 +154,15 @@ export function StatsClient() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navStats}</h1>
           <p className="text-gray-500 dark:text-gray-400">{t.stSubtitle}</p>
         </div>
-        <div className="flex items-center gap-2">
-          {/* Month / Year toggle */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Month / Year mode toggle */}
           <div className="flex rounded-full border border-gray-200 bg-white p-1 dark:border-white/[0.08] dark:bg-[#111]">
             {(["month", "year"] as Range[]).map((r) => (
               <button
                 key={r}
-                onClick={() => setRange(r)}
+                onClick={() => setMode(r)}
                 className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                  range === r
+                  mode === r
                     ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
                     : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                 }`}
@@ -154,6 +171,34 @@ export function StatsClient() {
               </button>
             ))}
           </div>
+
+          {/* Month-name picker (only in month mode) */}
+          {mode === "month" && (
+            <select
+              value={selMonth}
+              onChange={(e) => setSelMonth(Number(e.target.value))}
+              className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-900 dark:border-white/[0.08] dark:bg-[#111] dark:text-white"
+            >
+              {monthNames.map((name, i) => (
+                <option key={i} value={i}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {/* Year picker */}
+          <select
+            value={selYear}
+            onChange={(e) => setSelYear(Number(e.target.value))}
+            className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-900 dark:border-white/[0.08] dark:bg-[#111] dark:text-white"
+          >
+            {Array.from({ length: 6 }, (_, i) => now.getFullYear() - i).map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
           {/* Theme picker */}
           <div className="relative">
             <button
@@ -223,7 +268,9 @@ export function StatsClient() {
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>{t.stTrend}</CardTitle>
-            <CardDescription>{range === "month" ? t.stRangeMonth : t.stRangeYear}</CardDescription>
+            <CardDescription>
+              {mode === "month" ? `${monthNames[selMonth]} ${selYear}` : selYear}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
