@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   buildSie,
+  normalizeOrgNumber,
   SieBalanceError,
   VAT_INPUT_ACCOUNT,
   type SieReceiptInput,
@@ -22,7 +23,7 @@ const baseOpts = {
   company: { name: "Testbolaget AB", orgNumber: "5566778899" },
   from: new Date("2026-01-01T00:00:00Z"),
   to: new Date("2026-12-31T00:00:00Z"),
-  generatedAt: new Date("2026-07-06T00:00:00Z"),
+  generatedAt: new Date("2026-07-06T12:00:00Z"),
 };
 
 /** Pull the numeric #TRANS amounts out of the generated text. */
@@ -49,7 +50,7 @@ describe("SIE 4 header", () => {
     expect(idx("#GEN 20260706")).toBeGreaterThan(idx("#FORMAT PC8"));
     expect(idx("#SIETYP 4")).toBeGreaterThan(idx("#GEN"));
     // #ORGNR must come before #FNAMN.
-    expect(idx("#ORGNR 5566778899")).toBeGreaterThan(idx("#SIETYP 4"));
+    expect(idx("#ORGNR 556677-8899")).toBeGreaterThan(idx("#SIETYP 4"));
     expect(idx("#FNAMN")).toBeGreaterThan(idx("#ORGNR"));
     expect(idx("#RAR 0 20260101 20261231")).toBeGreaterThan(idx("#FNAMN"));
   });
@@ -61,11 +62,38 @@ describe("SIE 4 header", () => {
   it("quotes the company name", () => {
     expect(text).toContain('#FNAMN "Testbolaget AB"');
   });
+});
 
-  it("throws when organisationsnummer is missing", () => {
-    expect(() =>
-      buildSie({ ...baseOpts, company: { name: "X", orgNumber: "" }, receipts: [receipt()] }),
-    ).toThrow(/rganisationsnummer/);
+describe("organisationsnummer validation", () => {
+  it("normalizes a valid 10-digit orgnr to NNNNNN-NNNN", () => {
+    expect(normalizeOrgNumber("5566778899")).toEqual({ value: "556677-8899", valid: true });
+    expect(normalizeOrgNumber("556677-8899")).toEqual({ value: "556677-8899", valid: true });
+  });
+
+  it("flags malformed orgnr (e.g. the 9-digit test value 02468-4360)", () => {
+    expect(normalizeOrgNumber("02468-4360").valid).toBe(false);
+  });
+
+  it("warns on malformed orgnr but still produces the file", () => {
+    const { text, warnings } = buildSie({
+      ...baseOpts,
+      company: { name: "Blueberry Inc", orgNumber: "02468-4360" },
+      receipts: [receipt()],
+    });
+    expect(warnings.some((w) => w.includes("02468-4360"))).toBe(true);
+    expect(text).toContain("#ORGNR 02468-4360"); // emitted, not swallowed
+    expect(text).toContain("#VER"); // file still complete
+  });
+
+  it("warns when orgnr is missing and omits #ORGNR", () => {
+    const { text, warnings } = buildSie({
+      ...baseOpts,
+      company: { name: "Solo", orgNumber: null },
+      receipts: [receipt()],
+    });
+    expect(text).not.toContain("#ORGNR");
+    expect(warnings.some((w) => w.toLowerCase().includes("organisationsnummer"))).toBe(true);
+    expect(text).toContain("#VER");
   });
 });
 
@@ -76,6 +104,12 @@ describe("SIE 4 verifications", () => {
     expect(text).toContain("#TRANS 5611 {} 100.00"); // net = 125 - 25
     expect(text).toContain(`#TRANS ${VAT_INPUT_ACCOUNT} {} 25.00`);
     expect(text).toContain("#TRANS 1930 {} -125.00");
+  });
+
+  it("emits one #VER per receipt (count matches input)", () => {
+    const many = Array.from({ length: 24 }, (_, i) => receipt({ id: `r${i}` }));
+    const { text: t } = buildSie({ ...baseOpts, receipts: many });
+    expect([...t.matchAll(/#VER /g)]).toHaveLength(24);
   });
 
   it("uses series F with sequential unique verification numbers", () => {
@@ -95,6 +129,9 @@ describe("SIE 4 verifications", () => {
         receipt({ id: "a" }),
         receipt({ id: "b", totalAmount: "99.99", vatAmount: "20.00", basCode: "6110" }),
         receipt({ id: "c", totalAmount: "1000.00", vatAmount: "0", vatRate: 0 }),
+        // real-world nulls seen in the DB
+        receipt({ id: "d", vatAmount: null }),
+        receipt({ id: "e", totalAmount: null, vatAmount: null, vendorName: null }),
       ],
     });
     for (const sum of verSums(multi)) expect(Math.abs(sum)).toBeLessThan(0.005);
@@ -106,8 +143,8 @@ describe("SIE 4 verifications", () => {
       receipt({ id: "b", totalAmount: "0.05", vatAmount: "0.01", basCode: "6110" }),
       receipt({ id: "c", totalAmount: "33.34", vatAmount: "6.67", basCode: "6110" }),
     ];
-    const { text } = buildSie({ ...baseOpts, receipts: nasty });
-    for (const sum of verSums(text)) expect(Math.abs(sum)).toBeLessThan(0.005);
+    const { text: t } = buildSie({ ...baseOpts, receipts: nasty });
+    for (const sum of verSums(t)) expect(Math.abs(sum)).toBeLessThan(0.005);
   });
 
   it("SieBalanceError names the offending receipt id (route surfaces this as 422)", () => {
@@ -117,11 +154,69 @@ describe("SIE 4 verifications", () => {
     expect(err.message).toContain("broken-42");
   });
 
-  it("honours a credit-account override (e.g. 2440 supplier invoice)", () => {
+  it("honours a credit-account override (e.g. 2440 on account/unpaid)", () => {
     const { text: t } = buildSie({ ...baseOpts, receipts: [receipt()], creditAccount: "2440" });
     expect(t).toContain("#TRANS 2440 {} -125.00");
     expect(t).toContain('#KONTO 2440 "Leverantörsskulder"');
     expect(t).not.toContain("#TRANS 1930");
+  });
+
+  it("falls back to createdAt (with a warning) when the receipt date is null", () => {
+    const { text: t, warnings } = buildSie({
+      ...baseOpts,
+      receipts: [receipt({ id: "nodate", date: null, createdAt: new Date("2026-05-01T08:00:00Z") })],
+    });
+    expect(t).toContain('#VER "F" "1" 20260501');
+    expect(warnings.some((w) => w.includes("nodate"))).toBe(true);
+  });
+});
+
+describe("all-time mode and #RAR coverage", () => {
+  const spanning = [
+    receipt({ id: "old", date: new Date("2007-02-08T12:00:00Z") }),
+    receipt({ id: "mid", date: new Date("2015-08-15T12:00:00Z"), basCode: "4000" }),
+    receipt({ id: "new", date: new Date("2026-07-02T12:00:00Z"), basCode: "6110" }),
+  ];
+
+  it("without a range, #RAR spans min..max verification date", () => {
+    const { text } = buildSie({
+      company: baseOpts.company,
+      generatedAt: baseOpts.generatedAt,
+      receipts: spanning,
+    });
+    expect(text).toContain("#RAR 0 20070208 20260702");
+  });
+
+  it("no #VER date falls outside the declared #RAR", () => {
+    const { text } = buildSie({
+      company: baseOpts.company,
+      generatedAt: baseOpts.generatedAt,
+      receipts: spanning,
+    });
+    const [, start, end] = text.match(/#RAR 0 (\d{8}) (\d{8})/)!;
+    const verDates = [...text.matchAll(/#VER "F" "\d+" (\d{8})/g)].map((m) => m[1]);
+    expect(verDates.length).toBe(spanning.length);
+    for (const d of verDates) {
+      expect(d >= start).toBe(true);
+      expect(d <= end).toBe(true);
+    }
+  });
+
+  it("a provided range widens #RAR to cover both range and dates", () => {
+    const { text } = buildSie({ ...baseOpts, receipts: spanning });
+    // from 2026-01-01 / to 2026-12-31 merged with 2007-02-08..2026-07-02
+    expect(text).toContain("#RAR 0 20070208 20261231");
+  });
+
+  it("empty result set falls back to the generation year", () => {
+    const { text, bytes } = buildSie({
+      company: baseOpts.company,
+      generatedAt: baseOpts.generatedAt,
+      receipts: [],
+    });
+    expect(text).toContain("#RAR 0 20260101 20261231");
+    expect(text).not.toContain("#VER");
+    expect(bytes.length).toBeGreaterThan(0);
   });
 });
 
@@ -132,6 +227,7 @@ describe("SIE 4 #KONTO coverage", () => {
       receipts: [
         receipt({ id: "a", basCode: "5611" }),
         receipt({ id: "b", basCode: "6110" }),
+        receipt({ id: "c", basCode: null }), // falls back to 6991
       ],
     });
     const declared = [...text.matchAll(/#KONTO (\d+)/g)].map((m) => m[1]);
@@ -157,15 +253,6 @@ describe("zero-VAT receipt", () => {
     expect(text).toContain("#TRANS 5810 {} 500.00");
     expect(text).toContain("#TRANS 1930 {} -500.00");
     for (const sum of verSums(text)) expect(Math.abs(sum)).toBeLessThan(0.005);
-  });
-});
-
-describe("empty result set", () => {
-  it("produces a valid header-only file with no #VER blocks", () => {
-    const { text, bytes } = buildSie({ ...baseOpts, receipts: [] });
-    expect(text).toContain("#SIETYP 4");
-    expect(text).not.toContain("#VER");
-    expect(bytes.length).toBeGreaterThan(0);
   });
 });
 
@@ -223,7 +310,7 @@ describe("golden file", () => {
       "#FORMAT PC8\r\n" +
       "#GEN 20260706\r\n" +
       "#SIETYP 4\r\n" +
-      "#ORGNR 5566778899\r\n" +
+      "#ORGNR 556677-8899\r\n" +
       '#FNAMN "Testbolaget AB"\r\n' +
       "#RAR 0 20260101 20261231\r\n" +
       '#KONTO 1930 "Företagskonto"\r\n' +

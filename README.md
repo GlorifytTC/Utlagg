@@ -73,12 +73,16 @@ format for Fortnox/Visma/Bokio) via `lib/sie-export.ts` + `GET /api/export/sie`.
 Trigger it from the dashboard **Export** panel, or directly:
 ```
 GET /api/export/sie?from=YYYY-MM-DD&to=YYYY-MM-DD[&credit=1930]
+GET /api/export/sie                     # no range = ALL receipts (all-time)
 ```
-Each receipt becomes one balanced verification: cost account (BAS code, net of
-VAT) + input VAT `2640` + a credit row. Output is transcoded to **CP437**, not
-UTF-8, so å/ä/ö survive import (see `lib/cp437.ts`). A valid file needs the
-company's **organisationsnummer** (`companies.orgNumber`); the endpoint returns
-422 if it's missing.
+**Receipts only** — customer invoices have their own export path and are never
+included. Each receipt becomes one balanced verification: cost account (BAS
+code, net of VAT) + input VAT `2640` + a credit row. `#RAR` is widened to cover
+every verification date, so all-time exports spanning several fiscal years stay
+importable. Output is transcoded to **CP437**, not UTF-8, so å/ä/ö survive
+import (see `lib/cp437.ts`). The company **organisationsnummer** is validated
+(10 digits, emitted as `NNNNNN-NNNN`); a missing or malformed orgnr is logged as
+a warning but does not block the export.
 
 **One assumption to confirm with a bookkeeper:** the model does not record *how*
 each receipt was paid, so the credit account defaults to **`1930` (företagskonto/

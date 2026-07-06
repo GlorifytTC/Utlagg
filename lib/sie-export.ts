@@ -1,18 +1,24 @@
 /**
  * SIE 4 export — the de-facto standard interchange format for Swedish accounting
- * software (Fortnox, Visma, Bokio, …). Each receipt becomes one balanced
- * verification (`#VER`) whose transaction rows (`#TRANS`) sum to exactly 0.00:
+ * software (Fortnox, Visma, Bokio, …). RECEIPTS ONLY: customer invoices have a
+ * separate export path and are never fed through this module. Each receipt
+ * becomes one balanced verification (`#VER`) whose transaction rows (`#TRANS`)
+ * sum to exactly 0.00:
  *
  *   1. cost account (receipt BAS code), net of VAT   — debit  (+)
  *   2. input VAT account 2640 (ingående moms)        — debit  (+)   [omitted if 0]
  *   3. payment / credit account                      — credit (−)
  *
  * The credit account depends on HOW the receipt was paid — company card/bank
- * (1930) vs. supplier invoice (2440). Our receipts model does NOT record the
+ * (1930) vs. on account / unpaid (2440). Our receipts model does NOT record the
  * payment method, so the credit account is a caller-supplied parameter that
  * defaults to 1930. Confirm this, plus the BAS cost mapping, with the company's
  * accountant.  TODO(accounting): capture payment method per receipt to remove
  * the assumption; employee out-of-pocket outlays would instead credit 2890.
+ *
+ * #RAR: strict importers reject #VER dates outside a declared financial year,
+ * so we emit one #RAR 0 spanning the full range of exported verification dates
+ * (merged with any requested date range). This keeps all-time exports loadable.
  *
  * Spec: SIE file format v4B, https://sie.se/ . Output is CP437 ("PC8") encoded
  * bytes — see lib/cp437.ts for why UTF-8 is not acceptable.
@@ -43,19 +49,25 @@ export interface SieReceiptInput {
   vatAmount: string | number | null;
   vatRate: number | null;
   basCode: string | null;
+  /** Fallback verification date when `date` is missing. */
+  createdAt?: Date | string | null;
 }
 
 export interface SieCompany {
   name: string;
-  orgNumber: string; // organisationsnummer — required for a valid SIE file
+  /** Organisationsnummer. Malformed/missing values warn but do not block. */
+  orgNumber?: string | null;
 }
 
 export interface BuildSieOptions {
   company: SieCompany;
   receipts: SieReceiptInput[];
-  /** Financial-year / export range boundaries (used for #RAR). */
-  from: Date;
-  to: Date;
+  /**
+   * Optional requested date range. When omitted the export is "all time" and
+   * #RAR is derived purely from the exported verification dates.
+   */
+  from?: Date | null;
+  to?: Date | null;
   /** Credit account for row 3. Defaults to 1930 (company bank). */
   creditAccount?: string;
   program?: { name: string; version: string };
@@ -68,7 +80,7 @@ export interface BuildSieResult {
   bytes: Buffer;
   /** The pre-encoding text (useful for debugging / assertions). */
   text: string;
-  /** Encoding transliterations and other non-fatal notes. */
+  /** Non-fatal issues: orgnr problems, date fallbacks, encoding substitutions… */
   warnings: string[];
 }
 
@@ -83,18 +95,35 @@ export class SieBalanceError extends Error {
   }
 }
 
+/**
+ * Validate/normalise a Swedish organisationsnummer. Valid = exactly 10 digits
+ * (ignoring separators), emitted as NNNNNN-NNNN. Malformed values are returned
+ * as-is with `valid: false` so the caller can warn instead of failing —
+ * important for test data like "02468-4360" (9 digits).
+ */
+export function normalizeOrgNumber(raw: string): { value: string; valid: boolean } {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length === 10) {
+    return { value: `${digits.slice(0, 6)}-${digits.slice(6)}`, valid: true };
+  }
+  return { value: raw, valid: false };
+}
+
 function toNumber(n: unknown): number {
   const v = typeof n === "string" ? Number(n) : (n as number);
   return Number.isFinite(v) ? v : 0;
 }
 
-function sieDate(d: Date | string | null): string {
-  if (!d) return "";
+function toDate(d: Date | string | null | undefined): Date | null {
+  if (!d) return null;
   const date = typeof d === "string" ? new Date(d) : d;
-  if (Number.isNaN(date.getTime())) return "";
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function sieDate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
   return `${y}${m}${day}`;
 }
 
@@ -136,22 +165,22 @@ function receiptToTrans(r: SieReceiptInput, creditAccount: string): Trans[] {
 }
 
 /**
- * Build a SIE 4 file. Pure function: no HTTP/framework concerns, fully unit
- * testable. Throws SieBalanceError if any verification fails the zero-sum
- * invariant.
+ * Build a SIE 4 file from receipts. Pure function: no HTTP/framework concerns,
+ * fully unit testable. Every receipt yields exactly one #VER; throws
+ * SieBalanceError if any verification fails the zero-sum invariant.
  */
 export function buildSie(opts: BuildSieOptions): BuildSieResult {
   const creditAccount = opts.creditAccount || DEFAULT_CREDIT_ACCOUNT;
   const program = opts.program ?? { name: "Kvittino", version: "1.0" };
+  const generatedAt = opts.generatedAt ?? new Date();
   const warnings: string[] = [];
 
-  if (!opts.company.orgNumber) {
-    throw new Error("Organisationsnummer saknas — kan inte skapa en giltig SIE-fil.");
-  }
-
-  // First pass: build verifications, validate balance, collect used accounts.
+  // First pass: build verifications, validate balance, collect used accounts
+  // and the span of verification dates (drives #RAR).
   const usedAccounts = new Set<string>();
   const verBlocks: string[] = [];
+  let minVerDate: Date | null = null;
+  let maxVerDate: Date | null = null;
 
   opts.receipts.forEach((r, i) => {
     const rows = receiptToTrans(r, creditAccount);
@@ -160,10 +189,22 @@ export function buildSie(opts: BuildSieOptions): BuildSieResult {
 
     for (const t of rows) usedAccounts.add(t.account);
 
-    const d = sieDate(r.date);
+    // A verification needs a date; fall back to the upload timestamp.
+    let verDate = toDate(r.date);
+    if (!verDate) {
+      verDate = toDate(r.createdAt) ?? generatedAt;
+      warnings.push(`Kvitto ${r.id} saknar datum — använder ${sieDate(verDate)} istället.`);
+    }
+    if (!minVerDate || verDate < minVerDate) minVerDate = verDate;
+    if (!maxVerDate || verDate > maxVerDate) maxVerDate = verDate;
+
+    if (toNumber(r.totalAmount) === 0) {
+      warnings.push(`Kvitto ${r.id} har 0 kr i totalbelopp — verifikationen blir tom.`);
+    }
+
     const text = field(r.vendorName || "Kvitto");
     const block = [
-      `#VER "${VERIFICATION_SERIES}" "${i + 1}" ${d} ${text}`,
+      `#VER "${VERIFICATION_SERIES}" "${i + 1}" ${sieDate(verDate)} ${text}`,
       "{",
       ...rows.map((t) => `   #TRANS ${t.account} {} ${amount(t.amount)}`),
       "}",
@@ -171,17 +212,38 @@ export function buildSie(opts: BuildSieOptions): BuildSieResult {
     verBlocks.push(block.join("\r\n"));
   });
 
+  // #RAR must cover every #VER date. Merge the requested range (if any) with
+  // the actual verification-date span; default to the generation year.
+  const from = toDate(opts.from);
+  const to = toDate(opts.to);
+  let rarStart = minVerDate ?? from ?? new Date(generatedAt.getFullYear(), 0, 1);
+  let rarEnd = maxVerDate ?? to ?? new Date(generatedAt.getFullYear(), 11, 31);
+  if (from && from < rarStart) rarStart = from;
+  if (to && to > rarEnd) rarEnd = to;
+
   // Header.
   const lines: string[] = [
     "#FLAGGA 0",
     `#PROGRAM ${field(program.name)} ${field(program.version)}`,
     "#FORMAT PC8",
-    `#GEN ${sieDate(opts.generatedAt ?? new Date())}`,
+    `#GEN ${sieDate(generatedAt)}`,
     "#SIETYP 4",
-    `#ORGNR ${opts.company.orgNumber}`,
-    `#FNAMN ${field(opts.company.name)}`,
-    `#RAR 0 ${sieDate(opts.from)} ${sieDate(opts.to)}`,
   ];
+
+  if (opts.company.orgNumber) {
+    const org = normalizeOrgNumber(opts.company.orgNumber);
+    if (!org.valid) {
+      warnings.push(
+        `Ogiltigt organisationsnummer "${opts.company.orgNumber}" (måste vara 10 siffror, NNNNNN-NNNN) — exporterar ändå.`,
+      );
+    }
+    lines.push(`#ORGNR ${org.value}`);
+  } else {
+    warnings.push("Organisationsnummer saknas — filen exporteras utan #ORGNR.");
+  }
+
+  lines.push(`#FNAMN ${field(opts.company.name)}`);
+  lines.push(`#RAR 0 ${sieDate(rarStart)} ${sieDate(rarEnd)}`);
 
   // One #KONTO per distinct account used, in ascending numeric order so a given
   // receipt set always yields byte-identical output (golden-file friendly).
