@@ -352,6 +352,19 @@ export interface Translations {
   apWaiting: string;
   apWaitingDesc: string;
   apNoneWaiting: string;
+  apInboxTitle: string;
+  apInboxDesc: string;
+  apReceiptApproved: string;
+  apReceiptRemoved: string;
+  apFrom: string;
+  apUnknownVendor: string;
+  apDetailVendor: string;
+  apDetailTotal: string;
+  apDetailVat: string;
+  apDetailDate: string;
+  apDetailCategory: string;
+  apDetailNumber: string;
+  btnRemove: string;
   toastSelectReceiptApprover: string;
   toastSubmitted: string;
   toastSubmitFail: string;
@@ -872,6 +885,19 @@ export const strings: Record<Lang, Translations> = {
     apWaiting: "Väntar på ditt godkännande",
     apWaitingDesc: "Förfrågningar adresserade till din e-post",
     apNoneWaiting: "Inga väntande förfrågningar.",
+    apInboxTitle: "Väntar på ditt godkännande",
+    apInboxDesc: "Kvitton som medarbetare laddat upp och som du behöver godkänna.",
+    apReceiptApproved: "Kvitto godkänt",
+    apReceiptRemoved: "Kvitto borttaget",
+    apFrom: "Från",
+    apUnknownVendor: "Okänd leverantör",
+    apDetailVendor: "Leverantör",
+    apDetailTotal: "Totalt",
+    apDetailVat: "Moms",
+    apDetailDate: "Datum",
+    apDetailCategory: "Kategori",
+    apDetailNumber: "Kvittonr",
+    btnRemove: "Ta bort",
     toastSelectReceiptApprover: "Välj kvitto och attestant",
     toastSubmitted: "Skickad för attest",
     toastSubmitFail: "Kunde inte skicka",
@@ -1497,6 +1523,19 @@ export const strings: Record<Lang, Translations> = {
     apWaiting: "Awaiting your approval",
     apWaitingDesc: "Requests addressed to your email",
     apNoneWaiting: "No pending requests.",
+    apInboxTitle: "Awaiting your approval",
+    apInboxDesc: "Receipts uploaded by members that need your approval.",
+    apReceiptApproved: "Receipt approved",
+    apReceiptRemoved: "Receipt removed",
+    apFrom: "From",
+    apUnknownVendor: "Unknown vendor",
+    apDetailVendor: "Vendor",
+    apDetailTotal: "Total",
+    apDetailVat: "VAT",
+    apDetailDate: "Date",
+    apDetailCategory: "Category",
+    apDetailNumber: "Receipt no.",
+    btnRemove: "Remove",
     toastSelectReceiptApprover: "Select a receipt and approver",
     toastSubmitted: "Submitted for approval",
     toastSubmitFail: "Could not submit",

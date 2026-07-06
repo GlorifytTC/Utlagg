@@ -357,7 +357,7 @@ export function CookieConsent() {
                 </abbr>{" "}
                 Art.&nbsp;7. You can withdraw or change consent at any time.{" "}
                 <Link
-                  href="/privacy"
+                  href="/legal/privacy"
                   className="text-nordic-600 underline decoration-dotted transition hover:decoration-solid"
                 >
                   Privacy policy

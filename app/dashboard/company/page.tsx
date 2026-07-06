@@ -112,7 +112,6 @@ export default function CompanyPage() {
                     <select value={m.role} onChange={(e) => changeRole(m.id, e.target.value)}
                       className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-white/[0.10] dark:bg-[#111]">
                       <option value="member">{t.roleMember}</option>
-                      <option value="approver">{t.roleApprover}</option>
                       <option value="admin">{t.roleAdmin}</option>
                     </select>
                   ) : (<span className="text-sm text-gray-500">{m.role}</span>)}
@@ -136,7 +135,6 @@ export default function CompanyPage() {
               <select value={invite.role} onChange={(e) => setInvite({ ...invite, role: e.target.value })}
                 className="flex h-10 rounded-lg border border-gray-300 px-3 text-sm dark:border-white/[0.10] dark:bg-[#111]">
                 <option value="member">{t.roleMember}</option>
-                <option value="approver">{t.roleApprover}</option>
                 <option value="admin">{t.roleAdmin}</option>
               </select></div>
             <Button onClick={sendInvite}>{t.btnSendInvite}</Button>

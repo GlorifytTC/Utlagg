@@ -123,6 +123,8 @@ export const receipts = pgTable(
     category: varchar("category", { length: 120 }),
     basCode: varchar("bas_code", { length: 10 }), // Swedish BAS account code
     status: receiptStatus("status").notNull().default("pending"),
+    // Who (owner/admin) approved or rejected this receipt, if anyone.
+    approvedBy: uuid("approved_by").references(() => users.id),
     aiConfidence: real("ai_confidence"),
     receiptText: text("receipt_text"), // raw OCR text — kept for audit
     // Fortnox sync state
