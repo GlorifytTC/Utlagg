@@ -66,6 +66,26 @@ cut food VAT from 12% → 6% for **1 Apr 2026 – 31 Dec 2027**; takeaway is 6%,
 dine-in stays 12%, alcohol is excluded. After 2027 food reverts to 12%. Don't
 replace this with a static rate map. Verify the current rules with an accountant.
 
+## SIE 4 export (accounting)
+Receipts can be exported as a **SIE 4** file (`#FORMAT PC8`, the de-facto import
+format for Fortnox/Visma/Bokio) via `lib/sie-export.ts` + `GET /api/export/sie`.
+
+Trigger it from the dashboard **Export** panel, or directly:
+```
+GET /api/export/sie?from=YYYY-MM-DD&to=YYYY-MM-DD[&credit=1930]
+```
+Each receipt becomes one balanced verification: cost account (BAS code, net of
+VAT) + input VAT `2640` + a credit row. Output is transcoded to **CP437**, not
+UTF-8, so å/ä/ö survive import (see `lib/cp437.ts`). A valid file needs the
+company's **organisationsnummer** (`companies.orgNumber`); the endpoint returns
+422 if it's missing.
+
+**One assumption to confirm with a bookkeeper:** the model does not record *how*
+each receipt was paid, so the credit account defaults to **`1930` (företagskonto/
+bank)**. If receipts were paid on supplier invoice use `&credit=2440`
+(leverantörsskulder); for employee out-of-pocket outlays use `2890`. Also confirm
+the per-receipt BAS cost mapping. See the `TODO(accounting)` in `lib/sie-export.ts`.
+
 ## What's real vs. what needs work
 **Implemented & tested logic**
 - Full Drizzle schema (5 tables + enums + relations).
