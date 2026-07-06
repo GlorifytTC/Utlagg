@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { UpsellCard } from "@/components/UpsellCard";
+import { PendingReceiptsInbox } from "@/components/dashboard/PendingReceiptsInbox";
 
 interface Req {
   id: string;
@@ -68,6 +69,8 @@ export default function ApprovalsPage() {
           <Link href="/dashboard/approvals/history"><Button variant="outline">{t.btnHistory}</Button></Link>
         </div>
       </div>
+
+      <PendingReceiptsInbox />
 
       <Card>
         <CardHeader>

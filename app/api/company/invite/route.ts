@@ -13,7 +13,7 @@ export const runtime = "nodejs";
 
 const schema = z.object({
   email: z.string().email(),
-  role: z.enum(["admin", "approver", "member"]).default("member"),
+  role: z.enum(["admin", "member"]).default("member"),
 });
 
 export async function POST(req: NextRequest) {
