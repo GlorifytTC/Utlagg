@@ -39,10 +39,6 @@ export function InvoiceHistory() {
     };
   }, []);
 
-  // Nothing to bill yet and nothing failed — don't render an empty card for
-  // free-tier users who have never checked out.
-  if (invoices !== null && invoices.length === 0 && !error) return null;
-
   const locale = lang === "sv" ? "sv-SE" : "en-GB";
   const fmtAmount = (amount: number, currency: string) =>
     new Intl.NumberFormat(locale, {
@@ -81,6 +77,8 @@ export function InvoiceHistory() {
           <div className="flex items-center justify-center py-6">
             <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
           </div>
+        ) : invoices.length === 0 ? (
+          <p className="py-2 text-sm text-gray-500 dark:text-gray-400">{t.invEmpty}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
