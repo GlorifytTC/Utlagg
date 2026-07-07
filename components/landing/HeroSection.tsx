@@ -73,7 +73,10 @@ export function HeroSection() {
         </div>
 
         <div className="relative">
-          <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-nordic-600/10 blur-3xl" />
+          <div
+            className="pointer-events-none absolute inset-0 -z-10"
+            style={{ background: "radial-gradient(circle at center, rgb(var(--accent) / 0.10) 0%, rgb(var(--accent) / 0.05) 45%, transparent 72%)" }}
+          />
           <Hero3D />
         </div>
       </div>

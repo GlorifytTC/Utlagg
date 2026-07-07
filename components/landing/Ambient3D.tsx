@@ -77,8 +77,10 @@ export default function Ambient3D() {
   return (
     <Canvas
       camera={{ position: [0, 0, 7], fov: 45 }}
-      dpr={[1, 1]}
-      gl={{ alpha: true, antialias: false }}
+      // The layer above blurs this canvas by 4px, so render at reduced
+      // resolution — the upscale is invisible and fragment work drops ~45%.
+      dpr={0.75}
+      gl={{ alpha: true, antialias: false, powerPreference: "low-power" }}
       frameloop={animated ? "always" : "demand"}
       style={{ background: "transparent" }}
     >

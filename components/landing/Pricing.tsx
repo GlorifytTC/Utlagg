@@ -73,7 +73,7 @@ export function Pricing() {
             viewport={{ once: true }}
             transition={{ delay: i * 0.08, duration: 0.5 }}
             className={cn(
-              "flex flex-col rounded-2xl border bg-white/60 p-6 backdrop-blur",
+              "flex flex-col rounded-2xl border bg-white/75 p-6",
               plan.highlight
                 ? "border-nordic-600 shadow-[0_20px_60px_-30px_rgba(47,96,121,0.6)]"
                 : "hairline",
