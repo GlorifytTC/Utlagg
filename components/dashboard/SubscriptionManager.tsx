@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { CreditCard, Loader2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,14 +15,17 @@ import { cn } from "@/lib/utils";
 export function SubscriptionManager({
   currentTier,
   periodEnd,
+  hasBilling = false,
 }: {
   currentTier: string;
   periodEnd: string | null;
+  hasBilling?: boolean;
 }) {
   const [loading, setLoading] = useState<string | null>(null);
   const [showCancel, setShowCancel] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const { t } = useLanguage();
+  const router = useRouter();
 
   const planName = (n: string) =>
     ({
@@ -60,6 +64,11 @@ export function SubscriptionManager({
       const data = await res.json();
       if (res.ok && data.url) {
         window.location.href = data.url;
+      } else if (res.ok && data.switched) {
+        // Existing subscription was updated in place — no checkout needed.
+        toast.success(t.toastPlanSwitched);
+        setLoading(null);
+        router.refresh();
       } else {
         toast.error(data.error ?? t.toastCheckoutFail);
         setLoading(null);
@@ -68,6 +77,22 @@ export function SubscriptionManager({
       toast.error(t.toastNetwork);
       setLoading(null);
     }
+  }
+
+  async function openPortal() {
+    setLoading("portal");
+    try {
+      const res = await fetch("/api/subscription/portal", { method: "POST" });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      toast.error(data.error ?? t.toastPortalFail);
+    } catch {
+      toast.error(t.toastNetwork);
+    }
+    setLoading(null);
   }
 
   async function cancel() {
@@ -137,13 +162,27 @@ export function SubscriptionManager({
             {periodEnd ? ` · ${t.subRenews} ${new Date(periodEnd).toLocaleDateString()}` : ""}
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center justify-between">
+        <CardContent className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-2xl font-bold text-gray-900 dark:text-white">{current ? priceLbl(current.priceLabel) : "—"}</p>
-          {currentTier !== "free" && currentTier !== "enterprise" && (
-            <Button variant="outline" onClick={() => { setAccepted(false); setShowCancel(true); }} disabled={loading !== null}>
-              {t.subCancel}
-            </Button>
-          )}
+          <div className="flex flex-wrap items-center gap-2">
+            {hasBilling && (
+              <Button variant="outline" onClick={openPortal} disabled={loading !== null}>
+                {loading === "portal" ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    {t.subManageBilling}
+                  </>
+                )}
+              </Button>
+            )}
+            {currentTier !== "free" && currentTier !== "enterprise" && (
+              <Button variant="outline" onClick={() => { setAccepted(false); setShowCancel(true); }} disabled={loading !== null}>
+                {t.subCancel}
+              </Button>
+            )}
+          </div>
         </CardContent>
       </motion.div>
 

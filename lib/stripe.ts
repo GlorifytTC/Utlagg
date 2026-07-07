@@ -12,8 +12,6 @@ export const stripe = new Stripe(key ?? "sk_test_placeholder", {
   typescript: true,
 });
 
-export const CURRENCY = "sek";
-
 /** Map a Stripe price ID back to our internal tier. */
 export function tierFromPriceId(priceId: string | undefined): string | null {
   if (!priceId) return null;

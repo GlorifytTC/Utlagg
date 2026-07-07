@@ -448,6 +448,20 @@ Datum: {{ billing_date }}
 
 — ${APP_NAME}`;
 
+const PAYMENT_FAILED_TEMPLATE = `# Betalning misslyckades
+
+Hej {{ user_name }},
+
+Vi kunde inte dra betalningen för din {{ plan_name }}-prenumeration.
+
+Vi försöker igen automatiskt inom kort. För att undvika avbrott i tjänsten, kontrollera dina betalningsuppgifter.
+
+[button] {{ action_url }} | Uppdatera betalningsuppgifter
+
+Frågor: {{ support_email }}
+
+— ${APP_NAME}`;
+
 const SUBSCRIPTION_CANCELED_TEMPLATE = `# Prenumeration avslutad
 
 Hej {{ user_name }},
@@ -557,6 +571,24 @@ export function sendPaymentReceipt(
     support_email: SUPPORT_EMAIL,
   });
   return send(to, "Betalningskvitto", html);
+}
+
+export function sendPaymentFailed(
+  to: string,
+  params: {
+    userName: string;
+    planName: string;
+    actionUrl: string;
+  },
+) {
+  const html = buildEmailHtml(PAYMENT_FAILED_TEMPLATE, {
+    user_name: params.userName,
+    app_name: APP_NAME,
+    plan_name: params.planName,
+    action_url: params.actionUrl,
+    support_email: SUPPORT_EMAIL,
+  });
+  return send(to, "Betalning misslyckades – åtgärd krävs", html);
 }
 
 export function sendSubscriptionCanceled(

@@ -5,7 +5,12 @@ import { stripe, tierFromPriceId } from "@/lib/stripe";
 import { db } from "@/db";
 import { users, subscriptions, webhookEvents } from "@/db/schema";
 import { logAudit } from "@/lib/audit";
-import { sendWelcomeEmail } from "@/lib/email";
+import {
+  sendWelcomeEmail,
+  sendPaymentReceipt,
+  sendPaymentFailed,
+} from "@/lib/email";
+import { planForTier, type Tier } from "@/lib/plans";
 
 export const runtime = "nodejs";
 // Stripe needs the raw body for signature verification — don't let Next parse it.
@@ -67,6 +72,16 @@ export async function POST(req: NextRequest) {
         await downgradeToFree(sub);
         break;
       }
+      case "invoice.paid": {
+        const invoice = event.data.object as Stripe.Invoice;
+        await handleInvoicePaid(invoice);
+        break;
+      }
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as Stripe.Invoice;
+        await handleInvoiceFailed(invoice);
+        break;
+      }
       default:
         // Ignore unhandled event types.
         break;
@@ -124,6 +139,7 @@ async function syncSubscription(sub: Stripe.Subscription) {
     .set({
       subscriptionTier: tier,
       subscriptionStatus: status,
+      subscriptionSource: tier === "free" ? null : "stripe",
       scanLimit: SCAN_LIMITS[tier] ?? 25,
     })
     .where(eq(users.id, userId));
@@ -133,6 +149,101 @@ async function syncSubscription(sub: Stripe.Subscription) {
     action: "subscription.sync",
     details: `tier=${tier} status=${status}`,
   });
+}
+
+async function findUserRowByCustomer(customerId: string) {
+  const [sub] = await db
+    .select()
+    .from(subscriptions)
+    .where(eq(subscriptions.stripeCustomerId, customerId))
+    .limit(1);
+  if (!sub) return null;
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, sub.userId))
+    .limit(1);
+  return user ?? null;
+}
+
+async function handleInvoicePaid(invoice: Stripe.Invoice) {
+  const customerId =
+    typeof invoice.customer === "string"
+      ? invoice.customer
+      : invoice.customer?.id;
+  if (!customerId) return;
+
+  const user = await findUserRowByCustomer(customerId);
+  if (!user) {
+    console.warn("No user mapped to Stripe customer", customerId);
+    return;
+  }
+
+  // A paid invoice means the account is in good standing again (this also
+  // clears past_due after a successful retry).
+  await db
+    .update(subscriptions)
+    .set({ status: "active" })
+    .where(eq(subscriptions.stripeCustomerId, customerId));
+  await db
+    .update(users)
+    .set({ subscriptionStatus: "active" })
+    .where(eq(users.id, user.id));
+
+  await logAudit({
+    userId: user.id,
+    action: "subscription.invoice_paid",
+    details: `invoice=${invoice.id} amount=${invoice.amount_paid}`,
+  });
+
+  // Receipt email — skip 0 kr invoices (trials, 100% coupons).
+  if (invoice.amount_paid > 0 && user.email) {
+    const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+    const plan = planForTier(user.subscriptionTier as Tier);
+    await sendPaymentReceipt(user.email, {
+      userName: user.name ?? "där",
+      planName: plan.name,
+      amount: `${(invoice.amount_paid / 100).toLocaleString("sv-SE")} kr`,
+      billingDate: new Date(invoice.created * 1000).toLocaleDateString("sv-SE"),
+      actionUrl: invoice.hosted_invoice_url ?? `${baseUrl}/dashboard/subscription`,
+    });
+  }
+}
+
+async function handleInvoiceFailed(invoice: Stripe.Invoice) {
+  const customerId =
+    typeof invoice.customer === "string"
+      ? invoice.customer
+      : invoice.customer?.id;
+  if (!customerId) return;
+
+  const user = await findUserRowByCustomer(customerId);
+  if (!user) return;
+
+  await db
+    .update(subscriptions)
+    .set({ status: "past_due" })
+    .where(eq(subscriptions.stripeCustomerId, customerId));
+  await db
+    .update(users)
+    .set({ subscriptionStatus: "past_due" })
+    .where(eq(users.id, user.id));
+
+  await logAudit({
+    userId: user.id,
+    action: "subscription.payment_failed",
+    details: `invoice=${invoice.id} attempt=${invoice.attempt_count}`,
+  });
+
+  if (user.email) {
+    const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+    const plan = planForTier(user.subscriptionTier as Tier);
+    await sendPaymentFailed(user.email, {
+      userName: user.name ?? "där",
+      planName: plan.name,
+      actionUrl: invoice.hosted_invoice_url ?? `${baseUrl}/dashboard/subscription`,
+    });
+  }
 }
 
 async function downgradeToFree(sub: Stripe.Subscription) {

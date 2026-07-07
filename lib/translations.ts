@@ -180,6 +180,20 @@ export interface Translations {
   fortnoxDisconnectFail: string;
   fortnoxSyncFail: string;
   subManageDesc: string;
+  subManageBilling: string;
+  toastPlanSwitched: string;
+  toastPortalFail: string;
+  invHistoryTitle: string;
+  invHistoryDesc: string;
+  invColNumber: string;
+  invColStatus: string;
+  invStatusPaid: string;
+  invStatusOpen: string;
+  invStatusFailed: string;
+  invDownload: string;
+  invPay: string;
+  invEmpty: string;
+  invLoadFail: string;
   featuresPageSubtitle: string;
   featuresCompareTitle: string;
   featuresCompareCapability: string;
@@ -1017,6 +1031,20 @@ export const strings: Record<Lang, Translations> = {
     btnSaveTrip: "Spara resa",
     btnCancel: "Avbryt",
     subManageDesc: "Hantera din plan och fakturering",
+    subManageBilling: "Hantera betalning",
+    toastPlanSwitched: "Din plan har uppdaterats.",
+    toastPortalFail: "Kunde inte öppna betalningsportalen.",
+    invHistoryTitle: "Fakturor",
+    invHistoryDesc: "Kvitton och fakturor för din prenumeration",
+    invColNumber: "Faktura",
+    invColStatus: "Status",
+    invStatusPaid: "Betald",
+    invStatusOpen: "Obetald",
+    invStatusFailed: "Misslyckad",
+    invDownload: "Ladda ner PDF",
+    invPay: "Betala",
+    invEmpty: "Inga fakturor ännu. Din första faktura visas här efter din första betalning.",
+    invLoadFail: "Kunde inte hämta fakturor.",
     subCurrentPlan: "Nuvarande plan",
     subYouAreOnPre: "Du är på ",
     subYouAreOnPost: "-planen",
@@ -1658,6 +1686,20 @@ export const strings: Record<Lang, Translations> = {
     btnSaveTrip: "Save trip",
     btnCancel: "Cancel",
     subManageDesc: "Manage your plan and billing",
+    subManageBilling: "Manage billing",
+    toastPlanSwitched: "Your plan has been updated.",
+    toastPortalFail: "Could not open the billing portal.",
+    invHistoryTitle: "Invoices",
+    invHistoryDesc: "Receipts and invoices for your subscription",
+    invColNumber: "Invoice",
+    invColStatus: "Status",
+    invStatusPaid: "Paid",
+    invStatusOpen: "Unpaid",
+    invStatusFailed: "Failed",
+    invDownload: "Download PDF",
+    invPay: "Pay",
+    invEmpty: "No invoices yet. Your first invoice will appear here after your first payment.",
+    invLoadFail: "Could not load invoices.",
     subCurrentPlan: "Current plan",
     subYouAreOnPre: "You're on the ",
     subYouAreOnPost: " plan",
