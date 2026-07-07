@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Logo } from "@/components/brand/Logo";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: "", companyName: "", email: "", password: "" });
@@ -42,8 +43,8 @@ export default function RegisterPage() {
     return (
       <main className="flex min-h-screen items-center justify-center bg-paper px-6 py-12">
         <div className="w-full max-w-sm text-center">
-          <Link href="/" className="font-display text-xl font-semibold">
-            Kvittino
+          <Link href="/">
+            <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
           </Link>
           <h1 className="mt-8 font-display text-3xl">Kolla din inkorg</h1>
           {emailFailed ? (
@@ -86,8 +87,8 @@ export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-paper px-6 py-12">
       <div className="w-full max-w-sm">
-        <Link href="/" className="font-display text-xl font-semibold">
-          Kvittino 
+        <Link href="/">
+          <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
         <h1 className="mt-8 font-display text-3xl">Skapa konto</h1>
         <p className="mt-2 text-sm text-ink/60">25 skanningar/mån gratis.</p>

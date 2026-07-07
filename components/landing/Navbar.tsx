@@ -25,7 +25,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b hairline bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" onClick={() => setOpen(false)}>
-          <Logo size={30} wordmarkClassName="text-xl" />
+          <Logo size={30} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
 
         {/* Desktop nav */}

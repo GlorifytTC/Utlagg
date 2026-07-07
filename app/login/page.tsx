@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Logo } from "@/components/brand/Logo";
 
 export default function LoginPage() {
   return (
@@ -82,8 +83,8 @@ function LoginForm() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-paper px-6">
       <div className="w-full max-w-sm">
-        <Link href="/" className="font-display text-xl font-semibold">
-          Kvittino 
+        <Link href="/">
+          <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
         <h1 className="mt-8 font-display text-3xl">Logga in</h1>
         <div className="mt-6 space-y-4">
