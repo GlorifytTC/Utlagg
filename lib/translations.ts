@@ -422,6 +422,8 @@ export interface Translations {
   contact: string;
   navMenu: string;
   navClose: string;
+  dashboard: string;
+  logout: string;
   howKicker: string;
   howTitle: string;
   howStep1Title: string;
@@ -767,6 +769,8 @@ export const strings: Record<Lang, Translations> = {
     contact: "Kontakt",
     navMenu: "Meny",
     navClose: "Stäng",
+    dashboard: "Kontrollpanel",
+    logout: "Logga ut",
     howKicker: "Så fungerar det",
     howTitle: "Från kvitto till bokföring på sekunder",
     howStep1Title: "Skanna",
@@ -1405,6 +1409,8 @@ export const strings: Record<Lang, Translations> = {
     contact: "Contact",
     navMenu: "Menu",
     navClose: "Close",
+    dashboard: "Dashboard",
+    logout: "Log out",
     howKicker: "How it works",
     howTitle: "From receipt to bookkeeping in seconds",
     howStep1Title: "Scan",

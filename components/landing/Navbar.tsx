@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/brand/Logo";
@@ -13,6 +14,11 @@ export function Navbar() {
   const { t, lang, toggleLanguage } = useLanguage();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { status } = useSession();
+  const isAuthed = status === "authenticated";
+  // While the session is resolving, don't render either auth state to avoid a
+  // flash of "Log in" for users who already have a valid session cookie.
+  const authResolved = status !== "loading";
 
   const links = [
     { href: "/features", label: t.features },
@@ -52,15 +58,30 @@ export function Navbar() {
           >
             {lang === "sv" ? "SV / EN" : "EN / SV"}
           </button>
-          <Link href="/login" className="text-ink/60 transition hover:text-ink">
-            {t.login}
-          </Link>
-          <Link
-            href="/register"
-            className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-nordic-700"
-          >
-            {t.startFree}
-          </Link>
+          {authResolved &&
+            (isAuthed ? (
+              <Link
+                href="/dashboard"
+                className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-nordic-700"
+              >
+                {t.dashboard}
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-ink/60 transition hover:text-ink"
+                >
+                  {t.login}
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-nordic-700"
+                >
+                  {t.startFree}
+                </Link>
+              </>
+            ))}
         </nav>
 
         {/* Mobile toggle */}
@@ -98,20 +119,33 @@ export function Navbar() {
             >
               {lang === "sv" ? "Svenska / English" : "English / Svenska"}
             </button>
-            <Link
-              href="/login"
-              onClick={() => setOpen(false)}
-              className="rounded-lg px-3 py-3 text-ink/70 transition hover:bg-ink/5 hover:text-ink"
-            >
-              {t.login}
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setOpen(false)}
-              className="mt-1 rounded-full bg-nordic-600 px-5 py-3 text-center font-medium text-white transition hover:bg-nordic-700"
-            >
-              {t.startFree}
-            </Link>
+            {authResolved &&
+              (isAuthed ? (
+                <Link
+                  href="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="mt-1 rounded-full bg-nordic-600 px-5 py-3 text-center font-medium text-white transition hover:bg-nordic-700"
+                >
+                  {t.dashboard}
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg px-3 py-3 text-ink/70 transition hover:bg-ink/5 hover:text-ink"
+                  >
+                    {t.login}
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setOpen(false)}
+                    className="mt-1 rounded-full bg-nordic-600 px-5 py-3 text-center font-medium text-white transition hover:bg-nordic-700"
+                  >
+                    {t.startFree}
+                  </Link>
+                </>
+              ))}
           </nav>
         </div>
       )}
