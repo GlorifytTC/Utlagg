@@ -595,6 +595,7 @@ export interface Translations {
   expThisQuarter: string;
   expLastQuarter: string;
   expThisYear: string;
+  expAllTime: string;
   expCustom: string;
   expFrom: string;
   expTo: string;
@@ -643,6 +644,7 @@ export const strings: Record<Lang, Translations> = {
     expThisQuarter: "Detta kvartal",
     expLastQuarter: "Förra kvartalet",
     expThisYear: "Detta år",
+    expAllTime: "Hela tiden",
     expCustom: "Anpassad period",
     expFrom: "Från",
     expTo: "Till",
@@ -1283,6 +1285,7 @@ export const strings: Record<Lang, Translations> = {
     expThisQuarter: "This quarter",
     expLastQuarter: "Last quarter",
     expThisYear: "This year",
+    expAllTime: "All time",
     expCustom: "Custom period",
     expFrom: "From",
     expTo: "To",

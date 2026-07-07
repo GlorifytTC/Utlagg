@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatSek, formatDate, cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
@@ -21,6 +21,8 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
   const [to, setTo] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
 
   const statusLabel: Record<string, string> = {
     pending: t.statusPending,
@@ -55,13 +57,31 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
     );
   }, [receipts, query]);
 
-  function exportCsv() {
+  const EXPORT_FORMATS = [
+    { key: "csv", label: "CSV", path: "/api/export/csv" },
+    { key: "sie", label: "SIE4", path: "/api/export/sie" },
+    { key: "pdf", label: "PDF", path: "/api/export/pdf" },
+  ] as const;
+
+  function exportAs(path: string) {
     const params = new URLSearchParams();
     if (from) params.set("from", from);
     if (to) params.set("to", to);
     const qs = params.toString();
-    window.location.href = `/api/export/csv${qs ? `?${qs}` : ""}`;
+    setExportOpen(false);
+    window.location.href = `${path}${qs ? `?${qs}` : ""}`;
   }
+
+  useEffect(() => {
+    if (!exportOpen) return;
+    function onClick(e: MouseEvent) {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setExportOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [exportOpen]);
 
   async function approve(id: string) {
     await fetch(`/api/receipts/${id}`, {
@@ -123,11 +143,46 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
               {t.receiptTo}
               <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="mt-0.5 block rounded-lg border border-gray-900/[0.12] bg-white px-2 py-1.5 text-sm dark:border-white/[0.12] dark:bg-[#111] dark:text-white" />
             </label>
-            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <button onClick={exportCsv} className="rounded-full border border-gray-900/[0.15] px-4 py-2 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40">
-                {t.receiptExportCsv}
-              </button>
-            </motion.button>
+            <div ref={exportRef} className="relative">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setExportOpen((o) => !o)}
+                className="flex items-center gap-1.5 rounded-full border border-gray-900/[0.15] px-4 py-2 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40"
+              >
+                {t.receiptExport}
+                <svg
+                  className={cn("h-3.5 w-3.5 transition-transform", exportOpen && "rotate-180")}
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                >
+                  <path d="M6 8l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </motion.button>
+              <AnimatePresence>
+                {exportOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.12 }}
+                    className="absolute right-0 z-20 mt-1 min-w-[140px] overflow-hidden rounded-xl border border-gray-900/[0.12] bg-white py-1 shadow-lg dark:border-white/[0.12] dark:bg-[#111]"
+                  >
+                    {EXPORT_FORMATS.map((f) => (
+                      <button
+                        key={f.key}
+                        onClick={() => exportAs(f.path)}
+                        className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-900/[0.05] dark:text-gray-200 dark:hover:bg-white/[0.06]"
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>

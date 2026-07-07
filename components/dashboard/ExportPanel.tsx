@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { Download, FileSpreadsheet, FileText, Car, Bus } from "lucide-react";
 
-type PresetKey = "thisMonth" | "lastMonth" | "thisQuarter" | "lastQuarter" | "thisYear" | "custom";
+type PresetKey = "thisMonth" | "lastMonth" | "thisQuarter" | "lastQuarter" | "thisYear" | "allTime" | "custom";
 
 function toIso(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -48,6 +48,8 @@ function computeRange(preset: PresetKey, now = new Date()): { from: string; to: 
     }
     case "thisYear":
       return { from: toIso(new Date(y, 0, 1)), to: toIso(new Date(y, 11, 31)) };
+    case "allTime":
+      return { from: "2000-01-01", to: toIso(new Date(y, 11, 31)) };
     default:
       return { from: toIso(new Date(y, m, 1)), to: toIso(now) };
   }
@@ -77,6 +79,7 @@ export function ExportPanel() {
     { key: "thisQuarter", label: t.expThisQuarter },
     { key: "lastQuarter", label: t.expLastQuarter },
     { key: "thisYear", label: t.expThisYear },
+    { key: "allTime", label: t.expAllTime },
     { key: "custom", label: t.expCustom },
   ];
 
