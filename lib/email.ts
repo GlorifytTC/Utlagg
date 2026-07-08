@@ -1,32 +1,20 @@
 /**
- * Sends transactional email via Brevo's SMTP relay (smtp-relay.brevo.com)
- * using nodemailer, over port 587 with STARTTLS.
+ * Sends transactional email via Brevo's HTTP API (https://api.brevo.com/v3/smtp/email).
  *
- * Brevo issues two different secrets: an SMTP key (the password for the
- * SMTP relay) and a separate v3 API key (the `api-key` header for the HTTP
- * API). They are NOT interchangeable. Auth here uses BREVO_SMTP_KEY, falling
- * back to BREVO_API_KEY — in this project the working SMTP credential has
- * historically been stored under BREVO_API_KEY, so the fallback preserves
- * that setup. If you ever move to the HTTP API instead, make sure the value
- * is an actual v3 API key, otherwise Brevo rejects it.
+ * IMPORTANT — why HTTP and not SMTP: Vercel's serverless functions frequently
+ * block or throttle outbound SMTP (port 587/465), so nodemailer connections
+ * hang or time out — the classic "account created but confirmation email
+ * failed" symptom. An HTTPS POST works reliably in that environment. This is
+ * the transport the app now uses.
+ *
+ * Brevo issues two different secrets: an SMTP key and a separate v3 API key.
+ * The HTTP API requires the v3 API KEY (starts with "xkeysib-") in the
+ * `api-key` header. We read BREVO_API_KEY, falling back to BREVO_SMTP_KEY for
+ * backward compatibility, but for HTTP the value MUST be a v3 API key — an
+ * SMTP-only key will be rejected with 401.
  */
 
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  host: process.env.BREVO_SMTP_HOST || "smtp-relay.brevo.com",
-  port: Number(process.env.BREVO_SMTP_PORT) || 587,
-  // Port 587 is the STARTTLS submission port; force the TLS upgrade so a
-  // downgrade can't send credentials in the clear. Port 465 is implicit TLS.
-  secure: (Number(process.env.BREVO_SMTP_PORT) || 587) === 465,
-  requireTLS: (Number(process.env.BREVO_SMTP_PORT) || 587) !== 465,
-  auth: {
-    // clean() strips invisible copy/paste corruption (a pasted trailing
-    // newline in the key is a classic source of a generic SMTP 535).
-    user: clean(process.env.BREVO_SMTP_LOGIN || ""),
-    pass: clean(process.env.BREVO_SMTP_KEY || process.env.BREVO_API_KEY || ""),
-  },
-});
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
 /**
  * Normalises an env-var value before use. It targets copy/paste corruption
@@ -150,9 +138,10 @@ export function emailConfigDiagnostics(): Record<string, unknown> {
 }
 
 export function isEmailConfigured(): boolean {
+  // The HTTP API needs only the API key and a sender address — the SMTP
+  // login is no longer required (it was only for the SMTP relay).
   return Boolean(
-    (process.env.BREVO_SMTP_KEY || process.env.BREVO_API_KEY) &&
-      process.env.BREVO_SMTP_LOGIN &&
+    (process.env.BREVO_API_KEY || process.env.BREVO_SMTP_KEY) &&
       process.env.BREVO_FROM_EMAIL,
   );
 }
@@ -166,49 +155,78 @@ async function brevoSend(
   subject: string,
   html: string,
 ): Promise<BrevoSendResult> {
+  const apiKey = clean(process.env.BREVO_API_KEY || process.env.BREVO_SMTP_KEY || "");
   try {
-    const info = await transporter.sendMail({
-      from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
-      to,
-      subject,
-      html,
-    });
-    return { ok: true, messageId: info.messageId ?? "(none returned)" };
-  } catch (err) {
-    const e = err as NodeJS.ErrnoException & {
-      responseCode?: number;
-      response?: string;
-      command?: string;
-    };
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    let res: Response;
+    try {
+      res = await fetch(BREVO_API_URL, {
+        method: "POST",
+        headers: {
+          "api-key": apiKey,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          sender: { name: FROM_NAME, email: FROM_EMAIL },
+          to: [{ email: to }],
+          subject,
+          htmlContent: html,
+        }),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    if (res.ok) {
+      const data = (await res.json().catch(() => ({}))) as { messageId?: string };
+      return { ok: true, messageId: data.messageId ?? "(none returned)" };
+    }
+    const errText = await res.text().catch(() => "");
     return {
       ok: false,
-      status: e.responseCode ?? 0,
-      error: `${e.name}: ${e.message} (code=${e.code ?? "?"} response=${e.response ?? "?"} command=${e.command ?? "?"})`,
+      status: res.status,
+      error: `Brevo API ${res.status}: ${errText.slice(0, 300)}`,
+    };
+  } catch (err) {
+    const e = err as Error;
+    return {
+      ok: false,
+      status: 0,
+      error: `${e.name}: ${e.message}`,
     };
   }
 }
 
 /**
- * Checks the SMTP connection + auth WITHOUT sending an email, by doing the
- * EHLO/STARTTLS/AUTH handshake only. Much faster to iterate on than a full
- * register-and-wait cycle, and tells you immediately whether the problem is
- * credentials/connectivity vs. something with the send itself.
+ * Validates the Brevo credentials WITHOUT sending an email, by calling the
+ * account endpoint. Confirms the API key is accepted (and is a real v3 API
+ * key, not an SMTP-only key) before relying on it for a send.
  */
 export async function verifyEmailConnection(): Promise<
   { ok: true } | { ok: false; error: string }
 > {
+  const apiKey = clean(process.env.BREVO_API_KEY || process.env.BREVO_SMTP_KEY || "");
+  if (!apiKey) return { ok: false, error: "No BREVO_API_KEY set" };
   try {
-    await transporter.verify();
-    return { ok: true };
-  } catch (err) {
-    const e = err as NodeJS.ErrnoException & {
-      responseCode?: number;
-      response?: string;
-    };
+    const res = await fetch("https://api.brevo.com/v3/account", {
+      headers: { "api-key": apiKey, Accept: "application/json" },
+    });
+    if (res.ok) return { ok: true };
+    const body = await res.text().catch(() => "");
     return {
       ok: false,
-      error: `${e.name}: ${e.message} (code=${e.code ?? "?"} responseCode=${e.responseCode ?? "?"} response=${e.response ?? "?"})`,
+      error: `Brevo account check ${res.status}: ${
+        res.status === 401
+          ? "key rejected — is this a v3 API key (xkeysib-…) and not an SMTP key?"
+          : body.slice(0, 200)
+      }`,
     };
+  } catch (err) {
+    const e = err as Error;
+    return { ok: false, error: `${e.name}: ${e.message}` };
   }
 }
 
@@ -219,22 +237,19 @@ async function send(
 ): Promise<boolean> {
   if (!isEmailConfigured()) {
     console.error(
-      `[email] NOT CONFIGURED — missing one of BREVO_SMTP_KEY/BREVO_API_KEY, BREVO_SMTP_LOGIN or BREVO_FROM_EMAIL. Skipped "${subject}" to ${to}.`,
+      `[email] NOT CONFIGURED — missing BREVO_API_KEY (or BREVO_SMTP_KEY) or BREVO_FROM_EMAIL. Skipped "${subject}" to ${to}.`,
     );
     return false;
   }
 
-  const pass = process.env.BREVO_SMTP_KEY || process.env.BREVO_API_KEY || "";
+  const pass = process.env.BREVO_API_KEY || process.env.BREVO_SMTP_KEY || "";
   console.log("=".repeat(70));
-  console.log(`[EMAIL] >>> ATTEMPTING SEND (Brevo SMTP) to=${to}`);
+  console.log(`[EMAIL] >>> ATTEMPTING SEND (Brevo HTTP API) to=${to}`);
   console.log(`[EMAIL]     subject = "${subject}"`);
-  console.log(
-    `[EMAIL]     host=${process.env.BREVO_SMTP_HOST || "smtp-relay.brevo.com"} port=${Number(process.env.BREVO_SMTP_PORT) || 587}`,
-  );
-  console.log(`[EMAIL]     login=${process.env.BREVO_SMTP_LOGIN || "(not set)"}`);
+  console.log(`[EMAIL]     endpoint=${BREVO_API_URL}`);
   console.log(`[EMAIL]     from="${FROM_NAME}" <${FROM_EMAIL}>`);
   console.log(
-    `[EMAIL]     pass prefix=${pass.slice(0, 8)}... len=${pass.length}`,
+    `[EMAIL]     api-key prefix=${pass.slice(0, 8)}... len=${pass.length}`,
   );
 
   const startedAt = Date.now();

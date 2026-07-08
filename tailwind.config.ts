@@ -9,7 +9,6 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Nordic palette: warm paper, deep ink, a single cold-blue accent + amber
         // Kvittino palette: warm off-white paper, near-black ink, one terracotta accent.
         paper: "#FAF8F3",
         ink: "#1A1A1A",
@@ -26,9 +25,14 @@ const config: Config = {
           700: "rgb(var(--accent-strong) / <alpha-value>)",
           900: "rgb(var(--accent-strong) / <alpha-value>)",
         },
+        // Semantic alias for new code — same accent token.
+        accent: "rgb(var(--accent) / <alpha-value>)",
         amber: "#D98A37",
       },
       fontFamily: {
+        // All-sans system per the rebrand — Plus Jakarta Sans replaces the old
+        // serif-display / sans-body pairing. `display` kept as an alias so the
+        // ~100 existing `font-display` headings render in the new sans.
         display: ["var(--font-jakarta)", "system-ui", "sans-serif"],
         sans: ["var(--font-jakarta)", "system-ui", "sans-serif"],
       },
