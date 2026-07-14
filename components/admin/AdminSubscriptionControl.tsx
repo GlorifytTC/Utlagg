@@ -55,8 +55,21 @@ export function AdminSubscriptionControl({ userId, current }: Props) {
           Nu: <strong>{current.tier}</strong> · {current.status}
           {current.source ? ` · ${current.source === "manual" ? "manuell (comp)" : current.source}` : ""}
           {current.paused ? " · PAUSAD" : ""}
-          {current.grantedUntil ? ` · gäller t.o.m. ${new Date(current.grantedUntil).toLocaleDateString("sv-SE")}` : ""}
+          {current.grantedUntil
+            ? new Date(current.grantedUntil).getTime() < Date.now()
+              ? ` · UTGÅNGEN ${new Date(current.grantedUntil).toLocaleDateString("sv-SE")} — ingen aktiv plan`
+              : ` · gäller t.o.m. ${new Date(current.grantedUntil).toLocaleDateString("sv-SE")}`
+            : ""}
         </p>
+        {current.grantedUntil &&
+          new Date(current.grantedUntil).getTime() < Date.now() && (
+            <p className="mt-1 text-amber-700 dark:text-amber-300">
+              Den tilldelade planen har gått ut — användaren är nedgraderad till Free.
+            </p>
+          )}
+        {!current.grantedUntil && current.tier === "free" && (
+          <p className="mt-1 text-gray-500">Ingen aktiv plan.</p>
+        )}
       </div>
 
       <div className="flex flex-wrap items-end gap-2">

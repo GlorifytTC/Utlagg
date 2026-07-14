@@ -180,6 +180,8 @@ export interface Translations {
   fortnoxDisconnectFail: string;
   fortnoxSyncFail: string;
   subManageDesc: string;
+  subPausedNotice: string;
+  subGrantExpiredNotice: string;
   subManageBilling: string;
   toastPlanSwitched: string;
   toastPortalFail: string;
@@ -1031,6 +1033,8 @@ export const strings: Record<Lang, Translations> = {
     btnSaveTrip: "Spara resa",
     btnCancel: "Avbryt",
     subManageDesc: "Hantera din plan och fakturering",
+    subPausedNotice: "Din prenumeration är pausad, så premiumfunktioner är låsta tills den återupptas.",
+    subGrantExpiredNotice: "Din tilldelade plan har gått ut. Du har ingen aktiv plan längre — uppgradera för att låsa upp premiumfunktioner igen.",
     subManageBilling: "Hantera betalning",
     toastPlanSwitched: "Din plan har uppdaterats.",
     toastPortalFail: "Kunde inte öppna betalningsportalen.",
@@ -1686,6 +1690,8 @@ export const strings: Record<Lang, Translations> = {
     btnSaveTrip: "Save trip",
     btnCancel: "Cancel",
     subManageDesc: "Manage your plan and billing",
+    subPausedNotice: "Your subscription is paused, so premium features are locked until it is resumed.",
+    subGrantExpiredNotice: "Your granted plan has expired. You no longer have an active plan — upgrade to unlock premium features again.",
     subManageBilling: "Manage billing",
     toastPlanSwitched: "Your plan has been updated.",
     toastPortalFail: "Could not open the billing portal.",
