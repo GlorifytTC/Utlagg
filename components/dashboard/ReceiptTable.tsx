@@ -12,6 +12,25 @@ const STATUS_STYLE: Record<string, string> = {
   rejected: "bg-red-100/50 text-red-700 dark:bg-red-900/20 dark:text-red-300",
 };
 
+type SortKey = "date" | "vendor" | "bas" | "vat" | "amount" | "status";
+
+function sortValue(r: Receipt, key: SortKey): string | number | null {
+  switch (key) {
+    case "date":
+      return r.date ? new Date(r.date).getTime() : null;
+    case "vendor":
+      return r.vendorName?.trim().toLowerCase() || null;
+    case "bas":
+      return r.basCode ? Number(r.basCode) : null;
+    case "vat":
+      return r.vatAmount != null ? Number(r.vatAmount) : null;
+    case "amount":
+      return r.totalAmount != null ? Number(r.totalAmount) : null;
+    case "status":
+      return r.status;
+  }
+}
+
 export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
   const { t } = useLanguage();
   const [receipts, setReceipts] = useState<Receipt[]>([]);
@@ -22,6 +41,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
   const [preview, setPreview] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [exportOpen, setExportOpen] = useState(false);
+  const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({ key: "date", dir: "desc" });
   const exportRef = useRef<HTMLDivElement>(null);
 
   const statusLabel: Record<string, string> = {
@@ -56,6 +76,25 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
         .some((v) => String(v).toLowerCase().includes(q)),
     );
   }, [receipts, query]);
+
+  const sorted = useMemo(() => {
+    const dir = sort.dir === "asc" ? 1 : -1;
+    return [...filtered].sort((a, b) => {
+      const av = sortValue(a, sort.key);
+      const bv = sortValue(b, sort.key);
+      // Missing values always sort to the bottom, regardless of direction.
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      if (av < bv) return -1 * dir;
+      if (av > bv) return dir;
+      return 0;
+    });
+  }, [filtered, sort]);
+
+  function toggleSort(key: SortKey) {
+    setSort((s) => (s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }));
+  }
 
   const EXPORT_FORMATS = [
     { key: "csv", label: "CSV", path: "/api/export/csv" },
@@ -99,6 +138,25 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
     load();
     setRemovingId(null);
   }
+
+  const sortHeader = (column: SortKey, label: string, className?: string) => {
+    const active = sort.key === column;
+    return (
+      <th className={cn("px-5 py-3 font-medium", className)}>
+        <button
+          type="button"
+          onClick={() => toggleSort(column)}
+          aria-sort={active ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
+          className="group inline-flex items-center gap-1 uppercase tracking-wide transition hover:text-gray-700 dark:hover:text-gray-200"
+        >
+          {label}
+          <span className={cn("text-[9px] leading-none transition-opacity", active ? "opacity-100" : "opacity-0 group-hover:opacity-40")}>
+            {active && sort.dir === "desc" ? "▼" : "▲"}
+          </span>
+        </button>
+      </th>
+    );
+  };
 
   return (
     <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
@@ -220,17 +278,17 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
             <table className="w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="text-left text-xs uppercase tracking-wide text-gray-400 dark:text-gray-400">
-                  <th className="px-5 py-3 font-medium">{t.colDate}</th>
-                  <th className="px-5 py-3 font-medium">{t.colVendor}</th>
-                  <th className="px-5 py-3 font-medium">{t.colBas}</th>
-                  <th className="px-5 py-3 font-medium">{t.colVat}</th>
-                  <th className="px-5 py-3 font-medium">{t.colAmount}</th>
-                  <th className="px-5 py-3 font-medium text-nordic-600 dark:text-nordic-600">{t.colStatus}</th>
+                  {sortHeader("date", t.colDate)}
+                  {sortHeader("vendor", t.colVendor)}
+                  {sortHeader("bas", t.colBas)}
+                  {sortHeader("vat", t.colVat)}
+                  {sortHeader("amount", t.colAmount)}
+                  {sortHeader("status", t.colStatus, "text-nordic-600 dark:text-nordic-600")}
                   <th className="px-5 py-3 font-medium text-right">{t.colActions}</th>
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((r) => (
+                {sorted.map((r) => (
                   <motion.tr
                     key={r.id}
                     initial={{ opacity: 0, y: 5 }}
