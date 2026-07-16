@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { ReceiptsManager } from "@/components/dashboard/ReceiptsManager";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 import { getT } from "@/lib/i18n-server";
 
 export const metadata = { title: "Kvitton" };
@@ -24,10 +25,7 @@ export default async function ReceiptsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navReceipts}</h1>
-        <p className="text-nordic-600 dark:text-nordic-600">{t.receiptsSubtitle}</p>
-      </div>
+      <PageHeader title={t.navReceipts} description={t.pdReceipts} />
       <ReceiptsManager
         used={user.scansUsedThisMonth}
         limit={user.scanLimit}

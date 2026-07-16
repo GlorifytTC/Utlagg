@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { UpsellCard } from "@/components/UpsellCard";
 import { PendingReceiptsInbox } from "@/components/dashboard/PendingReceiptsInbox";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 interface Req {
   id: string;
@@ -54,7 +55,7 @@ export default function ApprovalsPage() {
   if (allowed === false) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navApprovals}</h1>
+        <PageHeader title={t.navApprovals} description={t.pdApprovals} />
         <UpsellCard title={t.navApprovals} requiredPlan="Företag" description={t.apUpsellDesc} />
       </div>
     );
@@ -62,13 +63,16 @@ export default function ApprovalsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navApprovals}</h1>
-        <div className="flex gap-2">
-          <Link href="/dashboard/approvals/submit"><Button variant="outline">{t.btnSubmitApproval}</Button></Link>
-          <Link href="/dashboard/approvals/history"><Button variant="outline">{t.btnHistory}</Button></Link>
-        </div>
-      </div>
+      <PageHeader
+        title={t.navApprovals}
+        description={t.pdApprovals}
+        action={
+          <div className="flex gap-2">
+            <Link href="/dashboard/approvals/submit"><Button variant="outline">{t.btnSubmitApproval}</Button></Link>
+            <Link href="/dashboard/approvals/history"><Button variant="outline">{t.btnHistory}</Button></Link>
+          </div>
+        }
+      />
 
       <PendingReceiptsInbox />
 

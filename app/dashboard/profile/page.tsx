@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/context/LanguageContext";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export default function ProfilePage() {
   const { t } = useLanguage();
@@ -73,7 +74,7 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.prTitle}</h1>
+      <PageHeader title={t.prTitle} description={t.pdProfile} />
 
       <Card>
         <CardHeader>

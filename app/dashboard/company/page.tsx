@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/context/LanguageContext";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 interface Company { id: string; name: string; orgNumber?: string; vatNumber?: string; }
 interface Member { id: string; userId: string; role: string; email: string | null; name: string | null; }
@@ -73,7 +74,7 @@ export default function CompanyPage() {
   if (!company) {
     return (
       <div className="max-w-xl space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navCompany}</h1>
+        <PageHeader title={t.navCompany} description={t.pdCompany} />
         <Card>
           <CardHeader>
             <CardTitle>{t.btnCreateCompany}</CardTitle>
@@ -95,7 +96,7 @@ export default function CompanyPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{company.name}</h1>
+      <PageHeader title={company.name} description={t.pdCompany} />
 
       <Card>
         <CardHeader><CardTitle>{t.coMembers}</CardTitle><CardDescription>{t.coYourRole} {role}</CardDescription></CardHeader>

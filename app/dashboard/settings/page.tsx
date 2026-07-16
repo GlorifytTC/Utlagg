@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Download } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export default function SettingsPage() {
   const { t } = useLanguage();
@@ -32,7 +33,7 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navSettings}</h1>
+      <PageHeader title={t.navSettings} description={t.pdSettings} />
 
       <Card>
         <CardHeader>

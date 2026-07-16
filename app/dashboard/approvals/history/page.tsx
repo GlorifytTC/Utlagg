@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "@/context/LanguageContext";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 interface Req { id: string; amount: string; status: string; approverEmail?: string; approverComment: string | null; createdAt: string; }
 
@@ -23,7 +24,7 @@ export default function ApprovalHistoryPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.apHistoryTitle}</h1>
+      <PageHeader title={t.apHistoryTitle} />
       <Card>
         <CardHeader><CardTitle>{t.apHistoryDesc}</CardTitle></CardHeader>
         <CardContent>

@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { hasFeature, type Feature } from "@/lib/features";
 import type { Tier } from "@/lib/plans";
 import { Logo, LogoMark } from "@/components/brand/Logo";
+import { Tooltip } from "@/components/ui/tooltip";
 
 const nav = [
   { key: "navOverview", href: "/dashboard", icon: Home },
@@ -74,7 +75,11 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
                 >
                   <Icon className={cn("h-[15px] w-[15px] shrink-0 transition-opacity", active ? "opacity-90" : "opacity-40 group-hover:opacity-60")} strokeWidth={1.75} />
                   <span className="flex-1">{t[item.key as keyof Translations]}</span>
-                  {tier && "feature" in item && !hasFeature(tier, (item as { feature: Feature }).feature) && <Lock className="h-3.5 w-3.5 text-gray-400" />}
+                  {tier && "feature" in item && !hasFeature(tier, (item as { feature: Feature }).feature) && (
+                    <Tooltip label={t.tipLocked} side="right">
+                      <Lock className="h-3.5 w-3.5 text-gray-400 transition-colors group-hover:text-gray-500 dark:group-hover:text-gray-300" />
+                    </Tooltip>
+                  )}
                 </Link>
               </li>
             );

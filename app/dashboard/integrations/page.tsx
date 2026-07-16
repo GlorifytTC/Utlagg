@@ -9,6 +9,7 @@ import { FortnoxPanel } from "@/components/dashboard/FortnoxPanel";
 import { currentTier } from "@/lib/entitlements";
 import { hasFeature } from "@/lib/features";
 import { UpsellCard } from "@/components/UpsellCard";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 import { getT } from "@/lib/i18n-server";
 
 export const metadata = { title: "Integrationer" };
@@ -23,7 +24,7 @@ export default async function IntegrationsPage() {
   if (!ctx || !hasFeature(ctx.tier, "fortnox")) {
     return (
       <div className="max-w-2xl space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navIntegrations}</h1>
+        <PageHeader title={t.navIntegrations} description={t.pdIntegrations} />
         <UpsellCard
           title={t.intUpsellTitle}
           requiredPlan="Pro"
@@ -48,7 +49,7 @@ export default async function IntegrationsPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navIntegrations}</h1>
+      <PageHeader title={t.navIntegrations} description={t.pdIntegrations} />
       <Card>
         <CardHeader>
           <CardTitle>Fortnox</CardTitle>

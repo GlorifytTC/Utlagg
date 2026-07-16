@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { UpsellCard } from "@/components/UpsellCard";
 import { DeleteInvoiceButton } from "@/components/dashboard/DeleteInvoiceButton";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export const metadata = { title: "Fakturor" };
 export const dynamic = "force-dynamic";
@@ -26,7 +27,7 @@ export default async function InvoicesPage() {
   if (!ctx || !hasFeature(ctx.tier, "invoicing")) {
     return (
       <div className="max-w-2xl space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navInvoices}</h1>
+        <PageHeader title={t.navInvoices} description={t.pdInvoices} />
         <UpsellCard
           title={t.invUpsellTitle}
           requiredPlan="Pro"
@@ -40,7 +41,7 @@ export default async function InvoicesPage() {
   if (!membership) {
     return (
       <div className="max-w-2xl space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navInvoices}</h1>
+        <PageHeader title={t.navInvoices} description={t.pdInvoices} />
         <Card>
           <CardHeader>
             <CardTitle>{t.invNeedCompanyTitle}</CardTitle>
@@ -62,10 +63,11 @@ export default async function InvoicesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navInvoices}</h1>
-        <Link href="/dashboard/invoices/new"><Button>{t.btnNewInvoice}</Button></Link>
-      </div>
+      <PageHeader
+        title={t.navInvoices}
+        description={t.pdInvoices}
+        action={<Link href="/dashboard/invoices/new"><Button>{t.btnNewInvoice}</Button></Link>}
+      />
       <Card>
         <CardContent className="p-0">
           {rows.length === 0 ? (

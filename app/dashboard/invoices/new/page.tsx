@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { computeInvoiceTotals, REVERSE_CHARGE_TEXT, type InvoiceLine } from "@/lib/invoice";
 import { useLanguage } from "@/context/LanguageContext";
 import { BuyerAutocomplete } from "@/components/BuyerAutocomplete";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 const emptyLine = (): InvoiceLine => ({
   description: "",
@@ -89,9 +90,7 @@ export default function NewInvoicePage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-        {t.btnNewInvoice}
-      </h1>
+      <PageHeader title={t.btnNewInvoice} />
 
       <Card>
         <CardHeader>
