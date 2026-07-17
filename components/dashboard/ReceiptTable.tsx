@@ -147,7 +147,12 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
           type="button"
           onClick={() => toggleSort(column)}
           aria-sort={active ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
-          className="group inline-flex items-center gap-1 uppercase tracking-wide transition hover:text-gray-700 dark:hover:text-gray-200"
+          className={cn(
+            "group inline-flex items-center gap-1 uppercase tracking-wide transition-colors",
+            active
+              ? "text-nordic-600 [text-shadow:0_0_10px_rgb(var(--accent)/0.55)]"
+              : "hover:text-gray-700 dark:hover:text-gray-200",
+          )}
         >
           {label}
           <span className={cn("text-[9px] leading-none transition-opacity", active ? "opacity-100" : "opacity-0 group-hover:opacity-40")}>
@@ -283,7 +288,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                   {sortHeader("bas", t.colBas)}
                   {sortHeader("vat", t.colVat)}
                   {sortHeader("amount", t.colAmount)}
-                  {sortHeader("status", t.colStatus, "text-nordic-600 dark:text-nordic-600")}
+                  {sortHeader("status", t.colStatus)}
                   <th className="px-5 py-3 font-medium text-right">{t.colActions}</th>
                 </tr>
               </thead>

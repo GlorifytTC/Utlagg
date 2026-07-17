@@ -438,16 +438,28 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col items-center bg-black/90 p-4 sm:p-6"
+            className="fixed inset-0 z-50 bg-black"
           >
-            <div className="flex min-h-0 w-full flex-1 items-center justify-center">
-              <video ref={videoRef} playsInline muted className="max-h-full max-w-full rounded-xl object-contain" />
-            </div>
-            <div className="flex shrink-0 justify-center gap-3 py-4">
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={capturePhoto} className="rounded-full bg-white px-6 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 dark:bg-white/[0.12] dark:text-white dark:hover:bg-white/[0.18]">
+            {/* The preview fills the entire viewport. object-contain keeps the
+                whole receipt visible (never cropped — the edges matter for
+                OCR) while scaling as large as the screen allows, on both
+                phones and wide desktop monitors. */}
+            <video
+              ref={videoRef}
+              playsInline
+              muted
+              className="absolute inset-0 h-full w-full object-contain"
+            />
+
+            {/* Controls float over the preview, pinned to the bottom on a
+                gradient scrim so they stay legible against any receipt, with
+                safe-area padding so they clear the home indicator / notch on
+                mobile. */}
+            <div className="absolute inset-x-0 bottom-0 flex justify-center gap-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] pt-20">
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={capturePhoto} className="rounded-full bg-white px-7 py-3 text-sm font-medium text-gray-900 shadow-lg hover:bg-gray-100">
                 {t.receiptTakePhoto}
               </motion.button>
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={closeCamera} className="rounded-full border border-white/40 px-6 py-2.5 text-sm text-white hover:bg-white/10">
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={closeCamera} className="rounded-full border border-white/50 bg-black/30 px-7 py-3 text-sm text-white backdrop-blur-sm hover:bg-white/10">
                 {t.receiptCancel}
               </motion.button>
             </div>
