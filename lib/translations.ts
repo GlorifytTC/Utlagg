@@ -74,27 +74,6 @@ export interface Translations {
   navProfile: string;
   navLogout: string;
   langName: string;
-  // Dashboard page descriptions (self-explanatory subtitles) + UI hover text
-  pdReceipts: string;
-  pdMileage: string;
-  pdTransport: string;
-  pdApprovals: string;
-  pdExport: string;
-  pdIntegrations: string;
-  pdSubscription: string;
-  pdStats: string;
-  pdInvoices: string;
-  pdCompany: string;
-  pdSettings: string;
-  pdProfile: string;
-  tipLocked: string;
-  tipThemeLight: string;
-  tipThemeDark: string;
-  tipLanguage: string;
-  tipStatTotal: string;
-  tipStatMonth: string;
-  tipStatAmount: string;
-  tipStatUsage: string;
   // Dashboard overview
   dashWelcome: string;
   dashPremiumEndedTitle: string;
@@ -1190,27 +1169,6 @@ export const strings: Record<Lang, Translations> = {
     navProfile: "Profil",
     navLogout: "Logga ut",
     langName: "Svenska",
-    // Dashboard page descriptions + UI hover text
-    pdReceipts: "Ladda upp, granska och exportera dina kvitton",
-    pdMileage: "Registrera resor och räkna ut skattefri milersättning automatiskt",
-    pdTransport: "Spara månadskort och periodbiljetter — logga inte varje resa",
-    pdApprovals: "Granska och attestera utlägg som väntar på godkännande",
-    pdExport: "Ladda ner kvitton, körjournal och biljetter för en bokföringsperiod",
-    pdIntegrations: "Koppla Kvittino till ditt bokföringsprogram",
-    pdSubscription: "Hantera din plan, dina fakturor och ditt betalsätt",
-    pdStats: "Följ utgifter, moms och trender över tid",
-    pdInvoices: "Skapa och skicka fakturor till dina kunder",
-    pdCompany: "Hantera företagsuppgifter och teammedlemmar",
-    pdSettings: "Anpassa ditt konto, aviseringar och integritet",
-    pdProfile: "Uppdatera ditt namn, lösenord och kontosäkerhet",
-    tipLocked: "Uppgradera för att låsa upp",
-    tipThemeLight: "Byt till ljust läge",
-    tipThemeDark: "Byt till mörkt läge",
-    tipLanguage: "Byt språk",
-    tipStatTotal: "Alla kvitton du har sparat i Kvittino",
-    tipStatMonth: "Kvitton uppladdade den här kalendermånaden",
-    tipStatAmount: "Summan av alla registrerade kvitton",
-    tipStatUsage: "Andel av månadens skanningar du har använt",
     // Navigation
     features: "Funktioner",
     pricing: "Priser",
@@ -1868,27 +1826,6 @@ export const strings: Record<Lang, Translations> = {
     navProfile: "Profile",
     navLogout: "Log out",
     langName: "English",
-    // Dashboard page descriptions + UI hover text
-    pdReceipts: "Upload, review and export your receipts",
-    pdMileage: "Log trips and calculate tax-free mileage allowance automatically",
-    pdTransport: "Save monthly and period passes — no need to log every trip",
-    pdApprovals: "Review and approve expenses waiting for sign-off",
-    pdExport: "Download receipts, mileage and passes for an accounting period",
-    pdIntegrations: "Connect Kvittino to your accounting software",
-    pdSubscription: "Manage your plan, invoices and payment method",
-    pdStats: "Track spending, VAT and trends over time",
-    pdInvoices: "Create and send invoices to your customers",
-    pdCompany: "Manage company details and team members",
-    pdSettings: "Customize your account, notifications and privacy",
-    pdProfile: "Update your name, password and account security",
-    tipLocked: "Upgrade to unlock",
-    tipThemeLight: "Switch to light mode",
-    tipThemeDark: "Switch to dark mode",
-    tipLanguage: "Change language",
-    tipStatTotal: "Every receipt you've saved in Kvittino",
-    tipStatMonth: "Receipts uploaded this calendar month",
-    tipStatAmount: "The total value of all recorded receipts",
-    tipStatUsage: "Share of this month's scans you've used",
     // Navigation
     features: "Features",
     pricing: "Pricing",

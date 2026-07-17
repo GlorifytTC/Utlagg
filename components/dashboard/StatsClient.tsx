@@ -17,7 +17,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { formatSek } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
-import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Palette } from "lucide-react";
 
 type Range = "month" | "year";
@@ -151,7 +150,10 @@ export function StatsClient() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <PageHeader title={t.navStats} description={t.pdStats} />
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navStats}</h1>
+          <p className="text-gray-500 dark:text-gray-400">{t.stSubtitle}</p>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Month / Year mode toggle */}
           <div className="flex rounded-full border border-gray-200 bg-white p-1 dark:border-white/[0.08] dark:bg-[#111]">

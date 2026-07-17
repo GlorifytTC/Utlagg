@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { getT } from "@/lib/i18n-server";
 import { ExportPanel } from "@/components/dashboard/ExportPanel";
-import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export const metadata = { title: "Exportera" };
 export const dynamic = "force-dynamic";
@@ -15,7 +14,9 @@ export default async function ExportPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t.navExport} description={t.pdExport} />
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navExport}</h1>
+      </div>
       <ExportPanel />
     </div>
   );

@@ -6,7 +6,6 @@ import { db } from "@/db";
 import { users, subscriptions } from "@/db/schema";
 import { SubscriptionManager } from "@/components/dashboard/SubscriptionManager";
 import { InvoiceHistory } from "@/components/dashboard/InvoiceHistory";
-import { PageHeader } from "@/components/dashboard/PageHeader";
 import { getT } from "@/lib/i18n-server";
 import { currentTier } from "@/lib/entitlements";
 
@@ -56,7 +55,10 @@ export default async function SubscriptionPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t.navSubscription} description={t.pdSubscription} />
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navSubscription}</h1>
+        <p className="text-gray-500 dark:text-gray-400">{t.subManageDesc}</p>
+      </div>
       {justExpired && (
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
           {t.subGrantExpiredNotice}

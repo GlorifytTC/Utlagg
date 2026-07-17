@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/context/LanguageContext";
-import { PageHeader } from "@/components/dashboard/PageHeader";
 
 interface Pass {
   id: string;
@@ -88,7 +87,10 @@ export default function TransportPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t.trTitle} description={t.trSubtitle} />
+      <div>
+        <h1 className="text-2xl font-bold">{t.trTitle}</h1>
+        <p className="text-gray-500 dark:text-gray-400">{t.trSubtitle}</p>
+      </div>
 
       {/* Quick add */}
       <Card>

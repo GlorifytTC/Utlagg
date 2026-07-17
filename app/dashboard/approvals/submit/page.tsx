@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UpsellCard } from "@/components/UpsellCard";
 import { useLanguage } from "@/context/LanguageContext";
-import { PageHeader } from "@/components/dashboard/PageHeader";
 
 interface Receipt { id: string; vendorName: string | null; totalAmount: string | null; }
 
@@ -52,7 +51,7 @@ export default function SubmitApprovalPage() {
   if (allowed === false) {
     return (
       <div className="max-w-xl space-y-6">
-        <PageHeader title={t.btnSubmitApproval} description={t.apRequestDesc} />
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
         <UpsellCard
           title={t.apUpsellTitle}
           requiredPlan="Företag"
@@ -64,7 +63,7 @@ export default function SubmitApprovalPage() {
 
   return (
     <div className="max-w-xl space-y-6">
-      <PageHeader title={t.btnSubmitApproval} description={t.apRequestDesc} />
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
       <Card>
         <CardHeader>
           <CardTitle>{t.apRequest}</CardTitle>
