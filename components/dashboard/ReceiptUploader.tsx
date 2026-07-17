@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { BasSelect } from "./BasSelect";
 import { getBasAccount } from "@/lib/bas";
@@ -432,14 +433,21 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
 
   return (
     <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]">
-      <AnimatePresence>
-        {showCamera && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black"
-          >
+      {/* Rendered through a portal on document.body: the uploader card uses
+          backdrop-blur, and backdrop-filter establishes a containing block
+          for position:fixed descendants — so without the portal this "full
+          screen" overlay was being clamped to the card's box instead of the
+          viewport. */}
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {showCamera && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 bg-black"
+              >
             {/* The preview fills the entire viewport. object-contain keeps the
                 whole receipt visible (never cropped — the edges matter for
                 OCR) while scaling as large as the screen allows, on both
@@ -463,9 +471,11 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 {t.receiptCancel}
               </motion.button>
             </div>
-          </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
 
       <h2 className="font-display text-xl text-gray-900 dark:text-white">{t.receiptNewTitle}</h2>
 
