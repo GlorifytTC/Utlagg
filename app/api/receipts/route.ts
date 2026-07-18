@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { and, desc, eq, inArray, ne } from "drizzle-orm";
+import { and, count, desc, eq, gte, ilike, inArray, lte, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { receipts, users, companyMembers } from "@/db/schema";
@@ -12,19 +12,93 @@ import { getBasAccount } from "@/lib/bas";
 
 export const runtime = "nodejs";
 
-export async function GET() {
+// Columns the receipt LIST needs. Deliberately excludes the heavy fields —
+// `imageUrl` (often a full base64 data URL) and `receiptText` (raw OCR) — so
+// the list payload stays tiny no matter how many receipts a user has. The
+// image is loaded lazily on the per-receipt detail page instead. `hasImage`
+// lets the UI show an indicator without shipping the bytes.
+const listColumns = {
+  id: receipts.id,
+  vendorName: receipts.vendorName,
+  date: receipts.date,
+  totalAmount: receipts.totalAmount,
+  vatAmount: receipts.vatAmount,
+  vatRate: receipts.vatRate,
+  basCode: receipts.basCode,
+  category: receipts.category,
+  status: receipts.status,
+  createdAt: receipts.createdAt,
+  hasImage: sql<boolean>`${receipts.imageUrl} is not null`,
+} as const;
+
+const SORT_COLUMNS = {
+  date: receipts.date,
+  vendor: receipts.vendorName,
+  bas: receipts.basCode,
+  vat: receipts.vatAmount,
+  amount: receipts.totalAmount,
+  status: receipts.status,
+} as const;
+
+const MAX_PAGE_SIZE = 100;
+
+export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   }
 
-  const rows = await db
-    .select()
-    .from(receipts)
-    .where(eq(receipts.userId, session.user.id))
-    .orderBy(desc(receipts.createdAt));
+  const sp = req.nextUrl.searchParams;
+  const page = Math.max(1, Number(sp.get("page")) || 1);
+  const pageSize = Math.min(
+    MAX_PAGE_SIZE,
+    Math.max(1, Number(sp.get("pageSize")) || 25),
+  );
+  const q = sp.get("q")?.trim() ?? "";
+  const from = sp.get("from");
+  const to = sp.get("to");
+  const sortKey = (sp.get("sort") ?? "date") as keyof typeof SORT_COLUMNS;
+  const sortCol = SORT_COLUMNS[sortKey] ?? receipts.date;
+  const dir = sp.get("dir") === "asc" ? sql`asc` : sql`desc`;
 
-  return NextResponse.json({ receipts: rows });
+  const conditions = [eq(receipts.userId, session.user.id)];
+  if (q) {
+    const like = `%${q}%`;
+    conditions.push(
+      or(
+        ilike(receipts.vendorName, like),
+        ilike(receipts.basCode, like),
+        ilike(sql`${receipts.totalAmount}::text`, like),
+      )!,
+    );
+  }
+  if (from) conditions.push(gte(receipts.date, new Date(from)));
+  if (to) {
+    const end = new Date(to);
+    end.setHours(23, 59, 59, 999);
+    conditions.push(lte(receipts.date, end));
+  }
+  const where = and(...conditions);
+
+  const [rows, totals] = await Promise.all([
+    db
+      .select(listColumns)
+      .from(receipts)
+      .where(where)
+      // NULLS LAST keeps unset fields at the bottom either direction; the
+      // createdAt tiebreak makes pagination deterministic on ties.
+      .orderBy(sql`${sortCol} ${dir} nulls last`, desc(receipts.createdAt))
+      .limit(pageSize)
+      .offset((page - 1) * pageSize),
+    db.select({ total: count() }).from(receipts).where(where),
+  ]);
+
+  return NextResponse.json({
+    receipts: rows,
+    total: totals[0]?.total ?? 0,
+    page,
+    pageSize,
+  });
 }
 
 const createSchema = z.object({

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatSek, formatDate, cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
-import type { Receipt } from "@/db/schema";
 
 const STATUS_STYLE: Record<string, string> = {
   pending: "bg-amber-100/50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
@@ -14,31 +14,34 @@ const STATUS_STYLE: Record<string, string> = {
 
 type SortKey = "date" | "vendor" | "bas" | "vat" | "amount" | "status";
 
-function sortValue(r: Receipt, key: SortKey): string | number | null {
-  switch (key) {
-    case "date":
-      return r.date ? new Date(r.date).getTime() : null;
-    case "vendor":
-      return r.vendorName?.trim().toLowerCase() || null;
-    case "bas":
-      return r.basCode ? Number(r.basCode) : null;
-    case "vat":
-      return r.vatAmount != null ? Number(r.vatAmount) : null;
-    case "amount":
-      return r.totalAmount != null ? Number(r.totalAmount) : null;
-    case "status":
-      return r.status;
-  }
-}
+// Trimmed shape returned by GET /api/receipts — no image bytes or OCR text.
+type ReceiptRow = {
+  id: string;
+  vendorName: string | null;
+  date: string | null;
+  totalAmount: string | null;
+  vatAmount: string | null;
+  vatRate: number | null;
+  basCode: string | null;
+  category: string | null;
+  status: string;
+  createdAt: string;
+  hasImage: boolean;
+};
+
+const PAGE_SIZE = 25;
 
 export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
   const { t } = useLanguage();
-  const [receipts, setReceipts] = useState<Receipt[]>([]);
+  const router = useRouter();
+  const [receipts, setReceipts] = useState<ReceiptRow[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [preview, setPreview] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [exportOpen, setExportOpen] = useState(false);
   const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({ key: "date", dir: "desc" });
@@ -50,47 +53,44 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
     rejected: t.statusRejected,
   };
 
+  // Debounce the search box so typing doesn't fire a query per keystroke.
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedQuery(query.trim()), 300);
+    return () => clearTimeout(id);
+  }, [query]);
+
+  // Any change to filters or sort returns to the first page.
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedQuery, from, to, sort]);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/receipts");
+      const params = new URLSearchParams({
+        page: String(page),
+        pageSize: String(PAGE_SIZE),
+        sort: sort.key,
+        dir: sort.dir,
+      });
+      if (debouncedQuery) params.set("q", debouncedQuery);
+      if (from) params.set("from", from);
+      if (to) params.set("to", to);
+      const res = await fetch(`/api/receipts?${params.toString()}`);
       const data = await res.json();
       setReceipts(data.receipts ?? []);
+      setTotal(data.total ?? 0);
     } catch {
       setReceipts([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, sort, debouncedQuery, from, to]);
 
   useEffect(() => {
     load();
   }, [load, refreshKey]);
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return receipts;
-    return receipts.filter((r) =>
-      [r.vendorName, r.basCode, r.totalAmount != null ? String(r.totalAmount) : ""]
-        .filter(Boolean)
-        .some((v) => String(v).toLowerCase().includes(q)),
-    );
-  }, [receipts, query]);
-
-  const sorted = useMemo(() => {
-    const dir = sort.dir === "asc" ? 1 : -1;
-    return [...filtered].sort((a, b) => {
-      const av = sortValue(a, sort.key);
-      const bv = sortValue(b, sort.key);
-      // Missing values always sort to the bottom, regardless of direction.
-      if (av == null && bv == null) return 0;
-      if (av == null) return 1;
-      if (bv == null) return -1;
-      if (av < bv) return -1 * dir;
-      if (av > bv) return dir;
-      return 0;
-    });
-  }, [filtered, sort]);
 
   function toggleSort(key: SortKey) {
     setSort((s) => (s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }));
@@ -135,9 +135,17 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
     if (!confirm(t.receiptDeleteConfirm)) return;
     setRemovingId(id);
     await fetch(`/api/receipts/${id}`, { method: "DELETE" });
-    load();
+    await load();
     setRemovingId(null);
   }
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const rangeFrom = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const rangeTo = Math.min(page * PAGE_SIZE, total);
+  const showingLabel = t.receiptShowing
+    .replace("{from}", String(rangeFrom))
+    .replace("{to}", String(rangeTo))
+    .replace("{total}", String(total));
 
   const sortHeader = (column: SortKey, label: string, className?: string) => {
     const active = sort.key === column;
@@ -165,27 +173,6 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
 
   return (
     <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
-      <AnimatePresence>
-        {preview && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setPreview(null)}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
-          >
-            <motion.img 
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              src={preview} 
-              alt="" 
-              className="max-h-[90vh] max-w-full rounded-lg" 
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div className="flex flex-col gap-3 border-b border-gray-900/[0.07] p-5 dark:border-white/[0.07]">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-xl text-gray-900 dark:text-white">{t.navReceipts}</h2>
@@ -262,7 +249,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
             <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
             {t.receiptLoading}
           </motion.div>
-        ) : filtered.length === 0 ? (
+        ) : receipts.length === 0 ? (
           <motion.p
             key="empty"
             initial={{ opacity: 0 }}
@@ -270,7 +257,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
             exit={{ opacity: 0 }}
             className="p-10 text-center text-sm text-gray-500 dark:text-gray-400"
           >
-            {receipts.length === 0 ? t.receiptNone : "—"}
+            {total === 0 && !debouncedQuery && !from && !to ? t.receiptNone : "—"}
           </motion.p>
         ) : (
           <motion.div
@@ -293,26 +280,33 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                 </tr>
               </thead>
               <tbody>
-                {sorted.map((r) => (
+                {receipts.map((r) => (
                   <motion.tr
                     key={r.id}
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="border-t border-gray-900/[0.07] hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
+                    onClick={() => router.push(`/dashboard/receipts/${r.id}`)}
+                    className="cursor-pointer border-t border-gray-900/[0.07] hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
                   >
                     <td className="px-5 py-3">{formatDate(r.date)}</td>
                     <td className="px-5 py-3 font-medium">
                       <div className="flex items-center gap-2">
-                        {r.imageUrl && (
-                          <img
-                            src={r.imageUrl}
-                            alt=""
-                            onClick={() => setPreview(r.imageUrl!)}
-                            className="h-9 w-9 cursor-pointer rounded object-cover ring-1 ring-black/10 transition-transform hover:scale-110 dark:ring-white/10"
-                          />
-                        )}
                         <span>{r.vendorName ?? "—"}</span>
+                        {r.hasImage && (
+                          <svg
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.4"
+                            className="h-3.5 w-3.5 text-gray-300 dark:text-gray-600"
+                            aria-hidden
+                          >
+                            <rect x="3" y="4" width="14" height="12" rx="2" />
+                            <circle cx="7.5" cy="8.5" r="1.2" />
+                            <path d="M4 14l4-4 3 3 2-2 3 3" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        )}
                       </div>
                     </td>
                     <td className="px-5 py-3 font-mono text-gray-500 dark:text-gray-400">{r.basCode ?? "—"}</td>
@@ -331,7 +325,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => approve(r.id)}
+                            onClick={(e) => { e.stopPropagation(); approve(r.id); }}
                             className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs hover:border-emerald-400 hover:text-emerald-700 dark:border-white/[0.15]"
                           >
                             {t.receiptApprove}
@@ -340,7 +334,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => remove(r.id)}
+                          onClick={(e) => { e.stopPropagation(); remove(r.id); }}
                           disabled={removingId === r.id}
                           className={cn(
                             "rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs text-red-600 hover:border-red-400 dark:border-white/[0.15]",
@@ -361,6 +355,33 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                 ))}
               </tbody>
             </table>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-900/[0.07] px-5 py-3 text-sm text-gray-500 dark:border-white/[0.07] dark:text-gray-400">
+              <span>{showingLabel}</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  className={cn(
+                    "rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs dark:border-white/[0.15]",
+                    page <= 1 ? "cursor-not-allowed opacity-40" : "hover:border-gray-900/40 dark:hover:border-white/40",
+                  )}
+                >
+                  {t.receiptPrev}
+                </button>
+                <span className="tabular-nums">{page} / {totalPages}</span>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page >= totalPages}
+                  className={cn(
+                    "rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs dark:border-white/[0.15]",
+                    page >= totalPages ? "cursor-not-allowed opacity-40" : "hover:border-gray-900/40 dark:hover:border-white/40",
+                  )}
+                >
+                  {t.receiptNext}
+                </button>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

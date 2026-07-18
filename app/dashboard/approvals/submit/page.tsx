@@ -30,7 +30,8 @@ export default function SubmitApprovalPage() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/receipts").then(async (r) => {
+    // Recent receipts for the approval dropdown (the list API paginates).
+    fetch("/api/receipts?pageSize=100").then(async (r) => {
       if (r.ok) setReceipts((await r.json()).receipts ?? []);
     });
   }, []);

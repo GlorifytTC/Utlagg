@@ -117,3 +117,30 @@ export async function deleteReceiptImage(key: string): Promise<void> {
   const client = getClient();
   await client.send(new DeleteObjectCommand({ Bucket: BUCKET, Key: key }));
 }
+
+/**
+ * Turn a stored `receipts.imageUrl` into something an <img> can display.
+ *
+ * Historically the column has held two shapes:
+ *   - a self-contained base64 `data:image/...` URL (current uploader flow), or
+ *   - an R2 object KEY like `receipts/<userId>/<id>.jpg` (private bucket).
+ * Data URLs and plain http(s) URLs pass through unchanged; R2 keys are minted
+ * into a short-lived presigned URL, but only for the owner. Returns null when
+ * there's no image or the key isn't the caller's to read.
+ */
+export async function resolveReceiptImageSrc(
+  imageUrl: string | null | undefined,
+  userId: string,
+): Promise<string | null> {
+  if (!imageUrl) return null;
+  if (imageUrl.startsWith("data:") || imageUrl.startsWith("http")) return imageUrl;
+  if (imageUrl.startsWith("receipts/")) {
+    if (!isStorageConfigured() || !keyBelongsToUser(imageUrl, userId)) return null;
+    try {
+      return await getSignedReceiptUrl(imageUrl);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}

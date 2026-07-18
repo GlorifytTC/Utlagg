@@ -109,6 +109,16 @@ export interface Translations {
   receiptDelete: string;
   receiptDeleteConfirm: string;
   colActions: string;
+  colCategory: string;
+  receiptBack: string;
+  receiptDetails: string;
+  receiptNoImage: string;
+  receiptNumberLabel: string;
+  receiptCreatedLabel: string;
+  receiptOpenImage: string;
+  receiptPrev: string;
+  receiptNext: string;
+  receiptShowing: string;
   idleTitle: string;
   idleStay: string;
   idleLogout: string;
@@ -1147,6 +1157,16 @@ export const strings: Record<Lang, Translations> = {
     colVat: "Moms",
     colAmount: "Belopp",
     colStatus: "Status",
+    colCategory: "Kategori",
+    receiptBack: "Tillbaka till kvitton",
+    receiptDetails: "Kvittodetaljer",
+    receiptNoImage: "Ingen bild sparad för det här kvittot.",
+    receiptNumberLabel: "Kvittonummer",
+    receiptCreatedLabel: "Uppladdad",
+    receiptOpenImage: "Öppna bild i full storlek",
+    receiptPrev: "Föregående",
+    receiptNext: "Nästa",
+    receiptShowing: "Visar {from}–{to} av {total}",
     statusPending: "Väntar",
     statusApproved: "Godkänd",
     statusRejected: "Nekad",
@@ -1804,6 +1824,16 @@ export const strings: Record<Lang, Translations> = {
     colVat: "VAT",
     colAmount: "Amount",
     colStatus: "Status",
+    colCategory: "Category",
+    receiptBack: "Back to receipts",
+    receiptDetails: "Receipt details",
+    receiptNoImage: "No image saved for this receipt.",
+    receiptNumberLabel: "Receipt number",
+    receiptCreatedLabel: "Uploaded",
+    receiptOpenImage: "Open full-size image",
+    receiptPrev: "Previous",
+    receiptNext: "Next",
+    receiptShowing: "Showing {from}–{to} of {total}",
     statusPending: "Pending",
     statusApproved: "Approved",
     statusRejected: "Rejected",
