@@ -150,7 +150,7 @@ type BrevoSendResult =
   | { ok: true; messageId: string }
   | { ok: false; status: number; error: string };
 
-async function brevoSend(
+async function brevoSendHttp(
   to: string,
   subject: string,
   html: string,
@@ -215,33 +215,128 @@ async function brevoSend(
 }
 
 /**
+ * SMTP fallback via Brevo's relay. Kept because it is PROVEN to work with
+ * these credentials, and because a Brevo v3 API key can be permission-scoped
+ * in ways that make the HTTP API reject it while SMTP still sends fine.
+ * Uses BREVO_SMTP_LOGIN + BREVO_SMTP_KEY (the xsmtpsib-… credential).
+ */
+async function brevoSendSmtp(
+  to: string,
+  subject: string,
+  html: string,
+): Promise<BrevoSendResult> {
+  const login = clean(process.env.BREVO_SMTP_LOGIN || "");
+  const key = clean(process.env.BREVO_SMTP_KEY || "");
+  if (!login || !key) {
+    return { ok: false, status: 0, error: "SMTP fallback unavailable (BREVO_SMTP_LOGIN/BREVO_SMTP_KEY not set)" };
+  }
+  try {
+    const nodemailer = (await import("nodemailer")).default;
+    const port = Number(process.env.BREVO_SMTP_PORT) || 587;
+    const transporter = nodemailer.createTransport({
+      host: process.env.BREVO_SMTP_HOST || "smtp-relay.brevo.com",
+      port,
+      secure: port === 465,
+      requireTLS: port !== 465,
+      auth: { user: login, pass: key },
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+      socketTimeout: 20000,
+    });
+    const info = await transporter.sendMail({
+      from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
+      to,
+      subject,
+      html,
+    });
+    return { ok: true, messageId: info.messageId ?? "(none returned)" };
+  } catch (err) {
+    const e = err as NodeJS.ErrnoException & { responseCode?: number; response?: string };
+    return {
+      ok: false,
+      status: e.responseCode ?? 0,
+      error: `SMTP: ${e.name}: ${e.message} (code=${e.code ?? "?"} response=${e.response ?? "?"})`,
+    };
+  }
+}
+
+/**
+ * Sends via the HTTP API first (reliable on serverless), and falls back to
+ * SMTP if that fails for any reason. Using both means a scoped/rejected API
+ * key, or a blocked outbound port, can no longer take email delivery down on
+ * its own — whichever transport works, the mail goes out.
+ */
+async function brevoSend(
+  to: string,
+  subject: string,
+  html: string,
+): Promise<BrevoSendResult> {
+  const http = await brevoSendHttp(to, subject, html);
+  if (http.ok) return http;
+  console.error(`[EMAIL] HTTP API failed (${http.status}) — trying SMTP fallback. ${http.error}`);
+  const smtp = await brevoSendSmtp(to, subject, html);
+  if (smtp.ok) {
+    console.log("[EMAIL] SMTP fallback succeeded.");
+    return smtp;
+  }
+  return {
+    ok: false,
+    status: http.status || smtp.status,
+    error: `Both transports failed. HTTP: ${http.error} | ${smtp.error}`,
+  };
+}
+
+/**
  * Validates the Brevo credentials WITHOUT sending an email, by calling the
  * account endpoint. Confirms the API key is accepted (and is a real v3 API
  * key, not an SMTP-only key) before relying on it for a send.
  */
 export async function verifyEmailConnection(): Promise<
-  { ok: true } | { ok: false; error: string }
+  { ok: true; via: string } | { ok: false; error: string }
 > {
-  const apiKey = clean(process.env.BREVO_API_KEY || process.env.BREVO_SMTP_KEY || "");
-  if (!apiKey) return { ok: false, error: "No BREVO_API_KEY set" };
-  try {
-    const res = await fetch("https://api.brevo.com/v3/account", {
-      headers: { "api-key": apiKey, Accept: "application/json" },
-    });
-    if (res.ok) return { ok: true };
-    const body = await res.text().catch(() => "");
-    return {
-      ok: false,
-      error: `Brevo account check ${res.status}: ${
+  const apiKey = clean(process.env.BREVO_API_KEY || "");
+  let httpNote = "no v3 API key set";
+  if (apiKey) {
+    try {
+      const res = await fetch("https://api.brevo.com/v3/account", {
+        headers: { "api-key": apiKey, Accept: "application/json" },
+      });
+      if (res.ok) return { ok: true, via: "http-api" };
+      httpNote = `HTTP /v3/account ${res.status}${
         res.status === 401
-          ? "key rejected — is this a v3 API key (xkeysib-…) and not an SMTP key?"
-          : body.slice(0, 200)
-      }`,
-    };
-  } catch (err) {
-    const e = err as Error;
-    return { ok: false, error: `${e.name}: ${e.message}` };
+          ? " (key rejected here — may still be able to SEND if it is a scoped key)"
+          : ""
+      }`;
+    } catch (err) {
+      httpNote = `HTTP check threw: ${(err as Error).message}`;
+    }
   }
+
+  // The account endpoint can 401 for a permission-scoped key that is still
+  // perfectly able to send. So don't call it a failure until SMTP also fails.
+  const login = clean(process.env.BREVO_SMTP_LOGIN || "");
+  const key = clean(process.env.BREVO_SMTP_KEY || "");
+  if (login && key) {
+    try {
+      const nodemailer = (await import("nodemailer")).default;
+      const port = Number(process.env.BREVO_SMTP_PORT) || 587;
+      const transporter = nodemailer.createTransport({
+        host: process.env.BREVO_SMTP_HOST || "smtp-relay.brevo.com",
+        port,
+        secure: port === 465,
+        requireTLS: port !== 465,
+        auth: { user: login, pass: key },
+        connectionTimeout: 15000,
+        greetingTimeout: 15000,
+      });
+      await transporter.verify();
+      return { ok: true, via: `smtp (http check: ${httpNote})` };
+    } catch (err) {
+      const e = err as Error;
+      return { ok: false, error: `Both failed — ${httpNote}; SMTP: ${e.message}` };
+    }
+  }
+  return { ok: false, error: `${httpNote}; no SMTP credentials to fall back on` };
 }
 
 async function send(
