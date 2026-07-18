@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 
@@ -10,6 +10,37 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [emailFailed, setEmailFailed] = useState(false);
+  // Inline "send it again" so someone who never got the mail can retry right
+  // here, instead of being told to go hunt for a button on the login page.
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(id);
+  }, [cooldown]);
+
+  async function resendVerification() {
+    if (!sentTo || cooldown > 0 || resendState === "sending") return;
+    setResendState("sending");
+    try {
+      const res = await fetch("/api/auth/resend-verification-public", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: sentTo }),
+      });
+      if (res.ok) {
+        setResendState("sent");
+        setEmailFailed(false); // a successful resend clears the failure notice
+        setCooldown(60); // throttle client-side too; the API is rate-limited
+      } else {
+        setResendState("error");
+      }
+    } catch {
+      setResendState("error");
+    }
+  }
 
   function update(key: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -55,11 +86,7 @@ export default function RegisterPage() {
                 med e-postutskick på vår sida — inte med din adress.
               </p>
               <p className="mt-4 text-sm text-ink/70">
-                Försök igen om en stund via{" "}
-                <Link href="/login" className="text-nordic-600 underline">
-                  inloggningssidan
-                </Link>{" "}
-                (knappen för att skicka länken igen finns där), eller kontakta{" "}
+                Du kan skicka mejlet igen här nedan, eller kontakta{" "}
                 <a href="mailto:support@utlagg.se" className="text-nordic-600 underline">
                   support@utlagg.se
                 </a>{" "}
@@ -72,6 +99,32 @@ export default function RegisterPage() {
               länken i mejlet för att aktivera kontot och komma till din instrumentpanel.
             </p>
           )}
+
+          {/* Resend, available in both cases — whether the first send failed
+              outright or the mail simply never turned up. */}
+          <div className="mt-6">
+            <button
+              onClick={resendVerification}
+              disabled={cooldown > 0 || resendState === "sending"}
+              className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {resendState === "sending"
+                ? "Skickar…"
+                : cooldown > 0
+                  ? `Skicka igen om ${cooldown}s`
+                  : "Skicka mejlet igen"}
+            </button>
+            {resendState === "sent" && cooldown > 0 && (
+              <p className="mt-2 text-sm text-green-700">
+                Skickat! Kolla inkorgen (och skräpposten) för <strong>{sentTo}</strong>.
+              </p>
+            )}
+            {resendState === "error" && (
+              <p className="mt-2 text-sm text-red-600">
+                Kunde inte skicka just nu. Vänta en stund och försök igen.
+              </p>
+            )}
+          </div>
           <p className="mt-6 text-sm text-ink/60">
             Inget mejl efter några minuter? Kolla skräpposten, eller{" "}
             <Link href="/login" className="text-nordic-600 underline">
