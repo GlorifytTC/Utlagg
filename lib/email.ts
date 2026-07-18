@@ -156,6 +156,20 @@ async function brevoSend(
   html: string,
 ): Promise<BrevoSendResult> {
   const apiKey = clean(process.env.BREVO_API_KEY || process.env.BREVO_SMTP_KEY || "");
+  // Fail fast with an actionable message when the wrong Brevo credential is
+  // configured. The HTTP API only accepts a v3 API key ("xkeysib-…"); an SMTP
+  // key ("xsmtpsib-…") is rejected with an opaque 401 that looks like a
+  // network/auth problem and wastes a lot of debugging time.
+  if (apiKey.startsWith("xsmtpsib")) {
+    return {
+      ok: false,
+      status: 401,
+      error:
+        "Wrong Brevo credential: BREVO_API_KEY holds an SMTP key (xsmtpsib-…). " +
+        "The HTTP API needs a v3 API key (xkeysib-…) — create one on Brevo's " +
+        "\"API Keys\" tab (not the SMTP tab) and set it as BREVO_API_KEY.",
+    };
+  }
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);

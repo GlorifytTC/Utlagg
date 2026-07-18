@@ -35,7 +35,26 @@ export async function GET(req: NextRequest) {
   // SMTP relay: auth password comes from BREVO_SMTP_KEY, falling back to
   // BREVO_API_KEY (the historical name for the working SMTP credential here).
   const smtpPass = process.env.BREVO_SMTP_KEY || process.env.BREVO_API_KEY;
+  const apiKey = process.env.BREVO_API_KEY;
+  const smtpKey = process.env.BREVO_SMTP_KEY;
+  // Show EACH key's prefix separately. The HTTP API only accepts a v3 API
+  // key ("xkeysib-…"); an SMTP key ("xsmtpsib-…") is a different credential
+  // and is rejected with an opaque 401. Showing only one combined value hid
+  // exactly which credential was wrong.
+  const describeKey = (v: string | undefined) =>
+    v ? `${v.slice(0, 9)}... (len ${v.length})` : "(not set)";
+  const keyTypeVerdict = !apiKey
+    ? "BREVO_API_KEY is NOT set — the HTTP API needs it (xkeysib-…)"
+    : apiKey.startsWith("xkeysib")
+      ? "OK — BREVO_API_KEY looks like a v3 API key"
+      : apiKey.startsWith("xsmtpsib")
+        ? "WRONG TYPE — BREVO_API_KEY holds an SMTP key (xsmtpsib-…). Create a key on the API Keys tab, not the SMTP tab."
+        : `UNKNOWN PREFIX — BREVO_API_KEY starts with "${apiKey.slice(0, 9)}", expected "xkeysib-"`;
+
   const masked = {
+    BREVO_API_KEY_used_by_HTTP_API: describeKey(apiKey),
+    BREVO_SMTP_KEY_legacy: describeKey(smtpKey),
+    KEY_TYPE_VERDICT: keyTypeVerdict,
     BREVO_SMTP_KEY_OR_API_KEY: smtpPass
       ? `${smtpPass.slice(0, 8)}... (len ${smtpPass.length}, source ${process.env.BREVO_SMTP_KEY ? "BREVO_SMTP_KEY" : "BREVO_API_KEY"})`
       : "(not set)",
