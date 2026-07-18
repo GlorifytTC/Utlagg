@@ -13,7 +13,7 @@ export default function PrivacyPage() {
         enlighet med EU:s dataskyddsförordning (GDPR, EU 2016/679) och
         kompletterande svensk dataskyddslagstiftning.
       </p>
-      <p className="mt-2 text-sm text-ink/50">Senast uppdaterad: 28 juni 2026</p>
+      <p className="mt-2 text-sm text-ink/50">Senast uppdaterad: 18 juli 2026</p>
 
       <div className="mt-10 space-y-8 text-sm leading-relaxed">
 
@@ -26,8 +26,8 @@ export default function PrivacyPage() {
           </p>
           <p>
             Kontakt i dataskyddsfrågor:{" "}
-            <a className="underline underline-offset-2" href="mailto:legal@utlagg.se">
-              legal@utlagg.se
+            <a className="underline underline-offset-2" href="mailto:legal@kvittino.se">
+              legal@kvittino.se
             </a>
           </p>
           <p className="text-ink/60">
@@ -47,8 +47,10 @@ export default function PrivacyPage() {
           <p className="font-medium text-ink/90">Kontoinformation</p>
           <p className="text-ink/80">
             Namn, e-postadress, krypterat lösenord och inloggningsmetod (e-post/
-            lösenord eller BankID). Om BankID används behandlas en signerad
-            autentiseringstoken — vi lagrar inte personnummer.
+            lösenord eller BankID). Vid inloggning med BankID behandlas ditt
+            personnummer vid inloggningstillfället som en del av autentiseringen, men vi
+            lagrar det inte; vi bevarar endast en referens till den genomförda
+            autentiseringen.
           </p>
 
           <p className="font-medium text-ink/90">Företagsinformation</p>
@@ -82,11 +84,17 @@ export default function PrivacyPage() {
             hanteras uteslutande av Stripe — vi lagrar dem inte.
           </p>
 
-          <p className="font-medium text-ink/90">Revisionslogg och teknisk data</p>
+          <p className="font-medium text-ink/90">Supportärenden</p>
           <p className="text-ink/80">
-            IP-adress, tidsstämpel och åtgärdstyp loggas vid varje inloggning och
-            kontoaktivitet i enlighet med Bokföringslagen. Vi samlar också in
-            webbläsartyp och sessionsdata för säkerhet och felsökning.
+            Om du kontaktar vår support behandlar vi din korrespondens och de
+            uppgifter du lämnar i ärendet.
+          </p>
+
+          <p className="font-medium text-ink/90">Loggar och teknisk data</p>
+          <p className="text-ink/80">
+            IP-adress, tidsstämpel och åtgärdstyp loggas vid inloggning och
+            kontoaktivitet. Vi samlar också in webbläsartyp och sessionsdata för
+            säkerhet och felsökning.
           </p>
         </section>
 
@@ -99,13 +107,14 @@ export default function PrivacyPage() {
               <span>Rättslig grund (GDPR art. 6)</span>
             </div>
             {[
-              ["Tillhandahålla och driva tjänsten", "Avtalsfullgörelse (6.1.b)"],
+              ["Tillhandahålla och driva tjänsten, inklusive lagring av dina kvitton och underlag", "Avtalsfullgörelse (6.1.b)"],
               ["Hantera prenumerationer och betalningar", "Avtalsfullgörelse (6.1.b)"],
-              ["Arkivera bokföringsunderlag i 7 år", "Rättslig förpliktelse (6.1.c) — Bokföringslagen"],
-              ["Skicka transaktionsmejl (kvitton, lösenord, inbjudningar)", "Avtalsfullgörelse (6.1.b)"],
-              ["Förhindra bedrägerier och obehörig åtkomst", "Berättigat intresse (6.1.f)"],
-              ["Förbättra OCR-modellen med anonymiserade markeringar", "Samtycke (6.1.a)"],
-              ["Uppfylla lagkrav och myndighetsförfrågningar", "Rättslig förpliktelse (6.1.c)"],
+              ["Bevara vår egen räkenskapsinformation (fakturor till dig, betalningshistorik) i sju år", "Rättslig förpliktelse (6.1.c) — Bokföringslagen och skattelagstiftning"],
+              ["Skicka transaktionsmejl (kvitton, lösenordsåterställning, inbjudningar, raderingspåminnelser)", "Avtalsfullgörelse (6.1.b)"],
+              ["Hantera supportärenden", "Berättigat intresse (6.1.f) — att kunna ge dig support"],
+              ["Förhindra bedrägerier, missbruk och obehörig åtkomst; säkerhets- och ändringsloggar", "Berättigat intresse (6.1.f)"],
+              ["Förbättra OCR-modellen med hjälp av dina markeringar (uppgifterna avidentifieras före sådan användning)", "Samtycke (6.1.a) — kan återkallas när som helst"],
+              ["Uppfylla lagkrav och besvara bindande myndighetsförfrågningar", "Rättslig förpliktelse (6.1.c)"],
             ].map(([purpose, basis]) => (
               <div key={purpose} className="grid grid-cols-[1fr_1fr] gap-4 p-4 text-ink/80">
                 <span>{purpose}</span>
@@ -113,6 +122,16 @@ export default function PrivacyPage() {
               </div>
             ))}
           </div>
+
+          <p className="text-ink/80">
+            När du som företagskund behandlar dina anställdas eller andra tredje mäns
+            personuppgifter via tjänsten agerar vi personuppgiftsbiträde enligt vårt{" "}
+            <Link className="underline underline-offset-2" href="/legal/dpa">
+              personuppgiftsbiträdesavtal
+            </Link>
+            ; den rättsliga grunden för sådan behandling fastställs av dig som
+            personuppgiftsansvarig.
+          </p>
 
           <p className="text-ink/60">
             Vi förlitar oss på berättigat intresse (art. 6.1.f) enbart där vårt
@@ -125,30 +144,45 @@ export default function PrivacyPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg">4. Lagringstider</h2>
           <p>
-            Vi sparar dina uppgifter så länge som krävs för ändamålet eller av lag:
+            Vi skiljer mellan innehåll vi lagrar för din räkning som en del av tjänsten
+            och uppgifter vi behandlar för egen räkning.
           </p>
+
+          <p className="font-medium text-ink/90">Innehåll vi lagrar för din räkning</p>
+          <ul className="ml-4 list-disc space-y-2 text-ink/80">
+            <li>
+              <strong>Kvitton, verifikationer, körjournaler och fakturor</strong> — under
+              aktiv prenumeration samt under en exportperiod om tolv (12) månader
+              därefter, i enlighet med § 7 i användarvillkoren. Innan radering sker
+              skickar vi påminnelser 90, 30 och 7 dagar i förväg, varefter uppgifterna
+              raderas inom 30 dagar. Observera att arkiveringsskyldigheten enligt
+              Bokföringslagen (SFS 1999:1078) åvilar dig som bokföringsskyldig —
+              exportera dina underlag innan exportperioden löper ut.
+            </li>
+          </ul>
+
+          <p className="font-medium text-ink/90">Uppgifter vi behandlar för egen räkning</p>
           <ul className="ml-4 list-disc space-y-2 text-ink/80">
             <li>
               <strong>Kontouppgifter</strong> — till dess att du raderar ditt konto,
-              varefter uppgifterna tas bort inom 30 dagar (utom där lag kräver längre
-              bevarande).
+              varefter uppgifterna tas bort inom 30 dagar, utom där lag kräver längre
+              bevarande.
             </li>
             <li>
-              <strong>Kvitton, fakturor och bokföringsunderlag</strong> — under aktiv
-              prenumeration och upp till ett (1) år efter din senaste betalning.
-              Notera att Bokföringslagen (SFS 1999:1078) ålägger dig som
-              bokföringsskyldig att bevara räkenskapsinformation i sju (7) år.
-              Exportera ditt material innan du avslutar kontot.
+              <strong>Vår egen räkenskapsinformation</strong> (fakturor till dig,
+              betalningshistorik) — sju (7) år enligt Bokföringslagen och
+              skattelagstiftningen.
             </li>
             <li>
-              <strong>Revisionslogg</strong> — sju (7) år enligt Bokföringslagen.
+              <strong>Säkerhetsloggar</strong> (IP-adress, sessioner) — nittio (90) dagar.
             </li>
             <li>
-              <strong>Betalningsuppgifter</strong> — sju (7) år i enlighet med
-              bokförings- och skattelagstiftning.
+              <strong>Ändringslogg för verifikationer</strong> (vem som ändrat vad, utan
+              IP-adress) — så länge det underliggande underlaget lagras.
             </li>
             <li>
-              <strong>Säkerhetsloggar</strong> (IP, sessioner) — 90 dagar.
+              <strong>Supportärenden</strong> — så länge det behövs för att hantera
+              ärendet och en rimlig tid därefter, dock längst 24 månader.
             </li>
           </ul>
         </section>
@@ -157,7 +191,8 @@ export default function PrivacyPage() {
           <h2 className="font-display text-lg">5. Mottagare och underbiträden</h2>
           <p>
             Vi delar personuppgifter enbart med leverantörer som behöver dem för att
-            vi ska kunna tillhandahålla tjänsten. En fullständig lista finns på{" "}
+            vi ska kunna tillhandahålla tjänsten. En fullständig och uppdaterad lista
+            finns på{" "}
             <Link className="underline underline-offset-2" href="/legal/subprocessors">
               /legal/subprocessors
             </Link>
@@ -166,17 +201,15 @@ export default function PrivacyPage() {
           <ul className="ml-4 list-disc space-y-1 text-ink/80">
             <li>Molninfrastruktur och databas (EU)</li>
             <li>Lagring av kvittobilder (EU)</li>
-            <li>Betalningshantering (EU/US med standardavtalsklausuler, SCC)</li>
-            <li>Transaktionsmejl (US med SCC)</li>
-            <li>OCR-behandling av kvitton (EU/US med SCC)</li>
+            <li>Betalningshantering (EU/US med lämpliga skyddsåtgärder)</li>
+            <li>Transaktionsmejl (US med lämpliga skyddsåtgärder)</li>
+            <li>OCR-behandling av kvitton (EU)</li>
           </ul>
           <p>
             Vi säljer aldrig personuppgifter till tredje part och delar dem aldrig
-            för marknadsföringsändamål utan ditt uttryckliga samtycke.
-          </p>
-          <p>
-            Vi kan lämna ut uppgifter till myndigheter (t.ex. Skatteverket, Polisen)
-            om vi är skyldiga att göra det enligt lag.
+            för marknadsföringsändamål utan ditt uttryckliga samtycke. Vi kan lämna ut
+            uppgifter till myndigheter (t.ex. Skatteverket, Polisen) om vi är skyldiga
+            att göra det enligt lag.
           </p>
         </section>
 
@@ -186,13 +219,14 @@ export default function PrivacyPage() {
             Vår primära lagring sker i <strong>Sverige och inom EU/EES</strong>.
             Vissa underbiträden är etablerade i USA. Sådana överföringar sker
             uteslutande med stöd av EU-kommissionens standardavtalsklausuler (SCC,
-            art. 46.2.c GDPR) och/eller EU-US Data Privacy Framework där tillämpligt.
+            art. 46.2.c GDPR) och/eller EU–US Data Privacy Framework där leverantören
+            är certifierad.
           </p>
           <p>
             Du kan begära information om vilka skyddsåtgärder som gäller för en
             specifik underbiträdare genom att kontakta oss på{" "}
-            <a className="underline underline-offset-2" href="mailto:legal@utlagg.se">
-              legal@utlagg.se
+            <a className="underline underline-offset-2" href="mailto:legal@kvittino.se">
+              legal@kvittino.se
             </a>
             .
           </p>
@@ -202,8 +236,8 @@ export default function PrivacyPage() {
           <h2 className="font-display text-lg">7. Dina rättigheter</h2>
           <p>
             Under GDPR har du följande rättigheter. Kontakta oss på{" "}
-            <a className="underline underline-offset-2" href="mailto:legal@utlagg.se">
-              legal@utlagg.se
+            <a className="underline underline-offset-2" href="mailto:legal@kvittino.se">
+              legal@kvittino.se
             </a>{" "}
             för att utöva dem. Vi svarar inom en (1) månad.
           </p>
@@ -239,8 +273,8 @@ export default function PrivacyPage() {
             </li>
             <li>
               <strong>Återkallelse av samtycke</strong> — om behandlingen grundas
-              på samtycke kan du när som helst återkalla det utan att det påverkar
-              lagligheten av tidigare behandling.
+              på samtycke (t.ex. förbättring av OCR-modellen) kan du när som helst
+              återkalla det utan att det påverkar lagligheten av tidigare behandling.
             </li>
           </ul>
         </section>
@@ -264,7 +298,7 @@ export default function PrivacyPage() {
             </a>
           </p>
           <p>
-            Vi hoppas att du kontaktar oss först så att vi kan lösa eventuella
+            Vi ser gärna att du kontaktar oss först så att vi kan lösa eventuella
             problem direkt.
           </p>
         </section>
@@ -275,16 +309,24 @@ export default function PrivacyPage() {
             Vi vidtar tekniska och organisatoriska åtgärder för att skydda dina
             uppgifter mot obehörig åtkomst, förlust och förstöring. Åtgärderna
             inkluderar kryptering under överföring (TLS/HTTPS), krypterade lösenord
-            (bcrypt), tidsbegränsade signerade URL:er för kvittobilder, och en
-            sjuårig revisionslogg för alla kontoåtgärder.
+            (bcrypt), tidsbegränsade signerade URL:er för kvittobilder och en
+            ändringslogg för kontoåtgärder.
+          </p>
+          <p>
+            Vid en personuppgiftsincident anmäler vi incidenten till
+            Integritetsskyddsmyndigheten (IMY) utan onödigt dröjsmål och, där det är
+            möjligt, senast 72 timmar efter att vi fått kännedom om den, i enlighet med
+            art. 33 GDPR. Om incidenten kan innebära en hög risk för dina rättigheter
+            och friheter informerar vi även dig utan onödigt dröjsmål (art. 34). När vi
+            agerar personuppgiftsbiträde underrättar vi i stället den
+            personuppgiftsansvarige utan onödigt dröjsmål.
           </p>
           <p>
             Mer information finns på{" "}
             <Link className="underline underline-offset-2" href="/security">
               /security
             </Link>
-            . Vid en personuppgiftsincident som kan innebära hög risk för dina
-            rättigheter och friheter informerar vi dig utan onödigt dröjsmål.
+            .
           </p>
         </section>
 
@@ -327,8 +369,8 @@ export default function PrivacyPage() {
           <h2 className="font-display text-lg">13. Kontakt</h2>
           <p>
             Frågor om hur vi behandlar dina personuppgifter besvaras på:{" "}
-            <a className="underline underline-offset-2" href="mailto:legal@utlagg.se">
-              legal@utlagg.se
+            <a className="underline underline-offset-2" href="mailto:legal@kvittino.se">
+              legal@kvittino.se
             </a>
           </p>
           <p>
@@ -351,7 +393,7 @@ export default function PrivacyPage() {
       </div>
 
       <p className="mt-10 text-xs text-ink/50">
-        Kontakt: legal@utlagg.se · GlorifyTC · Org.nr [xxxxxx-xxxx]
+        Kontakt: legal@kvittino.se · GlorifyTC · Org.nr [xxxxxx-xxxx]
       </p>
     </main>
   );

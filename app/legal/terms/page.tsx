@@ -11,7 +11,7 @@ export default function TermsPage() {
         kvittohantering, utläggsredovisning och bokföringsexport anpassad för
         svenska moms- och bokföringsregler.
       </p>
-      <p className="mt-2 text-sm text-ink/50">Senast uppdaterad: 28 juni 2026</p>
+      <p className="mt-2 text-sm text-ink/50">Senast uppdaterad: 18 juli 2026</p>
 
       <div className="mt-10 space-y-8 text-sm leading-relaxed">
 
@@ -33,12 +33,16 @@ export default function TermsPage() {
           <h2 className="font-display text-lg">§ 2 Avtalets ingående</h2>
           <p>
             Avtalet träder i kraft när du skapar ett konto och markerar att du
-            accepterar dessa villkor. Fortsatt användning av tjänsten efter att
-            villkoren uppdaterats innebär att du godkänner de nya villkoren.
+            accepterar dessa villkor.
           </p>
           <p>
             Dessa villkor gäller för samtliga planer — Gratis, Pro, Företag och
             Enterprise — om inget annat skriftligen avtalats.
+          </p>
+          <p>
+            Ändringar av villkoren hanteras enligt § 13. För konsumenter förutsätter
+            väsentliga ändringar till din nackdel att du underrättas i förväg och ges
+            möjlighet att säga upp avtalet utan kostnad innan ändringen träder i kraft.
           </p>
         </section>
 
@@ -54,13 +58,15 @@ export default function TermsPage() {
           <p>
             Vi strävar efter hög tillgänglighet men garanterar inte avbrottsfri
             drift. Planerat underhåll och oplanerade driftstörningar kan förekomma.
-            Tjänsten tillhandahålls i befintligt skick (&ldquo;as-is&rdquo;).
+            Tjänsten tillhandahålls i befintligt skick (&ldquo;as-is&rdquo;), med de
+            begränsningar som följer av § 12.
           </p>
           <p>
             AI-genererade värden — t.ex. OCR-utläsning av leverantör, belopp och
-            momssats — är hjälpmedel och inte juridiskt bindande underlag. Du ansvarar
-            alltid för att kontrollera och godkänna uppgifter innan de sparas eller
-            exporteras.
+            momssats — är hjälpmedel och utgör inte juridiskt bindande underlag. Du
+            ansvarar alltid för att kontrollera och godkänna uppgifter innan de sparas
+            eller exporteras. Vi fattar inte automatiserade beslut med rättslig verkan
+            för dig (se integritetspolicyns avsnitt om automatiserat beslutsfattande).
           </p>
         </section>
 
@@ -75,7 +81,8 @@ export default function TermsPage() {
             Vi förbehåller oss rätten att stänga av eller radera konton som (i) bryter
             mot dessa villkor, (ii) används för olagliga ändamål, eller (iii) misstänks
             ha komprometterats — med omedelbar verkan och utan föregående varsel om
-            säkerheten kräver det.
+            säkerheten kräver det. Vid avstängning eller uppsägning från vår sida gäller
+            din rätt till export enligt § 14.
           </p>
           <p>
             Du måste vara minst 18 år och ha rättslig handlingsförmåga för att
@@ -86,8 +93,9 @@ export default function TermsPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg">§ 5 Prenumeration och betalning</h2>
           <p>
-            Betalda abonnemang debiteras månadsvis i förskott i SEK. Betalning hanteras
-            av <strong>Stripe, Inc.</strong> Kvittino lagrar inga kortuppgifter.
+            Betalda abonnemang debiteras månadsvis i förskott i SEK. Priser till
+            konsumenter anges inklusive moms. Betalning hanteras av{" "}
+            <strong>Stripe, Inc.</strong> Kvittino lagrar inga kortuppgifter.
           </p>
           <p>
             Prenumerationen förnyas automatiskt tills du avslutar den. Avslutning
@@ -102,7 +110,7 @@ export default function TermsPage() {
           </p>
           <p>
             Återbetalning sker inte för redan fakturerade perioder, utom i fall där
-            lag kräver det (se § 6 om ångerrätt).
+            tvingande lag kräver det (se § 6 om ångerrätt).
           </p>
         </section>
 
@@ -116,37 +124,74 @@ export default function TermsPage() {
             affärslokaler.
           </p>
           <p>
-            Ångerrätten upphör om du uttryckligen begärt att tjänsten ska påbörjas
-            omedelbart och du är medveten om att ångerrätten därigenom förfaller när
-            tjänsten är fullgjord. Om tjänsten delvis utförts har vi rätt att ta betalt
-            för den del som levererats.
+            Om du uttryckligen begär att tjänsten ska börja tillhandahållas under
+            ångerfristen, och samtidigt bekräftar att du är medveten om att din
+            ångerrätt går förlorad när tjänsten fullgjorts, förfaller ångerrätten när
+            tjänsten är fullgjord. För en löpande prenumeration som du frånträder under
+            fristen har vi rätt till betalning i proportion till vad som levererats
+            fram till att du meddelar oss att du frånträder avtalet.
           </p>
           <p>
-            För att utöva ångerrätten kontaktar du oss på{" "}
-            <a className="underline underline-offset-2" href="mailto:legal@utlagg.se">
-              legal@utlagg.se
+            För att utöva ångerrätten kan du använda Konsumentverkets standardformulär
+            för ånger, som finns tillgängligt{" "}
+            <Link className="underline underline-offset-2" href="/legal/angerblankett">
+              här
+            </Link>
+            , eller kontakta oss på{" "}
+            <a className="underline underline-offset-2" href="mailto:legal@kvittino.se">
+              legal@kvittino.se
             </a>{" "}
-            med ditt namn, e-post och ett tydligt meddelande om att du frånträder avtalet.
+            med ditt namn, din e-postadress och ett tydligt meddelande om att du
+            frånträder avtalet.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">§ 7 Lagring av bokföringsunderlag</h2>
+          <h2 className="font-display text-lg">
+            § 7 Lagring, arkivering och radering av underlag
+          </h2>
           <p>
-            Bokföringslagen (SFS 1999:1078) ålägger företag att bevara
-            räkenskapsinformation i <strong>sju (7) år</strong>. Kvittino lagrar dina
-            kvitton och underlag under hela din aktiva prenumeration och i upp till
-            <strong> ett (1) år</strong> efter din senaste betalning.
+            7.1 Bokföringslagen (1999:1078) ålägger den som är bokföringsskyldig att
+            bevara räkenskapsinformation till och med utgången av det sjunde året efter
+            det kalenderår då räkenskapsåret avslutades. Denna arkiveringsskyldighet
+            åvilar dig i egenskap av bokföringsskyldig. Kvittino övertar inte, och ska
+            inte anses ha övertagit, någon arkiveringsskyldighet enligt Bokföringslagen
+            eller annan författning, om inte detta uttryckligen och skriftligen avtalats.
           </p>
           <p>
-            Det är <em>ditt</em> ansvar som bokföringsskyldig att uppfylla
-            arkiveringsskyldigheten. Om du avslutar ditt konto rekommenderar vi starkt
-            att du exporterar samtliga underlag via vår SIE-, CSV- eller PDF-export
-            <em> innan</em> kontot raderas.
+            7.2 Under avtalets löptid lagrar Kvittino dina kvitton, verifikationer och
+            övriga underlag som en del av tjänsten. Om din betalda prenumeration upphör
+            övergår kontot till läsläge, i vilket du under tolv (12) månader från den
+            senaste betalda periodens utgång (&ldquo;Exportperioden&rdquo;) har fortsatt
+            tillgång till samtliga underlag för granskning och export via tjänstens
+            exportfunktioner (SIE, CSV, PDF). Under läsläget kan möjligheten att ladda
+            upp nya underlag vara begränsad.
           </p>
           <p>
-            Kvittino kan inte hållas ansvarigt för förlust av bokföringsunderlag till
-            följd av att du avslutat prenumerationen eller kontot.
+            7.3 Kvittino åtar sig att, innan underlag raderas enligt punkt 7.4, skicka
+            skriftliga påminnelser till din registrerade e-postadress senast nittio
+            (90), trettio (30) respektive sju (7) dagar före Exportperiodens utgång.
+            Varje påminnelse ska ange det datum då radering sker samt hänvisa till
+            exportfunktionerna.
+          </p>
+          <p>
+            7.4 Efter Exportperiodens utgång raderas kvitton, verifikationer och därtill
+            hörande bilder permanent inom trettio (30) dagar. Radering dokumenteras i
+            Kvittinos loggar. Uppgifter som Kvittino är skyldigt att bevara enligt lag
+            — däribland Kvittinos egen räkenskapsinformation avseende fakturering och
+            betalningar — bevaras under den tid som följer av tillämplig lagstiftning.
+          </p>
+          <p>
+            7.5 Det åligger dig att före Exportperiodens utgång exportera samtliga
+            underlag som du är skyldig att bevara. Under förutsättning att Kvittino
+            fullgjort sina åtaganden enligt punkterna 7.2–7.4 ansvarar Kvittino inte för
+            förlust av räkenskapsinformation som raderats efter Exportperiodens utgång.
+          </p>
+          <p>
+            7.6 För konton som omfattas av gratisplanen och som varit inaktiva under
+            tolv (12) sammanhängande månader tillämpas motsvarande förfarande enligt
+            punkterna 7.3–7.5, varvid Exportperioden räknas från den senaste
+            inloggningen.
           </p>
         </section>
 
@@ -158,17 +203,18 @@ export default function TermsPage() {
           </p>
           <p>
             Du ger oss en begränsad, icke-exklusiv licens att behandla dina uppgifter
-            uteslutande i syfte att tillhandahålla, driva och förbättra tjänsten. Vi kan
-            använda anonymiserade och aggregerade uppgifter — som aldrig kan kopplas till
-            dig — för att förbättra vår AI-modell och statistik.
-          </p>
-          <p>
-            Vi delar aldrig dina personuppgifter med tredje part i marknadsföringssyfte.
-            Se vår{" "}
+            uteslutande i syfte att tillhandahålla, driva och säkerställa tjänsten. Med
+            ditt uttryckliga samtycke kan vi dessutom använda markeringar från dina
+            kvitton för att förbättra vår OCR-modell; sådana uppgifter avidentifieras
+            innan de används för detta ändamål, och samtycket kan återkallas när som
+            helst. Se vår{" "}
             <Link className="underline underline-offset-2" href="/legal/privacy">
               integritetspolicy
             </Link>{" "}
-            för fullständig information om hur vi behandlar personuppgifter.
+            för närmare information.
+          </p>
+          <p>
+            Vi delar aldrig dina personuppgifter med tredje part i marknadsföringssyfte.
           </p>
         </section>
 
@@ -182,7 +228,7 @@ export default function TermsPage() {
           <p>
             Du får inte kopiera, modifiera, distribuera, sälja eller utföra reverse
             engineering av tjänsten eller något av dess komponenter, vare sig helt
-            eller delvis.
+            eller delvis, utom i den utsträckning tvingande lag uttryckligen tillåter det.
           </p>
         </section>
 
@@ -197,13 +243,31 @@ export default function TermsPage() {
             <li>bryta mot tillämplig lag — däribland GDPR, bokföringsrätt och skattelagstiftning.</li>
           </ul>
           <p>
-            Överträdelse kan leda till omedelbar kontostängning och kan anmälas till
-            berörda myndigheter.
+            Överträdelse kan leda till omedelbar kontostängning enligt § 4 och kan
+            anmälas till berörda myndigheter.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">§ 11 Personuppgiftsbehandling</h2>
+          <h2 className="font-display text-lg">§ 11 Ansvar för uppladdat innehåll</h2>
+          <p>
+            Du ansvarar för att innehåll som du laddar upp till tjänsten inte gör
+            intrång i tredje mans rättigheter och att din behandling av tredje mans
+            personuppgifter via tjänsten sker i enlighet med tillämplig
+            dataskyddslagstiftning.
+          </p>
+          <p>
+            Du åtar dig att hålla Kvittino skadeslöst från krav från tredje man —
+            inklusive skäliga ombudskostnader — som grundas på innehåll du laddat upp
+            eller på din användning av tjänsten i strid med dessa villkor eller
+            tillämplig lag. Detta åtagande gäller inte i den utsträckning kravet
+            orsakats av Kvittinos vårdslöshet, och gäller för konsumenter endast i den
+            utsträckning det är förenligt med tvingande rätt.
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="font-display text-lg">§ 12 Personuppgiftsbehandling</h2>
           <p>
             Vår behandling av personuppgifter styrs av{" "}
             <Link className="underline underline-offset-2" href="/legal/privacy">
@@ -213,61 +277,89 @@ export default function TermsPage() {
             <Link className="underline underline-offset-2" href="/legal/dpa">
               personuppgiftsbiträdesavtalet (DPA)
             </Link>
-            . Kvittino agerar som personuppgiftsbiträde för de personuppgifter du
-            behandlar via tjänsten och som personuppgiftsansvarig för kontorelaterade
-            uppgifter.
+            . Kvittino agerar som personuppgiftsansvarig för kontorelaterade uppgifter
+            och som personuppgiftsbiträde för de personuppgifter du som företagskund
+            behandlar om tredje man (t.ex. dina anställdas utlägg) via tjänsten.
           </p>
           <p>
             En lista över anlitade underbiträden finns på{" "}
             <Link className="underline underline-offset-2" href="/legal/subprocessors">
               /legal/subprocessors
             </Link>
-            . Uppgifter lagras i Sverige och behandlas inom EU/EES.
+            . Uppgifter lagras i Sverige och behandlas inom EU/EES, med de undantag för
+            överföring till tredjeland som anges i integritetspolicyn.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">§ 12 Ansvarsbegränsning</h2>
+          <h2 className="font-display text-lg">§ 13 Ansvarsbegränsning</h2>
           <p>
             Kvittino tillhandahålls &ldquo;i befintligt skick&rdquo;. Vi lämnar inga
             garantier — uttryckliga eller underförstådda — om tjänstens lämplighet
-            för ett visst ändamål, avbrottsfrihet eller frihet från fel.
+            för ett visst ändamål, avbrottsfrihet eller frihet från fel, utöver vad som
+            följer av tvingande lag.
           </p>
           <p>
             Vår totala ansvarsskyldighet gentemot dig under ett kalenderår är begränsad
             till det sammanlagda belopp du faktiskt betalat för tjänsten under de
-            tre månader som föregick den händelse som ger upphov till anspråket,
-            dock minst 100 SEK.
+            tre (3) månader som föregick den händelse som ger upphov till anspråket. För
+            skada som består i förlust av data och som orsakats genom Kvittinos
+            vårdslöshet är ansvaret dock begränsat till högst tiotusen (10&nbsp;000) SEK
+            per kalenderår.
           </p>
           <p>
-            Vi ansvarar inte för indirekta skador, utebliven vinst, inkomstbortfall,
-            dataförlust eller följdskador av något slag — oavsett om vi informerats om
-            risken för sådana skador.
+            Vi ansvarar inte för indirekta skador, utebliven vinst, inkomstbortfall
+            eller följdskador av något slag — oavsett om vi informerats om risken för
+            sådana skador.
           </p>
-          <p className="text-ink/60">
+          <p>
             Ingenting i dessa villkor utesluter eller begränsar ansvar som inte kan
             avtalas bort enligt tvingande lag (t.ex. personskada orsakad av grov
             vårdslöshet eller uppsåt).
           </p>
+          <p className="text-ink/60">
+            Om du är konsument gäller begränsningarna i denna § 13 endast i den
+            utsträckning de är förenliga med tvingande konsumentskyddande lagstiftning,
+            däribland konsumenttjänst- och konsumentköprättsliga regler samt lag
+            (1994:1512) om avtalsvillkor i konsumentförhållanden. Sådan lagstiftning kan
+            ge dig rättigheter utöver vad som anges i dessa villkor, och ingenting i
+            villkoren inskränker dessa rättigheter.
+          </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">§ 13 Ändringar av villkoren</h2>
+          <h2 className="font-display text-lg">§ 14 Force majeure</h2>
           <p>
-            Vi kan när som helst ändra dessa villkor. Vid väsentliga ändringar
-            skickar vi ett meddelande till den e-postadress du registrerat, med minst
+            Part är befriad från påföljd för underlåtenhet att fullgöra förpliktelse
+            enligt detta avtal om underlåtenheten beror på en omständighet utanför
+            partens kontroll som parten inte skäligen kunde ha förutsett vid avtalets
+            ingående och vars följder parten inte skäligen kunde ha undvikit eller
+            övervunnit — såsom krig, myndighetsåtgärd, nytillkommen eller ändrad
+            lagstiftning, arbetskonflikt, omfattande driftstörning hos underleverantör
+            av infrastruktur, brand, översvämning eller olyckshändelse av större
+            omfattning. Om avtalets fullgörande hindras under längre tid än tre (3)
+            månader har vardera parten rätt att säga upp avtalet med omedelbar verkan.
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="font-display text-lg">§ 15 Ändringar av villkoren</h2>
+          <p>
+            Vi kan ändra dessa villkor. Vid väsentliga ändringar skickar vi ett
+            meddelande till den e-postadress du registrerat, med minst
             <strong> 30 dagars</strong> varsel innan ändringen träder i kraft.
           </p>
           <p>
-            Fortsatt användning av tjänsten efter att ändringen trätt i kraft utgör
-            ditt godkännande av de uppdaterade villkoren. Om du inte godkänner en
-            väsentlig ändring kan du avsluta ditt konto och din prenumeration utan
-            extra kostnad före ändringsdatumet.
+            För företagskunder utgör fortsatt användning av tjänsten efter att
+            ändringen trätt i kraft ett godkännande av de uppdaterade villkoren. För
+            konsumenter träder en väsentlig ändring till din nackdel i kraft först om du
+            inte har sagt upp avtalet före ändringsdatumet; i annat fall kan du avsluta
+            ditt konto och din prenumeration utan extra kostnad före ändringsdatumet.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">§ 14 Avtalets löptid och upphörande</h2>
+          <h2 className="font-display text-lg">§ 16 Avtalets löptid och upphörande</h2>
           <p>
             Avtalet gäller tills vidare och kan avslutas av båda parter när som helst.
             Du kan avsluta ditt konto via profilinställningarna. Vi kan säga upp avtalet
@@ -275,22 +367,48 @@ export default function TermsPage() {
             av dessa villkor.
           </p>
           <p>
+            Om Kvittino säger upp avtalet, eller stänger av ett konto enligt § 4, ska
+            Kvittino — utom där det är oförenligt med lag, myndighetsbeslut eller
+            nödvändiga säkerhetsåtgärder — ge dig tillgång till kontot i läsläge under
+            trettio (30) dagar för export av dina underlag. Vid misstanke om brott får
+            Kvittino i stället bevara underlagen och lämna ut dem till behörig myndighet.
+          </p>
+          <p>
             Vid avslutning upphör din rätt att använda tjänsten. Bestämmelserna om
-            ansvarsbegränsning, immateriella rättigheter, datalagring och tvistlösning
-            gäller även efter avtalets upphörande.
+            ansvar för uppladdat innehåll, ansvarsbegränsning, immateriella rättigheter,
+            datalagring och radering samt tvistlösning gäller även efter avtalets
+            upphörande.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">§ 15 Tillämplig lag och tvister</h2>
+          <h2 className="font-display text-lg">§ 17 Överlåtelse</h2>
+          <p>
+            Du får inte överlåta dina rättigheter eller skyldigheter enligt detta avtal
+            utan vårt skriftliga medgivande. Kvittino får överlåta avtalet till annan
+            juridisk person i samband med fusion, förvärv eller överlåtelse av hela eller
+            väsentliga delar av verksamheten, förutsatt att förvärvaren övertar dessa
+            villkor. Vi informerar dig om en sådan överlåtelse via e-post eller i
+            tjänsten; om du är konsument har du rätt att säga upp avtalet utan kostnad om
+            överlåtelsen är till din nackdel.
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="font-display text-lg">§ 18 Tillämplig lag och tvister</h2>
           <p>
             Dessa villkor regleras av och tolkas i enlighet med <strong>svensk rätt</strong>,
             utan hänsynstagande till dess lagvalsregler.
           </p>
           <p>
-            Tvister ska i första hand lösas genom förhandling mellan parterna. Om
-            förhandling inte leder till lösning inom 30 dagar kan tvisten hänskjutas
-            till allmän domstol. Konsumenter har dessutom rätt att vända sig till{" "}
+            Tvister ska i första hand lösas genom förhandling mellan parterna. För
+            tvister med näringsidkare är Stockholms tingsrätt avtalad som exklusivt forum
+            i första instans. För konsumenter gäller detta forumval endast i den
+            utsträckning det är förenligt med tvingande rätt; en konsument har alltid
+            rätt att väcka talan vid domstolen på sin hemort.
+          </p>
+          <p>
+            Konsumenter har dessutom rätt att vända sig till{" "}
             <strong>Allmänna reklamationsnämnden (ARN)</strong>,{" "}
             <a
               className="underline underline-offset-2"
@@ -300,10 +418,8 @@ export default function TermsPage() {
             >
               www.arn.se
             </a>
-            , för alternativ tvistlösning.
-          </p>
-          <p>
-            EU-kommissionens plattform för tvistlösning online (ODR) nås via{" "}
+            , för alternativ tvistlösning. EU-kommissionens plattform för tvistlösning
+            online (ODR) nås via{" "}
             <a
               className="underline underline-offset-2"
               href="https://ec.europa.eu/consumers/odr"
@@ -314,14 +430,10 @@ export default function TermsPage() {
             </a>
             .
           </p>
-          <p>
-            Stockholms tingsrätt är avtalad som första instans för tvister som inte
-            löses på annat sätt.
-          </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">§ 16 Övrigt</h2>
+          <h2 className="font-display text-lg">§ 19 Övrigt</h2>
           <p>
             Om en bestämmelse i dessa villkor befinns ogiltig eller icke-verkställbar
             ska övriga bestämmelser förbli i full kraft. Den ogiltiga bestämmelsen
@@ -338,7 +450,7 @@ export default function TermsPage() {
       </div>
 
       <p className="mt-10 text-xs text-ink/50">
-        Kontakt: legal@utlagg.se · GlorifyTC · Org.nr [xxxxxx-xxxx]
+        Kontakt: legal@kvittino.se · GlorifyTC · Org.nr [xxxxxx-xxxx]
       </p>
     </main>
   );
