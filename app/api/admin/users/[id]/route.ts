@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { requireAdmin } from "@/lib/admin";
 import { logAuditEvent, clientIp } from "@/lib/audit";
+import { deleteAllUserImages } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
@@ -15,7 +16,9 @@ export async function DELETE(
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   // FK cascade clears receipts/expenses/subscriptions/tokens; audit_logs.userId
-  // is SET NULL so the trail survives de-identified.
+  // is SET NULL so the trail survives de-identified. Purge the user's R2 receipt
+  // images too, which the DB cascade can't reach.
+  await deleteAllUserImages(params.id);
   await db.delete(users).where(eq(users.id, params.id));
   await logAuditEvent({
     userId: session.user!.id,

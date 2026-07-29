@@ -3,6 +3,8 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
+  DeleteObjectsCommand,
+  ListObjectsV2Command,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -116,6 +118,68 @@ export async function getSignedReceiptUrl(
 export async function deleteReceiptImage(key: string): Promise<void> {
   const client = getClient();
   await client.send(new DeleteObjectCommand({ Bucket: BUCKET, Key: key }));
+}
+
+/**
+ * True when a stored `receipts.imageUrl` is an R2 object key we own (rather than
+ * an inline base64 data URL or an external http URL). Only these need an R2
+ * delete when the receipt row goes away.
+ */
+export function isR2Key(imageUrl: string | null | undefined): imageUrl is string {
+  return Boolean(imageUrl && imageUrl.startsWith("receipts/"));
+}
+
+/**
+ * Best-effort R2 cleanup for a stored imageUrl. Safe to call with any imageUrl
+ * shape (or null) and when storage isn't configured — it no-ops rather than
+ * throwing, so it can't break the DB delete it accompanies.
+ */
+export async function deleteReceiptImageIfR2(
+  imageUrl: string | null | undefined,
+): Promise<void> {
+  if (!isR2Key(imageUrl) || !isStorageConfigured()) return;
+  try {
+    await deleteReceiptImage(imageUrl);
+  } catch (err) {
+    console.error("R2 image delete failed for", imageUrl, err);
+  }
+}
+
+/**
+ * Purge every stored image under a user's prefix (`receipts/<userId>/`).
+ * Used when an account is deleted: the DB rows cascade away, but their R2
+ * objects would otherwise be orphaned. Best-effort and paginated.
+ */
+export async function deleteAllUserImages(userId: string): Promise<void> {
+  if (!isStorageConfigured()) return;
+  const client = getClient();
+  const prefix = `receipts/${userId}/`;
+  try {
+    let token: string | undefined;
+    do {
+      const listed = await client.send(
+        new ListObjectsV2Command({
+          Bucket: BUCKET,
+          Prefix: prefix,
+          ContinuationToken: token,
+        }),
+      );
+      const keys = (listed.Contents ?? [])
+        .map((o) => o.Key)
+        .filter((k): k is string => Boolean(k));
+      if (keys.length > 0) {
+        await client.send(
+          new DeleteObjectsCommand({
+            Bucket: BUCKET,
+            Delete: { Objects: keys.map((Key) => ({ Key })) },
+          }),
+        );
+      }
+      token = listed.IsTruncated ? listed.NextContinuationToken : undefined;
+    } while (token);
+  } catch (err) {
+    console.error("R2 bulk delete failed for user", userId, err);
+  }
 }
 
 /**

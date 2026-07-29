@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
+import { deleteReceiptImageIfR2 } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
@@ -87,11 +88,15 @@ export async function DELETE(
   const [deleted] = await db
     .delete(receipts)
     .where(and(eq(receipts.id, params.id), eq(receipts.userId, session.user.id)))
-    .returning({ id: receipts.id });
+    .returning({ id: receipts.id, imageUrl: receipts.imageUrl });
 
   if (!deleted) {
     return NextResponse.json({ error: "Kvitto hittades inte" }, { status: 404 });
   }
+
+  // The row is gone — its R2 image object would otherwise be orphaned. Best-
+  // effort cleanup (no-ops for inline data-URL / external images).
+  await deleteReceiptImageIfR2(deleted.imageUrl);
 
   await logAudit({
     userId: session.user.id,

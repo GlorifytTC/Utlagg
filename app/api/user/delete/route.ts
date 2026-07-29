@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
+import { deleteAllUserImages } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
@@ -25,6 +26,9 @@ export async function DELETE(req: NextRequest) {
     action: "user.delete",
     ipAddress: clientIp(req),
   });
+  // Cascade clears the DB rows; purge the user's R2 receipt images too so no
+  // financial PII is left orphaned in the bucket.
+  await deleteAllUserImages(session.user.id);
   await db.delete(users).where(eq(users.id, session.user.id));
   return NextResponse.json({ ok: true });
 }
