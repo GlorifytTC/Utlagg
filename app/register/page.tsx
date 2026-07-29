@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 
+// Cooldown between verification-email sends. Also armed right after signup so
+// the button can't be hit instantly — gives the original mail time to arrive.
+const RESEND_COOLDOWN = 30;
+
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: "", companyName: "", email: "", password: "" });
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +37,7 @@ export default function RegisterPage() {
       if (res.ok) {
         setResendState("sent");
         setEmailFailed(false); // a successful resend clears the failure notice
-        setCooldown(60); // throttle client-side too; the API is rate-limited
+        setCooldown(RESEND_COOLDOWN); // throttle client-side too; the API is rate-limited
       } else {
         setResendState("error");
       }
@@ -65,6 +69,9 @@ export default function RegisterPage() {
       // clicked, so we show a "check your inbox" screen instead.
       setEmailFailed(data.verificationEmailSent === false);
       setSentTo(form.email);
+      // Arm the cooldown immediately so "skicka igen" can't be spammed before
+      // the first email has had a chance to land.
+      setCooldown(RESEND_COOLDOWN);
     } finally {
       setLoading(false);
     }
