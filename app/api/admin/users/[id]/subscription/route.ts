@@ -11,7 +11,7 @@ export const runtime = "nodejs";
 
 const schema = z.object({
   action: z.enum(["grant", "pause", "resume", "revoke"]),
-  tier: z.enum(["free", "pro", "business", "enterprise"]).optional(),
+  tier: z.enum(["free", "pro", "business", "max", "enterprise"]).optional(),
   days: z.number().int().positive().max(3650).optional(), // trial length; omit = unlimited
 });
 

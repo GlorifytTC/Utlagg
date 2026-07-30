@@ -10,6 +10,7 @@ import {
   pgEnum,
   uuid,
   index,
+  uniqueIndex,
   jsonb,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
@@ -31,6 +32,7 @@ export const subscriptionTier = pgEnum("subscription_tier", [
   "free",
   "pro",
   "business",
+  "max",
   "enterprise",
 ]);
 export const subscriptionStatus = pgEnum("subscription_status", [
@@ -50,6 +52,23 @@ export const approvalStatus = pgEnum("approval_status", [
   "approved",
   "rejected",
 ]);
+
+/**
+ * Referral reward lifecycle (Pricing V2 §4):
+ *  pending → the referred user made their first paid payment; in the hold window
+ *  vested  → survived the hold, cleared to grant (transient; set granted next)
+ *  granted → the referrer actually received their 14 days of Pro
+ *  void    → refund / chargeback / cancel within hold, or fraud clawback
+ */
+export const referralStatus = pgEnum("referral_status", [
+  "pending",
+  "vested",
+  "granted",
+  "void",
+]);
+
+/** Scope a usage / credit balance is billed against (spec §7.3 — pooled). */
+export const billingScope = pgEnum("billing_scope", ["user", "company"]);
 
 /* ------------------------------------------------------------------ */
 /* users                                                              */
@@ -92,6 +111,17 @@ export const users = pgTable("users", {
   passwordResetTokenExpires: timestamp("password_reset_token_expires", {
     withTimezone: true,
   }),
+  // --- Referral program (Pricing V2 §4, all nullable / backfilled) ---
+  // Unique, non-guessable share code (base32). Backfilled for existing users.
+  referralCode: varchar("referral_code", { length: 32 }).unique(),
+  // Who referred THIS user (immutable once set on signup). Self-ref FK added in
+  // the migration to avoid a forward-reference here.
+  referredByUserId: uuid("referred_by_user_id"),
+  // Normalised email (lower-case, Gmail dots/+alias stripped) for referral
+  // dedup — a plain unique index can't catch alias-based duplicate signups.
+  emailNormalized: varchar("email_normalized", { length: 320 }),
+  // Signup IP — one signal used by referral ring-detection.
+  signupIp: varchar("signup_ip", { length: 64 }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -215,7 +245,22 @@ export const subscriptions = pgTable("subscriptions", {
   stripeSubscriptionId: varchar("stripe_subscription_id", { length: 120 }),
   tier: subscriptionTier("tier").notNull().default("free"),
   status: subscriptionStatus("status").notNull().default("active"),
+  currentPeriodStart: timestamp("current_period_start", { withTimezone: true }),
   currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
+  // --- Pricing V2 ---
+  // Grandfather flag (spec §2.5): existing Pro subscribers were sold "unlimited
+  // scans". Set true at migration time for every Pro subscription that already
+  // exists; those stay uncapped. The 500/mo cap applies only to Pro created
+  // AFTER rollout (legacyUnlimitedScans = false, the default).
+  legacyUnlimitedScans: boolean("legacy_unlimited_scans")
+    .notNull()
+    .default(false),
+  // User-set monthly overage spend ceiling in öre (spec §3.4). Null = use the
+  // config default (DEFAULT_OVERAGE_CAP_ORE).
+  overageSpendCapOre: integer("overage_spend_cap_ore"),
+  // Stripe card fingerprint of the payment method — a referral ring-detection
+  // signal (same card on both sides of a referral is blocked).
+  stripeCardFingerprint: varchar("stripe_card_fingerprint", { length: 64 }),
 });
 
 /* ------------------------------------------------------------------ */
@@ -419,6 +464,123 @@ export const webhookEvents = pgTable("webhook_events", {
 });
 
 /* ------------------------------------------------------------------ */
+/* scan_usage (Pricing V2 §2.2) — metered scans per billing period     */
+/* One row per billing account per period. planScansUsed resets each    */
+/* cycle; overage columns accrue within the cycle. The unique index on   */
+/* (scope, scopeId, periodStart) is what makes metering idempotent and   */
+/* lets us upsert the row on first scan of a period.                     */
+/* ------------------------------------------------------------------ */
+export const scanUsage = pgTable(
+  "scan_usage",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    scope: billingScope("scope").notNull().default("user"),
+    scopeId: uuid("scope_id").notNull(), // user id OR company id, per `scope`
+    periodStart: timestamp("period_start", { withTimezone: true }).notNull(),
+    periodEnd: timestamp("period_end", { withTimezone: true }).notNull(),
+    // Scans counted against the included monthly plan quota (resets each cycle).
+    planScansUsed: integer("plan_scans_used").notNull().default(0),
+    // Scans that fell through to overage billing (billed per-scan).
+    overageScansUsed: integer("overage_scans_used").notNull().default(0),
+    // Öre of overage accrued/reported to Stripe this period.
+    overageBilledOre: integer("overage_billed_ore").notNull().default(0),
+    // True once the user's overage spend cap was hit this period (auto-billing
+    // paused; user notified).
+    capReached: boolean("cap_reached").notNull().default(false),
+    // Set once the period's accrued overage has been reported to Stripe (as an
+    // end-of-cycle invoice item). Null = not yet flushed. Prevents double-billing.
+    overageFlushedAt: timestamp("overage_flushed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => ({
+    periodIdx: uniqueIndex("scan_usage_scope_period_idx").on(
+      t.scope,
+      t.scopeId,
+      t.periodStart,
+    ),
+  }),
+);
+
+/* ------------------------------------------------------------------ */
+/* scan_credits (Pricing V2 §3.3) — purchased packs that roll over      */
+/* Consumed BEFORE overage billing. Must not expire < 12 months         */
+/* (consumer law). Tracked with their own expiry; monthly plan scans     */
+/* (scan_usage) reset and never roll over — two separate balances.       */
+/* ------------------------------------------------------------------ */
+export const scanCredits = pgTable(
+  "scan_credits",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    scope: billingScope("scope").notNull().default("user"),
+    scopeId: uuid("scope_id").notNull(),
+    scansTotal: integer("scans_total").notNull(),
+    scansRemaining: integer("scans_remaining").notNull(),
+    priceOre: integer("price_ore").notNull(),
+    purchasedAt: timestamp("purchased_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    // Stripe PaymentIntent / Checkout Session id — UNIQUE so replaying the
+    // purchase webhook can't grant the same pack twice (idempotency).
+    stripeRef: varchar("stripe_ref", { length: 255 }).unique(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => ({
+    scopeIdx: index("scan_credits_scope_idx").on(t.scope, t.scopeId),
+    expiryIdx: index("scan_credits_expiry_idx").on(t.expiresAt),
+  }),
+);
+
+/* ------------------------------------------------------------------ */
+/* referral_rewards (Pricing V2 §4) — one reward per referred user       */
+/* The UNIQUE constraint on referredUserId is the load-bearing            */
+/* idempotency control: one referred conversion → at most one reward.     */
+/* ------------------------------------------------------------------ */
+export const referralRewards = pgTable(
+  "referral_rewards",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    referrerUserId: uuid("referrer_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // One reward per referred user — enforced unique.
+    referredUserId: uuid("referred_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" })
+      .unique(),
+    status: referralStatus("status").notNull().default("pending"),
+    rewardDays: integer("reward_days").notNull(),
+    // Stripe context that triggered the reward (first paid invoice) + the event
+    // id that created it, for audit / idempotent replay.
+    triggerInvoiceId: varchar("trigger_invoice_id", { length: 255 }),
+    triggerEventId: varchar("trigger_event_id", { length: 255 }),
+    // Lifecycle timestamps.
+    vestsAt: timestamp("vests_at", { withTimezone: true }), // pendingAt + holdDays
+    grantedAt: timestamp("granted_at", { withTimezone: true }),
+    voidedAt: timestamp("voided_at", { withTimezone: true }),
+    voidReason: text("void_reason"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => ({
+    referrerIdx: index("referral_rewards_referrer_idx").on(t.referrerUserId),
+    statusIdx: index("referral_rewards_status_idx").on(t.status),
+    vestsIdx: index("referral_rewards_vests_idx").on(t.vestsAt),
+  }),
+);
+
+/* ------------------------------------------------------------------ */
 /* Relations                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -464,6 +626,10 @@ export type MileageEntry = typeof mileageEntries.$inferSelect;
 export type ApprovalRequest = typeof approvalRequests.$inferSelect;
 export type Company = typeof companies.$inferSelect;
 export type CompanyMember = typeof companyMembers.$inferSelect;
+export type ScanUsage = typeof scanUsage.$inferSelect;
+export type NewScanUsage = typeof scanUsage.$inferInsert;
+export type ScanCredit = typeof scanCredits.$inferSelect;
+export type ReferralReward = typeof referralRewards.$inferSelect;
 
 /* OCR training samples — manual field annotations for future model training. */
 export const ocrSamples = pgTable("ocr_samples", {

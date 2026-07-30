@@ -11,11 +11,12 @@ import { logAudit } from "@/lib/audit";
 
 export const runtime = "nodejs";
 
-const schema = z.object({ tier: z.enum(["pro", "business"]) });
+const schema = z.object({ tier: z.enum(["pro", "business", "max"]) });
 
 const PRICE_ENV: Record<string, string | undefined> = {
   pro: process.env.STRIPE_PRICE_PRO,
   business: process.env.STRIPE_PRICE_FORETAG,
+  max: process.env.STRIPE_PRICE_MAX,
 };
 
 export async function POST(req: NextRequest) {

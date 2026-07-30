@@ -45,9 +45,32 @@ function applySecurityHeaders(res: NextResponse): NextResponse {
   return res;
 }
 
+/**
+ * Persist a `?ref=CODE` referral param into a first-party cookie so the code
+ * survives the journey to /register even if the visitor browses around first.
+ * Attribution itself happens server-side at signup (see referrals.captureReferral).
+ */
+interface RefRequest {
+  nextUrl: { searchParams: URLSearchParams };
+  cookies: { get(name: string): { value: string } | undefined };
+}
+function captureRefCookie(req: RefRequest, res: NextResponse): NextResponse {
+  const ref = req.nextUrl.searchParams.get("ref");
+  if (ref && /^[0-9A-Za-z]{4,32}$/.test(ref) && !req.cookies.get("kvittino_ref")) {
+    res.cookies.set("kvittino_ref", ref.toUpperCase(), {
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      httpOnly: false,
+      sameSite: "lax",
+      path: "/",
+    });
+  }
+  return res;
+}
+
 export default withAuth(
-  function middleware() {
-    return applySecurityHeaders(NextResponse.next());
+  function middleware(req) {
+    const res = applySecurityHeaders(NextResponse.next());
+    return captureRefCookie(req, res);
   },
   {
     callbacks: {

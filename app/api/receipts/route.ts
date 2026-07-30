@@ -3,12 +3,13 @@ import { getServerSession } from "next-auth";
 import { and, count, desc, eq, gte, ilike, inArray, lte, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { receipts, users, companyMembers } from "@/db/schema";
+import { receipts, companyMembers } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
 import { getUserCompany } from "@/lib/company";
 import { suggestBasCode } from "@/lib/auto-categorize";
 import { getBasAccount } from "@/lib/bas";
+import { meterScan } from "@/lib/billing/metering";
 
 export const runtime = "nodejs";
 
@@ -131,22 +132,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Enforce scan limit (scanLimit === -1 means unlimited).
-    const [user] = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, userId))
-      .limit(1);
-    if (!user) {
-      return NextResponse.json({ error: "Användare saknas" }, { status: 404 });
-    }
-
-    if (user.scanLimit !== -1 && user.scansUsedThisMonth >= user.scanLimit) {
+    // Scan metering — the single choke-point (lib/billing/metering.ts) enforces
+    // the monthly cap, consumes credits before overage, applies the tapered
+    // overage rate and honours the spend cap. Do NOT add cap checks anywhere
+    // else. When PRICING_V2 is off this transparently uses the legacy counter.
+    const meter = await meterScan(userId);
+    if (!meter.allowed) {
       return NextResponse.json(
         {
           error:
-            "Du har nått månadens gräns. Uppgradera för obegränsade skanningar.",
-          code: "SCAN_LIMIT_REACHED",
+            meter.message ??
+            "Du har nått månadens gräns. Uppgradera för fler skanningar.",
+          code: meter.reason === "spend_cap_reached"
+            ? "OVERAGE_CAP_REACHED"
+            : "SCAN_LIMIT_REACHED",
+          usage: {
+            planScansUsed: meter.planScansUsed,
+            planLimit: meter.planLimit,
+            creditsRemaining: meter.creditsRemaining,
+          },
         },
         { status: 402 },
       );
@@ -198,13 +202,6 @@ export async function POST(req: NextRequest) {
         status: receiptStatus,
       })
       .returning();
-
-    if (user.scanLimit !== -1) {
-      await db
-        .update(users)
-        .set({ scansUsedThisMonth: user.scansUsedThisMonth + 1 })
-        .where(eq(users.id, userId));
-    }
 
     await logAudit({
       userId,

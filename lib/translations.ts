@@ -45,12 +45,14 @@ export interface Translations {
   planFree: string;
   planPro: string;
   planBusiness: string;
+  planMax: string;
   planEnterprise: string;
 
   // Plan features
   planFreeFeatures: string[];
   planProFeatures: string[];
   planBusinessFeatures: string[];
+  planMaxFeatures: string[];
   planEnterpriseFeatures: string[];
 
   // Footer
@@ -1071,6 +1073,7 @@ export const strings: Record<Lang, Translations> = {
     planFree: "Gratis",
     planPro: "Pro",
     planBusiness: "Företag",
+    planMax: "Max",
     planEnterprise: "Enterprise",
     cancelTitle: "Avsluta prenumeration?",
     cancelIntro: "Innan du avslutar, läs och godkänn följande:",
@@ -1239,23 +1242,35 @@ export const strings: Record<Lang, Translations> = {
 
     // Plan features
     planFreeFeatures: [
-      "25 skanningar/månad",
+      "15 skanningar/mån",
       "Grundläggande OCR",
       "CSV-export",
     ],
     planProFeatures: [
-      "Obegränsade skanningar",
+      "500 skanningar/mån",
+      "SIE/PDF-export, moms & BAS",
+      "Milersättning",
       "Fortnox-integration",
-      "Svensk moms (6/12/25 %)",
       "7-årig revisionslogg",
     ],
     planBusinessFeatures: [
+      "1 500 skanningar/mån (delas i teamet)",
       "Allt i Pro",
+      "5–10 användare, roller",
       "Attestflöden",
-      "Milersättning",
-      "Koldioxidavtryck",
+      "Bokföringsintegrationer",
     ],
-    planEnterpriseFeatures: ["Allt i Företag", "SSO", "API", "White-label"],
+    planMaxFeatures: [
+      "5 000 skanningar/mån (delas i teamet)",
+      "Allt i Företag",
+      "Flera klienter",
+      "Prioriterad support",
+    ],
+    planEnterpriseFeatures: [
+      "Allt i Max",
+      "Skräddarsydda volymer",
+      "Dedikerad kontakt (offert)",
+    ],
 
     // Footer
     footerTitle: "Kvitto",
@@ -1738,6 +1753,7 @@ export const strings: Record<Lang, Translations> = {
     planFree: "Free",
     planPro: "Pro",
     planBusiness: "Business",
+    planMax: "Max",
     planEnterprise: "Enterprise",
     cancelTitle: "Cancel subscription?",
     cancelIntro: "Before you cancel, please read and accept the following:",
@@ -1906,24 +1922,31 @@ export const strings: Record<Lang, Translations> = {
     // Plan names
 
     // Plan features
-    planFreeFeatures: ["25 scans/month", "Basic OCR", "CSV export"],
+    planFreeFeatures: ["15 scans/month", "Basic OCR", "CSV export"],
     planProFeatures: [
-      "Unlimited scans",
+      "500 scans/month",
+      "SIE/PDF export, VAT & BAS",
+      "Mileage allowance",
       "Fortnox integration",
-      "Swedish VAT (6/12/25 %)",
       "7-year audit log",
     ],
     planBusinessFeatures: [
+      "1,500 scans/month (shared by the team)",
       "Everything in Pro",
+      "5–10 users, roles",
       "Approval flows",
-      "Mileage allowance",
-      "Carbon footprint",
+      "Accounting integrations",
+    ],
+    planMaxFeatures: [
+      "5,000 scans/month (shared by the team)",
+      "Everything in Business",
+      "Multi-client",
+      "Priority support",
     ],
     planEnterpriseFeatures: [
-      "Everything in Business",
-      "SSO",
-      "API",
-      "White-label",
+      "Everything in Max",
+      "Custom volumes",
+      "Dedicated contact (quote)",
     ],
 
     // Footer

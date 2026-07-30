@@ -7,12 +7,16 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { logAudit, clientIp } from "@/lib/audit";
 import { sendVerificationEmail } from "@/lib/email";
+import { captureReferral } from "@/lib/referrals";
+import { normalizeEmail } from "@/lib/billing/referral-utils";
 
 const schema = z.object({
   email: z.string().email(),
   password: z.string().min(8, "Lösenordet måste vara minst 8 tecken"),
   name: z.string().min(1).optional(),
   companyName: z.string().optional(),
+  // Referral code carried through the signup flow (?ref=CODE → cookie → here).
+  ref: z.string().max(32).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -84,6 +88,9 @@ export async function POST(req: NextRequest) {
       .insert(users)
       .values({
         email,
+        // Normalised email + signup IP power referral dedup / ring detection.
+        emailNormalized: normalizeEmail(email),
+        signupIp: clientIp(req),
         hashedPassword,
         name: parsed.data.name,
         companyName: parsed.data.companyName,
@@ -100,6 +107,17 @@ export async function POST(req: NextRequest) {
       details: `New account (pending verification): ${email}`,
       ipAddress: clientIp(req),
     });
+
+    // Attribute the referral (immutable, self-referral rejected). The reward
+    // only fires later, on the referred user's first paid invoice (see webhook).
+    const refCode = parsed.data.ref ?? req.cookies.get("kvittino_ref")?.value;
+    if (refCode) {
+      try {
+        await captureReferral({ referredUserId: user.id, refCode });
+      } catch (e) {
+        console.error("referral capture failed (non-blocking):", e);
+      }
+    }
 
     const emailSent = await sendVerificationEmail(
       user.email,

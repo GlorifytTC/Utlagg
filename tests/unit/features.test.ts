@@ -9,9 +9,11 @@ describe("feature entitlements", () => {
     expect(e.approvals).toBe(false);
   });
 
-  it("pro unlocks fortnox but not company features", () => {
+  it("pro unlocks fortnox + mileage but not company approval flows", () => {
+    // Pricing V2 tier table: Pro is "full features" incl. mileage; approvals
+    // (attestflöden) remain a Företag/Business team feature.
     expect(hasFeature("pro", "fortnox")).toBe(true);
-    expect(hasFeature("pro", "mileage")).toBe(false);
+    expect(hasFeature("pro", "mileage")).toBe(true);
     expect(hasFeature("pro", "approvals")).toBe(false);
   });
 
@@ -24,8 +26,8 @@ describe("feature entitlements", () => {
     expect(hasFeature("enterprise", "mileage")).toBe(true);
   });
 
-  it("mileage and approvals require Företag (business)", () => {
-    expect(FEATURE_MIN_TIER.mileage).toBe("business");
+  it("approvals require Företag (business); mileage now unlocks at Pro", () => {
+    expect(FEATURE_MIN_TIER.mileage).toBe("pro");
     expect(FEATURE_MIN_TIER.approvals).toBe("business");
   });
 });

@@ -9,7 +9,9 @@ import { logAuditEvent, clientIp } from "@/lib/audit";
 
 export const runtime = "nodejs";
 
-const schema = z.object({ tier: z.enum(["free", "pro", "business", "enterprise"]) });
+const schema = z.object({
+  tier: z.enum(["free", "pro", "business", "max", "enterprise"]),
+});
 
 /**
  * Admin sets a user's subscription tier directly. This is how you grant

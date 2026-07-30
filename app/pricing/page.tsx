@@ -12,24 +12,20 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { ChatBox } from "@/components/ChatBox";
 
+// Scan quotas + feature matrix. Numbers mirror lib/billing/config.ts (the
+// single source of truth) — keep them in sync if the tier table changes.
 const PRICING_TABLE_ROWS = [
-  { labelKey: "pricingTableReceipts", free: "50", pro: "500", business: "2,500", enterprise: "∞" },
-  { labelKey: "pricingTableMembers", free: "1", pro: "1", business: "Upp till 20", enterprise: "∞" },
-  { labelKey: "pricingTableOcr", free: "✓", pro: "✓", business: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableBas", free: "✓", pro: "✓", business: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableCurrency", free: "✓", pro: "✓", business: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableSie4", free: "✓", pro: "✓", business: "✓", enterprise: "✓" },
-  {
-    labelKey: "pricingTableSync",
-    free: "—",
-    pro: "✓",
-    business: "✓",
-    enterprise: "✓",
-  },
-  { labelKey: "pricingTableRoles", free: "—", pro: "—", business: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableLimits", free: "—", pro: "—", business: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableOnboarding", free: "—", pro: "—", business: "—", enterprise: "✓" },
-  { labelKey: "pricingTableSupport", free: "—", pro: "—", business: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableReceipts", free: "15", pro: "500", business: "1 500", max: "5 000", enterprise: "∞" },
+  { labelKey: "pricingTableMembers", free: "1", pro: "1", business: "5–10", max: "∞", enterprise: "∞" },
+  { labelKey: "pricingTableOcr", free: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableBas", free: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableCurrency", free: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableSie4", free: "—", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableSync", free: "—", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableRoles", free: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableLimits", free: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableOnboarding", free: "—", pro: "—", business: "—", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableSupport", free: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
 ] as const;
 
 const FAQ_KEYS = [
@@ -39,7 +35,7 @@ const FAQ_KEYS = [
   { q: "pricingFaq4Q" as const, a: "pricingFaq4A" as const },
 ];
 
-const TIER_ORDER = ["free", "pro", "business", "enterprise"] as const;
+const TIER_ORDER = ["free", "pro", "business", "max", "enterprise"] as const;
 
 function PricingPageContent() {
   const { status } = useSession();
@@ -116,7 +112,7 @@ function PricingPageContent() {
 
         {/* Plan cards */}
         <section className="mx-auto max-w-6xl px-6 py-24">
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {PLANS.map((plan, i) => (
               <motion.div
                 key={plan.tier}

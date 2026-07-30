@@ -1,9 +1,9 @@
 import { PLANS, type Tier } from "@/lib/plans";
+import { TIER_ORDER } from "@/lib/billing/config";
 
 /** Premium features that require a paid tier. */
 export type Feature = "fortnox" | "mileage" | "approvals" | "invoicing";
 
-const TIER_ORDER: Tier[] = ["free", "pro", "business", "enterprise"];
 export function tierRank(t: Tier): number {
   const i = TIER_ORDER.indexOf(t);
   return i === -1 ? 0 : i;
@@ -12,7 +12,7 @@ export function tierRank(t: Tier): number {
 /** Minimum tier required per feature (matches the pricing page). */
 export const FEATURE_MIN_TIER: Record<Feature, Tier> = {
   fortnox: "pro", // Pro+
-  mileage: "business", // Företag+
+  mileage: "pro", // Pro+ (Pro now includes mileage per the V2 tier table)
   approvals: "business", // Företag+
   invoicing: "pro", // Pro+ (kundfakturor)
 };

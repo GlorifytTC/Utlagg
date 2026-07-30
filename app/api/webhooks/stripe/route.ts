@@ -11,15 +11,24 @@ import {
   sendPaymentFailed,
 } from "@/lib/email";
 import { planForTier, type Tier } from "@/lib/plans";
+import {
+  onReferredFirstPaid,
+  applyReferralEventForReferred,
+} from "@/lib/referrals";
+import { grantCreditPack } from "@/lib/billing/credits";
 
 export const runtime = "nodejs";
 // Stripe needs the raw body for signature verification — don't let Next parse it.
 export const dynamic = "force-dynamic";
 
+// Legacy per-user scanLimit column (only consulted when PRICING_V2 is off).
+// Paid tiers stay "unlimited" here so flipping the flag off never caps anyone;
+// V2 enforcement lives entirely in lib/billing/metering.ts + config, not here.
 const SCAN_LIMITS: Record<string, number> = {
   free: 25,
   pro: -1,
   business: -1,
+  max: -1,
   enterprise: -1,
 };
 
@@ -51,6 +60,22 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case "checkout.session.completed": {
         const sessionObj = event.data.object as Stripe.Checkout.Session;
+        // One-off credit-pack purchase (mode: payment) → grant credits,
+        // idempotent on the session id. Subscriptions are handled by the
+        // subscription.* events, so only act on credit packs here.
+        if (
+          sessionObj.mode === "payment" &&
+          sessionObj.metadata?.kind === "credit_pack" &&
+          sessionObj.metadata?.userId
+        ) {
+          await grantCreditPack({
+            userId: sessionObj.metadata.userId,
+            stripeRef: sessionObj.id,
+            scans: Number(sessionObj.metadata.scans) || undefined,
+            priceOre: Number(sessionObj.metadata.priceOre) || undefined,
+          });
+          break;
+        }
         const email =
           sessionObj.customer_details?.email ??
           sessionObj.customer_email ??
@@ -70,16 +95,46 @@ export async function POST(req: NextRequest) {
       case "customer.subscription.deleted": {
         const sub = event.data.object as Stripe.Subscription;
         await downgradeToFree(sub);
+        // A cancellation may land within a referral hold → void the reward.
+        const uid = await findUserByCustomer(
+          typeof sub.customer === "string" ? sub.customer : sub.customer.id,
+        );
+        if (uid) {
+          await applyReferralEventForReferred(uid, "cancel_within_hold", `sub_deleted=${sub.id}`);
+        }
         break;
       }
-      case "invoice.paid": {
+      case "invoice.paid":
+      case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
-        await handleInvoicePaid(invoice);
+        await handleInvoicePaid(invoice, event.id);
         break;
       }
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
         await handleInvoiceFailed(invoice);
+        break;
+      }
+      case "charge.refunded": {
+        const charge = event.data.object as Stripe.Charge;
+        const uid = await findUserByCustomer(
+          typeof charge.customer === "string" ? charge.customer : charge.customer?.id ?? "",
+        );
+        if (uid) await applyReferralEventForReferred(uid, "refund", `charge=${charge.id}`);
+        break;
+      }
+      case "charge.dispute.created": {
+        const dispute = event.data.object as Stripe.Dispute;
+        const chargeId =
+          typeof dispute.charge === "string" ? dispute.charge : dispute.charge?.id;
+        // Resolve the customer via the disputed charge.
+        if (chargeId) {
+          const charge = await stripe.charges.retrieve(chargeId);
+          const uid = await findUserByCustomer(
+            typeof charge.customer === "string" ? charge.customer : charge.customer?.id ?? "",
+          );
+          if (uid) await applyReferralEventForReferred(uid, "chargeback", `dispute=${dispute.id}`);
+        }
         break;
       }
       default:
@@ -130,6 +185,9 @@ async function syncSubscription(sub: Stripe.Subscription) {
       stripeSubscriptionId: sub.id,
       tier,
       status,
+      // Persist both bounds so metering can align the scan cycle to the Stripe
+      // billing anchor (lib/billing/period.ts) instead of the calendar month.
+      currentPeriodStart: new Date(sub.current_period_start * 1000),
       currentPeriodEnd: new Date(sub.current_period_end * 1000),
     })
     .where(eq(subscriptions.stripeCustomerId, customerId));
@@ -149,6 +207,28 @@ async function syncSubscription(sub: Stripe.Subscription) {
     action: "subscription.sync",
     details: `tier=${tier} status=${status}`,
   });
+
+  // Best-effort: record the card fingerprint for referral ring-detection. Never
+  // let this fail the webhook — it's a fraud signal, not core billing state.
+  await captureCardFingerprint(sub, customerId).catch((e) =>
+    console.error("card fingerprint capture failed (non-blocking):", e),
+  );
+}
+
+/** Store the subscription's default card fingerprint (referral anti-abuse). */
+async function captureCardFingerprint(sub: Stripe.Subscription, customerId: string) {
+  const pmId =
+    typeof sub.default_payment_method === "string"
+      ? sub.default_payment_method
+      : sub.default_payment_method?.id;
+  if (!pmId) return;
+  const pm = await stripe.paymentMethods.retrieve(pmId);
+  const fingerprint = pm.card?.fingerprint;
+  if (!fingerprint) return;
+  await db
+    .update(subscriptions)
+    .set({ stripeCardFingerprint: fingerprint })
+    .where(eq(subscriptions.stripeCustomerId, customerId));
 }
 
 async function findUserRowByCustomer(customerId: string) {
@@ -166,7 +246,7 @@ async function findUserRowByCustomer(customerId: string) {
   return user ?? null;
 }
 
-async function handleInvoicePaid(invoice: Stripe.Invoice) {
+async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
   const customerId =
     typeof invoice.customer === "string"
       ? invoice.customer
@@ -195,6 +275,22 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     action: "subscription.invoice_paid",
     details: `invoice=${invoice.id} amount=${invoice.amount_paid}`,
   });
+
+  // Referral reward trigger (spec §4): the referred user's FIRST *paid* invoice
+  // (amount > 0 → not a trial / 100% coupon) puts any referral reward into the
+  // pending/hold state. onReferredFirstPaid is idempotent (one reward per
+  // referred user) so replays and renewals never create a second reward.
+  if (invoice.amount_paid > 0 && invoice.id) {
+    try {
+      await onReferredFirstPaid({
+        referredUserId: user.id,
+        invoiceId: invoice.id,
+        eventId,
+      });
+    } catch (e) {
+      console.error("referral trigger failed (non-blocking):", e);
+    }
+  }
 
   // Receipt email — skip 0 kr invoices (trials, 100% coupons).
   if (invoice.amount_paid > 0 && user.email) {
