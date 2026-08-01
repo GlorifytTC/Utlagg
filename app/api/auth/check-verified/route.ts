@@ -26,7 +26,16 @@ export async function POST(req: NextRequest) {
   }
 
   const email = parsed.data.email.toLowerCase();
-  const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  // Select only what we need (not `SELECT *`) so this stays working even if the
+  // live DB is missing a column that exists in the Drizzle schema.
+  const [user] = await db
+    .select({
+      hashedPassword: users.hashedPassword,
+      emailVerified: users.emailVerified,
+    })
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1);
 
   if (!user || !user.hashedPassword) return NextResponse.json({ reason: "invalid" });
   const valid = await bcrypt.compare(parsed.data.password, user.hashedPassword);

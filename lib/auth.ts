@@ -26,8 +26,17 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
 
+        // Select only the columns this path needs. Avoids `SELECT *`, which
+        // would break sign-in if the running DB is missing any column present
+        // in the Drizzle schema (e.g. a not-yet-applied migration).
         const [user] = await db
-          .select()
+          .select({
+            id: users.id,
+            email: users.email,
+            name: users.name,
+            hashedPassword: users.hashedPassword,
+            emailVerified: users.emailVerified,
+          })
           .from(users)
           .where(eq(users.email, credentials.email.toLowerCase()))
           .limit(1);
@@ -94,7 +103,11 @@ export const authOptions: NextAuthOptions = {
           .digest("hex");
 
         const [existing] = await db
-          .select()
+          .select({
+            id: users.id,
+            email: users.email,
+            name: users.name,
+          })
           .from(users)
           .where(eq(users.bankIdSubject, subject))
           .limit(1);
