@@ -8,12 +8,19 @@ import { db } from "@/db";
 import { users, subscriptions } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
+import {
+  TRIAL_DAYS,
+  pricingV3Enabled,
+  trialRequireCard,
+} from "@/lib/billing/config";
+import { checkTrialEligibility } from "@/lib/billing/trial";
 
 export const runtime = "nodejs";
 
-const schema = z.object({ tier: z.enum(["pro", "business", "max"]) });
+const schema = z.object({ tier: z.enum(["starter", "pro", "business", "max"]) });
 
 const PRICE_ENV: Record<string, string | undefined> = {
+  starter: process.env.STRIPE_PRICE_STARTER,
   pro: process.env.STRIPE_PRICE_PRO,
   business: process.env.STRIPE_PRICE_FORETAG,
   max: process.env.STRIPE_PRICE_MAX,
@@ -128,6 +135,18 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Card-required 30-day trial (spec §A.3, §9): offered to a genuinely new
+    // subscriber who is trial-eligible (hasn't consumed their one trial and
+    // isn't blocked by the email guard). The selected tier becomes the
+    // post-trial plan; full Pro entitlement applies DURING the trial regardless
+    // (lib/billing/access.ts). Stripe charges at day 31 and the subscription
+    // becomes active. Consumer-law disclosure (price + first charge date) is
+    // shown up-front in the checkout UI and the ToS (§F.2).
+    const wantTrial =
+      pricingV3Enabled() &&
+      trialRequireCard() &&
+      (await checkTrialEligibility(session.user.id, session.user.email)).eligible;
+
     const checkout = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer: customerId,
@@ -143,11 +162,16 @@ export async function POST(req: NextRequest) {
         ? { automatic_tax: { enabled: true } }
         : {}),
       subscription_data: {
-        metadata: { userId: session.user.id, tier },
+        metadata: {
+          userId: session.user.id,
+          tier,
+          ...(wantTrial ? { trial: "1", postTrialPlan: tier } : {}),
+        },
+        ...(wantTrial ? { trial_period_days: TRIAL_DAYS } : {}),
       },
       success_url: `${baseUrl}/dashboard/subscription?checkout=success`,
       cancel_url: `${baseUrl}/dashboard/subscription?checkout=cancelled`,
-      metadata: { userId: session.user.id, tier },
+      metadata: { userId: session.user.id, tier, trial: wantTrial ? "1" : "0" },
     });
 
     return NextResponse.json({ url: checkout.url });

@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { users, scanUsage, scanCredits } from "@/db/schema";
 import {
   DEFAULT_OVERAGE_CAP_ORE,
+  TRIAL_SCANS,
   UNLIMITED,
   pricingV2Enabled,
   tierConfig,
@@ -27,7 +28,13 @@ import { logAudit } from "@/lib/audit";
 
 export interface MeterOutcome {
   allowed: boolean;
-  reason: ScanReason | "legacy_limit" | "legacy_ok" | "no_user";
+  reason:
+    | ScanReason
+    | "legacy_limit"
+    | "legacy_ok"
+    | "no_user"
+    | "trial_hard_stop"
+    | "read_only";
   source: ConsumeSource | null;
   planScansUsed: number;
   planLimit: number; // -1 = unlimited
@@ -43,6 +50,14 @@ const FREE_STOP_MSG =
   "Du har nått månadens gräns på gratisplanen. Uppgradera för fler skanningar.";
 const CAP_STOP_MSG =
   "Din månatliga kostnadsgräns för extra skanningar är nådd. Höj gränsen eller uppgradera för att fortsätta.";
+// Trial hard-stop (spec §3.1: no overage, hard-stop at TRIAL_SCANS with a
+// convert prompt).
+const TRIAL_STOP_MSG =
+  "Du har använt alla skanningar i din provperiod. Uppgradera till en betald plan för att fortsätta.";
+// Read-only lockout (spec §C): scanning/uploading is blocked, but a complete CSV
+// export and your original files remain available.
+const READ_ONLY_MSG =
+  "Ditt konto är i läsläge. Du kan fortfarande exportera dina kvitton (CSV) och ladda ner dina originalfiler. Aktivera en prenumeration för att skanna igen.";
 
 /** Sum of unexpired, non-empty purchased credits for a billing account. */
 async function creditsRemaining(scope: "user" | "company", scopeId: string): Promise<number> {
@@ -128,21 +143,44 @@ export async function meterScan(userId: string): Promise<MeterOutcome> {
     return legacyMeter(userId);
   }
 
+  // ---- V3 read-only lockout (spec §C): no new scans; exports stay open. ------
+  if (ctx.state === "read_only") {
+    return {
+      allowed: false,
+      reason: "read_only",
+      source: null,
+      planScansUsed: 0,
+      planLimit: 0,
+      creditsRemaining: 0,
+      overageScansThisPeriod: 0,
+      overageOreThisPeriod: 0,
+      spendCapOre: 0,
+      message: READ_ONLY_MSG,
+    };
+  }
+
+  // Trial = full Pro entitlement (ctx.tier is already 'pro') but hard-stops at
+  // TRIAL_SCANS with NO overage and no credits (spec §3.1). Everything else uses
+  // the tier config.
+  const isTrial = ctx.state === "trial";
   const cfg = tierConfig(ctx.tier);
   const unlimited =
-    ctx.legacyUnlimited || cfg.monthlyScans === UNLIMITED || ctx.tier === "enterprise";
-  const planLimit = unlimited ? UNLIMITED : cfg.monthlyScans;
+    !isTrial &&
+    (ctx.legacyUnlimited || cfg.monthlyScans === UNLIMITED || ctx.tier === "enterprise");
+  const planLimit = isTrial ? TRIAL_SCANS : unlimited ? UNLIMITED : cfg.monthlyScans;
+  const overageRateOre = isTrial ? null : cfg.overageOrePerScan;
   const spendCapOre = ctx.subscription?.overageSpendCapOre ?? DEFAULT_OVERAGE_CAP_ORE;
 
   const row = await usageRowFor(ctx);
-  const credits = unlimited ? 0 : await creditsRemaining(ctx.scope, ctx.scopeId);
+  const credits =
+    unlimited || isTrial ? 0 : await creditsRemaining(ctx.scope, ctx.scopeId);
 
   const decision = decideScan({
     unlimited,
     planScansUsed: row.planScansUsed,
     planLimit: unlimited ? Number.MAX_SAFE_INTEGER : planLimit,
     creditsRemaining: credits,
-    overageRateOre: cfg.overageOrePerScan,
+    overageRateOre,
     overageOreSoFar: row.overageBilledOre,
     spendCapOre,
   });
@@ -172,6 +210,11 @@ export async function meterScan(userId: string): Promise<MeterOutcome> {
         action: "billing.overage_cap_reached",
         details: `scope=${ctx.scope}:${ctx.scopeId} cap=${spendCapOre}öre`,
       });
+    }
+    // A trial exhausting its quota hard-stops with a convert prompt, not the
+    // free-plan upgrade copy.
+    if (decision.reason === "free_hard_stop" && isTrial) {
+      return snapshot({ reason: "trial_hard_stop", message: TRIAL_STOP_MSG });
     }
     return snapshot({
       message: decision.reason === "free_hard_stop" ? FREE_STOP_MSG : CAP_STOP_MSG,
@@ -221,18 +264,36 @@ export async function getUsageSnapshot(userId: string): Promise<MeterOutcome | n
   if (!ctx) return null;
   if (!pricingV2Enabled()) return legacyMeter(userId, { peek: true });
 
+  // Read-only: nothing to meter — scanning is locked (exports remain open).
+  if (ctx.state === "read_only") {
+    return {
+      allowed: false,
+      reason: "read_only",
+      source: null,
+      planScansUsed: 0,
+      planLimit: 0,
+      creditsRemaining: 0,
+      overageScansThisPeriod: 0,
+      overageOreThisPeriod: 0,
+      spendCapOre: 0,
+      message: READ_ONLY_MSG,
+    };
+  }
+
+  const isTrial = ctx.state === "trial";
   const cfg = tierConfig(ctx.tier);
   const unlimited =
-    ctx.legacyUnlimited || cfg.monthlyScans === UNLIMITED || ctx.tier === "enterprise";
+    !isTrial &&
+    (ctx.legacyUnlimited || cfg.monthlyScans === UNLIMITED || ctx.tier === "enterprise");
   const row = await usageRowFor(ctx);
-  const credits = await creditsRemaining(ctx.scope, ctx.scopeId);
+  const credits = isTrial ? 0 : await creditsRemaining(ctx.scope, ctx.scopeId);
   const spendCapOre = ctx.subscription?.overageSpendCapOre ?? DEFAULT_OVERAGE_CAP_ORE;
   return {
     allowed: true,
-    reason: unlimited ? "unlimited" : "plan",
+    reason: isTrial ? "plan" : unlimited ? "unlimited" : "plan",
     source: null,
     planScansUsed: row.planScansUsed,
-    planLimit: unlimited ? UNLIMITED : cfg.monthlyScans,
+    planLimit: isTrial ? TRIAL_SCANS : unlimited ? UNLIMITED : cfg.monthlyScans,
     creditsRemaining: credits,
     overageScansThisPeriod: row.overageScansUsed,
     overageOreThisPeriod: row.overageBilledOre,

@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { PLANS } from "@/lib/plans";
+import { SELECTABLE_PLANS } from "@/lib/plans";
 import { cn } from "@/lib/utils";
 import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
@@ -14,18 +14,21 @@ import { ChatBox } from "@/components/ChatBox";
 
 // Scan quotas + feature matrix. Numbers mirror lib/billing/config.ts (the
 // single source of truth) — keep them in sync if the tier table changes.
+// Free is a deprecated tombstone (spec §7) — the offerable ladder now starts at
+// Starter. SIE/SIE4 export is included on every paid tier (core), so it's a "✓"
+// across the board; it is only ever gated in read-only/lapsed state (spec §C).
 const PRICING_TABLE_ROWS = [
-  { labelKey: "pricingTableReceipts", free: "15", pro: "500", business: "1 500", max: "5 000", enterprise: "∞" },
-  { labelKey: "pricingTableMembers", free: "1", pro: "1", business: "5–10", max: "∞", enterprise: "∞" },
-  { labelKey: "pricingTableOcr", free: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableBas", free: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableCurrency", free: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableSie4", free: "—", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableSync", free: "—", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableRoles", free: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableLimits", free: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableOnboarding", free: "—", pro: "—", business: "—", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableSupport", free: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableReceipts", starter: "100", pro: "500", business: "1 500", max: "5 000", enterprise: "∞" },
+  { labelKey: "pricingTableMembers", starter: "1", pro: "1", business: "5–10", max: "∞", enterprise: "∞" },
+  { labelKey: "pricingTableOcr", starter: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableBas", starter: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableCurrency", starter: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableSie4", starter: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableSync", starter: "—", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableRoles", starter: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableLimits", starter: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableOnboarding", starter: "—", pro: "—", business: "—", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableSupport", starter: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
 ] as const;
 
 const FAQ_KEYS = [
@@ -35,7 +38,7 @@ const FAQ_KEYS = [
   { q: "pricingFaq4Q" as const, a: "pricingFaq4A" as const },
 ];
 
-const TIER_ORDER = ["free", "pro", "business", "max", "enterprise"] as const;
+const TIER_ORDER = ["starter", "pro", "business", "max", "enterprise"] as const;
 
 function PricingPageContent() {
   const { status } = useSession();
@@ -113,7 +116,7 @@ function PricingPageContent() {
         {/* Plan cards */}
         <section className="mx-auto max-w-6xl px-6 py-24">
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {PLANS.map((plan, i) => (
+            {SELECTABLE_PLANS.map((plan, i) => (
               <motion.div
                 key={plan.tier}
                 initial={{ opacity: 0, y: 16 }}

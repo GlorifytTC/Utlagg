@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { PLANS } from "@/lib/plans";
+import { SELECTABLE_PLANS } from "@/lib/plans";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -65,7 +65,7 @@ export function Pricing() {
       </div>
 
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {PLANS.map((plan, i) => (
+        {SELECTABLE_PLANS.map((plan, i) => (
           <motion.div
             key={plan.tier}
             initial={{ opacity: 0, y: 16 }}

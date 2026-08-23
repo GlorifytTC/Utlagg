@@ -6,6 +6,8 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { hasFeature, type Feature } from "@/lib/features";
 import { planForTier, type Tier } from "@/lib/plans";
+import { pricingV3Enabled } from "@/lib/billing/config";
+import { resolveAccountState, type AccessState } from "@/lib/billing/access";
 
 /**
  * Resolve the signed-in user's EFFECTIVE tier (honours pause + trial expiry).
@@ -18,28 +20,49 @@ import { planForTier, type Tier } from "@/lib/plans";
  * means every screen (user dashboard AND admin) sees the same truth: the plan
  * is gone.
  */
-export async function currentTier(): Promise<{ userId: string; tier: Tier } | null> {
+export async function currentTier(): Promise<{
+  userId: string;
+  tier: Tier;
+  state: AccessState;
+} | null> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return null;
   const [u] = await db
     .select({
       tier: users.subscriptionTier,
+      status: users.subscriptionStatus,
       paused: users.subscriptionPaused,
       grantedUntil: users.subscriptionGrantedUntil,
       source: users.subscriptionSource,
+      trialEndsAt: users.trialEndsAt,
     })
     .from(users)
     .where(eq(users.id, session.user.id))
     .limit(1);
 
-  let tier = (u?.tier ?? "free") as Tier;
+  const v3 = pricingV3Enabled();
+  const { state, entitledTier } = resolveAccountState({
+    subscriptionTier: (u?.tier ?? "free") as Tier,
+    subscriptionStatus: u?.status ?? "active",
+    subscriptionPaused: u?.paused ?? false,
+    subscriptionGrantedUntil: u?.grantedUntil ?? null,
+    trialEndsAt: u?.trialEndsAt ?? null,
+    v3Enabled: v3,
+  });
+
+  // For FEATURE gating, a lapsed (read-only) account keeps no premium features —
+  // its export access is handled separately by canUseExport, not requireFeature.
+  // Trials get full Pro; active accounts get their entitled tier.
+  let tier: Tier = state === "read_only" ? "free" : entitledTier;
 
   const grantExpired =
     !!u?.grantedUntil && new Date(u.grantedUntil).getTime() < Date.now();
 
   // An expired grant is a real state change: persist it so the plan actually
-  // ends rather than lingering as a stale "business" row in the database.
-  if (grantExpired && tier !== "free") {
+  // ends rather than lingering as a stale "business" row in the database. Only
+  // do this for the legacy grant case (not V3 trial/read-only, whose transitions
+  // are driven by Stripe webhooks + the trial-expiry cron).
+  if (grantExpired && state !== "read_only" && state !== "trial" && tier !== "free") {
     tier = "free";
     try {
       await db
@@ -57,15 +80,9 @@ export async function currentTier(): Promise<{ userId: string; tier: Tier } | nu
       // still applies, so access is correctly denied either way.
       console.error("failed to persist expired-grant downgrade:", e);
     }
-  } else if (grantExpired) {
-    tier = "free";
   }
 
-  // A paused subscription falls back to free (but keeps the tier so it can
-  // be resumed later — pause is reversible, expiry is not).
-  if (u?.paused) tier = "free";
-
-  return { userId: session.user.id, tier };
+  return { userId: session.user.id, tier, state };
 }
 
 export interface Gate {

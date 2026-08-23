@@ -8,7 +8,7 @@ import { CreditCard, Loader2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PLANS } from "@/lib/plans";
+import { PLANS, SELECTABLE_PLANS } from "@/lib/plans";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -53,7 +53,7 @@ export function SubscriptionManager({
       "Allt i Företag": t.featAllBusiness,
     } as Record<string, string>)[f] ?? f);
 
-  async function upgrade(tier: "pro" | "business") {
+  async function upgrade(tier: "starter" | "pro" | "business" | "max") {
     setLoading(tier);
     try {
       const res = await fetch("/api/checkout", {
@@ -187,9 +187,13 @@ export function SubscriptionManager({
       </motion.div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {PLANS.map((plan, index) => {
+        {SELECTABLE_PLANS.map((plan, index) => {
           const isCurrent = plan.tier === currentTier;
-          const upgradable = plan.tier === "pro" || plan.tier === "business";
+          const upgradable =
+            plan.tier === "starter" ||
+            plan.tier === "pro" ||
+            plan.tier === "business" ||
+            plan.tier === "max";
           return (
             <motion.div
               key={plan.tier}
@@ -237,7 +241,7 @@ export function SubscriptionManager({
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full"
-                      onClick={() => upgrade(plan.tier as "pro" | "business")}
+                      onClick={() => upgrade(plan.tier as "starter" | "pro" | "business" | "max")}
                       disabled={loading !== null}
                     >
                       <Button className="w-full" disabled={loading !== null}>

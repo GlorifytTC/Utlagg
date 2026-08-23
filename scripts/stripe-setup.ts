@@ -56,7 +56,7 @@ async function ensurePrice(opts: {
 async function main() {
   const ids: Record<string, string> = {};
 
-  for (const tier of ["pro", "business", "max"] as const) {
+  for (const tier of ["starter", "pro", "business", "max"] as const) {
     const cfg = TIERS[tier];
     if (cfg.priceOre == null || !cfg.stripeLookupKey) continue;
     ids[tier] = await ensurePrice({
@@ -75,6 +75,7 @@ async function main() {
   });
 
   console.log("\nAdd these to your environment:");
+  console.log(`STRIPE_PRICE_STARTER=${ids.starter ?? "(unchanged)"}`);
   console.log(`STRIPE_PRICE_PRO=${ids.pro ?? "(unchanged)"}`);
   console.log(`STRIPE_PRICE_FORETAG=${ids.business ?? "(unchanged)"}`);
   console.log(`STRIPE_PRICE_MAX=${ids.max ?? "(unchanged)"}`);

@@ -4,6 +4,7 @@ import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { db } from "@/db";
 import { transportPasses, type TransportPass } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
+import { assertExportAllowed } from "@/lib/billing/export-gating";
 
 export const runtime = "nodejs";
 
@@ -18,6 +19,10 @@ function csvCell(v: string | number | null): string {
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return new Response("Ej inloggad", { status: 401 });
+
+  // Transport-pass CSV is a machine-readable record set → "csv", always
+  // available (spec §C).
+  await assertExportAllowed(session.user.id, "csv");
 
   const from = req.nextUrl.searchParams.get("from");
   const to = req.nextUrl.searchParams.get("to");

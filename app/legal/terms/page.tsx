@@ -112,6 +112,24 @@ export default function TermsPage() {
             Återbetalning sker inte för redan fakturerade perioder, utom i fall där
             tvingande lag kräver det (se § 6 om ångerrätt).
           </p>
+          <p>
+            <strong>Provperiod.</strong> Vi kan erbjuda en kostnadsfri provperiod om
+            trettio (30) dagar. Om du inte säger upp prenumerationen före provperiodens
+            slut övergår den automatiskt till en betald prenumeration enligt den plan och
+            det pris du valt vid registreringen, och betalning dras då för den kommande
+            perioden. Du kan när som helst under provperioden säga upp prenumerationen
+            utan kostnad via dina kontoinställningar. Vi påminner dig via e-post innan den
+            första betalningen dras.
+          </p>
+          <p>
+            <strong>Provperioden får utnyttjas en (1) gång per användare.</strong> Rätten
+            till provperiod bedöms per person, inte enbart per konto eller e-postadress.
+            För att förhindra att provperioden utnyttjas upprepade gånger genom nya konton
+            kan vi, efter att ett konto raderats, bevara en pseudonymiserad
+            (envägskrypterad) token som härletts från din e-postadress; närmare
+            information finns i integritetspolicyn. Vi förbehåller oss rätten att neka
+            eller avsluta en provperiod vid misstanke om missbruk.
+          </p>
         </section>
 
         <section className="space-y-3">
@@ -192,6 +210,16 @@ export default function TermsPage() {
             tolv (12) sammanhängande månader tillämpas motsvarande förfarande enligt
             punkterna 7.3–7.5, varvid Exportperioden räknas från den senaste
             inloggningen.
+          </p>
+          <p>
+            <strong>7.7 Export i läsläge.</strong> När ditt konto övergår till läsläge
+            — vare sig efter avslutad provperiod eller efter att en betald prenumeration
+            upphört — behåller du full tillgång att granska och exportera dina underlag.
+            En fullständig export i CSV-format samt nedladdning av dina ursprungliga
+            kvitto- och fakturafiler är alltid tillgänglig, så att du kan fullgöra din
+            arkiveringsskyldighet enligt Bokföringslagen. Vissa tilläggsfunktioner för
+            export — däribland export i SIE- och SIE4-format samt direktintegrationer med
+            bokföringsprogram — förutsätter dock en aktiv betald prenumeration.
           </p>
         </section>
 

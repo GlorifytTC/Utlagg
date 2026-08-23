@@ -43,6 +43,7 @@ export interface Translations {
 
   // Plan names
   planFree: string;
+  planStarter: string;
   planPro: string;
   planBusiness: string;
   planMax: string;
@@ -50,6 +51,7 @@ export interface Translations {
 
   // Plan features
   planFreeFeatures: string[];
+  planStarterFeatures: string[];
   planProFeatures: string[];
   planBusinessFeatures: string[];
   planMaxFeatures: string[];
@@ -1071,6 +1073,7 @@ export const strings: Record<Lang, Translations> = {
     subRequestQuote: "Begär offert",
     planQuote: "Offert",
     planFree: "Gratis",
+    planStarter: "Starter",
     planPro: "Pro",
     planBusiness: "Företag",
     planMax: "Max",
@@ -1245,6 +1248,12 @@ export const strings: Record<Lang, Translations> = {
       "15 skanningar/mån",
       "Grundläggande OCR",
       "CSV-export",
+    ],
+    planStarterFeatures: [
+      "100 skanningar/mån",
+      "OCR, moms & BAS",
+      "SIE- och CSV-export",
+      "En användare",
     ],
     planProFeatures: [
       "500 skanningar/mån",
@@ -1751,6 +1760,7 @@ export const strings: Record<Lang, Translations> = {
     subRequestQuote: "Request a quote",
     planQuote: "Quote",
     planFree: "Free",
+    planStarter: "Starter",
     planPro: "Pro",
     planBusiness: "Business",
     planMax: "Max",
@@ -1923,6 +1933,12 @@ export const strings: Record<Lang, Translations> = {
 
     // Plan features
     planFreeFeatures: ["15 scans/month", "Basic OCR", "CSV export"],
+    planStarterFeatures: [
+      "100 scans/month",
+      "OCR, VAT & BAS",
+      "SIE and CSV export",
+      "Single user",
+    ],
     planProFeatures: [
       "500 scans/month",
       "SIE/PDF export, VAT & BAS",

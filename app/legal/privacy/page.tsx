@@ -113,6 +113,7 @@ export default function PrivacyPage() {
               ["Skicka transaktionsmejl (kvitton, lösenordsåterställning, inbjudningar, raderingspåminnelser)", "Avtalsfullgörelse (6.1.b)"],
               ["Hantera supportärenden", "Berättigat intresse (6.1.f) — att kunna ge dig support"],
               ["Förhindra bedrägerier, missbruk och obehörig åtkomst; säkerhets- och ändringsloggar", "Berättigat intresse (6.1.f)"],
+              ["Förhindra upprepat utnyttjande av den kostnadsfria provperioden (pseudonymiserad token härledd från e-postadress, bevarad efter kontoradering)", "Berättigat intresse (6.1.f)"],
               ["Förbättra OCR-modellen med hjälp av dina markeringar (uppgifterna avidentifieras före sådan användning)", "Samtycke (6.1.a) — kan återkallas när som helst"],
               ["Uppfylla lagkrav och besvara bindande myndighetsförfrågningar", "Rättslig förpliktelse (6.1.c)"],
             ].map(([purpose, basis]) => (
@@ -184,6 +185,14 @@ export default function PrivacyPage() {
               <strong>Supportärenden</strong> — så länge det behövs för att hantera
               ärendet och en rimlig tid därefter, dock längst 24 månader.
             </li>
+            <li>
+              <strong>Pseudonymiserad provperiodstoken</strong> — efter att du raderat
+              ditt konto bevarar vi en envägskrypterad (hashad) token som härletts från
+              din normaliserade e-postadress, uteslutande för att förhindra upprepat
+              utnyttjande av den kostnadsfria provperioden. Token kan inte återställas
+              till din e-postadress och bevaras i högst tjugofyra (24) månader, varefter
+              den raderas automatiskt.
+            </li>
           </ul>
         </section>
 
@@ -254,7 +263,10 @@ export default function PrivacyPage() {
             <li>
               <strong>Radering (art. 17)</strong> — rätt att begära att vi raderar
               dina uppgifter (&ldquo;rätten att bli bortglömd&rdquo;), under
-              förutsättning att vi inte har rättslig skyldighet att bevara dem.
+              förutsättning att vi inte har rättslig skyldighet att bevara dem. När du
+              utövar din rätt till radering tar vi bort dina personuppgifter, med undantag
+              för den pseudonymiserade provperiodstoken som beskrivs i avsnittet om
+              lagringstider och för sådana uppgifter vi är skyldiga att bevara enligt lag.
             </li>
             <li>
               <strong>Begränsning (art. 18)</strong> — rätt att begära att

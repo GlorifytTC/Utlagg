@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
+import { assertExportAllowed } from "@/lib/billing/export-gating";
 
 export const runtime = "nodejs";
 
@@ -28,6 +29,16 @@ export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+  }
+
+  // Export gating (spec §C): the bulk PDF pack is a premium/convenience format,
+  // gated in read-only state (CSV + original files stay available instead).
+  const gate = await assertExportAllowed(session.user.id, "premium_pdf");
+  if (!gate.allowed) {
+    return NextResponse.json(
+      { error: gate.message, code: gate.reason, fallback: gate.fallback },
+      { status: 403 },
+    );
   }
 
   const from = req.nextUrl.searchParams.get("from");

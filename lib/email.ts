@@ -735,6 +735,133 @@ export function sendSubscriptionCanceled(
   return send(to, "Prenumeration avslutad", html);
 }
 
+// ─── Pricing V3: trial + read-only lifecycle (spec §10) ──────
+
+/**
+ * Up-front disclosure at trial start (spec §10): converts to a paid
+ * subscription, the exact price, and the first charge date. Copy must stay
+ * consistent with the ToS §F.2 (30 days, auto-converts, we remind before the
+ * first charge).
+ */
+export function sendTrialStarted(
+  to: string,
+  params: {
+    userName: string;
+    planName: string;
+    priceLabel: string; // e.g. "149 kr/mån inkl. moms"
+    firstChargeDate: string; // Swedish-formatted date
+    actionUrl: string;
+  },
+) {
+  const body = `# Din provperiod har börjat
+
+Hej ${params.userName || "där"}!
+
+Du har nu **30 dagars kostnadsfri provperiod** med full tillgång till Kvittino Pro.
+
+- **Efter provperioden:** planen **${params.planName}** (${params.priceLabel})
+- **Första betalning dras:** ${params.firstChargeDate}
+
+Om du inte säger upp prenumerationen före provperiodens slut övergår den automatiskt till en betald prenumeration. Du kan när som helst säga upp den utan kostnad via dina kontoinställningar — vi påminner dig via e-post innan den första betalningen dras.
+
+[button] ${params.actionUrl} | Hantera prenumeration
+
+— ${APP_NAME}`;
+  const html = buildEmailHtml(body, {
+    user_name: params.userName,
+    app_name: APP_NAME,
+    action_url: params.actionUrl,
+    support_email: SUPPORT_EMAIL,
+  });
+  return send(to, "Din provperiod har börjat", html);
+}
+
+/**
+ * Reminder before the first charge (spec §10), driven by Stripe's
+ * `customer.subscription.trial_will_end` (~3 days before).
+ */
+export function sendTrialWillEnd(
+  to: string,
+  params: {
+    userName: string;
+    planName: string;
+    priceLabel: string;
+    firstChargeDate: string;
+    actionUrl: string;
+  },
+) {
+  const body = `# Din provperiod tar snart slut
+
+Hej ${params.userName || "där"}!
+
+Din kostnadsfria provperiod avslutas snart. Om du inte säger upp den övergår prenumerationen automatiskt till **${params.planName}** (${params.priceLabel}) och den **första betalningen dras ${params.firstChargeDate}**.
+
+Vill du inte fortsätta? Säg upp utan kostnad före dess via dina kontoinställningar.
+
+[button] ${params.actionUrl} | Hantera prenumeration
+
+— ${APP_NAME}`;
+  const html = buildEmailHtml(body, {
+    user_name: params.userName,
+    app_name: APP_NAME,
+    action_url: params.actionUrl,
+    support_email: SUPPORT_EMAIL,
+  });
+  return send(to, "Påminnelse: din provperiod tar snart slut", html);
+}
+
+/**
+ * Plan-change / trial-start notice for the Free→V3 migration (spec §6/§D).
+ * `mode` selects the copy: an active Free user starting a trial, or a dormant
+ * Free user moved to read-only under the export ladder.
+ */
+export function sendPlanChangeNotice(
+  to: string,
+  params: {
+    userName: string;
+    mode: "trial" | "read_only";
+    actionUrl: string;
+  },
+) {
+  const body =
+    params.mode === "trial"
+      ? `# Din gratisplan blir en provperiod
+
+Hej ${params.userName || "där"}!
+
+Vi har uppdaterat våra planer. Gratisplanen ersätts av en **30 dagars kostnadsfri provperiod** med full tillgång till Kvittino Pro. Ditt konto har nu startat provperioden — inget kort krävs, och den övergår inte automatiskt till en betald plan.
+
+När provperioden tar slut övergår kontot till **läsläge**, där du alltid kan exportera dina kvitton (CSV) och ladda ner dina originalfiler.
+
+[button] ${params.actionUrl} | Öppna Kvittino
+
+— ${APP_NAME}`
+      : `# Ändring av din gratisplan
+
+Hej ${params.userName || "där"}!
+
+Vi har uppdaterat våra planer och gratisplanen upphör. Ditt konto övergår till **läsläge**. Dina uppgifter raderas inte nu — du behåller full tillgång att granska och exportera dina underlag (CSV) och ladda ner dina originalfiler, i enlighet med exportperioden i våra villkor.
+
+Vill du skanna igen? Aktivera en betald plan när som helst.
+
+[button] ${params.actionUrl} | Öppna Kvittino
+
+— ${APP_NAME}`;
+  const html = buildEmailHtml(body, {
+    user_name: params.userName,
+    app_name: APP_NAME,
+    action_url: params.actionUrl,
+    support_email: SUPPORT_EMAIL,
+  });
+  return send(
+    to,
+    params.mode === "trial"
+      ? "Din gratisplan blir en provperiod"
+      : "Ändring av din gratisplan",
+    html,
+  );
+}
+
 // ─── Legacy compatibility wrappers ───────────────────────────
 
 export function sendCompanyInviteEmail(to: string, token: string) {

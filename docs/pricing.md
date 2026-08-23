@@ -115,3 +115,106 @@ the existing setup. *Default assumption — confirm inkl./exkl. treatment before
 `lib/billing/config.ts`: `TIERS`, `FREE_MONTHLY_SCANS`, `CREDIT_PACK`,
 `DEFAULT_OVERAGE_CAP_ORE`, `REFERRAL.*`, `BILLING_TIMEZONE`, `pricingV2Enabled()`.
 No pricing/quota/referral magic numbers live in business logic.
+
+---
+
+# Pricing V3 — Trial + Starter + read-only export gating
+
+Pricing V3 **reworks** the live V2 model (it does not rebuild it). It replaces the
+recurring **Free** plan with a one-time **30-day Trial**, adds a paid **Starter**
+tier, drops lapsed accounts to **read-only** with **premium export gating** (CSV +
+original files always available), and adds a pseudonymised **repeat-trial email
+guard**. Everything is behind independently toggleable flags; with them off the
+app behaves exactly as V2.
+
+## Feature flags (spec §0)
+
+| Flag | Default | Effect |
+|------|---------|--------|
+| `PRICING_V3_ENABLED` | `false` | Master switch for trial / read-only / Starter logic. |
+| `EXPORT_GATING_ENABLED` | `false` | Gate SIE/SIE4/integration/premium-PDF in read-only. |
+| `TRIAL_EMAIL_GUARD_ENABLED` | `false` | Enable the delete→same-email trial guard. |
+| `TRIAL_REQUIRE_CARD` | `true` | Card-required trial (identity anchor). `false` = no-card variant. |
+
+Trial shape: `TRIAL_DAYS=30`, `TRIAL_SCANS=500`, post-trial default plan **Pro**.
+
+## Tiers (spec §2)
+
+Free becomes a **deprecated tombstone** (`TIERS.free.selectable = false`): the enum
+value + existing rows are retained for referential integrity, but it is never
+offered again. Offerable ladder = `SELECTABLE_TIERS` = Starter…Enterprise.
+
+| Tier | Price | Scans/mo | Overage/scan |
+|------|------:|---------:|-------------:|
+| **Trial** | 0 (30 days, once/user) | 500 (full Pro) | — (hard stop, no overage) |
+| **Starter** | 50 kr | 100 | 0.50 kr |
+| Pro / Business / Max / Enterprise | unchanged from V2 | unchanged | 0.39 / 0.29 / 0.19 / — |
+
+## Access states (spec §A/§C)
+
+`lib/billing/access.ts` → `resolveAccountState()` (pure, unit-tested) maps
+`subscription_status` + trial timestamps to one of **active | trial | read_only**
+and the **entitled tier** (trial → full Pro). Consumed by `scope.ts` (metering
+context), `entitlements.ts` (feature gates; read-only → no premium features), and
+`export-gating.ts`.
+
+- **Trial:** `trialing` status; entitled as Pro; hard-stops at `TRIAL_SCANS` with
+  **no overage** (`metering.ts`); on expiry converts (card) or lapses to read-only.
+- **Read-only:** scanning/uploading blocked (`meterScan` short-circuit); premium
+  exports gated; **data never deleted at lapse** — only the §7 12-month export
+  ladder ever deletes.
+
+## Export gating — one helper (spec §C)
+
+`lib/billing/export-gating.ts` → `assertExportAllowed(userId, format)`, pure core
+in `export-gating-core.ts` → `canUseExport({state}, format)`. Wired into **every**
+export entry point (SIE, PDF, CSV, Skatteverket, mileage, transport, Fortnox sync).
+
+- **Active / trial →** all formats.
+- **Read-only →** `GATED_EXPORT_FORMATS` (`sie`, `sie4`, `premium_pdf`,
+  `integration_fortnox`) blocked with an explicit message + CSV/originals fallback;
+  `ALWAYS_AVAILABLE_EXPORTS` (`csv`, `original_files`) **never** blocked. The
+  invariant is asserted in `tests/unit/export-gating.test.ts`.
+
+## Repeat-trial email guard (spec §E)
+
+`lib/billing/trial-guard.ts` (+ pure `trial-guard-hash.ts`). Token =
+`HMAC-SHA256(normalize(email), TRIAL_GUARD_HMAC_SECRET)` (hex). Written on account
+deletion **before** the wipe (only if the account consumed a trial), checked at
+trial start (checkout), purged past `expires_at` by the daily
+`/api/cron/trial-maintenance` job. Table `trial_email_guard` holds **only** the
+hash + timestamps — no plaintext email. Retention `TRIAL_GUARD_RETENTION_MONTHS`
+(24) **must match** Privacy clause F.5. Framing: **pseudonymised** personal data
+on legitimate interest (Art. 6.1.f) — a secondary layer; the card-required trial
+is the primary control.
+
+## Stripe (spec §9)
+
+- `npm run stripe:setup` now also creates the **Starter** price
+  (`kvittino_starter_monthly`, 5000 öre) → `STRIPE_PRICE_STARTER`.
+- Card-required trial via `trial_period_days` at checkout; the selected tier is the
+  post-trial plan (full Pro entitlement during the trial regardless).
+- Webhooks: `subscription` entering `trialing` → trial state + start-disclosure
+  email; `trial_will_end` → pre-charge reminder (~3 days); conversion (`invoice.paid`)
+  → active; conversion failure / lapse (`invoice.payment_failed` while trialing,
+  `subscription.deleted`) → **read-only** (data retained). Referral reward still
+  fires on **trial→paid** (first paid invoice), not trial start.
+
+## Migration (spec §6) — human-applied in pgAdmin4
+
+1. Apply schema: `drizzle/0009_pricing_v3_trial_starter.sql` (enum `ADD VALUE` for
+   `starter` + `read_only` isolated; trial columns; `trial_email_guard`). Enum
+   values can't be dropped — `free` stays a tombstone; rollback is code-level.
+2. Send Free-tier withdrawal notices (advance notice required — §13.3).
+3. Back-fill (idempotent, dry-run first): `npm run backfill:v3` (canonical, also
+   emails notices) **or** `scripts/backfill-pricing-v3.sql` for pure-DB review.
+   Active Free → 30-day trial; dormant Free → read-only; paid **untouched** (tagged
+   `paid_unchanged`).
+4. Flip `PRICING_V3_ENABLED=true` (then the sub-flags) per environment.
+
+## Config surface (V3 additions)
+
+`pricingV3Enabled()`, `exportGatingEnabled()`, `trialEmailGuardEnabled()`,
+`trialRequireCard()`, `TRIAL_DAYS`, `TRIAL_SCANS`, `POST_TRIAL_DEFAULT_PLAN`,
+`GATED_EXPORT_FORMATS`, `ALWAYS_AVAILABLE_EXPORTS`, `TRIAL_GUARD_RETENTION_MONTHS`,
+`SELECTABLE_TIERS`, `TIERS.starter`, `TIERS.free.selectable = false`.

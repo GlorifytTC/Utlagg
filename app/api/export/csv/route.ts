@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
+import { assertExportAllowed } from "@/lib/billing/export-gating";
 
 export const runtime = "nodejs";
 
@@ -21,6 +22,11 @@ export async function GET(req: NextRequest) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   }
+
+  // Routed through the single export gate for consistency. CSV is in
+  // ALWAYS_AVAILABLE_EXPORTS, so this ALWAYS resolves to allowed — even in
+  // read-only state — which is the legal guardrail (spec §C). Never gate CSV.
+  await assertExportAllowed(session.user.id, "csv");
 
   // Optional date range: ?from=YYYY-MM-DD&to=YYYY-MM-DD (inclusive).
   const sp = req.nextUrl.searchParams;

@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
+import { assertExportAllowed } from "@/lib/billing/export-gating";
 
 export const runtime = "nodejs";
 
@@ -31,6 +32,10 @@ export async function GET(req: NextRequest) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   }
+
+  // Skatteverket export is CSV-shaped (a complete, machine-readable record set),
+  // so it is treated as "csv" and ALWAYS available — never gated (spec §C).
+  await assertExportAllowed(session.user.id, "csv");
 
   const from = req.nextUrl.searchParams.get("from");
   const to = req.nextUrl.searchParams.get("to");

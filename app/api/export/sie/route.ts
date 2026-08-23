@@ -8,6 +8,7 @@ import { getUserCompany } from "@/lib/company";
 import { buildSie, SieBalanceError } from "@/lib/sie-export";
 import { logAudit, clientIp } from "@/lib/audit";
 import { logger } from "@/lib/logger";
+import { assertExportAllowed } from "@/lib/billing/export-gating";
 
 export const runtime = "nodejs";
 
@@ -24,6 +25,16 @@ export const runtime = "nodejs";
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+
+  // Export gating (spec §C): SIE4 is a premium format — blocked in read-only /
+  // lapsed state, where CSV + original files remain available instead.
+  const gate = await assertExportAllowed(session.user.id, "sie4");
+  if (!gate.allowed) {
+    return NextResponse.json(
+      { error: gate.message, code: gate.reason, fallback: gate.fallback },
+      { status: 403 },
+    );
+  }
 
   const sp = req.nextUrl.searchParams;
   const fromStr = sp.get("from");

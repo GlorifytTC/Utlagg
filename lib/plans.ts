@@ -30,7 +30,15 @@ export interface Plan {
 
 /** Feature bullet copy per tier (Swedish). Display only. */
 const FEATURES: Record<Tier, string[]> = {
+  // Free is a deprecated tombstone (spec §7) — kept for existing rows and the
+  // 30-day Trial's entitlement copy, never shown as an offerable plan.
   free: ["15 skanningar/mån", "Grundläggande OCR", "CSV-export"],
+  starter: [
+    "100 skanningar/mån",
+    "OCR, moms & BAS",
+    "SIE- och CSV-export",
+    "En användare",
+  ],
   pro: [
     "500 skanningar/mån",
     "SIE/PDF-export, moms & BAS",
@@ -87,6 +95,14 @@ function toPlan(c: TierConfig): Plan {
 }
 
 export const PLANS: Plan[] = TIER_ORDER.map((t) => toPlan(TIERS[t]));
+
+/**
+ * The plans actually offered on the pricing page / plan-selector (spec §7):
+ * everything except the Free tombstone. Render selectors from this, not PLANS.
+ */
+export const SELECTABLE_PLANS: Plan[] = PLANS.filter(
+  (p) => TIERS[p.tier].selectable,
+);
 
 export function planForTier(tier: Tier): Plan {
   return PLANS.find((p) => p.tier === tier) ?? PLANS[0];

@@ -15,7 +15,9 @@ export const stripe = new Stripe(key ?? "sk_test_placeholder", {
 /** Map a Stripe price ID back to our internal tier. */
 export function tierFromPriceId(priceId: string | undefined): string | null {
   if (!priceId) return null;
+  if (priceId === process.env.STRIPE_PRICE_STARTER) return "starter";
   if (priceId === process.env.STRIPE_PRICE_PRO) return "pro";
   if (priceId === process.env.STRIPE_PRICE_FORETAG) return "business";
+  if (priceId === process.env.STRIPE_PRICE_MAX) return "max";
   return null;
 }

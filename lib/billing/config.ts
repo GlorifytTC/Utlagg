@@ -31,8 +31,69 @@ export function pricingV2Enabled(): boolean {
   return process.env.PRICING_V2_ENABLED === "true";
 }
 
+/* ------------------------------------------------------------------ */
+/* Pricing V3 rollout flags (Trial + Starter + export gating)          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Master switch for the Pricing V3 rework (one-time 30-day Trial replacing the
+ * recurring Free plan, the new Starter tier, lapse→read-only, export gating and
+ * the repeat-trial email guard). Independently toggleable from V2 so the metered
+ * engine (caps/overage/credits/referrals) can stay live while V3 is dark, and so
+ * V3 can be rolled back without touching V2. When off, none of the trial /
+ * read-only / Starter logic takes effect and the app behaves exactly as V2.
+ */
+export function pricingV3Enabled(): boolean {
+  return process.env.PRICING_V3_ENABLED === "true";
+}
+
+/**
+ * Gate premium/SIE exports behind an active subscription when an account is in
+ * read-only / lapsed / expired-trial state (spec §C). Independently
+ * toggleable/rollback-able. CSV + original-file download are NEVER gated by this
+ * flag — that invariant lives in {@link ALWAYS_AVAILABLE_EXPORTS} and the
+ * canUseExport helper, not here.
+ */
+export function exportGatingEnabled(): boolean {
+  return process.env.EXPORT_GATING_ENABLED === "true";
+}
+
+/**
+ * Enable the pseudonymised email-hash guard that blocks "delete account → same
+ * email starts a new trial" (spec §E). Independently toggleable.
+ */
+export function trialEmailGuardEnabled(): boolean {
+  return process.env.TRIAL_EMAIL_GUARD_ENABLED === "true";
+}
+
+/**
+ * Card-required trial (spec §3.3, default TRUE). With BankID down, requiring a
+ * card at trial start makes payment the identity anchor and neutralises
+ * new-email trial farming. Set `TRIAL_REQUIRE_CARD=false` for the no-card
+ * variant (which still expires to read-only lockout — never to reusable free
+ * scans).
+ */
+export function trialRequireCard(): boolean {
+  return process.env.TRIAL_REQUIRE_CARD !== "false";
+}
+
 /** All monthly resets and hold-period math use Swedish wall-clock time. */
 export const BILLING_TIMEZONE = "Europe/Stockholm";
+
+/* ------------------------------------------------------------------ */
+/* Trial (spec §A) — one-time, 30 days, full Pro entitlement           */
+/* ------------------------------------------------------------------ */
+
+/** Trial length in days (spec §3.1). ToS §F.2 quotes "trettio (30)". */
+export const TRIAL_DAYS = intFromEnv("TRIAL_DAYS", 30);
+/** Included scans during the trial — full Pro entitlement, no overage. */
+export const TRIAL_SCANS = intFromEnv("TRIAL_SCANS", 500);
+/**
+ * The plan a card-required trial converts to when the user didn't actively pick
+ * one at checkout (spec §13.2, default Pro). Full Pro entitlement applies during
+ * the trial regardless of this.
+ */
+export const POST_TRIAL_DEFAULT_PLAN: Tier = "pro";
 
 /* ------------------------------------------------------------------ */
 /* Tiers                                                               */
@@ -64,6 +125,14 @@ export interface TierConfig {
    */
   stripeLookupKey: string | null;
   highlight?: boolean;
+  /**
+   * Whether this tier can be picked at checkout / shown on the pricing page as
+   * an offerable plan. Free is a deprecated V2 tombstone (spec §7): the enum
+   * value and live rows are retained for referential integrity until migrated,
+   * but it is NEVER offered again — the one-time Trial replaces it.
+   * @deprecated `free` is not an offerable plan under Pricing V3.
+   */
+  selectable: boolean;
 }
 
 /**
@@ -82,6 +151,18 @@ export const TIERS: Record<Tier, TierConfig> = {
     seats: 1,
     overageOrePerScan: null, // no payment method on file → never auto-charge
     stripeLookupKey: null,
+    // Deprecated V2 tombstone (spec §7): retained for existing rows, never offered.
+    selectable: false,
+  },
+  starter: {
+    tier: "starter",
+    name: "Starter",
+    priceOre: 5_000, // 50 kr
+    monthlyScans: 100,
+    seats: 1,
+    overageOrePerScan: 50, // 0.50 kr/scan (spec §2 taper)
+    stripeLookupKey: "kvittino_starter_monthly",
+    selectable: true,
   },
   pro: {
     tier: "pro",
@@ -92,6 +173,7 @@ export const TIERS: Record<Tier, TierConfig> = {
     overageOrePerScan: 39, // 0.39 kr/scan
     stripeLookupKey: "kvittino_pro_monthly",
     highlight: true,
+    selectable: true,
   },
   business: {
     tier: "business",
@@ -101,6 +183,7 @@ export const TIERS: Record<Tier, TierConfig> = {
     seats: 10, // 5–10 seats; enforced max is 10
     overageOrePerScan: 29, // 0.29 kr/scan
     stripeLookupKey: "kvittino_business_monthly",
+    selectable: true,
   },
   max: {
     tier: "max",
@@ -110,6 +193,7 @@ export const TIERS: Record<Tier, TierConfig> = {
     seats: UNLIMITED, // multi
     overageOrePerScan: 19, // 0.19 kr/scan
     stripeLookupKey: "kvittino_max_monthly",
+    selectable: true,
   },
   enterprise: {
     tier: "enterprise",
@@ -119,6 +203,7 @@ export const TIERS: Record<Tier, TierConfig> = {
     seats: UNLIMITED,
     overageOrePerScan: null,
     stripeLookupKey: null,
+    selectable: true, // contact-sales, but shown on the pricing page
   },
 };
 
@@ -128,11 +213,17 @@ export const FREE_MONTHLY_SCANS = TIERS.free.monthlyScans;
 /** Ascending rank — used for upgrade nudges ("next tier up"). */
 export const TIER_ORDER: Tier[] = [
   "free",
+  "starter",
   "pro",
   "business",
   "max",
   "enterprise",
 ];
+
+/** Offerable plans, in display order (Free tombstone excluded — spec §7). */
+export const SELECTABLE_TIERS: Tier[] = TIER_ORDER.filter(
+  (t) => TIERS[t].selectable,
+);
 
 export function tierConfig(tier: Tier): TierConfig {
   return TIERS[tier] ?? TIERS.free;
@@ -178,6 +269,64 @@ export const CREDIT_PACK = {
 export const DEFAULT_OVERAGE_CAP_ORE = 20_000; // 200 kr
 
 /* ------------------------------------------------------------------ */
+/* Export gating (spec §C) — the legal guardrail lives here            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Canonical export format identifiers used by {@link canUseExport}
+ * (lib/billing/export-gating.ts). Every export entry point maps its output to
+ * one of these — no inline format string checks anywhere else.
+ */
+export type ExportFormat =
+  | "csv"
+  | "original_files"
+  | "sie"
+  | "sie4"
+  | "pdf"
+  | "premium_pdf"
+  | "integration_fortnox";
+
+/**
+ * Formats gated behind an ACTIVE paid subscription / active trial (spec §C.2).
+ * Blocked in read-only / lapsed / expired-trial state. `integration_*` covers
+ * every accounting-integration export (Fortnox today).
+ *
+ * ⚠️ Adding a format here that a user needs to satisfy their 7-year archiving
+ * duty (Bokföringslagen) is a legal-exposure change — CSV and original files
+ * must never appear here. See ALWAYS_AVAILABLE_EXPORTS.
+ */
+export const GATED_EXPORT_FORMATS: ExportFormat[] = [
+  "sie",
+  "sie4",
+  "premium_pdf",
+  "integration_fortnox",
+];
+
+/**
+ * Formats that MUST remain available even in read-only / lapsed state (spec §C
+ * CRITICAL GUARDRAIL). The user may hold the only copy of records they are
+ * legally required to keep for 7 years, so a complete machine-readable export
+ * and the original files can never be gated.
+ */
+export const ALWAYS_AVAILABLE_EXPORTS: ExportFormat[] = ["csv", "original_files"];
+
+/* ------------------------------------------------------------------ */
+/* Repeat-trial email guard (spec §E)                                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * How long a pseudonymised trial-guard token is retained after account deletion
+ * (spec §E.2 / §8; default 24 months). MUST stay consistent with the "tjugofyra
+ * (24) månader" figure in the Privacy Policy clause F.5 — note the coupling in
+ * the PR. The HMAC secret itself (`TRIAL_GUARD_HMAC_SECRET`) is a stable
+ * server-side secret from the env store; rotating it invalidates the table.
+ */
+export const TRIAL_GUARD_RETENTION_MONTHS = intFromEnv(
+  "TRIAL_GUARD_RETENTION_MONTHS",
+  24,
+);
+
+/* ------------------------------------------------------------------ */
 /* Referral program (spec §4)                                          */
 /* ------------------------------------------------------------------ */
 
@@ -191,8 +340,11 @@ export const REFERRAL = {
   /** Max rewarded referrals per referrer per rolling 365 days. */
   annualCap: intFromEnv("REFERRAL_ANNUAL_CAP", 50),
   /**
-   * Referred-user welcome bonus is OUT OF SCOPE for now (spec §4 "out of
-   * scope"). Extension point only — keep referred users on standard Free.
+   * Referred-user welcome bonus is OUT OF SCOPE for now. Extension point only.
+   * Under Pricing V3 referred users land in the one-time 30-day Trial (not Free)
+   * like everyone else; the referrer reward still vests on the referred user's
+   * first PAID conversion after the hold (spec §11), i.e. on trial→paid, not on
+   * trial start. Default unchanged.
    */
   newUserBonusEnabled: process.env.REFERRAL_NEW_USER_BONUS_ENABLED === "true",
 } as const;

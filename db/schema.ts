@@ -29,7 +29,8 @@ export const companyRole = pgEnum("company_role", [
   "member",
 ]);
 export const subscriptionTier = pgEnum("subscription_tier", [
-  "free",
+  "free", // Pricing V3 tombstone — retained for existing rows, never offered again
+  "starter",
   "pro",
   "business",
   "max",
@@ -41,6 +42,10 @@ export const subscriptionStatus = pgEnum("subscription_status", [
   "past_due",
   "trialing",
   "incomplete",
+  // Pricing V3 §C: lapse (expired trial / lapsed paid) → read-only. Data is
+  // never deleted here; the account keeps CSV + original-file export while
+  // premium/SIE exports are gated (see lib/billing/export-gating.ts).
+  "read_only",
 ]);
 export const receiptStatus = pgEnum("receipt_status", [
   "pending",
@@ -122,6 +127,25 @@ export const users = pgTable("users", {
   emailNormalized: varchar("email_normalized", { length: 320 }),
   // Signup IP — one signal used by referral ring-detection.
   signupIp: varchar("signup_ip", { length: 64 }),
+  // --- Pricing V3 §A: one-time 30-day Trial (all nullable) ---
+  // When the current trial started / ends. The account is on the `trialing`
+  // status while now() < trialEndsAt; after that it converts (card-required) or
+  // lapses to `read_only`.
+  trialStartedAt: timestamp("trial_started_at", { withTimezone: true }),
+  trialEndsAt: timestamp("trial_ends_at", { withTimezone: true }),
+  // Durable one-time-trial guard (spec §A.2): set the first time a trial is ever
+  // started for this account and never cleared, so a trial can't be re-taken.
+  trialConsumedAt: timestamp("trial_consumed_at", { withTimezone: true }),
+  // Plan a card-required trial converts to at day 31 (spec §A.3). Stored as the
+  // tier name (e.g. 'pro'); full Pro entitlement applies during the trial
+  // regardless of this value.
+  postTrialPlan: subscriptionTier("post_trial_plan"),
+  // --- Pricing V3 §D migration audit (all nullable) ---
+  // When the plan-change/trial-start notice email was sent during the Free→V3
+  // back-fill, and which path the account was moved onto ('trial' | 'read_only'
+  // | 'paid_unchanged'). For support/audit; not read by gating logic.
+  migrationNoticeSentAt: timestamp("migration_notice_sent_at", { withTimezone: true }),
+  migrationPath: varchar("migration_path", { length: 20 }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -579,6 +603,35 @@ export const referralRewards = pgTable(
     vestsIdx: index("referral_rewards_vests_idx").on(t.vestsAt),
   }),
 );
+
+/* ------------------------------------------------------------------ */
+/* trial_email_guard (Pricing V3 §E) — repeat-trial guard              */
+/* Blocks "delete account → same email starts a new trial" WITHOUT      */
+/* retaining readable personal data after erasure. Holds only an        */
+/* HMAC-SHA256 of the normalised email (pseudonymised, one-way) with an  */
+/* expiry — NO plaintext email and no other identifying columns. The     */
+/* hash is written on account deletion (before the wipe) and checked at  */
+/* trial start; rows past expiresAt are purged by the retention job.     */
+/* ------------------------------------------------------------------ */
+export const trialEmailGuard = pgTable(
+  "trial_email_guard",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // HMAC-SHA256(normalize(email), TRIAL_GUARD_HMAC_SECRET), hex. Unique so the
+    // deletion-time write is an idempotent UPSERT and a lookup is a point read.
+    emailHash: varchar("email_hash", { length: 64 }).notNull().unique(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    // now() + TRIAL_GUARD_RETENTION_MONTHS at write time (default 24 months).
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  },
+  (t) => ({
+    expiryIdx: index("trial_email_guard_expiry_idx").on(t.expiresAt),
+  }),
+);
+
+export type TrialEmailGuard = typeof trialEmailGuard.$inferSelect;
 
 /* ------------------------------------------------------------------ */
 /* Relations                                                          */

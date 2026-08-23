@@ -14,10 +14,12 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed.ts",
     "stripe:setup": "tsx scripts/stripe-setup.ts",
+    "backfill:v3": "tsx scripts/backfill-pricing-v3.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "cron:reset-scans": "node scripts/cron-call.mjs /api/cron/reset-scans",
     "cron:vest-referrals": "node scripts/cron-call.mjs /api/cron/vest-referrals",
+    "cron:trial-maintenance": "node scripts/cron-call.mjs /api/cron/trial-maintenance",
     "cron:archive-audit": "node scripts/cron-call.mjs /api/cron/archive-audit"
   },
   "dependencies": {

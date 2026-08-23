@@ -7,6 +7,7 @@ import { integrationTokens, receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { pushReceiptToFortnox } from "@/lib/fortnox";
 import { logAudit, clientIp } from "@/lib/audit";
+import { assertExportAllowed } from "@/lib/billing/export-gating";
 
 export const runtime = "nodejs";
 
@@ -18,6 +19,17 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   }
+  // Export gating (spec §C): pushing to an accounting integration is a gated
+  // export format — blocked in read-only / lapsed state (CSV + original files
+  // remain available instead).
+  const gate = await assertExportAllowed(session.user.id, "integration_fortnox");
+  if (!gate.allowed) {
+    return NextResponse.json(
+      { error: gate.message, code: gate.reason, fallback: gate.fallback },
+      { status: 403 },
+    );
+  }
+
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success) {
     return NextResponse.json({ error: "receiptId saknas" }, { status: 400 });
