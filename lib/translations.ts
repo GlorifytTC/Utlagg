@@ -648,6 +648,240 @@ export interface Translations {
   rcScanningServer: string;
   rcLocalLowConfidence: string;
   rcLowConfidence: string;
+  cookieTitle: string;
+  cookieBody: string;
+  cookiePrivacyLink: string;
+  cookieAcceptAll: string;
+  cookieRejectAll: string;
+  cookieManage: string;
+  cookieSave: string;
+  cookieAlwaysActive: string;
+  cookieExamples: string;
+  cookieRetention: string;
+  cookieDataController: string;
+  cookieDataControllerValue: string;
+  cookieSupervisory: string;
+  cookieGdprRights: string;
+  cookieCatNecessaryLabel: string;
+  cookieCatNecessaryBasis: string;
+  cookieCatNecessaryDesc: string;
+  cookieCatNecessaryExamples: string;
+  cookieCatNecessaryRetention: string;
+  cookieCatFunctionalLabel: string;
+  cookieCatFunctionalBasis: string;
+  cookieCatFunctionalDesc: string;
+  cookieCatFunctionalExamples: string;
+  cookieCatFunctionalRetention: string;
+  cookieCatAnalyticsLabel: string;
+  cookieCatAnalyticsBasis: string;
+  cookieCatAnalyticsDesc: string;
+  cookieCatAnalyticsExamples: string;
+  cookieCatAnalyticsRetention: string;
+  // Privacy policy page
+  privTitle: string;
+  privIntro: string;
+  privUpdated: string;
+  priv1Title: string;
+  priv1P1: string;
+  priv1ContactLabel: string;
+  priv1P3: string;
+  priv1DpaLink: string;
+  priv2Title: string;
+  priv2AccountLabel: string;
+  priv2AccountDesc: string;
+  priv2CompanyLabel: string;
+  priv2CompanyDesc: string;
+  priv2BookLabel: string;
+  priv2BookDesc: string;
+  priv2MileageLabel: string;
+  priv2MileageDesc: string;
+  priv2InvoiceLabel: string;
+  priv2InvoiceDesc: string;
+  priv2PaymentLabel: string;
+  priv2PaymentDesc: string;
+  priv2SupportLabel: string;
+  priv2SupportDesc: string;
+  priv2LogsLabel: string;
+  priv2LogsDesc: string;
+  priv3Title: string;
+  priv3Col1: string;
+  priv3Col2: string;
+  priv3R1P: string; priv3R1B: string;
+  priv3R2P: string; priv3R2B: string;
+  priv3R3P: string; priv3R3B: string;
+  priv3R4P: string; priv3R4B: string;
+  priv3R5P: string; priv3R5B: string;
+  priv3R6P: string; priv3R6B: string;
+  priv3R7P: string; priv3R7B: string;
+  priv3R8P: string; priv3R8B: string;
+  priv3R9P: string; priv3R9B: string;
+  priv3P1Pre: string;
+  priv3DpaLink: string;
+  priv3P1Post: string;
+  priv3P2: string;
+  priv4Title: string;
+  priv4Intro: string;
+  priv4OwnLabel: string;
+  priv4Li1Strong: string;
+  priv4Li1Rest: string;
+  priv4OurLabel: string;
+  priv4Li2Strong: string;
+  priv4Li2Rest: string;
+  priv4Li3Strong: string;
+  priv4Li3Rest: string;
+  priv4Li4Strong: string;
+  priv4Li4Rest: string;
+  priv4Li5Strong: string;
+  priv4Li5Rest: string;
+  priv4Li6Strong: string;
+  priv4Li6Rest: string;
+  priv4Li7Strong: string;
+  priv4Li7Rest: string;
+  priv5Title: string;
+  priv5P1Pre: string;
+  priv5P1Post: string;
+  priv5Li1: string;
+  priv5Li2: string;
+  priv5Li3: string;
+  priv5Li4: string;
+  priv5Li5: string;
+  priv5P2: string;
+  priv6Title: string;
+  priv6P1: string;
+  priv6P2Pre: string;
+  priv7Title: string;
+  priv7P1Pre: string;
+  priv7P1Post: string;
+  priv7Li1Strong: string; priv7Li1Rest: string;
+  priv7Li2Strong: string; priv7Li2Rest: string;
+  priv7Li3Strong: string; priv7Li3Rest: string;
+  priv7Li4Strong: string; priv7Li4Rest: string;
+  priv7Li5Strong: string; priv7Li5Rest: string;
+  priv7Li6Strong: string; priv7Li6Rest: string;
+  priv7Li7Strong: string; priv7Li7Rest: string;
+  priv8Title: string;
+  priv8P1Pre: string;
+  priv8ImyStrong: string;
+  priv8P2: string;
+  priv9Title: string;
+  priv9P1: string;
+  priv9P2: string;
+  priv9MoreInfo: string;
+  priv10Title: string;
+  priv10P1: string;
+  priv10P2: string;
+  priv11Title: string;
+  priv11P1: string;
+  priv12Title: string;
+  priv12P1: string;
+  priv13Title: string;
+  priv13P1Pre: string;
+  priv13P2Pre: string;
+  priv13DpaLink: string;
+  priv13SubprocessorsLink: string;
+  priv13And: string;
+  priv13TermsLink: string;
+  privFooter: string;
+  // Terms of service page
+  termsTitle: string;
+  termsIntro: string;
+  termsUpdated: string;
+  terms1Title: string;
+  terms1P1: string;
+  terms1P2: string;
+  terms2Title: string;
+  terms2P1: string;
+  terms2P2: string;
+  terms2P3: string;
+  terms3Title: string;
+  terms3P1: string;
+  terms3P2: string;
+  terms3P3: string;
+  terms4Title: string;
+  terms4P1: string;
+  terms4P2: string;
+  terms4P3: string;
+  terms5Title: string;
+  terms5P1Pre: string;
+  terms5P1Post: string;
+  terms5P2: string;
+  terms5P3: string;
+  terms5P4: string;
+  terms5P5Strong: string;
+  terms5P5Rest: string;
+  terms5P6Strong: string;
+  terms5P6Rest: string;
+  terms6Title: string;
+  terms6P1: string;
+  terms6P2: string;
+  terms6P3Pre: string;
+  terms6AngerLink: string;
+  terms6P3Mid: string;
+  terms6P3Post: string;
+  terms7Title: string;
+  terms7P1: string;
+  terms7P2: string;
+  terms7P3: string;
+  terms7P4: string;
+  terms7P5: string;
+  terms7P6: string;
+  terms7P7Strong: string;
+  terms7P7Rest: string;
+  terms8Title: string;
+  terms8P1: string;
+  terms8P2Pre: string;
+  terms8PrivacyLink: string;
+  terms8P2Post: string;
+  terms8P3: string;
+  terms9Title: string;
+  terms9P1: string;
+  terms9P2: string;
+  terms10Title: string;
+  terms10Intro: string;
+  terms10Li1: string;
+  terms10Li2: string;
+  terms10Li3: string;
+  terms10Li4: string;
+  terms10Li5: string;
+  terms10P2: string;
+  terms11Title: string;
+  terms11P1: string;
+  terms11P2: string;
+  terms12Title: string;
+  terms12P1Pre: string;
+  terms12PrivacyLink: string;
+  terms12P1Mid: string;
+  terms12DpaLink: string;
+  terms12P1Post: string;
+  terms12P2Pre: string;
+  terms12P2Post: string;
+  terms13Title: string;
+  terms13P1: string;
+  terms13P2: string;
+  terms13P3: string;
+  terms13P4: string;
+  terms13P5: string;
+  terms14Title: string;
+  terms14P1: string;
+  terms15Title: string;
+  terms15P1: string;
+  terms15P2: string;
+  terms16Title: string;
+  terms16P1: string;
+  terms16P2: string;
+  terms16P3: string;
+  terms17Title: string;
+  terms17P1: string;
+  terms18Title: string;
+  terms18P1: string;
+  terms18P2: string;
+  terms18P3Pre: string;
+  terms18ArnStrong: string;
+  terms18P3Mid: string;
+  terms19Title: string;
+  terms19P1: string;
+  terms19P2: string;
+  termsFooter: string;
 }
 
 export const strings: Record<Lang, Translations> = {
@@ -731,7 +965,7 @@ export const strings: Record<Lang, Translations> = {
     annArm: "Markera fält",
     annArmed: "Rita en ruta över: {field}",
     annCancel: "Avbryt",
-    annScroll: "Bläddra fritt. Tryck “Markera fält” för att rätta ett värde.",
+    annScroll: "Bläddra fritt. Tryck \"Markera fält\" för att rätta ett värde.",
     navTransport: "Kollektivtrafik",
     trTitle: "Kollektivtrafik",
     trSubtitle: "Spara månadskort och periodbiljetter — logga inte varje resa.",
@@ -1337,6 +1571,256 @@ export const strings: Record<Lang, Translations> = {
     pricingTableLimits: "Beloppsgränser",
     pricingTableOnboarding: "Anpassad onboarding",
     pricingTableSupport: "Prioriterad support",
+    cookieTitle: "Integritet & Cookies",
+    cookieBody: "Vi använder cookies för att hålla tjänsten igång på ett säkert sätt. Nödvändiga cookies är alltid aktiva enligt lag om elektronisk kommunikation (LEK). Icke-nödvändiga cookies — funktionella och analytiska — lagras endast med ditt uttryckliga samtycke enligt GDPR Art. 7. Du kan när som helst återkalla eller ändra ditt samtycke.",
+    cookiePrivacyLink: "Integritetspolicy",
+    cookieAcceptAll: "Godkänn alla",
+    cookieRejectAll: "Avvisa alla",
+    cookieManage: "Hantera inställningar",
+    cookieSave: "Spara inställningar",
+    cookieAlwaysActive: "Alltid aktiv",
+    cookieExamples: "Exempel",
+    cookieRetention: "Lagringstid",
+    cookieDataController: "Personuppgiftsansvarig",
+    cookieDataControllerValue: "Kvittino AB, Sverige.",
+    cookieSupervisory: "Tillsynsmyndighet",
+    cookieGdprRights: "Du har rätt att begära tillgång till, rättelse av och radering av dina personuppgifter, samt att lämna in ett klagomål till IMY om du anser att dina rättigheter enligt GDPR inte uppfylls.",
+    cookieCatNecessaryLabel: "Nödvändiga",
+    cookieCatNecessaryBasis: "LEK — strikt nödvändigt undantag",
+    cookieCatNecessaryDesc: "Dessa cookies krävs för att tjänsten ska fungera. De hanterar inloggningssessioner, CSRF-skydd och BankID-autentisering. De är undantagna från samtyckeskrav enligt lag om elektronisk kommunikation (LEK) och behandlar inga personuppgifter utöver vad som är strikt nödvändigt för tjänsteleveransen.",
+    cookieCatNecessaryExamples: "Sessions-ID, CSRF-token, BankID-sessionstoken",
+    cookieCatNecessaryRetention: "Session — max 24 timmar",
+    cookieCatFunctionalLabel: "Funktionella",
+    cookieCatFunctionalBasis: "GDPR Art. 6(1)(a) — samtycke",
+    cookieCatFunctionalDesc: "Lagrar dina inställningar mellan besök så att tjänsten beter sig konsekvent — inklusive ditt språkval och visningsinställningar. Inga uppgifter delas med tredje part.",
+    cookieCatFunctionalExamples: "Språkinställning (sv/en), gränssnittsinställningar",
+    cookieCatFunctionalRetention: "12 månader",
+    cookieCatAnalyticsLabel: "Analytiska",
+    cookieCatAnalyticsBasis: "GDPR Art. 6(1)(a) — samtycke",
+    cookieCatAnalyticsDesc: "Samlar in anonymiserad data om hur tjänsten används — besökta sidor, använda funktioner och uppkomna fel — för att hjälpa oss förbättra produkten. Ingen enskild användare identifieras eller spåras på andra webbplatser.",
+    cookieCatAnalyticsExamples: "Sidvisningar, funktionsanvändning, sessionslängd, felrapporter",
+    cookieCatAnalyticsRetention: "13 månader",
+    // Privacy policy page
+    privTitle: "Integritetspolicy",
+    privIntro: "Den här policyn beskriver hur GlorifyTC (\"vi\", \"oss\" eller \"Kvittino\") samlar in, använder och skyddar dina personuppgifter när du använder Kvittino. Vi behandlar personuppgifter i enlighet med EU:s dataskyddsförordning (GDPR, EU 2016/679) och kompletterande svensk dataskyddslagstiftning.",
+    privUpdated: "Senast uppdaterad: 18 juli 2026",
+    priv1Title: "1. Personuppgiftsansvarig",
+    priv1P1: "(org.nr [xxxxxx-xxxx]) är personuppgiftsansvarig för behandlingen av dina uppgifter i samband med ditt konto och din användning av tjänsten.",
+    priv1ContactLabel: "Kontakt i dataskyddsfrågor:",
+    priv1P3: "När du som företagsanvändare behandlar tredje parts personuppgifter (t.ex. dina anställdas utlägg) via Kvittino agerar GlorifyTC som ditt personuppgiftsbiträde. Se vårt",
+    priv1DpaLink: "personuppgiftsbiträdesavtal (DPA)",
+    priv2Title: "2. Vilka uppgifter vi samlar in",
+    priv2AccountLabel: "Kontoinformation",
+    priv2AccountDesc: "Namn, e-postadress, krypterat lösenord och inloggningsmetod (e-post/lösenord eller BankID). Vid inloggning med BankID behandlas ditt personnummer vid inloggningstillfället som en del av autentiseringen, men vi lagrar det inte; vi bevarar endast en referens till den genomförda autentiseringen.",
+    priv2CompanyLabel: "Företagsinformation",
+    priv2CompanyDesc: "Företagsnamn, organisationsnummer, momsregistreringsnummer och postadress om du registrerar ett företag i tjänsten.",
+    priv2BookLabel: "Bokföringsunderlag",
+    priv2BookDesc: "Kvittobilder och data extraherade via OCR: leverantör, datum, belopp, momssats och BAS-konto. Dessa uppgifter kan innehålla personuppgifter om leverantören är en enskild firma eller om kvittot innehåller personnamn.",
+    priv2MileageLabel: "Körjournaldata",
+    priv2MileageDesc: "Start- och slutadresser, körsträcka, datum, resans syfte och fordon.",
+    priv2InvoiceLabel: "Fakturadata",
+    priv2InvoiceDesc: "Fakturanummer, kunduppgifter (namn, org.nr, adress), radposter och belopp.",
+    priv2PaymentLabel: "Betalningsinformation",
+    priv2PaymentDesc: "Prenumerationstyp, faktureringsperiod och betalningsstatus. Kortuppgifter hanteras uteslutande av Stripe — vi lagrar dem inte.",
+    priv2SupportLabel: "Supportärenden",
+    priv2SupportDesc: "Om du kontaktar vår support behandlar vi din korrespondens och de uppgifter du lämnar i ärendet.",
+    priv2LogsLabel: "Loggar och teknisk data",
+    priv2LogsDesc: "IP-adress, tidsstämpel och åtgärdstyp loggas vid inloggning och kontoaktivitet. Vi samlar också in webbläsartyp och sessionsdata för säkerhet och felsökning.",
+    priv3Title: "3. Ändamål och rättslig grund",
+    priv3Col1: "Ändamål",
+    priv3Col2: "Rättslig grund (GDPR art. 6)",
+    priv3R1P: "Tillhandahålla och driva tjänsten, inklusive lagring av dina kvitton och underlag",
+    priv3R1B: "Avtalsfullgörelse (6.1.b)",
+    priv3R2P: "Hantera prenumerationer och betalningar",
+    priv3R2B: "Avtalsfullgörelse (6.1.b)",
+    priv3R3P: "Bevara vår egen räkenskapsinformation (fakturor till dig, betalningshistorik) i sju år",
+    priv3R3B: "Rättslig förpliktelse (6.1.c) — Bokföringslagen och skattelagstiftning",
+    priv3R4P: "Skicka transaktionsmejl (kvitton, lösenordsåterställning, inbjudningar, raderingspåminnelser)",
+    priv3R4B: "Avtalsfullgörelse (6.1.b)",
+    priv3R5P: "Hantera supportärenden",
+    priv3R5B: "Berättigat intresse (6.1.f) — att kunna ge dig support",
+    priv3R6P: "Förhindra bedrägerier, missbruk och obehörig åtkomst; säkerhets- och ändringsloggar",
+    priv3R6B: "Berättigat intresse (6.1.f)",
+    priv3R7P: "Förhindra upprepat utnyttjande av den kostnadsfria provperioden (pseudonymiserad token härledd från e-postadress, bevarad efter kontoradering)",
+    priv3R7B: "Berättigat intresse (6.1.f)",
+    priv3R8P: "Förbättra OCR-modellen med hjälp av dina markeringar (uppgifterna avidentifieras före sådan användning)",
+    priv3R8B: "Samtycke (6.1.a) — kan återkallas när som helst",
+    priv3R9P: "Uppfylla lagkrav och besvara bindande myndighetsförfrågningar",
+    priv3R9B: "Rättslig förpliktelse (6.1.c)",
+    priv3P1Pre: "När du som företagskund behandlar dina anställdas eller andra tredje mäns personuppgifter via tjänsten agerar vi personuppgiftsbiträde enligt vårt",
+    priv3DpaLink: "personuppgiftsbiträdesavtal",
+    priv3P1Post: "; den rättsliga grunden för sådan behandling fastställs av dig som personuppgiftsansvarig.",
+    priv3P2: "Vi förlitar oss på berättigat intresse (art. 6.1.f) enbart där vårt intresse av att upprätthålla tjänstens säkerhet och funktionalitet väger tyngre än ditt intresse av skydd. Du har alltid rätt att invända mot sådan behandling (se avsnitt 7).",
+    priv4Title: "4. Lagringstider",
+    priv4Intro: "Vi skiljer mellan innehåll vi lagrar för din räkning som en del av tjänsten och uppgifter vi behandlar för egen räkning.",
+    priv4OwnLabel: "Innehåll vi lagrar för din räkning",
+    priv4Li1Strong: "Kvitton, verifikationer, körjournaler och fakturor",
+    priv4Li1Rest: "— under aktiv prenumeration samt under en exportperiod om tolv (12) månader därefter, i enlighet med § 7 i användarvillkoren. Innan radering sker skickar vi påminnelser 90, 30 och 7 dagar i förväg, varefter uppgifterna raderas inom 30 dagar. Observera att arkiveringsskyldigheten enligt Bokföringslagen (SFS 1999:1078) åvilar dig som bokföringsskyldig — exportera dina underlag innan exportperioden löper ut.",
+    priv4OurLabel: "Uppgifter vi behandlar för egen räkning",
+    priv4Li2Strong: "Kontouppgifter",
+    priv4Li2Rest: "— till dess att du raderar ditt konto, varefter uppgifterna tas bort inom 30 dagar, utom där lag kräver längre bevarande.",
+    priv4Li3Strong: "Vår egen räkenskapsinformation",
+    priv4Li3Rest: "(fakturor till dig, betalningshistorik) — sju (7) år enligt Bokföringslagen och skattelagstiftningen.",
+    priv4Li4Strong: "Säkerhetsloggar",
+    priv4Li4Rest: "(IP-adress, sessioner) — nittio (90) dagar.",
+    priv4Li5Strong: "Ändringslogg för verifikationer",
+    priv4Li5Rest: "(vem som ändrat vad, utan IP-adress) — så länge det underliggande underlaget lagras.",
+    priv4Li6Strong: "Supportärenden",
+    priv4Li6Rest: "— så länge det behövs för att hantera ärendet och en rimlig tid därefter, dock längst 24 månader.",
+    priv4Li7Strong: "Pseudonymiserad provperiodstoken",
+    priv4Li7Rest: "— efter att du raderat ditt konto bevarar vi en envägskrypterad (hashad) token som härletts från din normaliserade e-postadress, uteslutande för att förhindra upprepat utnyttjande av den kostnadsfria provperioden. Token kan inte återställas till din e-postadress och bevaras i högst tjugofyra (24) månader, varefter den raderas automatiskt.",
+    priv5Title: "5. Mottagare och underbiträden",
+    priv5P1Pre: "Vi delar personuppgifter enbart med leverantörer som behöver dem för att vi ska kunna tillhandahålla tjänsten. En fullständig och uppdaterad lista finns på",
+    priv5P1Post: ". Exempel på kategorier:",
+    priv5Li1: "Molninfrastruktur och databas (EU)",
+    priv5Li2: "Lagring av kvittobilder (EU)",
+    priv5Li3: "Betalningshantering (EU/US med lämpliga skyddsåtgärder)",
+    priv5Li4: "Transaktionsmejl (US med lämpliga skyddsåtgärder)",
+    priv5Li5: "OCR-behandling av kvitton (EU)",
+    priv5P2: "Vi säljer aldrig personuppgifter till tredje part och delar dem aldrig för marknadsföringsändamål utan ditt uttryckliga samtycke. Vi kan lämna ut uppgifter till myndigheter (t.ex. Skatteverket, Polisen) om vi är skyldiga att göra det enligt lag.",
+    priv6Title: "6. Överföring till tredjeland",
+    priv6P1: "Vår primära lagring sker i Sverige och inom EU/EES. Vissa underbiträden är etablerade i USA. Sådana överföringar sker uteslutande med stöd av EU-kommissionens standardavtalsklausuler (SCC, art. 46.2.c GDPR) och/eller EU–US Data Privacy Framework där leverantören är certifierad.",
+    priv6P2Pre: "Du kan begära information om vilka skyddsåtgärder som gäller för en specifik underbiträdare genom att kontakta oss på",
+    priv7Title: "7. Dina rättigheter",
+    priv7P1Pre: "Under GDPR har du följande rättigheter. Kontakta oss på",
+    priv7P1Post: "för att utöva dem. Vi svarar inom en (1) månad.",
+    priv7Li1Strong: "Tillgång (art. 15)",
+    priv7Li1Rest: "— rätt att få bekräftelse på om vi behandlar uppgifter om dig och att få en kopia av dem.",
+    priv7Li2Strong: "Rättelse (art. 16)",
+    priv7Li2Rest: "— rätt att få felaktiga eller ofullständiga uppgifter korrigerade. Du kan uppdatera de flesta uppgifter direkt via profilinställningarna.",
+    priv7Li3Strong: "Radering (art. 17)",
+    priv7Li3Rest: "— rätt att begära att vi raderar dina uppgifter (\"rätten att bli bortglömd\"), under förutsättning att vi inte har rättslig skyldighet att bevara dem. När du utövar din rätt till radering tar vi bort dina personuppgifter, med undantag för den pseudonymiserade provperiodstoken som beskrivs i avsnittet om lagringstider och för sådana uppgifter vi är skyldiga att bevara enligt lag.",
+    priv7Li4Strong: "Begränsning (art. 18)",
+    priv7Li4Rest: "— rätt att begära att behandlingen begränsas i vissa situationer, t.ex. om du bestrider uppgifternas riktighet.",
+    priv7Li5Strong: "Dataportabilitet (art. 20)",
+    priv7Li5Rest: "— rätt att få ut de uppgifter du lämnat i ett strukturerat, maskinläsbart format (CSV, SIE, PDF). Exportfunktioner finns direkt i tjänsten.",
+    priv7Li6Strong: "Invändning (art. 21)",
+    priv7Li6Rest: "— rätt att invända mot behandling som grundar sig på berättigat intresse. Vi upphör med behandlingen om vi inte kan påvisa tvingande berättigade skäl.",
+    priv7Li7Strong: "Återkallelse av samtycke",
+    priv7Li7Rest: "— om behandlingen grundas på samtycke (t.ex. förbättring av OCR-modellen) kan du när som helst återkalla det utan att det påverkar lagligheten av tidigare behandling.",
+    priv8Title: "8. Rätt att klaga till tillsynsmyndigheten",
+    priv8P1Pre: "Om du anser att vi behandlar dina personuppgifter i strid med GDPR har du rätt att inge ett klagomål till",
+    priv8ImyStrong: "Integritetsskyddsmyndigheten (IMY)",
+    priv8P2: "Vi ser gärna att du kontaktar oss först så att vi kan lösa eventuella problem direkt.",
+    priv9Title: "9. Säkerhet",
+    priv9P1: "Vi vidtar tekniska och organisatoriska åtgärder för att skydda dina uppgifter mot obehörig åtkomst, förlust och förstöring. Åtgärderna inkluderar kryptering under överföring (TLS/HTTPS), krypterade lösenord (bcrypt), tidsbegränsade signerade URL:er för kvittobilder och en ändringslogg för kontoåtgärder.",
+    priv9P2: "Vid en personuppgiftsincident anmäler vi incidenten till Integritetsskyddsmyndigheten (IMY) utan onödigt dröjsmål och, där det är möjligt, senast 72 timmar efter att vi fått kännedom om den, i enlighet med art. 33 GDPR. Om incidenten kan innebära en hög risk för dina rättigheter och friheter informerar vi även dig utan onödigt dröjsmål (art. 34). När vi agerar personuppgiftsbiträde underrättar vi i stället den personuppgiftsansvarige utan onödigt dröjsmål.",
+    priv9MoreInfo: "Mer information finns på",
+    priv10Title: "10. Cookies och spårning",
+    priv10P1: "Kvittino använder nödvändiga cookies för att hålla dig inloggad och skydda din session (CSRF-skydd). Vi använder inte spårningscookies för reklam.",
+    priv10P2: "Om vi i framtiden inför analytiska eller icke-nödvändiga cookies inhämtar vi ditt samtycke via ett cookie-meddelande innan de aktiveras.",
+    priv11Title: "11. Automatiserat beslutsfattande",
+    priv11P1: "Vår OCR-funktion extraherar automatiskt data från kvitton och föreslår momssats och BAS-konto. Detta är ett beslutsstöd — du granskar och godkänner alltid resultatet innan det sparas. Kvittino fattar inte automatiserade beslut som producerar rättsliga eller liknande effekter för dig i den mening som avses i GDPR art. 22.",
+    priv12Title: "12. Ändringar av policyn",
+    priv12P1: "Vi kan uppdatera denna policy för att spegla förändringar i tjänsten eller lagstiftningen. Vid väsentliga ändringar skickar vi ett meddelande till din registrerade e-postadress med minst 30 dagars varsel. Det aktuella datumet för senaste uppdatering anges alltid högst upp på sidan.",
+    priv13Title: "13. Kontakt",
+    priv13P1Pre: "Frågor om hur vi behandlar dina personuppgifter besvaras på:",
+    priv13P2Pre: "Se även vår",
+    priv13DpaLink: "DPA",
+    priv13SubprocessorsLink: "listan över underbiträden",
+    priv13And: "och",
+    priv13TermsLink: "användarvillkoren",
+    privFooter: "Kontakt: legal@kvittino.se · GlorifyTC · Org.nr [xxxxxx-xxxx]",
+    // Terms of service page
+    termsTitle: "Användarvillkor",
+    termsIntro: "Dessa villkor reglerar din användning av Kvittino — en AI-driven tjänst för kvittohantering, utläggsredovisning och bokföringsexport anpassad för svenska moms- och bokföringsregler.",
+    termsUpdated: "Senast uppdaterad: 18 juli 2026",
+    terms1Title: "§ 1 Parter",
+    terms1P1: "(org.nr [xxxxxx-xxxx]), nedan kallat \"vi\", \"oss\" eller \"Kvittino\".",
+    terms1P2: "Den fysiska eller juridiska person som registrerar ett konto och godkänner dessa villkor kallas \"du\", \"Kunden\" eller \"Användaren\". Om du accepterar villkoren å ett företags vägnar intygar du att du har befogenhet att binda det företaget.",
+    terms2Title: "§ 2 Avtalets ingående",
+    terms2P1: "Avtalet träder i kraft när du skapar ett konto och markerar att du accepterar dessa villkor.",
+    terms2P2: "Dessa villkor gäller för samtliga planer — Gratis, Pro, Företag och Enterprise — om inget annat skriftligen avtalats.",
+    terms2P3: "Ändringar av villkoren hanteras enligt § 13. För konsumenter förutsätter väsentliga ändringar till din nackdel att du underrättas i förväg och ges möjlighet att säga upp avtalet utan kostnad innan ändringen träder i kraft.",
+    terms3Title: "§ 3 Tjänstens omfattning",
+    terms3P1: "Kvittino är en webbaserad SaaS-tjänst (Software as a Service) för skanning och hantering av kvitton, körjournalföring, utläggsattest, kollektivtrafikregistrering och fakturahantering — anpassad för svenska momssatser (6/12/25 %), BAS-kontoplanen och Bokföringslagens krav.",
+    terms3P2: "Vi strävar efter hög tillgänglighet men garanterar inte avbrottsfri drift. Planerat underhåll och oplanerade driftstörningar kan förekomma. Tjänsten tillhandahålls i befintligt skick (\"as-is\"), med de begränsningar som följer av § 12.",
+    terms3P3: "AI-genererade värden — t.ex. OCR-utläsning av leverantör, belopp och momssats — är hjälpmedel och utgör inte juridiskt bindande underlag. Du ansvarar alltid för att kontrollera och godkänna uppgifter innan de sparas eller exporteras. Vi fattar inte automatiserade beslut med rättslig verkan för dig (se integritetspolicyns avsnitt om automatiserat beslutsfattande).",
+    terms4Title: "§ 4 Konton och åtkomst",
+    terms4P1: "Du ansvarar för att hålla dina inloggningsuppgifter konfidentiella och för all aktivitet som sker via ditt konto. Dela inte ditt lösenord med obehöriga.",
+    terms4P2: "Vi förbehåller oss rätten att stänga av eller radera konton som (i) bryter mot dessa villkor, (ii) används för olagliga ändamål, eller (iii) misstänks ha komprometterats — med omedelbar verkan och utan föregående varsel om säkerheten kräver det. Vid avstängning eller uppsägning från vår sida gäller din rätt till export enligt § 14.",
+    terms4P3: "Du måste vara minst 18 år och ha rättslig handlingsförmåga för att ingå detta avtal.",
+    terms5Title: "§ 5 Prenumeration och betalning",
+    terms5P1Pre: "Betalda abonnemang debiteras månadsvis i förskott i SEK. Priser till konsumenter anges inklusive moms. Betalning hanteras av",
+    terms5P1Post: "Kvittino lagrar inga kortuppgifter.",
+    terms5P2: "Prenumerationen förnyas automatiskt tills du avslutar den. Avslutning sker från dina kontoinställningar och träder i kraft vid innevarande faktureringsperiods slut — du behåller tillgång till betalda funktioner fram till dess.",
+    terms5P3: "Vi förbehåller oss rätten att ändra priser med minst 30 dagars skriftlig varsel via e-post. Om du inte godkänner prisändringen kan du avsluta prenumerationen utan extra kostnad innan ändringen träder i kraft.",
+    terms5P4: "Återbetalning sker inte för redan fakturerade perioder, utom i fall där tvingande lag kräver det (se § 6 om ångerrätt).",
+    terms5P5Strong: "Provperiod.",
+    terms5P5Rest: "Vi kan erbjuda en kostnadsfri provperiod om trettio (30) dagar. Om du inte säger upp prenumerationen före provperiodens slut övergår den automatiskt till en betald prenumeration enligt den plan och det pris du valt vid registreringen, och betalning dras då för den kommande perioden. Du kan när som helst under provperioden säga upp prenumerationen utan kostnad via dina kontoinställningar. Vi påminner dig via e-post innan den första betalningen dras.",
+    terms5P6Strong: "Provperioden får utnyttjas en (1) gång per användare.",
+    terms5P6Rest: "Rätten till provperiod bedöms per person, inte enbart per konto eller e-postadress. För att förhindra att provperioden utnyttjas upprepade gånger genom nya konton kan vi, efter att ett konto raderats, bevara en pseudonymiserad (envägskrypterad) token som härletts från din e-postadress; närmare information finns i integritetspolicyn. Vi förbehåller oss rätten att neka eller avsluta en provperiod vid misstanke om missbruk.",
+    terms6Title: "§ 6 Ångerrätt (konsumenter)",
+    terms6P1: "Om du är konsument (dvs. en fysisk person som handlar utanför sin yrkesmässiga verksamhet) har du rätt att frånträda detta avtal inom 14 dagar från avtalets ingående, utan att ange skäl, i enlighet med lag (2005:59) om distansavtal och avtal utanför affärslokaler.",
+    terms6P2: "Om du uttryckligen begär att tjänsten ska börja tillhandahållas under ångerfristen, och samtidigt bekräftar att du är medveten om att din ångerrätt går förlorad när tjänsten fullgjorts, förfaller ångerrätten när tjänsten är fullgjord. För en löpande prenumeration som du frånträder under fristen har vi rätt till betalning i proportion till vad som levererats fram till att du meddelar oss att du frånträder avtalet.",
+    terms6P3Pre: "För att utöva ångerrätten kan du använda Konsumentverkets standardformulär för ånger, som finns tillgängligt",
+    terms6AngerLink: "här",
+    terms6P3Mid: ", eller kontakta oss på",
+    terms6P3Post: "med ditt namn, din e-postadress och ett tydligt meddelande om att du frånträder avtalet.",
+    terms7Title: "§ 7 Lagring, arkivering och radering av underlag",
+    terms7P1: "7.1 Bokföringslagen (1999:1078) ålägger den som är bokföringsskyldig att bevara räkenskapsinformation till och med utgången av det sjunde året efter det kalenderår då räkenskapsåret avslutades. Denna arkiveringsskyldighet åvilar dig i egenskap av bokföringsskyldig. Kvittino övertar inte, och ska inte anses ha övertagit, någon arkiveringsskyldighet enligt Bokföringslagen eller annan författning, om inte detta uttryckligen och skriftligen avtalats.",
+    terms7P2: "7.2 Under avtalets löptid lagrar Kvittino dina kvitton, verifikationer och övriga underlag som en del av tjänsten. Om din betalda prenumeration upphör övergår kontot till läsläge, i vilket du under tolv (12) månader från den senaste betalda periodens utgång (\"Exportperioden\") har fortsatt tillgång till samtliga underlag för granskning och export via tjänstens exportfunktioner (SIE, CSV, PDF). Under läsläget kan möjligheten att ladda upp nya underlag vara begränsad.",
+    terms7P3: "7.3 Kvittino åtar sig att, innan underlag raderas enligt punkt 7.4, skicka skriftliga påminnelser till din registrerade e-postadress senast nittio (90), trettio (30) respektive sju (7) dagar före Exportperiodens utgång. Varje påminnelse ska ange det datum då radering sker samt hänvisa till exportfunktionerna.",
+    terms7P4: "7.4 Efter Exportperiodens utgång raderas kvitton, verifikationer och därtill hörande bilder permanent inom trettio (30) dagar. Radering dokumenteras i Kvittinos loggar. Uppgifter som Kvittino är skyldigt att bevara enligt lag — däribland Kvittinos egen räkenskapsinformation avseende fakturering och betalningar — bevaras under den tid som följer av tillämplig lagstiftning.",
+    terms7P5: "7.5 Det åligger dig att före Exportperiodens utgång exportera samtliga underlag som du är skyldig att bevara. Under förutsättning att Kvittino fullgjort sina åtaganden enligt punkterna 7.2–7.4 ansvarar Kvittino inte för förlust av räkenskapsinformation som raderats efter Exportperiodens utgång.",
+    terms7P6: "7.6 För konton som omfattas av gratisplanen och som varit inaktiva under tolv (12) sammanhängande månader tillämpas motsvarande förfarande enligt punkterna 7.3–7.5, varvid Exportperioden räknas från den senaste inloggningen.",
+    terms7P7Strong: "7.7 Export i läsläge.",
+    terms7P7Rest: "När ditt konto övergår till läsläge — vare sig efter avslutad provperiod eller efter att en betald prenumeration upphört — behåller du full tillgång att granska och exportera dina underlag. En fullständig export i CSV-format samt nedladdning av dina ursprungliga kvitto- och fakturafiler är alltid tillgänglig, så att du kan fullgöra din arkiveringsskyldighet enligt Bokföringslagen. Vissa tilläggsfunktioner för export — däribland export i SIE- och SIE4-format samt direktintegrationer med bokföringsprogram — förutsätter dock en aktiv betald prenumeration.",
+    terms8Title: "§ 8 Dina uppgifter och äganderätt",
+    terms8P1: "Du äger all data du laddar upp till Kvittino — kvitton, fakturor, reseuppgifter och övriga dokument. Vi gör inte anspråk på äganderätt till ditt innehåll.",
+    terms8P2Pre: "Du ger oss en begränsad, icke-exklusiv licens att behandla dina uppgifter uteslutande i syfte att tillhandahålla, driva och säkerställa tjänsten. Med ditt uttryckliga samtycke kan vi dessutom använda markeringar från dina kvitton för att förbättra vår OCR-modell; sådana uppgifter avidentifieras innan de används för detta ändamål, och samtycket kan återkallas när som helst. Se vår",
+    terms8PrivacyLink: "integritetspolicy",
+    terms8P2Post: "för närmare information.",
+    terms8P3: "Vi delar aldrig dina personuppgifter med tredje part i marknadsföringssyfte.",
+    terms9Title: "§ 9 Immateriella rättigheter",
+    terms9P1: "Kvittino-plattformen — inklusive programvara, design, grafik, varumärken och affärslogik — ägs av GlorifyTC och skyddas av upphovsrätt och andra immaterialrättsliga lagar.",
+    terms9P2: "Du får inte kopiera, modifiera, distribuera, sälja eller utföra reverse engineering av tjänsten eller något av dess komponenter, vare sig helt eller delvis, utom i den utsträckning tvingande lag uttryckligen tillåter det.",
+    terms10Title: "§ 10 Förbjuden användning",
+    terms10Intro: "Det är förbjudet att använda Kvittino för att:",
+    terms10Li1: "lagra, ladda upp eller skapa falska, förfalskade eller missvisande bokföringsunderlag,",
+    terms10Li2: "tvätta pengar eller finansiera olaglig verksamhet,",
+    terms10Li3: "skicka spam, skadlig kod eller störa tjänstens infrastruktur,",
+    terms10Li4: "kringgå säkerhetsfunktioner eller åtkomstbegränsningar,",
+    terms10Li5: "bryta mot tillämplig lag — däribland GDPR, bokföringsrätt och skattelagstiftning.",
+    terms10P2: "Överträdelse kan leda till omedelbar kontostängning enligt § 4 och kan anmälas till berörda myndigheter.",
+    terms11Title: "§ 11 Ansvar för uppladdat innehåll",
+    terms11P1: "Du ansvarar för att innehåll som du laddar upp till tjänsten inte gör intrång i tredje mans rättigheter och att din behandling av tredje mans personuppgifter via tjänsten sker i enlighet med tillämplig dataskyddslagstiftning.",
+    terms11P2: "Du åtar dig att hålla Kvittino skadeslöst från krav från tredje man — inklusive skäliga ombudskostnader — som grundas på innehåll du laddat upp eller på din användning av tjänsten i strid med dessa villkor eller tillämplig lag. Detta åtagande gäller inte i den utsträckning kravet orsakats av Kvittinos vårdslöshet, och gäller för konsumenter endast i den utsträckning det är förenligt med tvingande rätt.",
+    terms12Title: "§ 12 Personuppgiftsbehandling",
+    terms12P1Pre: "Vår behandling av personuppgifter styrs av",
+    terms12PrivacyLink: "integritetspolicyn",
+    terms12P1Mid: "och, för företagskunder,",
+    terms12DpaLink: "personuppgiftsbiträdesavtalet (DPA)",
+    terms12P1Post: ". Kvittino agerar som personuppgiftsansvarig för kontorelaterade uppgifter och som personuppgiftsbiträde för de personuppgifter du som företagskund behandlar om tredje man (t.ex. dina anställdas utlägg) via tjänsten.",
+    terms12P2Pre: "En lista över anlitade underbiträden finns på",
+    terms12P2Post: ". Uppgifter lagras i Sverige och behandlas inom EU/EES, med de undantag för överföring till tredjeland som anges i integritetspolicyn.",
+    terms13Title: "§ 13 Ansvarsbegränsning",
+    terms13P1: "Kvittino tillhandahålls \"i befintligt skick\". Vi lämnar inga garantier — uttryckliga eller underförstådda — om tjänstens lämplighet för ett visst ändamål, avbrottsfrihet eller frihet från fel, utöver vad som följer av tvingande lag.",
+    terms13P2: "Vår totala ansvarsskyldighet gentemot dig under ett kalenderår är begränsad till det sammanlagda belopp du faktiskt betalat för tjänsten under de tre (3) månader som föregick den händelse som ger upphov till anspråket. För skada som består i förlust av data och som orsakats genom Kvittinos vårdslöshet är ansvaret dock begränsat till högst tiotusen (10 000) SEK per kalenderår.",
+    terms13P3: "Vi ansvarar inte för indirekta skador, utebliven vinst, inkomstbortfall eller följdskador av något slag — oavsett om vi informerats om risken för sådana skador.",
+    terms13P4: "Ingenting i dessa villkor utesluter eller begränsar ansvar som inte kan avtalas bort enligt tvingande lag (t.ex. personskada orsakad av grov vårdslöshet eller uppsåt).",
+    terms13P5: "Om du är konsument gäller begränsningarna i denna § 13 endast i den utsträckning de är förenliga med tvingande konsumentskyddande lagstiftning, däribland konsumenttjänst- och konsumentköprättsliga regler samt lag (1994:1512) om avtalsvillkor i konsumentförhållanden. Sådan lagstiftning kan ge dig rättigheter utöver vad som anges i dessa villkor, och ingenting i villkoren inskränker dessa rättigheter.",
+    terms14Title: "§ 14 Force majeure",
+    terms14P1: "Part är befriad från påföljd för underlåtenhet att fullgöra förpliktelse enligt detta avtal om underlåtenheten beror på en omständighet utanför partens kontroll som parten inte skäligen kunde ha förutsett vid avtalets ingående och vars följder parten inte skäligen kunde ha undvikit eller övervunnit — såsom krig, myndighetsåtgärd, nytillkommen eller ändrad lagstiftning, arbetskonflikt, omfattande driftstörning hos underleverantör av infrastruktur, brand, översvämning eller olyckshändelse av större omfattning. Om avtalets fullgörande hindras under längre tid än tre (3) månader har vardera parten rätt att säga upp avtalet med omedelbar verkan.",
+    terms15Title: "§ 15 Ändringar av villkoren",
+    terms15P1: "Vi kan ändra dessa villkor. Vid väsentliga ändringar skickar vi ett meddelande till den e-postadress du registrerat, med minst 30 dagars varsel innan ändringen träder i kraft.",
+    terms15P2: "För företagskunder utgör fortsatt användning av tjänsten efter att ändringen trätt i kraft ett godkännande av de uppdaterade villkoren. För konsumenter träder en väsentlig ändring till din nackdel i kraft först om du inte har sagt upp avtalet före ändringsdatumet; i annat fall kan du avsluta ditt konto och din prenumeration utan extra kostnad före ändringsdatumet.",
+    terms16Title: "§ 16 Avtalets löptid och upphörande",
+    terms16P1: "Avtalet gäller tills vidare och kan avslutas av båda parter när som helst. Du kan avsluta ditt konto via profilinställningarna. Vi kan säga upp avtalet med 30 dagars varsel, eller med omedelbar verkan vid allvarlig överträdelse av dessa villkor.",
+    terms16P2: "Om Kvittino säger upp avtalet, eller stänger av ett konto enligt § 4, ska Kvittino — utom där det är oförenligt med lag, myndighetsbeslut eller nödvändiga säkerhetsåtgärder — ge dig tillgång till kontot i läsläge under trettio (30) dagar för export av dina underlag. Vid misstanke om brott får Kvittino i stället bevara underlagen och lämna ut dem till behörig myndighet.",
+    terms16P3: "Vid avslutning upphör din rätt att använda tjänsten. Bestämmelserna om ansvar för uppladdat innehåll, ansvarsbegränsning, immateriella rättigheter, datalagring och radering samt tvistlösning gäller även efter avtalets upphörande.",
+    terms17Title: "§ 17 Överlåtelse",
+    terms17P1: "Du får inte överlåta dina rättigheter eller skyldigheter enligt detta avtal utan vårt skriftliga medgivande. Kvittino får överlåta avtalet till annan juridisk person i samband med fusion, förvärv eller överlåtelse av hela eller väsentliga delar av verksamheten, förutsatt att förvärvaren övertar dessa villkor. Vi informerar dig om en sådan överlåtelse via e-post eller i tjänsten; om du är konsument har du rätt att säga upp avtalet utan kostnad om överlåtelsen är till din nackdel.",
+    terms18Title: "§ 18 Tillämplig lag och tvister",
+    terms18P1: "Dessa villkor regleras av och tolkas i enlighet med svensk rätt, utan hänsynstagande till dess lagvalsregler.",
+    terms18P2: "Tvister ska i första hand lösas genom förhandling mellan parterna. För tvister med näringsidkare är Stockholms tingsrätt avtalad som exklusivt forum i första instans. För konsumenter gäller detta forumval endast i den utsträckning det är förenligt med tvingande rätt; en konsument har alltid rätt att väcka talan vid domstolen på sin hemort.",
+    terms18P3Pre: "Konsumenter har dessutom rätt att vända sig till",
+    terms18ArnStrong: "Allmänna reklamationsnämnden (ARN)",
+    terms18P3Mid: ", för alternativ tvistlösning. EU-kommissionens plattform för tvistlösning online (ODR) nås via",
+    terms19Title: "§ 19 Övrigt",
+    terms19P1: "Om en bestämmelse i dessa villkor befinns ogiltig eller icke-verkställbar ska övriga bestämmelser förbli i full kraft. Den ogiltiga bestämmelsen ersätts med en giltig bestämmelse som så nära som möjligt återspeglar dess avsedda innebörd.",
+    terms19P2: "Dessa villkor utgör det fullständiga avtalet mellan parterna avseende tjänstens användning och ersätter alla tidigare överenskommelser i samma ämne.",
+    termsFooter: "Kontakt: legal@kvittino.se · GlorifyTC · Org.nr [xxxxxx-xxxx]",
   },
   en: {
     rcScanningLocally: "Reading receipt locally…",
@@ -1418,7 +1902,7 @@ export const strings: Record<Lang, Translations> = {
     annArm: "Mark a field",
     annArmed: "Draw a box over: {field}",
     annCancel: "Cancel",
-    annScroll: "Scroll freely. Tap “Mark a field” to fix a value.",
+    annScroll: "Scroll freely. Tap \"Mark a field\" to fix a value.",
     navTransport: "Public transport",
     trTitle: "Public transport",
     trSubtitle: "Save monthly and period passes — no need to log every trip.",
@@ -2020,5 +2504,255 @@ export const strings: Record<Lang, Translations> = {
     pricingTableLimits: "Spending limits",
     pricingTableOnboarding: "Custom onboarding",
     pricingTableSupport: "Priority support",
+    cookieTitle: "Privacy & Cookies",
+    cookieBody: "We use cookies to keep this service running securely. Necessary cookies are always active under the Swedish Electronic Communications Act (LEK). Any non-essential cookies — functional and analytics — are only stored with your explicit consent under GDPR Art. 7. You can withdraw or change consent at any time.",
+    cookiePrivacyLink: "Privacy policy",
+    cookieAcceptAll: "Accept all",
+    cookieRejectAll: "Reject all",
+    cookieManage: "Manage preferences",
+    cookieSave: "Save preferences",
+    cookieAlwaysActive: "Always active",
+    cookieExamples: "Examples",
+    cookieRetention: "Retention",
+    cookieDataController: "Data controller",
+    cookieDataControllerValue: "Kvittino AB, Sweden.",
+    cookieSupervisory: "Supervisory authority",
+    cookieGdprRights: "You have the right to access, rectify, and erase your personal data, and to lodge a complaint with IMY if you believe your rights under GDPR are not upheld.",
+    cookieCatNecessaryLabel: "Necessary",
+    cookieCatNecessaryBasis: "LEK — strictly necessary exemption",
+    cookieCatNecessaryDesc: "These cookies are required for the service to function. They handle login sessions, CSRF protection, and BankID authentication. They are exempt from consent requirements under the Swedish Electronic Communications Act (LEK) and process no personal data beyond what is strictly required for service delivery.",
+    cookieCatNecessaryExamples: "Session ID, CSRF token, BankID session token",
+    cookieCatNecessaryRetention: "Session — max 24 hours",
+    cookieCatFunctionalLabel: "Functional",
+    cookieCatFunctionalBasis: "GDPR Art. 6(1)(a) — consent",
+    cookieCatFunctionalDesc: "Stores your preferences between visits so the service behaves consistently — including your language selection and display settings. No data is shared with third parties.",
+    cookieCatFunctionalExamples: "Language setting (sv/en), UI preferences",
+    cookieCatFunctionalRetention: "12 months",
+    cookieCatAnalyticsLabel: "Analytics",
+    cookieCatAnalyticsBasis: "GDPR Art. 6(1)(a) — consent",
+    cookieCatAnalyticsDesc: "Collects anonymised data on how the service is used — pages visited, features engaged, and errors encountered — to help us improve the product. No individual user is identified or tracked across other websites.",
+    cookieCatAnalyticsExamples: "Page views, feature usage, session duration, error reports",
+    cookieCatAnalyticsRetention: "13 months",
+    // Privacy policy page
+    privTitle: "Privacy Policy",
+    privIntro: "This policy describes how GlorifyTC (\"we\", \"us\" or \"Kvittino\") collects, uses, and protects your personal data when you use Kvittino. We process personal data in accordance with the EU General Data Protection Regulation (GDPR, EU 2016/679) and supplementary Swedish data protection legislation.",
+    privUpdated: "Last updated: 18 July 2026",
+    priv1Title: "1. Data Controller",
+    priv1P1: "(reg. no. [xxxxxx-xxxx]) is the data controller for the processing of your personal data in connection with your account and your use of the service.",
+    priv1ContactLabel: "Data protection contact:",
+    priv1P3: "When you as a business user process third-party personal data (e.g. your employees' expenses) via Kvittino, GlorifyTC acts as your data processor. See our",
+    priv1DpaLink: "data processing agreement (DPA)",
+    priv2Title: "2. Data We Collect",
+    priv2AccountLabel: "Account information",
+    priv2AccountDesc: "Name, email address, encrypted password and login method (email/password or BankID). When logging in with BankID, your personal identity number is processed at the time of authentication as part of the authentication, but we do not store it; we only retain a reference to the completed authentication.",
+    priv2CompanyLabel: "Company information",
+    priv2CompanyDesc: "Company name, registration number, VAT number and postal address if you register a company in the service.",
+    priv2BookLabel: "Accounting records",
+    priv2BookDesc: "Receipt images and data extracted via OCR: supplier, date, amount, VAT rate and BAS account. This data may contain personal data if the supplier is a sole trader or if the receipt contains personal names.",
+    priv2MileageLabel: "Mileage log data",
+    priv2MileageDesc: "Start and end addresses, distance driven, date, purpose of journey and vehicle.",
+    priv2InvoiceLabel: "Invoice data",
+    priv2InvoiceDesc: "Invoice number, customer details (name, registration number, address), line items and amounts.",
+    priv2PaymentLabel: "Payment information",
+    priv2PaymentDesc: "Subscription type, billing period and payment status. Card details are handled exclusively by Stripe — we do not store them.",
+    priv2SupportLabel: "Support tickets",
+    priv2SupportDesc: "If you contact our support, we process your correspondence and the information you provide in the ticket.",
+    priv2LogsLabel: "Logs and technical data",
+    priv2LogsDesc: "IP address, timestamp and action type are logged at login and account activity. We also collect browser type and session data for security and debugging.",
+    priv3Title: "3. Purpose and Legal Basis",
+    priv3Col1: "Purpose",
+    priv3Col2: "Legal basis (GDPR art. 6)",
+    priv3R1P: "Provide and operate the service, including storage of your receipts and records",
+    priv3R1B: "Performance of contract (6.1.b)",
+    priv3R2P: "Manage subscriptions and payments",
+    priv3R2B: "Performance of contract (6.1.b)",
+    priv3R3P: "Retain our own accounting records (invoices to you, payment history) for seven years",
+    priv3R3B: "Legal obligation (6.1.c) — Bookkeeping Act and tax legislation",
+    priv3R4P: "Send transactional emails (receipts, password resets, invitations, deletion reminders)",
+    priv3R4B: "Performance of contract (6.1.b)",
+    priv3R5P: "Handle support tickets",
+    priv3R5B: "Legitimate interest (6.1.f) — to be able to provide you with support",
+    priv3R6P: "Prevent fraud, misuse and unauthorised access; security and audit logs",
+    priv3R6B: "Legitimate interest (6.1.f)",
+    priv3R7P: "Prevent repeated use of the free trial (pseudonymised token derived from email address, retained after account deletion)",
+    priv3R7B: "Legitimate interest (6.1.f)",
+    priv3R8P: "Improve the OCR model using your annotations (data is anonymised before such use)",
+    priv3R8B: "Consent (6.1.a) — may be withdrawn at any time",
+    priv3R9P: "Comply with legal requirements and respond to binding regulatory requests",
+    priv3R9B: "Legal obligation (6.1.c)",
+    priv3P1Pre: "When you as a business customer process your employees' or other third parties' personal data via the service, we act as data processor under our",
+    priv3DpaLink: "data processing agreement",
+    priv3P1Post: "; the legal basis for such processing is determined by you as the data controller.",
+    priv3P2: "We rely on legitimate interest (art. 6.1.f) only where our interest in maintaining the security and functionality of the service outweighs your interest in protection. You always have the right to object to such processing (see section 7).",
+    priv4Title: "4. Retention Periods",
+    priv4Intro: "We distinguish between content we store on your behalf as part of the service and data we process on our own account.",
+    priv4OwnLabel: "Content we store on your behalf",
+    priv4Li1Strong: "Receipts, vouchers, mileage logs and invoices",
+    priv4Li1Rest: "— during an active subscription and during an export period of twelve (12) months thereafter, in accordance with § 7 of the terms of service. Before deletion we send reminders 90, 30 and 7 days in advance, after which the data is deleted within 30 days. Note that the archiving obligation under the Bookkeeping Act (SFS 1999:1078) rests with you as the bookkeeping obligee — export your records before the export period expires.",
+    priv4OurLabel: "Data we process on our own account",
+    priv4Li2Strong: "Account data",
+    priv4Li2Rest: "— until you delete your account, after which the data is removed within 30 days, except where law requires longer retention.",
+    priv4Li3Strong: "Our own accounting records",
+    priv4Li3Rest: "(invoices to you, payment history) — seven (7) years under the Bookkeeping Act and tax legislation.",
+    priv4Li4Strong: "Security logs",
+    priv4Li4Rest: "(IP address, sessions) — ninety (90) days.",
+    priv4Li5Strong: "Voucher audit log",
+    priv4Li5Rest: "(who changed what, without IP address) — for as long as the underlying record is stored.",
+    priv4Li6Strong: "Support tickets",
+    priv4Li6Rest: "— for as long as is needed to handle the matter and a reasonable time thereafter, but no longer than 24 months.",
+    priv4Li7Strong: "Pseudonymised trial token",
+    priv4Li7Rest: "— after you delete your account we retain a one-way encrypted (hashed) token derived from your normalised email address, solely to prevent repeated use of the free trial. The token cannot be reversed to your email address and is retained for a maximum of twenty-four (24) months, after which it is automatically deleted.",
+    priv5Title: "5. Recipients and Sub-Processors",
+    priv5P1Pre: "We share personal data only with suppliers who need it for us to provide the service. A complete and up-to-date list is available at",
+    priv5P1Post: ". Examples of categories:",
+    priv5Li1: "Cloud infrastructure and database (EU)",
+    priv5Li2: "Receipt image storage (EU)",
+    priv5Li3: "Payment processing (EU/US with appropriate safeguards)",
+    priv5Li4: "Transactional email (US with appropriate safeguards)",
+    priv5Li5: "OCR processing of receipts (EU)",
+    priv5P2: "We never sell personal data to third parties and never share it for marketing purposes without your explicit consent. We may disclose data to authorities (e.g. the Swedish Tax Agency, the Police) if we are obliged to do so by law.",
+    priv6Title: "6. Transfers to Third Countries",
+    priv6P1: "Our primary storage takes place in Sweden and within the EU/EEA. Certain sub-processors are established in the USA. Such transfers take place exclusively on the basis of the European Commission's standard contractual clauses (SCC, art. 46.2.c GDPR) and/or the EU–US Data Privacy Framework where the supplier is certified.",
+    priv6P2Pre: "You can request information about the safeguards applicable to a specific sub-processor by contacting us at",
+    priv7Title: "7. Your Rights",
+    priv7P1Pre: "Under the GDPR you have the following rights. Contact us at",
+    priv7P1Post: "to exercise them. We respond within one (1) month.",
+    priv7Li1Strong: "Access (art. 15)",
+    priv7Li1Rest: "— right to receive confirmation of whether we process data about you and to receive a copy of it.",
+    priv7Li2Strong: "Rectification (art. 16)",
+    priv7Li2Rest: "— right to have inaccurate or incomplete data corrected. You can update most data directly via the profile settings.",
+    priv7Li3Strong: "Erasure (art. 17)",
+    priv7Li3Rest: "— right to request that we delete your data (\"the right to be forgotten\"), provided we do not have a legal obligation to retain it. When you exercise your right to erasure we remove your personal data, with the exception of the pseudonymised trial token described in the retention periods section and data we are required to retain by law.",
+    priv7Li4Strong: "Restriction (art. 18)",
+    priv7Li4Rest: "— right to request that processing be restricted in certain situations, e.g. if you dispute the accuracy of the data.",
+    priv7Li5Strong: "Data portability (art. 20)",
+    priv7Li5Rest: "— right to receive the data you have provided in a structured, machine-readable format (CSV, SIE, PDF). Export functions are available directly in the service.",
+    priv7Li6Strong: "Objection (art. 21)",
+    priv7Li6Rest: "— right to object to processing based on legitimate interest. We will cease the processing if we cannot demonstrate compelling legitimate grounds.",
+    priv7Li7Strong: "Withdrawal of consent",
+    priv7Li7Rest: "— if processing is based on consent (e.g. improvement of the OCR model) you may withdraw it at any time without affecting the lawfulness of prior processing.",
+    priv8Title: "8. Right to Complain to the Supervisory Authority",
+    priv8P1Pre: "If you believe that we process your personal data in breach of the GDPR you have the right to lodge a complaint with",
+    priv8ImyStrong: "the Swedish Authority for Privacy Protection (IMY)",
+    priv8P2: "We prefer that you contact us first so that we can resolve any issues directly.",
+    priv9Title: "9. Security",
+    priv9P1: "We take technical and organisational measures to protect your data against unauthorised access, loss and destruction. Measures include encryption in transit (TLS/HTTPS), encrypted passwords (bcrypt), time-limited signed URLs for receipt images and an audit log for account actions.",
+    priv9P2: "In the event of a personal data breach we will notify the Swedish Authority for Privacy Protection (IMY) without undue delay and, where feasible, no later than 72 hours after becoming aware of it, in accordance with art. 33 GDPR. If the breach is likely to result in a high risk to your rights and freedoms we will also notify you without undue delay (art. 34). When we act as data processor we instead notify the data controller without undue delay.",
+    priv9MoreInfo: "More information is available at",
+    priv10Title: "10. Cookies and Tracking",
+    priv10P1: "Kvittino uses necessary cookies to keep you logged in and protect your session (CSRF protection). We do not use tracking cookies for advertising.",
+    priv10P2: "If we introduce analytical or non-essential cookies in the future we will obtain your consent via a cookie notice before they are activated.",
+    priv11Title: "11. Automated Decision-Making",
+    priv11P1: "Our OCR function automatically extracts data from receipts and suggests VAT rate and BAS account. This is a decision-support tool — you always review and approve the result before it is saved. Kvittino does not make automated decisions that produce legal or similarly significant effects for you within the meaning of GDPR art. 22.",
+    priv12Title: "12. Changes to this Policy",
+    priv12P1: "We may update this policy to reflect changes in the service or legislation. For material changes we will send a notification to your registered email address with at least 30 days' notice. The current date of the latest update is always shown at the top of the page.",
+    priv13Title: "13. Contact",
+    priv13P1Pre: "Questions about how we process your personal data can be sent to:",
+    priv13P2Pre: "See also our",
+    priv13DpaLink: "DPA",
+    priv13SubprocessorsLink: "list of subprocessors",
+    priv13And: "and",
+    priv13TermsLink: "terms of service",
+    privFooter: "Contact: legal@kvittino.se · GlorifyTC · Reg. no. [xxxxxx-xxxx]",
+    // Terms of service page
+    termsTitle: "Terms of Service",
+    termsIntro: "These terms govern your use of Kvittino — an AI-powered service for receipt management, expense reporting and bookkeeping export adapted to Swedish VAT and bookkeeping rules.",
+    termsUpdated: "Last updated: 18 July 2026",
+    terms1Title: "§ 1 Parties",
+    terms1P1: "(reg. no. [xxxxxx-xxxx]), hereafter referred to as \"we\", \"us\" or \"Kvittino\".",
+    terms1P2: "The natural or legal person who registers an account and accepts these terms is referred to as \"you\", \"the Customer\" or \"the User\". If you accept the terms on behalf of a company you confirm that you have authority to bind that company.",
+    terms2Title: "§ 2 Formation of Agreement",
+    terms2P1: "The agreement takes effect when you create an account and indicate that you accept these terms.",
+    terms2P2: "These terms apply to all plans — Free, Pro, Business and Enterprise — unless otherwise agreed in writing.",
+    terms2P3: "Changes to the terms are handled in accordance with § 13. For consumers, material changes to your detriment require advance notice and the opportunity to terminate the agreement without charge before the change takes effect.",
+    terms3Title: "§ 3 Scope of Service",
+    terms3P1: "Kvittino is a web-based SaaS (Software as a Service) for scanning and managing receipts, mileage logging, expense approval, public transport recording and invoice management — adapted to Swedish VAT rates (6/12/25 %), the BAS chart of accounts and the requirements of the Bookkeeping Act.",
+    terms3P2: "We strive for high availability but do not guarantee uninterrupted operation. Planned maintenance and unplanned outages may occur. The service is provided \"as-is\", with the limitations set out in § 12.",
+    terms3P3: "AI-generated values — e.g. OCR readings of supplier, amount and VAT rate — are decision-support tools and do not constitute legally binding records. You are always responsible for checking and approving data before it is saved or exported. We do not make automated decisions with legal effect for you (see the automated decision-making section of the privacy policy).",
+    terms4Title: "§ 4 Accounts and Access",
+    terms4P1: "You are responsible for keeping your login credentials confidential and for all activity occurring via your account. Do not share your password with unauthorised parties.",
+    terms4P2: "We reserve the right to suspend or delete accounts that (i) violate these terms, (ii) are used for unlawful purposes, or (iii) are suspected of being compromised — with immediate effect and without prior notice if security requires it. Upon suspension or termination by us, your right to export under § 14 applies.",
+    terms4P3: "You must be at least 18 years of age and have legal capacity to enter into this agreement.",
+    terms5Title: "§ 5 Subscription and Payment",
+    terms5P1Pre: "Paid subscriptions are billed monthly in advance in SEK. Prices to consumers are shown inclusive of VAT. Payment is handled by",
+    terms5P1Post: "Kvittino does not store any card details.",
+    terms5P2: "The subscription renews automatically until you cancel it. Cancellation is done from your account settings and takes effect at the end of the current billing period — you retain access to paid features until then.",
+    terms5P3: "We reserve the right to change prices with at least 30 days' written notice by email. If you do not accept the price change you may cancel the subscription without extra charge before the change takes effect.",
+    terms5P4: "No refunds are given for already billed periods, except where mandatory law requires it (see § 6 on the right of withdrawal).",
+    terms5P5Strong: "Trial period.",
+    terms5P5Rest: "We may offer a free trial period of thirty (30) days. If you do not cancel the subscription before the trial ends it automatically converts to a paid subscription at the plan and price you chose at registration, and payment is then taken for the upcoming period. You may cancel the subscription at any time during the trial period without charge via your account settings. We will remind you by email before the first payment is taken.",
+    terms5P6Strong: "The trial period may be used once (1) per user.",
+    terms5P6Rest: "Entitlement to the trial period is assessed per person, not merely per account or email address. To prevent the trial from being used repeatedly through new accounts we may, after an account is deleted, retain a pseudonymised (one-way encrypted) token derived from your email address; further information is available in the privacy policy. We reserve the right to deny or terminate a trial period if misuse is suspected.",
+    terms6Title: "§ 6 Right of Withdrawal (consumers)",
+    terms6P1: "If you are a consumer (i.e. a natural person acting outside their professional capacity) you have the right to withdraw from this agreement within 14 days of the agreement being formed, without giving a reason, in accordance with the Distance and Off-Premises Contracts Act (2005:59).",
+    terms6P2: "If you expressly request that the service begin during the withdrawal period, and at the same time confirm that you are aware that your right of withdrawal is lost when the service is fully performed, the right of withdrawal lapses when the service is fully performed. For an ongoing subscription that you withdraw during the period we are entitled to payment proportional to what has been delivered up until you notify us that you are withdrawing from the agreement.",
+    terms6P3Pre: "To exercise the right of withdrawal you may use the Swedish Consumer Agency's standard withdrawal form, available",
+    terms6AngerLink: "here",
+    terms6P3Mid: ", or contact us at",
+    terms6P3Post: "with your name, your email address and a clear statement that you are withdrawing from the agreement.",
+    terms7Title: "§ 7 Storage, Archiving and Deletion of Records",
+    terms7P1: "7.1 The Bookkeeping Act (1999:1078) requires those subject to bookkeeping obligations to retain accounting records until the end of the seventh year after the calendar year in which the financial year ended. This archiving obligation rests with you as the bookkeeping obligee. Kvittino does not, and shall not be deemed to have, assumed any archiving obligation under the Bookkeeping Act or other legislation, unless expressly agreed in writing.",
+    terms7P2: "7.2 During the term of the agreement Kvittino stores your receipts, vouchers and other records as part of the service. If your paid subscription ends the account transitions to read mode, in which you have continued access for twelve (12) months from the end of the last paid period (the \"Export Period\") to all records for review and export via the service's export functions (SIE, CSV, PDF). In read mode the ability to upload new records may be limited.",
+    terms7P3: "7.3 Kvittino undertakes to, before records are deleted pursuant to clause 7.4, send written reminders to your registered email address no later than ninety (90), thirty (30) and seven (7) days before the end of the Export Period. Each reminder shall state the date on which deletion will occur and refer to the export functions.",
+    terms7P4: "7.4 After the Export Period ends, receipts, vouchers and associated images are permanently deleted within thirty (30) days. Deletion is documented in Kvittino's logs. Data that Kvittino is required to retain by law — including Kvittino's own accounting records relating to billing and payments — is retained for the period required by applicable legislation.",
+    terms7P5: "7.5 It is your responsibility to export before the end of the Export Period all records you are required to retain. Provided that Kvittino has fulfilled its obligations under clauses 7.2–7.4, Kvittino is not liable for loss of accounting records deleted after the Export Period ends.",
+    terms7P6: "7.6 For accounts on the free plan that have been inactive for twelve (12) consecutive months, the equivalent procedure under clauses 7.3–7.5 applies, with the Export Period calculated from the last login.",
+    terms7P7Strong: "7.7 Export in read mode.",
+    terms7P7Rest: "When your account transitions to read mode — whether after a completed trial period or after a paid subscription has ended — you retain full access to review and export your records. A complete export in CSV format and download of your original receipt and invoice files is always available, so that you can fulfil your archiving obligation under the Bookkeeping Act. Certain additional export features — including export in SIE and SIE4 format and direct integrations with bookkeeping software — require an active paid subscription.",
+    terms8Title: "§ 8 Your Data and Ownership",
+    terms8P1: "You own all data you upload to Kvittino — receipts, invoices, travel records and other documents. We make no claim of ownership over your content.",
+    terms8P2Pre: "You grant us a limited, non-exclusive licence to process your data solely for the purpose of providing, operating and securing the service. With your explicit consent we may also use annotations from your receipts to improve our OCR model; such data is anonymised before being used for this purpose, and consent may be withdrawn at any time. See our",
+    terms8PrivacyLink: "privacy policy",
+    terms8P2Post: "for further information.",
+    terms8P3: "We never share your personal data with third parties for marketing purposes.",
+    terms9Title: "§ 9 Intellectual Property Rights",
+    terms9P1: "The Kvittino platform — including software, design, graphics, trademarks and business logic — is owned by GlorifyTC and protected by copyright and other intellectual property laws.",
+    terms9P2: "You may not copy, modify, distribute, sell or reverse-engineer the service or any of its components, in whole or in part, except to the extent expressly permitted by mandatory law.",
+    terms10Title: "§ 10 Prohibited Use",
+    terms10Intro: "It is prohibited to use Kvittino to:",
+    terms10Li1: "store, upload or create false, forged or misleading accounting records,",
+    terms10Li2: "launder money or finance unlawful activity,",
+    terms10Li3: "send spam, malicious code or disrupt the service's infrastructure,",
+    terms10Li4: "circumvent security features or access restrictions,",
+    terms10Li5: "violate applicable law — including GDPR, bookkeeping law and tax legislation.",
+    terms10P2: "Violations may lead to immediate account suspension under § 4 and may be reported to the relevant authorities.",
+    terms11Title: "§ 11 Liability for Uploaded Content",
+    terms11P1: "You are responsible for ensuring that content you upload to the service does not infringe third-party rights and that your processing of third-party personal data via the service complies with applicable data protection legislation.",
+    terms11P2: "You undertake to indemnify Kvittino against claims from third parties — including reasonable legal costs — arising from content you have uploaded or from your use of the service in breach of these terms or applicable law. This undertaking does not apply to the extent that the claim was caused by Kvittino's negligence, and applies to consumers only to the extent compatible with mandatory law.",
+    terms12Title: "§ 12 Personal Data Processing",
+    terms12P1Pre: "Our processing of personal data is governed by",
+    terms12PrivacyLink: "the privacy policy",
+    terms12P1Mid: "and, for business customers,",
+    terms12DpaLink: "the data processing agreement (DPA)",
+    terms12P1Post: ". Kvittino acts as data controller for account-related data and as data processor for personal data you as a business customer process about third parties (e.g. your employees' expenses) via the service.",
+    terms12P2Pre: "A list of engaged sub-processors is available at",
+    terms12P2Post: ". Data is stored in Sweden and processed within the EU/EEA, with the exceptions for transfers to third countries set out in the privacy policy.",
+    terms13Title: "§ 13 Limitation of Liability",
+    terms13P1: "Kvittino is provided \"as is\". We give no warranties — express or implied — as to the service's fitness for a particular purpose, uninterrupted operation or freedom from errors, beyond what follows from mandatory law.",
+    terms13P2: "Our total liability to you in a calendar year is limited to the total amount you have actually paid for the service during the three (3) months preceding the event giving rise to the claim. For damage consisting of data loss caused by Kvittino's negligence the liability is however limited to a maximum of ten thousand (10,000) SEK per calendar year.",
+    terms13P3: "We are not liable for indirect damages, loss of profit, loss of revenue or consequential damages of any kind — regardless of whether we have been informed of the risk of such damages.",
+    terms13P4: "Nothing in these terms excludes or limits liability that cannot be contracted out of under mandatory law (e.g. personal injury caused by gross negligence or intent).",
+    terms13P5: "If you are a consumer the limitations in this § 13 apply only to the extent compatible with mandatory consumer protection legislation, including rules on consumer services and consumer purchases and the Standard Contract Terms (Consumer Contracts) Act (1994:1512). Such legislation may give you rights beyond those stated in these terms, and nothing in the terms restricts those rights.",
+    terms14Title: "§ 14 Force Majeure",
+    terms14P1: "A party is relieved from liability for failure to perform an obligation under this agreement if the failure is due to a circumstance outside the party's control that the party could not reasonably have foreseen at the time of formation of the agreement and whose consequences the party could not reasonably have avoided or overcome — such as war, regulatory action, new or amended legislation, industrial disputes, major disruption of an infrastructure sub-supplier, fire, flooding or accident of major proportions. If performance of the agreement is prevented for a period exceeding three (3) months, each party has the right to terminate the agreement with immediate effect.",
+    terms15Title: "§ 15 Changes to the Terms",
+    terms15P1: "We may change these terms. For material changes we will send a notification to the email address you have registered, with at least 30 days' notice before the change takes effect.",
+    terms15P2: "For business customers, continued use of the service after the change takes effect constitutes acceptance of the updated terms. For consumers, a material change to your detriment takes effect only if you have not terminated the agreement before the change date; otherwise you may close your account and subscription without extra charge before the change date.",
+    terms16Title: "§ 16 Term and Termination",
+    terms16P1: "The agreement runs indefinitely and may be terminated by either party at any time. You may close your account via the profile settings. We may terminate the agreement with 30 days' notice, or with immediate effect for a serious breach of these terms.",
+    terms16P2: "If Kvittino terminates the agreement, or suspends an account under § 4, Kvittino shall — except where incompatible with law, a regulatory decision or necessary security measures — give you access to the account in read mode for thirty (30) days for the export of your records. If criminal activity is suspected Kvittino may instead retain the records and disclose them to the competent authority.",
+    terms16P3: "Upon termination your right to use the service ends. Provisions on liability for uploaded content, limitation of liability, intellectual property rights, data storage and deletion, and dispute resolution continue to apply after the agreement ends.",
+    terms17Title: "§ 17 Assignment",
+    terms17P1: "You may not assign your rights or obligations under this agreement without our written consent. Kvittino may assign the agreement to another legal entity in connection with a merger, acquisition or transfer of all or a substantial part of the business, provided that the acquirer assumes these terms. We will inform you of such an assignment by email or in the service; if you are a consumer you have the right to terminate the agreement without charge if the assignment is to your detriment.",
+    terms18Title: "§ 18 Governing Law and Disputes",
+    terms18P1: "These terms are governed by and construed in accordance with Swedish law, without regard to its conflict-of-laws rules.",
+    terms18P2: "Disputes shall in the first instance be resolved by negotiation between the parties. For disputes with businesses, the District Court of Stockholm is agreed as the exclusive forum in the first instance. For consumers this choice of forum applies only to the extent compatible with mandatory law; a consumer always has the right to bring an action before the court of their place of domicile.",
+    terms18P3Pre: "Consumers also have the right to refer to",
+    terms18ArnStrong: "the National Board for Consumer Disputes (ARN)",
+    terms18P3Mid: ", for alternative dispute resolution. The European Commission's online dispute resolution platform (ODR) is available at",
+    terms19Title: "§ 19 Miscellaneous",
+    terms19P1: "If a provision of these terms is found to be invalid or unenforceable the remaining provisions shall remain in full force. The invalid provision shall be replaced by a valid provision that as closely as possible reflects its intended meaning.",
+    terms19P2: "These terms constitute the entire agreement between the parties regarding the use of the service and supersede all prior agreements on the same subject matter.",
+    termsFooter: "Contact: legal@kvittino.se · GlorifyTC · Reg. no. [xxxxxx-xxxx]",
   },
 };

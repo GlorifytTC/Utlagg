@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
+import type { Translations } from "@/lib/translations";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -50,7 +52,7 @@ export function useCookieConsent(): ConsentPrefs | null {
 
 // ── Category data ──────────────────────────────────────────────────────────────
 
-const CATEGORIES: {
+function getCategories(t: Translations): {
   id: CategoryId;
   label: string;
   required: boolean;
@@ -58,38 +60,37 @@ const CATEGORIES: {
   description: string;
   examples: string;
   retention: string;
-}[] = [
-  {
-    id: "necessary",
-    label: "Necessary",
-    required: true,
-    legalBasis: "LEK — strictly necessary exemption",
-    description:
-      "These cookies are required for the service to function. They handle login sessions, CSRF protection, and BankID authentication. They are exempt from consent requirements under the Swedish Electronic Communications Act (LEK) and process no personal data beyond what is strictly required for service delivery.",
-    examples: "Session ID, CSRF token, BankID session token",
-    retention: "Session — max 24 hours",
-  },
-  {
-    id: "functional",
-    label: "Functional",
-    required: false,
-    legalBasis: "GDPR Art. 6(1)(a) — consent",
-    description:
-      "Stores your preferences between visits so the service behaves consistently — including your language selection and display settings. No data is shared with third parties.",
-    examples: "Language setting (sv/en), UI preferences",
-    retention: "12 months",
-  },
-  {
-    id: "analytics",
-    label: "Analytics",
-    required: false,
-    legalBasis: "GDPR Art. 6(1)(a) — consent",
-    description:
-      "Collects anonymised data on how the service is used — pages visited, features engaged, and errors encountered — to help us improve the product. No individual user is identified or tracked across other websites.",
-    examples: "Page views, feature usage, session duration, error reports",
-    retention: "13 months",
-  },
-];
+}[] {
+  return [
+    {
+      id: "necessary",
+      label: t.cookieCatNecessaryLabel,
+      required: true,
+      legalBasis: t.cookieCatNecessaryBasis,
+      description: t.cookieCatNecessaryDesc,
+      examples: t.cookieCatNecessaryExamples,
+      retention: t.cookieCatNecessaryRetention,
+    },
+    {
+      id: "functional",
+      label: t.cookieCatFunctionalLabel,
+      required: false,
+      legalBasis: t.cookieCatFunctionalBasis,
+      description: t.cookieCatFunctionalDesc,
+      examples: t.cookieCatFunctionalExamples,
+      retention: t.cookieCatFunctionalRetention,
+    },
+    {
+      id: "analytics",
+      label: t.cookieCatAnalyticsLabel,
+      required: false,
+      legalBasis: t.cookieCatAnalyticsBasis,
+      description: t.cookieCatAnalyticsDesc,
+      examples: t.cookieCatAnalyticsExamples,
+      retention: t.cookieCatAnalyticsRetention,
+    },
+  ];
+}
 
 // ── SVG Icons ──────────────────────────────────────────────────────────────────
 
@@ -169,10 +170,12 @@ function CategoryRow({
   cat,
   value,
   onChange,
+  t,
 }: {
-  cat: (typeof CATEGORIES)[number];
+  cat: ReturnType<typeof getCategories>[number];
   value: boolean;
   onChange: (v: boolean) => void;
+  t: Translations;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -206,7 +209,7 @@ function CategoryRow({
               </span>
               {cat.required ? (
                 <span className="rounded-full bg-ink/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink/50">
-                  Always active
+                  {t.cookieAlwaysActive}
                 </span>
               ) : null}
             </div>
@@ -239,11 +242,11 @@ function CategoryRow({
               </p>
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink/45">
                 <span>
-                  <span className="font-medium text-ink/55">Examples:</span>{" "}
+                  <span className="font-medium text-ink/55">{t.cookieExamples}:</span>{" "}
                   {cat.examples}
                 </span>
                 <span>
-                  <span className="font-medium text-ink/55">Retention:</span>{" "}
+                  <span className="font-medium text-ink/55">{t.cookieRetention}:</span>{" "}
                   {cat.retention}
                 </span>
               </div>
@@ -258,6 +261,7 @@ function CategoryRow({
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function CookieConsent() {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
   const [managing, setManaging] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -305,6 +309,8 @@ export function CookieConsent() {
 
   if (!visible) return null;
 
+  const categories = getCategories(t);
+
   return (
     <AnimatePresence>
       {!leaving && (
@@ -325,7 +331,7 @@ export function CookieConsent() {
               </span>
               <div className="flex-1">
                 <p className="font-display text-sm font-semibold leading-tight text-ink">
-                  Privacy &amp; Cookies
+                  {t.cookieTitle}
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -344,23 +350,12 @@ export function CookieConsent() {
             {/* Body */}
             <div className="px-5 pt-5">
               <p className="text-sm leading-relaxed text-ink/70">
-                We use cookies to keep this service running securely. Necessary
-                cookies are always active under the Swedish Electronic
-                Communications Act (LEK). Any non-essential cookies —
-                functional and analytics — are only stored with your explicit
-                consent under{" "}
-                <abbr
-                  title="EU General Data Protection Regulation 2016/679"
-                  className="cursor-help underline decoration-dotted"
-                >
-                  GDPR
-                </abbr>{" "}
-                Art.&nbsp;7. You can withdraw or change consent at any time.{" "}
+                {t.cookieBody}{" "}
                 <Link
                   href="/legal/privacy"
                   className="text-nordic-600 underline decoration-dotted transition hover:decoration-solid"
                 >
-                  Privacy policy
+                  {t.cookiePrivacyLink}
                 </Link>
                 .
               </p>
@@ -377,7 +372,7 @@ export function CookieConsent() {
                     className="overflow-hidden"
                   >
                     <div className="space-y-2 pt-4 pb-1">
-                      {CATEGORIES.map((cat) => (
+                      {categories.map((cat) => (
                         <CategoryRow
                           key={cat.id}
                           cat={cat}
@@ -389,6 +384,7 @@ export function CookieConsent() {
                           onChange={(v) =>
                             setPrefs((p) => ({ ...p, [cat.id]: v }))
                           }
+                          t={t}
                         />
                       ))}
                     </div>
@@ -396,11 +392,11 @@ export function CookieConsent() {
                     <div className="mt-3 rounded-xl border hairline bg-white/30 px-4 py-3">
                       <p className="text-[11px] leading-relaxed text-ink/50">
                         <span className="font-medium text-ink/60">
-                          Data controller:
+                          {t.cookieDataController}:
                         </span>{" "}
-                        Kvittino AB, Sweden.{" "}
+                        {t.cookieDataControllerValue}{" "}
                         <span className="font-medium text-ink/60">
-                          Supervisory authority:
+                          {t.cookieSupervisory}:
                         </span>{" "}
                         <a
                           href="https://www.imy.se"
@@ -410,9 +406,7 @@ export function CookieConsent() {
                         >
                           IMY — Integritetsskyddsmyndigheten
                         </a>
-                        . You have the right to access, rectify, and erase your
-                        personal data, and to lodge a complaint with IMY if you
-                        believe your rights under GDPR are not upheld.
+                        . {t.cookieGdprRights}
                       </p>
                     </div>
                   </motion.div>
@@ -427,7 +421,7 @@ export function CookieConsent() {
                 onClick={() => commit({ functional: true, analytics: true })}
                 className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition hover:bg-nordic-900"
               >
-                Accept all
+                {t.cookieAcceptAll}
               </button>
 
               {/* Equal-prominence reject — required by IMY guidance */}
@@ -435,7 +429,7 @@ export function CookieConsent() {
                 onClick={() => commit({ functional: false, analytics: false })}
                 className="rounded-full border hairline px-5 py-2.5 text-sm font-medium text-ink/75 transition hover:border-ink/30 hover:text-ink"
               >
-                Reject all
+                {t.cookieRejectAll}
               </button>
 
               {/* Manage / Save */}
@@ -450,7 +444,7 @@ export function CookieConsent() {
                     onClick={() => setManaging(true)}
                     className="ml-auto text-sm text-ink/45 underline decoration-dotted transition hover:text-ink hover:decoration-solid"
                   >
-                    Manage preferences
+                    {t.cookieManage}
                   </motion.button>
                 ) : (
                   <motion.button
@@ -462,7 +456,7 @@ export function CookieConsent() {
                     onClick={() => commit({})}
                     className="ml-auto rounded-full border border-nordic-600/40 px-5 py-2.5 text-sm font-medium text-nordic-600 transition hover:border-nordic-600 hover:bg-nordic-600/5"
                   >
-                    Save preferences
+                    {t.cookieSave}
                   </motion.button>
                 )}
               </AnimatePresence>
