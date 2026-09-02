@@ -7,9 +7,10 @@ const nextConfig = {
   output: process.env.VERCEL ? undefined : "standalone",
   images: {
     remotePatterns: [
-      // Allow receipt images served from your storage bucket / CDN.
-      // Replace host below with your actual storage domain in production.
-      { protocol: "https", hostname: "**" },
+      // Receipt images live on Cloudflare R2 (see lib/storage.ts). Scope the
+      // optimizer to that host only — a "**" wildcard turns /_next/image into
+      // an open fetch proxy an attacker can aim at internal services.
+      { protocol: "https", hostname: "**.r2.cloudflarestorage.com" },
     ],
   },
   // three.js ships untranspiled ESM that Next needs to transpile

@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import crypto from "node:crypto";
 import { requireAdmin } from "@/lib/admin";
 import {
   isEmailConfigured,
@@ -19,9 +20,19 @@ export const runtime = "nodejs";
  * matching CRON_SECRET — the latter exists so this is reachable even while
  * you can't log in yet (e.g. while debugging the verification email itself).
  */
+function timingSafeEqual(a: string, b: string): boolean {
+  const ab = Buffer.from(a);
+  const bb = Buffer.from(b);
+  // timingSafeEqual throws on length mismatch; hash first so both sides are a
+  // fixed 32 bytes and the comparison itself leaks nothing about length.
+  const ah = crypto.createHash("sha256").update(ab).digest();
+  const bh = crypto.createHash("sha256").update(bb).digest();
+  return crypto.timingSafeEqual(ah, bh);
+}
+
 async function authorized(req: NextRequest): Promise<boolean> {
   const headerSecret = req.headers.get("x-debug-secret");
-  if (headerSecret && process.env.CRON_SECRET && headerSecret === process.env.CRON_SECRET) {
+  if (headerSecret && process.env.CRON_SECRET && timingSafeEqual(headerSecret, process.env.CRON_SECRET)) {
     return true;
   }
   return Boolean(await requireAdmin());

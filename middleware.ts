@@ -30,7 +30,9 @@ function applySecurityHeaders(res: NextResponse): NextResponse {
       "Content-Security-Policy",
       [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://cdn.jsdelivr.net",
+        // 'wasm-unsafe-eval' (not full 'unsafe-eval') lets the Tesseract/three
+        // WASM run without permitting arbitrary eval() of strings.
+        "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://vercel.live https://cdn.jsdelivr.net",
         "worker-src 'self' blob: https://cdn.jsdelivr.net",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: https: blob:",

@@ -8,12 +8,23 @@ import { Redis } from "@upstash/redis";
  * Degrades gracefully: if UPSTASH_REDIS_REST_URL/TOKEN are not set, limiting is
  * disabled (the app still runs) rather than crashing every wrapped route.
  */
+const upstashConfigured = Boolean(
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN,
+);
+
+// Fail LOUD in production: a missing Upstash config silently disables every
+// rate limit (login brute force, register/OCR abuse). Surface it in logs so a
+// misconfigured deploy is visible instead of quietly unprotected.
+if (!upstashConfigured && process.env.NODE_ENV === "production") {
+  console.error(
+    "[rate-limit] UPSTASH_REDIS_REST_URL/TOKEN not set in production — " +
+      "ALL rate limiting is DISABLED (auth, register, OCR). Configure Upstash.",
+  );
+}
+
 let limiter: Ratelimit | null = null;
 
-if (
-  process.env.UPSTASH_REDIS_REST_URL &&
-  process.env.UPSTASH_REDIS_REST_TOKEN
-) {
+if (upstashConfigured) {
   limiter = new Ratelimit({
     redis: Redis.fromEnv(),
     limiter: Ratelimit.slidingWindow(10, "10 s"),

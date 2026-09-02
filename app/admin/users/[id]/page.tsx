@@ -3,6 +3,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users, subscriptions, receipts, auditLogs } from "@/db/schema";
 import { formatDate, formatSek } from "@/lib/utils";
+import { requireAdmin } from "@/lib/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminUserActions } from "@/components/admin/AdminUserActions";
 import { AdminSubscriptionControl } from "@/components/admin/AdminSubscriptionControl";
@@ -11,6 +12,9 @@ export const metadata = { title: "Admin · Användare" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminUserDetail({ params }: { params: { id: string } }) {
+  // Gate at the data-fetch point, not just the parent layout — this page reads
+  // arbitrary user PII + audit logs, so it must not depend solely on the layout.
+  if (!(await requireAdmin())) notFound();
   const [user] = await db.select().from(users).where(eq(users.id, params.id)).limit(1);
   if (!user) notFound();
 

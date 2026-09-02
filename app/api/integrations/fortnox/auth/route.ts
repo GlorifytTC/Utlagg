@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getFortnoxAuthUrl } from "@/lib/fortnox";
+import { saveOAuthState } from "@/lib/oauth-state";
 
 export const runtime = "nodejs";
 
@@ -17,8 +18,10 @@ export async function GET() {
       { status: 503 },
     );
   }
-  // State binds the callback to this user. For full CSRF hardening, also store
-  // it server-side (e.g. Redis) and compare on callback.
+  // State binds the callback to this user. Stored server-side (single-use, TTL)
+  // for CSRF/replay protection; the userId prefix is the fallback when Upstash
+  // isn't configured (see consumeOAuthState / oauthStateEnabled).
   const state = `${session.user.id}.${crypto.randomUUID()}`;
+  await saveOAuthState(state, session.user.id);
   return NextResponse.redirect(getFortnoxAuthUrl(state));
 }

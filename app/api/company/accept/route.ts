@@ -36,6 +36,16 @@ export async function POST(req: NextRequest) {
     .limit(1);
   if (!invite) return NextResponse.json({ error: "Länken är ogiltig eller har gått ut" }, { status: 400 });
 
+  // Bind the invite to the address it was sent to — the link is a bearer token,
+  // so this stops a leaked/forwarded link from being redeemed by a different
+  // account than the one invited.
+  if (invite.email && invite.email.toLowerCase() !== session.user.email?.toLowerCase()) {
+    return NextResponse.json(
+      { error: "Inbjudan är kopplad till en annan e-postadress." },
+      { status: 403 },
+    );
+  }
+
   await db.insert(companyMembers).values({
     companyId: invite.companyId,
     userId: session.user.id,

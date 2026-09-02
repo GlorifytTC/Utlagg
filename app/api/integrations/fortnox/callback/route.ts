@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { integrationTokens } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { exchangeFortnoxCode } from "@/lib/fortnox";
+import { consumeOAuthState, oauthStateEnabled } from "@/lib/oauth-state";
 import { logAudit, clientIp } from "@/lib/audit";
 
 export const runtime = "nodejs";
@@ -17,7 +18,14 @@ export async function GET(req: NextRequest) {
 
   const code = req.nextUrl.searchParams.get("code");
   const state = req.nextUrl.searchParams.get("state");
-  if (!code || !state?.startsWith(session.user.id + ".")) {
+  // Verify state: prefer the single-use server-side record (consumes it so a
+  // state can't be replayed); fall back to the in-band userId prefix when
+  // Upstash isn't configured. Either way the flow must belong to this session.
+  const boundUserId = state ? await consumeOAuthState(state) : null;
+  const stateValid = oauthStateEnabled()
+    ? boundUserId === session.user.id
+    : !!state?.startsWith(session.user.id + ".");
+  if (!code || !stateValid) {
     return NextResponse.json({ error: "Ogiltig callback" }, { status: 400 });
   }
 
