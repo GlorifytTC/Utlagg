@@ -5,12 +5,15 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { receiptTrainingData } from "@/db/schema";
 import { readReceiptWithGemini } from "@/lib/gemini-ocr";
+import { checkLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
+// ~15MB of base64 ≈ an 11MB image — generous for a phone photo, but bounded
+// so a caller can't stream an arbitrarily large body into memory / to Gemini.
 const schema = z.object({
-  image: z.string().min(10),
+  image: z.string().min(10).max(15_000_000),
 });
 
 /**
@@ -27,6 +30,16 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
+  }
+
+  // Cap paid-ish AI vision calls per user (30/min). No human scans receipts
+  // faster than this; the ceiling exists to stop a scripted loop running up
+  // Gemini quota/cost, independent of the plan scan-limit metering.
+  if (!(await checkLimit("api", `ocrai:${session.user.id}`))) {
+    return NextResponse.json(
+      { error: "För många förfrågningar. Försök igen snart." },
+      { status: 429 },
+    );
   }
 
   const parsed = schema.safeParse(await req.json().catch(() => null));

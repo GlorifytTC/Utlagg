@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { collectBankId } from "@/lib/bankid";
+import { checkLimit } from "@/lib/rate-limit";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -26,6 +27,13 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
 
+        const email = credentials.email.toLowerCase();
+        // Throttle password attempts per account (5/min). Keyed by email —
+        // not spoofable like an IP header — so targeted brute force against
+        // one account is bounded. Gate BEFORE bcrypt so a flood can't burn
+        // CPU on hash comparisons. Fails open only when Upstash is unset.
+        if (!(await checkLimit("auth", `login:${email}`))) return null;
+
         // Select only the columns this path needs. Avoids `SELECT *`, which
         // would break sign-in if the running DB is missing any column present
         // in the Drizzle schema (e.g. a not-yet-applied migration).
@@ -38,7 +46,7 @@ export const authOptions: NextAuthOptions = {
             emailVerified: users.emailVerified,
           })
           .from(users)
-          .where(eq(users.email, credentials.email.toLowerCase()))
+          .where(eq(users.email, email))
           .limit(1);
 
         if (!user || !user.hashedPassword) return null;

@@ -9,6 +9,7 @@ import { logAudit, clientIp } from "@/lib/audit";
 import { sendVerificationEmail } from "@/lib/email";
 import { captureReferral } from "@/lib/referrals";
 import { normalizeEmail } from "@/lib/billing/referral-utils";
+import { checkLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   email: z.string().email(),
@@ -21,6 +22,15 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    // Cap signups per IP (5/min). Without this the endpoint is an open
+    // verification-email cannon: each call sends a mail to any address the
+    // caller names, so it doubles as a spam/reputation-abuse vector.
+    if (!(await checkLimit("auth", `register:${clientIp(req) ?? "anon"}`))) {
+      return NextResponse.json(
+        { error: "För många försök. Försök igen om en stund." },
+        { status: 429 },
+      );
+    }
     const json = await req.json();
     const parsed = schema.safeParse(json);
     if (!parsed.success) {
