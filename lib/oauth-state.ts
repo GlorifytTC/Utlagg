@@ -12,7 +12,8 @@ import { Redis } from "@upstash/redis";
  * false and callers fall back to the in-band `userId.`-prefixed state check.
  */
 const redis =
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  process.env.UPSTASH_REDIS_REST_URL?.startsWith("https://") &&
+  process.env.UPSTASH_REDIS_REST_TOKEN
     ? Redis.fromEnv()
     : null;
 

@@ -5,11 +5,14 @@ import { Redis } from "@upstash/redis";
 /**
  * Sliding-window rate limiting backed by Upstash Redis.
  *
- * Degrades gracefully: if UPSTASH_REDIS_REST_URL/TOKEN are not set, limiting is
- * disabled (the app still runs) rather than crashing every wrapped route.
+ * Degrades gracefully: if UPSTASH_REDIS_REST_URL/TOKEN are not set (or are a
+ * placeholder / non-https value), limiting is disabled (the app still runs)
+ * rather than crashing every wrapped route. The https check matters at build
+ * time: Redis.fromEnv() throws on an invalid URL, which fails `next build`.
  */
 const upstashConfigured = Boolean(
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN,
+  process.env.UPSTASH_REDIS_REST_URL?.startsWith("https://") &&
+    process.env.UPSTASH_REDIS_REST_TOKEN,
 );
 
 // Fail LOUD in production: a missing Upstash config silently disables every
@@ -79,10 +82,7 @@ export const rateLimitEnabled = () => limiter !== null;
  * configured; checkLimit() then allows the request (fail-open in dev).
  */
 function make(tokens: number, window: Parameters<typeof Ratelimit.slidingWindow>[1]) {
-  if (
-    !process.env.UPSTASH_REDIS_REST_URL ||
-    !process.env.UPSTASH_REDIS_REST_TOKEN
-  ) {
+  if (!upstashConfigured) {
     return null;
   }
   return new Ratelimit({

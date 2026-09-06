@@ -62,8 +62,10 @@ export default function RootLayout({
   return (
     <html lang="sv" className={jakarta.variable}>
       <body className="bg-paper text-ink font-sans antialiased">
-        <Providers>{children}</Providers>
-        <CookieConsent />
+        <Providers>
+          {children}
+          <CookieConsent />
+        </Providers>
       </body>
     </html>
   );
