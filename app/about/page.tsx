@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
@@ -128,9 +128,5 @@ function AboutContent() {
 }
 
 export default function AboutPage() {
-  return (
-    <LanguageProvider>
-      <AboutContent />
-    </LanguageProvider>
-  );
+  return <AboutContent />;
 }

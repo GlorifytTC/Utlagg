@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
@@ -168,9 +168,5 @@ function FeaturesPageContent() {
 }
 
 export default function FeaturesPage() {
-  return (
-    <LanguageProvider>
-      <FeaturesPageContent />
-    </LanguageProvider>
-  );
+  return <FeaturesPageContent />;
 }

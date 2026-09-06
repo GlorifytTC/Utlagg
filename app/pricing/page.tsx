@@ -7,7 +7,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { SELECTABLE_PLANS } from "@/lib/plans";
 import { cn } from "@/lib/utils";
-import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { ChatBox } from "@/components/ChatBox";
@@ -268,9 +268,5 @@ function PricingPageContent() {
 }
 
 export default function PricingPage() {
-  return (
-    <LanguageProvider>
-      <PricingPageContent />
-    </LanguageProvider>
-  );
+  return <PricingPageContent />;
 }

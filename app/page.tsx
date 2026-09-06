@@ -8,7 +8,7 @@ import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { StructuredData } from "@/components/StructuredData";
-import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { ChatBox } from "@/components/ChatBox";
 
 const TEASER_FEATURES = [
@@ -146,9 +146,5 @@ function HomeContent() {
 }
 
 export default function HomePage() {
-  return (
-    <LanguageProvider>
-      <HomeContent />
-    </LanguageProvider>
-  );
+  return <HomeContent />;
 }

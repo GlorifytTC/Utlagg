@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Mail, Briefcase, Clock } from "lucide-react";
-import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
@@ -122,9 +122,5 @@ function ContactContent() {
 }
 
 export default function ContactPage() {
-  return (
-    <LanguageProvider>
-      <ContactContent />
-    </LanguageProvider>
-  );
+  return <ContactContent />;
 }
