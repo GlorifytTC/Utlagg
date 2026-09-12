@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CompanyAccountantAccess } from "@/components/dashboard/CompanyAccountantAccess";
+import { FindAccountant } from "@/components/dashboard/FindAccountant";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface Company { id: string; name: string; orgNumber?: string; vatNumber?: string; }
@@ -144,6 +145,7 @@ export default function CompanyPage() {
       )}
 
       {canManage && <CompanyAccountantAccess />}
+      {canManage && <FindAccountant />}
     </div>
   );
 }

@@ -29,6 +29,11 @@ export default async function DashboardPage() {
     .limit(1);
   if (!user) redirect("/login");
 
+  // Accountants get their own role-based workspace, not the business-owner
+  // dashboard (with its scan/upload tools). Read server-side from the DB flag;
+  // the browser never decides this. Normal users fall through to /dashboard.
+  if (user.isAccountant) redirect("/accountant");
+
   const t = getT();
 
   const [stats] = await db
