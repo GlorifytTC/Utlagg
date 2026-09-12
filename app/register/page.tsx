@@ -10,6 +10,7 @@ const RESEND_COOLDOWN = 30;
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: "", companyName: "", email: "", password: "" });
+  const [accountType, setAccountType] = useState<"user" | "accountant">("user");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
@@ -58,7 +59,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, accountType }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -151,11 +152,46 @@ export default function RegisterPage() {
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
         <h1 className="mt-8 font-display text-3xl">Skapa konto</h1>
-        <p className="mt-2 text-sm text-ink/60">25 skanningar/mån gratis.</p>
+        <p className="mt-2 text-sm text-ink/60">
+          {accountType === "accountant"
+            ? "Revisorskonto — hantera dina klienters kvitton."
+            : "25 skanningar/mån gratis."}
+        </p>
+
+        {/* Account type. The server derives isAccountant from this choice. */}
+        <div className="mt-5 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setAccountType("user")}
+            className={
+              "rounded-lg border px-4 py-3 text-left text-sm transition-colors " +
+              (accountType === "user"
+                ? "border-ink bg-ink/[0.03]"
+                : "hairline hover:border-ink/40")
+            }
+          >
+            <span className="block font-medium text-ink">Företag / privat</span>
+            <span className="mt-0.5 block text-xs text-ink/50">Skanna dina egna kvitton</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setAccountType("accountant")}
+            className={
+              "rounded-lg border px-4 py-3 text-left text-sm transition-colors " +
+              (accountType === "accountant"
+                ? "border-ink bg-ink/[0.03]"
+                : "hairline hover:border-ink/40")
+            }
+          >
+            <span className="block font-medium text-ink">Redovisningskonsult</span>
+            <span className="mt-0.5 block text-xs text-ink/50">Hantera klienters kvitton</span>
+          </button>
+        </div>
+
         <div className="mt-6 space-y-4">
           <input placeholder="Namn" value={form.name} onChange={update("name")}
             className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600" />
-          <input placeholder="Företag (valfritt)" value={form.companyName} onChange={update("companyName")}
+          <input placeholder={accountType === "accountant" ? "Byrå (valfritt)" : "Företag (valfritt)"} value={form.companyName} onChange={update("companyName")}
             className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600" />
           <input type="email" placeholder="E-post" value={form.email} onChange={update("email")}
             className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600" />

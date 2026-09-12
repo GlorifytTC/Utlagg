@@ -12,6 +12,7 @@ import { StatsCards } from "@/components/dashboard/StatsCards";
 import { RecentReceipts } from "@/components/dashboard/RecentReceipts";
 import { UsageChart } from "@/components/dashboard/UsageChart";
 import { AccountantEntryLink } from "@/components/accountant/AccountantEntryLink";
+import { DashboardAccountantAccess } from "@/components/dashboard/DashboardAccountantAccess";
 
 export const metadata = { title: "Översikt" };
 export const dynamic = "force-dynamic";
@@ -118,7 +119,7 @@ export default async function DashboardPage() {
         </span>
       </Link>
 
-      {/* Stats grid */}
+      <DashboardAccountantAccess />
       <StatsCards
         totalReceipts={Number(stats?.total ?? 0)}
         thisMonthReceipts={Number(stats?.thisMonth ?? 0)}

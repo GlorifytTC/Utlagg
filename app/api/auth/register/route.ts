@@ -16,6 +16,12 @@ const schema = z.object({
   password: z.string().min(8, "Lösenordet måste vara minst 8 tecken"),
   name: z.string().min(1).optional(),
   companyName: z.string().optional(),
+  // Account type chosen at registration. The SERVER derives isAccountant from
+  // this validated enum — the client never sends isAccountant directly, so a
+  // raw `isAccountant: true` in the body is ignored (unknown field). This is
+  // the ONLY path that can set isAccountant=true; there is no profile PATCH for
+  // it. Defaults to a normal user account.
+  accountType: z.enum(["user", "accountant"]).default("user"),
   // Referral code carried through the signup flow (?ref=CODE → cookie → here).
   ref: z.string().max(32).optional(),
 });
@@ -106,6 +112,8 @@ export async function POST(req: NextRequest) {
         companyName: parsed.data.companyName,
         subscriptionTier: "free",
         scanLimit: 25,
+        // Server-derived from the validated accountType enum only.
+        isAccountant: parsed.data.accountType === "accountant",
         emailVerificationToken: tokenHash,
         emailVerificationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
       })
