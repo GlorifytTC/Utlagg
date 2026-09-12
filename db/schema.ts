@@ -28,6 +28,14 @@ export const companyRole = pgEnum("company_role", [
   "approver",
   "member",
 ]);
+// Status shared by accountant<->company relationships, invites, and
+// connection requests: pending (awaiting acceptance), active (access granted),
+// revoked (access ended by either side). Revoked rows are kept for audit.
+export const accountantRelStatus = pgEnum("accountant_rel_status", [
+  "pending",
+  "active",
+  "revoked",
+]);
 export const subscriptionTier = pgEnum("subscription_tier", [
   "free", // Pricing V3 tombstone — retained for existing rows, never offered again
   "starter",
@@ -146,6 +154,12 @@ export const users = pgTable("users", {
   // | 'paid_unchanged'). For support/audit; not read by gating logic.
   migrationNoticeSentAt: timestamp("migration_notice_sent_at", { withTimezone: true }),
   migrationPath: varchar("migration_path", { length: 20 }),
+  // Accountant role flag — a user who can connect to client companies and
+  // review their receipts. Deliberately SEPARATE from `role` (platform/company
+  // role) and from `subscriptionTier`: being an accountant is not a tier and
+  // not an admin privilege. Read fresh from the DB by requireAccountant();
+  // never cached in the JWT.
+  isAccountant: boolean("is_accountant").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -189,6 +203,14 @@ export const receipts = pgTable(
     companyId: uuid("company_id"),
     // SHA-256 of the stored image bytes — tamper-evidence (Bokföringslagen 2024)
     fileHash: varchar("file_hash", { length: 64 }),
+    // Accountant review fields (Phase 1). All nullable/additive: an accountant
+    // with an active relationship may leave a note and mark a receipt reviewed.
+    // Never required; existing inserts are unaffected.
+    note: text("note"),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    reviewedBy: uuid("reviewed_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -370,6 +392,127 @@ export const companyInvites = pgTable(
   },
   (t) => ({ emailIdx: index("company_invites_email_idx").on(t.email) }),
 );
+
+/* ------------------------------------------------------------------ */
+/* Accountant ecosystem — Phase 1 foundation                          */
+/*                                                                    */
+/* An accountant (users.isAccountant) connects to a BUSINESS (company)*/
+/* through an explicit relationship. The company OWNS its data; the   */
+/* accountant EARNS access. Access is scoped through the company's    */
+/* CURRENT membership at query time — never through receipts.companyId*/
+/* (a nullable snapshot). See lib/accountant.ts.                      */
+/* ------------------------------------------------------------------ */
+
+// The active accountant <-> company relationship. At most one live row per
+// (accountant, company) pair (unique index). Revoked rows are retained so the
+// audit trail shows who ended the relationship and when.
+export const accountantClients = pgTable(
+  "accountant_clients",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    accountantId: uuid("accountant_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    status: accountantRelStatus("status").notNull().default("pending"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    activatedAt: timestamp("activated_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    // Who revoked it, so the audit trail distinguishes client- vs
+    // accountant-initiated termination.
+    revokedBy: uuid("revoked_by").references(() => users.id, { onDelete: "set null" }),
+  },
+  (t) => ({
+    // The lookups the authorization layer runs on every request.
+    acctIdx: index("accountant_clients_acct_idx").on(t.accountantId),
+    companyIdx: index("accountant_clients_company_idx").on(t.companyId),
+    // At most one relationship row per (accountant, company) pair.
+    pairIdx: uniqueIndex("accountant_clients_pair_idx").on(t.accountantId, t.companyId),
+  }),
+);
+export type AccountantClient = typeof accountantClients.$inferSelect;
+
+// Accountant -> business invitations. The accountant invites a business by the
+// email of someone who can consent for it; resolved to that user's company on
+// accept. Mirrors company_invites: sha256 token hash (raw token never stored),
+// expiry, single-use via acceptedAt, email-bound acceptance.
+export const accountantInvites = pgTable(
+  "accountant_invites",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    accountantId: uuid("accountant_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    email: varchar("email", { length: 320 }).notNull(),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull(), // sha256 of raw token
+    status: accountantRelStatus("status").notNull().default("pending"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    // Set once accepted: who accepted, and which company they connected.
+    acceptedBy: uuid("accepted_by").references(() => users.id, { onDelete: "set null" }),
+    companyId: uuid("company_id").references(() => companies.id, { onDelete: "cascade" }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    emailIdx: index("accountant_invites_email_idx").on(t.email),
+    acctIdx: index("accountant_invites_acct_idx").on(t.accountantId),
+    tokenIdx: index("accountant_invites_token_idx").on(t.tokenHash),
+  }),
+);
+export type AccountantInvite = typeof accountantInvites.$inferSelect;
+
+// Business -> accountant connection requests (the reverse direction). Kept
+// separate from accountantInvites: the target is a KNOWN accountant user (no
+// email token), and accept semantics differ.
+export const accountantConnectionRequests = pgTable(
+  "accountant_connection_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    accountantId: uuid("accountant_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // Which member of the company sent the request.
+    requestedBy: uuid("requested_by").references(() => users.id, { onDelete: "set null" }),
+    status: accountantRelStatus("status").notNull().default("pending"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    respondedAt: timestamp("responded_at", { withTimezone: true }),
+  },
+  (t) => ({
+    acctIdx: index("accountant_conn_req_acct_idx").on(t.accountantId),
+    companyIdx: index("accountant_conn_req_company_idx").on(t.companyId),
+    pairIdx: uniqueIndex("accountant_conn_req_pair_idx").on(t.companyId, t.accountantId),
+  }),
+);
+export type AccountantConnectionRequest = typeof accountantConnectionRequests.$inferSelect;
+
+// Export history: who exported which company's data, for which period.
+export const accountantExports = pgTable(
+  "accountant_exports",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    accountantId: uuid("accountant_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    fromDate: varchar("from_date", { length: 10 }), // YYYY-MM-DD
+    toDate: varchar("to_date", { length: 10 }),
+    format: varchar("format", { length: 10 }).notNull().default("csv"),
+    receiptCount: integer("receipt_count").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    acctCompanyIdx: index("accountant_exports_acct_company_idx").on(t.accountantId, t.companyId),
+  }),
+);
+export type AccountantExport = typeof accountantExports.$inferSelect;
 
 /* ------------------------------------------------------------------ */
 /* customer_invoices (kundfakturor — invoices the company sends out)    */

@@ -1,69 +1,83 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "7",
-      "when": 1780770748264,
-      "tag": "0000_tidy_leech",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1780838258618,
-      "tag": "0001_phase9_features",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1780854929365,
-      "tag": "0002_role_default_member",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1780864462842,
-      "tag": "0003_company_model_and_archiving",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1781021712538,
-      "tag": "0004_customer_invoices",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1781038030936,
-      "tag": "0005_admin_subscription_control",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1781676755063,
-      "tag": "0006_catchup_missing_schema",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1782000000000,
-      "tag": "0007_add_terms_acceptance",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1785600000000,
-      "tag": "0008_pricing_v2_referrals",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "postgresql",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "7",
+			"when": 1780770748264,
+			"tag": "0000_tidy_leech",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1780838258618,
+			"tag": "0001_phase9_features",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1780854929365,
+			"tag": "0002_role_default_member",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "7",
+			"when": 1780864462842,
+			"tag": "0003_company_model_and_archiving",
+			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "7",
+			"when": 1781021712538,
+			"tag": "0004_customer_invoices",
+			"breakpoints": true
+		},
+		{
+			"idx": 5,
+			"version": "7",
+			"when": 1781038030936,
+			"tag": "0005_admin_subscription_control",
+			"breakpoints": true
+		},
+		{
+			"idx": 6,
+			"version": "7",
+			"when": 1781676755063,
+			"tag": "0006_catchup_missing_schema",
+			"breakpoints": true
+		},
+		{
+			"idx": 7,
+			"version": "7",
+			"when": 1782000000000,
+			"tag": "0007_add_terms_acceptance",
+			"breakpoints": true
+		},
+		{
+			"idx": 8,
+			"version": "7",
+			"when": 1785600000000,
+			"tag": "0008_pricing_v2_referrals",
+			"breakpoints": true
+		},
+		{
+			"idx": 9,
+			"version": "7",
+			"when": 1786000000000,
+			"tag": "0009_pricing_v3_trial_starter",
+			"breakpoints": true
+		},
+		{
+			"idx": 10,
+			"version": "7",
+			"when": 1790000000000,
+			"tag": "0010_accountant_foundation",
+			"breakpoints": true
+		}
+	]
 }

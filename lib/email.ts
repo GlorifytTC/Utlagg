@@ -887,6 +887,29 @@ Du har blivit inbjuden att gå med i ett företag på ${APP_NAME}. Logga in elle
   );
 }
 
+export function sendAccountantInviteEmail(to: string, token: string) {
+  const url = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/accountant/accept?token=${encodeURIComponent(token)}`;
+  const body = `# En redovisningskonsult vill koppla upp sig mot ditt företag på ${APP_NAME}
+
+En redovisningskonsult har bjudit in dig att ge dem åtkomst till ditt företags kvitton och bokföringsunderlag på ${APP_NAME}. Logga in med den här e-postadressen och acceptera för att ge åtkomst. Du kan när som helst ta bort åtkomsten igen. Länken gäller i 7 dagar.
+
+[button] ${url} | Granska och acceptera
+
+— ${APP_NAME}`;
+  const html = buildEmailHtml(body, {
+    user_name: "",
+    app_name: APP_NAME,
+    action_url: url,
+    support_email: SUPPORT_EMAIL,
+    expiration_minutes: "10080",
+  });
+  return send(
+    to,
+    `En redovisningskonsult vill koppla upp sig mot ditt företag på ${APP_NAME}`,
+    html,
+  );
+}
+
 export function sendEnterpriseInquiry(
   ownerEmail: string,
   fromEmail: string,

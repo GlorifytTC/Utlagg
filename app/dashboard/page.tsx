@@ -11,6 +11,7 @@ import type { Receipt } from "@/db/schema";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { RecentReceipts } from "@/components/dashboard/RecentReceipts";
 import { UsageChart } from "@/components/dashboard/UsageChart";
+import { AccountantEntryLink } from "@/components/accountant/AccountantEntryLink";
 
 export const metadata = { title: "Översikt" };
 export const dynamic = "force-dynamic";
@@ -93,6 +94,8 @@ export default async function DashboardPage() {
           {t.dashWelcome}, {firstName}
         </h1>
       </div>
+
+      <AccountantEntryLink />
 
       {/* Export quick action — the one thing people come back for every
           VAT period, so it gets a direct link right on the landing page
