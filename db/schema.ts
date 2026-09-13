@@ -521,6 +521,45 @@ export const accountantExports = pgTable(
 );
 export type AccountantExport = typeof accountantExports.$inferSelect;
 
+/**
+ * Accountant Boost — a one-time paid visibility purchase (49 kr / 7 days).
+ * Stripe is the payment authority; this table is the entitlement authority.
+ * status/startsAt/expiresAt/stripePaymentIntentId are SERVER-controlled only
+ * (set from the verified webhook, never from the browser). Ranking treats a
+ * boost as active iff status='active' AND expiresAt > now(), so correctness
+ * never depends on a cron marking rows expired.
+ */
+export const accountantBoostStatus = pgEnum("accountant_boost_status", [
+  "pending",
+  "active",
+  "expired",
+  "cancelled",
+]);
+export const accountantBoosts = pgTable(
+  "accountant_boosts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    accountantId: uuid("accountant_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: accountantBoostStatus("status").notNull().default("pending"),
+    stripeCheckoutSessionId: varchar("stripe_checkout_session_id", { length: 255 }),
+    stripePaymentIntentId: varchar("stripe_payment_intent_id", { length: 255 }),
+    amount: integer("amount"), // öre
+    currency: varchar("currency", { length: 3 }),
+    startsAt: timestamp("starts_at", { withTimezone: true }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    acctIdx: index("accountant_boosts_acct_idx").on(t.accountantId),
+    // Idempotency: one row per checkout session, so a replayed webhook can't
+    // create a second boost.
+    sessionIdx: uniqueIndex("accountant_boosts_session_idx").on(t.stripeCheckoutSessionId),
+  }),
+);
+export type AccountantBoost = typeof accountantBoosts.$inferSelect;
+
 /* ------------------------------------------------------------------ */
 /* customer_invoices (kundfakturor — invoices the company sends out)    */
 /* ------------------------------------------------------------------ */

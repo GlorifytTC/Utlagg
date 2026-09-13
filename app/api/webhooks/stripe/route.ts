@@ -18,6 +18,7 @@ import {
   applyReferralEventForReferred,
 } from "@/lib/referrals";
 import { grantCreditPack } from "@/lib/billing/credits";
+import { activateBoostFromWebhook } from "@/lib/accountant-boost";
 import {
   TRIAL_SCANS,
   formatOre,
@@ -83,6 +84,38 @@ export async function POST(req: NextRequest) {
             scans: Number(sessionObj.metadata.scans) || undefined,
             priceOre: Number(sessionObj.metadata.priceOre) || undefined,
           });
+          break;
+        }
+        // One-off Accountant Boost purchase (mode: payment). Activate the boost,
+        // idempotent on the session id. Validate metadata + amount + currency
+        // server-side before trusting the purchase.
+        if (
+          sessionObj.mode === "payment" &&
+          sessionObj.metadata?.kind === "accountant_boost" &&
+          sessionObj.metadata?.accountantId &&
+          sessionObj.payment_status === "paid"
+        ) {
+          const expectedOre = Number(sessionObj.metadata.priceOre);
+          const paidOre = sessionObj.amount_total ?? 0;
+          const cur = (sessionObj.currency ?? "").toLowerCase();
+          // Reject if the confirmed charge doesn't match what we defined.
+          if (paidOre === expectedOre && cur === "sek") {
+            const pi =
+              typeof sessionObj.payment_intent === "string"
+                ? sessionObj.payment_intent
+                : (sessionObj.payment_intent?.id ?? null);
+            await activateBoostFromWebhook({
+              accountantId: sessionObj.metadata.accountantId,
+              checkoutSessionId: sessionObj.id,
+              paymentIntentId: pi,
+              amount: paidOre,
+              currency: cur,
+            });
+          } else {
+            console.error(
+              `boost webhook amount/currency mismatch: paid ${paidOre}${cur} expected ${expectedOre}sek`,
+            );
+          }
           break;
         }
         const email =
