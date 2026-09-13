@@ -160,6 +160,9 @@ export const users = pgTable("users", {
   // not an admin privilege. Read fresh from the DB by requireAccountant();
   // never cached in the JWT.
   isAccountant: boolean("is_accountant").notNull().default(false),
+  // Optional logo/avatar (base64 data URL), e.g. an accountant firm's logo
+  // shown in the discovery directory. Nullable/additive.
+  logoUrl: text("logo_url"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -360,6 +363,8 @@ export const companies = pgTable("companies", {
   accountantDiscoverable: boolean("accountant_discoverable").notNull().default(false),
   industry: varchar("industry", { length: 80 }),
   discoveryDescription: text("discovery_description"),
+  // Optional company logo (base64 data URL), shown in discovery + settings.
+  logoUrl: text("logo_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

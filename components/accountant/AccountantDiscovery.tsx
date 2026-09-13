@@ -13,6 +13,7 @@ interface CompanyRow {
   city: string | null;
   industry: string | null;
   description: string | null;
+  logoUrl: string | null;
   myStatus: "pending" | "active" | "revoked" | null;
 }
 
@@ -115,11 +116,21 @@ export function AccountantDiscovery({ compact = false }: { compact?: boolean }) 
             <Card key={c.id}>
               <CardContent className="flex h-full flex-col gap-2 p-5">
                 <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="font-medium text-ink">{c.name}</p>
-                    <p className="text-xs text-ink/50">
-                      {[c.city, c.industry].filter(Boolean).join(" · ") || "—"}
-                    </p>
+                  <div className="flex items-start gap-3">
+                    {c.logoUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={c.logoUrl}
+                        alt={c.name}
+                        className="h-10 w-10 shrink-0 rounded-lg border border-gray-200 object-contain dark:border-white/10"
+                      />
+                    )}
+                    <div>
+                      <p className="font-medium text-ink">{c.name}</p>
+                      <p className="text-xs text-ink/50">
+                        {[c.city, c.industry].filter(Boolean).join(" · ") || "—"}
+                      </p>
+                    </div>
                   </div>
                   <Badge className="bg-nordic-600/10 text-nordic-700 dark:bg-nordic-400/10 dark:text-nordic-300">
                     Söker revisor

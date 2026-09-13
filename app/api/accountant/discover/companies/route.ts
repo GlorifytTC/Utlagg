@@ -49,6 +49,7 @@ export async function GET(req: NextRequest) {
       city: companies.city,
       industry: companies.industry,
       description: companies.discoveryDescription,
+      logoUrl: companies.logoUrl,
       createdAt: companies.createdAt,
     })
     .from(companies)

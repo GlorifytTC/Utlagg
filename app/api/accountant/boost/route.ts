@@ -49,14 +49,14 @@ export async function POST(_req: NextRequest) {
       .where(eq(subscriptions.userId, acct.userId))
       .limit(1);
 
-    const checkout = await stripe.checkout.sessions.create({
-      mode: "payment",
-      ...(existing?.customerId
-        ? { customer: existing.customerId }
-        : { customer_email: acct.email }),
-      // Server-defined price data — the browser never supplies amount/currency.
-      line_items: [
-        {
+    // Prefer a pre-created Stripe price ID (the same proven pattern the credit
+    // pack uses). Fall back to inline price_data if no boost price is
+    // configured, so it still works without extra Stripe setup. Either way the
+    // amount/currency are server-defined, never from the browser.
+    const boostPriceId = process.env.STRIPE_PRICE_BOOST;
+    const lineItem = boostPriceId
+      ? { price: boostPriceId, quantity: 1 }
+      : {
           quantity: 1,
           price_data: {
             currency: BOOST_CURRENCY,
@@ -66,8 +66,14 @@ export async function POST(_req: NextRequest) {
               description: `Ökad synlighet i ${BOOST_DURATION_DAYS} dagar`,
             },
           },
-        },
-      ],
+        };
+
+    const checkout = await stripe.checkout.sessions.create({
+      mode: "payment",
+      ...(existing?.customerId
+        ? { customer: existing.customerId }
+        : { customer_email: acct.email }),
+      line_items: [lineItem],
       billing_address_collection: "required",
       ...(process.env.STRIPE_TAX_ENABLED === "true" ? { automatic_tax: { enabled: true } } : {}),
       // The webhook reads these to activate the boost for the right accountant.
@@ -84,8 +90,14 @@ export async function POST(_req: NextRequest) {
 
     return NextResponse.json({ url: checkout.url });
   } catch (err) {
-    console.error("boost checkout error:", err);
-    return NextResponse.json({ error: "Kunde inte starta köp" }, { status: 500 });
+    // Surface the real Stripe error so a misconfig (missing key, tax settings,
+    // inline-price restriction) is diagnosable instead of an opaque 500.
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("boost checkout error:", message);
+    return NextResponse.json(
+      { error: "Kunde inte starta köp", detail: message },
+      { status: 500 },
+    );
   }
 }
 

@@ -4,6 +4,7 @@ import { AccountantClientsList } from "@/components/accountant/AccountantClients
 import { AccountantDiscovery } from "@/components/accountant/AccountantDiscovery";
 import { AccountantOverview } from "@/components/accountant/AccountantOverview";
 import { AccountantBoostCard } from "@/components/accountant/AccountantBoostCard";
+import { AccountantLogoCard } from "@/components/accountant/AccountantLogoCard";
 
 export const metadata = { title: "Översikt" };
 export const dynamic = "force-dynamic";
@@ -21,6 +22,8 @@ export default function AccountantDashboardPage() {
       <Suspense fallback={null}>
         <AccountantBoostCard />
       </Suspense>
+
+      <AccountantLogoCard />
 
       <section className="space-y-3">
         <div className="flex items-center justify-between">

@@ -5,11 +5,13 @@ import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { LogoUploader } from "@/components/dashboard/LogoUploader";
 
 interface Profile {
   accountantDiscoverable: boolean;
   industry: string | null;
   discoveryDescription: string | null;
+  logoUrl: string | null;
 }
 interface Incoming {
   id: string;
@@ -40,7 +42,7 @@ export function CompanyDiscoverySettings() {
         fetch("/api/company/accountant-requests").then((x) => (x.ok ? x.json() : null)),
       ]);
       if (p?.profile) setProfile(p.profile);
-      else setProfile({ accountantDiscoverable: false, industry: "", discoveryDescription: "" });
+      else setProfile({ accountantDiscoverable: false, industry: "", discoveryDescription: "", logoUrl: null });
       setIncoming(r?.incoming ?? []);
       setStatus("ok");
     } catch {
@@ -99,6 +101,14 @@ export function CompanyDiscoverySettings() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
+        <LogoUploader
+          value={profile.logoUrl}
+          label="Företagets logotyp"
+          onSave={async (dataUrl) => {
+            await save({ logoUrl: dataUrl } as Partial<Profile>);
+          }}
+        />
+
         <label className="flex items-center gap-3">
           <input
             type="checkbox"

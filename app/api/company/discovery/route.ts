@@ -14,7 +14,19 @@ const schema = z.object({
   accountantDiscoverable: z.boolean().optional(),
   industry: z.string().max(80).nullable().optional(),
   discoveryDescription: z.string().max(1000).nullable().optional(),
+  // base64 data URL of the logo, or null to clear. Size/type validated below.
+  logoUrl: z.string().nullable().optional(),
 });
+
+/** Validate a base64 image data URL: correct type + under ~1.5MB encoded. */
+function validLogo(v: string | null | undefined): { ok: boolean; error?: string } {
+  if (v == null) return { ok: true };
+  if (!/^data:image\/(png|jpeg|jpg|webp|svg\+xml);base64,/.test(v)) {
+    return { ok: false, error: "Ogiltigt bildformat." };
+  }
+  if (v.length > 2_000_000) return { ok: false, error: "Bilden är för stor (max ~1,5 MB)." };
+  return { ok: true };
+}
 
 /**
  * GET / PATCH the caller's company discovery profile.
@@ -34,6 +46,7 @@ export async function GET() {
       accountantDiscoverable: companies.accountantDiscoverable,
       industry: companies.industry,
       discoveryDescription: companies.discoveryDescription,
+      logoUrl: companies.logoUrl,
     })
     .from(companies)
     .where(eq(companies.id, membership.companyId))
@@ -57,6 +70,11 @@ export async function PATCH(req: NextRequest) {
   if ("accountantDiscoverable" in parsed.data) updates.accountantDiscoverable = parsed.data.accountantDiscoverable;
   if ("industry" in parsed.data) updates.industry = parsed.data.industry ?? null;
   if ("discoveryDescription" in parsed.data) updates.discoveryDescription = parsed.data.discoveryDescription ?? null;
+  if ("logoUrl" in parsed.data) {
+    const check = validLogo(parsed.data.logoUrl);
+    if (!check.ok) return NextResponse.json({ error: check.error }, { status: 400 });
+    updates.logoUrl = parsed.data.logoUrl ?? null;
+  }
   if (Object.keys(updates).length === 0) return NextResponse.json({ ok: true });
 
   await db.update(companies).set(updates).where(eq(companies.id, membership.companyId));
