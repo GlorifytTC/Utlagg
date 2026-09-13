@@ -9,7 +9,8 @@ import { cn } from "@/lib/utils";
  * vocabulary rather than introducing a new navigation style.
  */
 const items = [
-  { href: "/accountant", label: "Klienter", exact: true },
+  { href: "/accountant", label: "Översikt", exact: true },
+  { href: "/accountant/discover", label: "Upptäck företag" },
   { href: "/accountant/requests", label: "Förfrågningar" },
 ];
 

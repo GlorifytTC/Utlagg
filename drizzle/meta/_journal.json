@@ -78,6 +78,13 @@
 			"when": 1790000000000,
 			"tag": "0010_accountant_foundation",
 			"breakpoints": true
+		},
+		{
+			"idx": 11,
+			"version": "7",
+			"when": 1791000000000,
+			"tag": "0011_company_discovery",
+			"breakpoints": true
 		}
 	]
 }

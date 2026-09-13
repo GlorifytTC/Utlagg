@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { accountantConnectionRequests, accountantClients } from "@/db/schema";
+import { accountantConnectionRequests, accountantClients, users } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { getUserCompany, canManageCompany } from "@/lib/company";
 
@@ -50,7 +50,27 @@ export async function GET() {
   for (const r of requests) map.set(r.accountantId, r.status);
   for (const rel of relationships) if (rel.status === "active") map.set(rel.accountantId, "active");
 
+  // Incoming PENDING requests (with accountant display info + request id) so
+  // owner/admin can accept/decline. Only safe fields (name/email).
+  const incoming = await db
+    .select({
+      id: accountantConnectionRequests.id,
+      accountantId: accountantConnectionRequests.accountantId,
+      name: users.name,
+      email: users.email,
+      createdAt: accountantConnectionRequests.createdAt,
+    })
+    .from(accountantConnectionRequests)
+    .innerJoin(users, eq(users.id, accountantConnectionRequests.accountantId))
+    .where(
+      and(
+        eq(accountantConnectionRequests.companyId, membership.companyId),
+        eq(accountantConnectionRequests.status, "pending"),
+      ),
+    );
+
   return NextResponse.json({
     requests: Array.from(map.entries()).map(([accountantId, status]) => ({ accountantId, status })),
+    incoming,
   });
 }

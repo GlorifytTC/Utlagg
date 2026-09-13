@@ -353,6 +353,13 @@ export const companies = pgTable("companies", {
   city: varchar("city", { length: 100 }),
   postalCode: varchar("postal_code", { length: 20 }),
   country: varchar("country", { length: 2 }).notNull().default("SE"),
+  // Accountant-discovery opt-in. A company appears in the accountant discovery
+  // marketplace ONLY when accountantDiscoverable = true; industry/description
+  // are the safe public fields shown on the discovery card. All additive and
+  // defaulted, so existing companies are unaffected and invisible by default.
+  accountantDiscoverable: boolean("accountant_discoverable").notNull().default(false),
+  industry: varchar("industry", { length: 80 }),
+  discoveryDescription: text("discovery_description"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

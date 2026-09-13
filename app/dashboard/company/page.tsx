@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CompanyAccountantAccess } from "@/components/dashboard/CompanyAccountantAccess";
+import { CompanyDiscoverySettings } from "@/components/dashboard/CompanyDiscoverySettings";
 import { FindAccountant } from "@/components/dashboard/FindAccountant";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -145,6 +146,7 @@ export default function CompanyPage() {
       )}
 
       {canManage && <CompanyAccountantAccess />}
+      {canManage && <CompanyDiscoverySettings />}
       {canManage && <FindAccountant />}
     </div>
   );
