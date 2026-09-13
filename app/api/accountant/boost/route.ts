@@ -40,6 +40,16 @@ export async function POST(_req: NextRequest) {
     );
   }
 
+  // Fail clearly if Stripe isn't configured on this deployment (the client
+  // otherwise throws an opaque 500 on the placeholder key).
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error("boost checkout: STRIPE_SECRET_KEY is not set");
+    return NextResponse.json(
+      { error: "Betalning är inte konfigurerad. Kontakta support." },
+      { status: 503 },
+    );
+  }
+
   const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
 
   try {

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { requireAccountant } from "@/lib/accountant";
 import { Logo } from "@/components/brand/Logo";
 import { AccountantNav } from "@/components/accountant/AccountantNav";
+import { AccountantAvatarMenu } from "@/components/accountant/AccountantAvatarMenu";
 
 export const dynamic = "force-dynamic";
 
@@ -34,12 +35,7 @@ export default async function AccountantWorkspaceLayout({
           <Logo size={30} wordmarkClassName="text-xl" />
         </Link>
         <div className="flex items-center gap-4 text-sm">
-          <Link
-            href="/dashboard"
-            className="rounded-full border hairline px-4 py-2 hover:border-ink/40"
-          >
-            Till mitt konto
-          </Link>
+          <AccountantAvatarMenu />
         </div>
       </header>
 
