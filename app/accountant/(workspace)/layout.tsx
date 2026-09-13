@@ -4,6 +4,7 @@ import { requireAccountant } from "@/lib/accountant";
 import { Logo } from "@/components/brand/Logo";
 import { AccountantNav } from "@/components/accountant/AccountantNav";
 import { AccountantAvatarMenu } from "@/components/accountant/AccountantAvatarMenu";
+import { AccountantFooter } from "@/components/accountant/AccountantFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,7 @@ export default async function AccountantWorkspaceLayout({
       <div className="mx-auto max-w-5xl space-y-6 px-6 pb-20">
         <AccountantNav />
         {children}
+        <AccountantFooter />
       </div>
     </main>
   );
