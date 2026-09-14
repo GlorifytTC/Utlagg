@@ -3,7 +3,7 @@
 
 import dynamic from "next/dynamic";
 
-const Ambient3D = dynamic(() => import("./Ambient3D"), { ssr: false });
+const Landing3D = dynamic(() => import("./Landing3D"), { ssr: false });
 
 export function AmbientBackground() {
   return (
@@ -39,11 +39,8 @@ export function AmbientBackground() {
         }}
       />
 
-      {/* Floating 3D orbs. A plain element blur here replaces the old full-screen
-          backdrop-filter: it softens only the canvas output (one GPU pass over this
-          layer) instead of forcing a per-frame readback of the whole viewport. */}
-      <div className="absolute inset-0" style={{ filter: "blur(4px)" }}>
-        <Ambient3D />
+      <div className="absolute inset-0">
+        <Landing3D />
       </div>
 
       {/* Paper tint + grain overlay. No backdrop-filter — the tint keeps text

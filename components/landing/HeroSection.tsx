@@ -1,22 +1,9 @@
 // components/landing/HeroSection.tsx
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
-
-const Hero3D = dynamic(() => import("@/components/landing/Hero3D"), {
-  ssr: false,
-  loading: function Loading3D() {
-    const { t } = useLanguage();
-    return (
-      <div className="flex h-[320px] items-center justify-center text-ink/30 sm:h-[420px] md:h-[520px]">
-        {t.loading3D}
-      </div>
-    );
-  },
-});
 
 export function HeroSection() {
   const { t } = useLanguage();
@@ -73,13 +60,8 @@ export function HeroSection() {
           <p className="mt-5 text-xs text-ink/45">{t.heroDisclaimer}</p>
         </div>
 
-        <div className="relative">
-          <div
-            className="pointer-events-none absolute inset-0 -z-10"
-            style={{ background: "radial-gradient(circle at center, rgb(var(--accent) / 0.10) 0%, rgb(var(--accent) / 0.05) 45%, transparent 72%)" }}
-          />
-          <Hero3D />
-        </div>
+        {/* Height placeholder keeps the 2-col grid intact; receipt rendered in the shared Landing3D canvas */}
+        <div className="hidden h-[520px] md:block" aria-hidden />
       </div>
     </section>
   );
