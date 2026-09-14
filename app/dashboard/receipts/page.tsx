@@ -25,7 +25,7 @@ export default async function ReceiptsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navReceipts}</h1>
+        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navReceipts}</h1>
         <p className="text-nordic-600 dark:text-nordic-600">{t.receiptsSubtitle}</p>
       </div>
       <ReceiptsManager

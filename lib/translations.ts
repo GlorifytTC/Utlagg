@@ -452,6 +452,7 @@ export interface Translations {
   contact: string;
   navMenu: string;
   navClose: string;
+  sidebarSubtitle: string;
   dashboard: string;
   logout: string;
   howKicker: string;
@@ -1035,6 +1036,7 @@ export const strings: Record<Lang, Translations> = {
     contact: "Kontakt",
     navMenu: "Meny",
     navClose: "Stäng",
+    sidebarSubtitle: "Kvittohantering",
     dashboard: "Kontrollpanel",
     logout: "Logga ut",
     howKicker: "Så fungerar det",
@@ -1972,6 +1974,7 @@ export const strings: Record<Lang, Translations> = {
     contact: "Contact",
     navMenu: "Menu",
     navClose: "Close",
+    sidebarSubtitle: "Expense Management",
     dashboard: "Dashboard",
     logout: "Log out",
     howKicker: "How it works",

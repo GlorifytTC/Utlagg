@@ -51,8 +51,8 @@ function HomeContent() {
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.07 }}
-                  className="bg-paper p-8"
+                  transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.07 }}
+                  className="bg-paper p-8 transition-colors hover:bg-ink/[0.02]"
                 >
                   <h3 className="font-display text-xl">
                     {t[`${key}Title` as keyof typeof t] as string}
@@ -93,7 +93,7 @@ function HomeContent() {
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.1 }}
                 className="relative border-t-2 border-ink pt-6"
               >
                 <span className="font-display text-5xl text-nordic-600/90">{s.n}</span>
@@ -110,6 +110,7 @@ function HomeContent() {
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ type: "spring", bounce: 0, duration: 0.5 }}
             className="flex flex-col gap-6 rounded-3xl border hairline bg-paper p-8 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
@@ -124,13 +125,13 @@ function HomeContent() {
             <div className="flex shrink-0 flex-wrap gap-3">
               <Link
                 href="/register"
-                className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-paper transition hover:bg-nordic-900"
+                className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.97] active:opacity-90"
               >
                 {t.startFree}
               </Link>
               <Link
                 href="/pricing"
-                className="rounded-full border hairline px-6 py-3 text-sm font-medium transition hover:border-ink/40"
+                className="rounded-full border hairline px-6 py-3 text-sm font-medium transition hover:border-ink/40 active:scale-[0.97] active:opacity-80"
               >
                 {t.pricing} →
               </Link>

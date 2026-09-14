@@ -28,6 +28,7 @@ export function HeroSection() {
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.5 }}
             className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600"
           >
             {t.heroTagline}
@@ -35,7 +36,7 @@ export function HeroSection() {
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.05 }}
             className="mt-4 font-display text-5xl leading-[1.05] md:text-6xl"
           >
             {t.heroTitleLine1}
@@ -45,7 +46,7 @@ export function HeroSection() {
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.12 }}
             className="mt-6 max-w-md text-lg leading-relaxed text-ink/70"
           >
             {t.heroDescription}
@@ -53,18 +54,18 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.18 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.18 }}
             className="mt-9 flex flex-wrap gap-3"
           >
             <Link
               href="/register"
-              className="rounded-full bg-nordic-600 px-7 py-3.5 text-sm font-medium text-white transition hover:bg-nordic-700"
+              className="rounded-full bg-nordic-600 px-7 py-3.5 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
             >
               {t.heroCtaPrimary}
             </Link>
             <Link
               href="#priser"
-              className="rounded-full border border-ink/20 px-7 py-3.5 text-sm font-medium transition hover:border-ink/40"
+              className="rounded-full border border-ink/20 px-7 py-3.5 text-sm font-medium transition hover:border-ink/40 active:scale-[0.97] active:opacity-80"
             >
               {t.heroCtaSecondary}
             </Link>

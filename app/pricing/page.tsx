@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { ChatBox } from "@/components/ChatBox";
 
 // Scan quotas + feature matrix. Numbers mirror lib/billing/config.ts (the
@@ -85,7 +86,8 @@ function PricingPageContent() {
     ] as string[];
 
   return (
-    <div className="bg-paper">
+    <div className="relative">
+      <AmbientBackground />
       <Navbar />
 
       <main>
@@ -98,6 +100,7 @@ function PricingPageContent() {
             <motion.h1
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", bounce: 0, duration: 0.5 }}
               className="mt-4 max-w-2xl font-display text-5xl leading-[1.05] md:text-6xl"
             >
               {t.pricingTitle}
@@ -105,7 +108,7 @@ function PricingPageContent() {
             <motion.p
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08 }}
+              transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.08 }}
               className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70"
             >
               {t.pricingPageSubtitle}
@@ -122,7 +125,7 @@ function PricingPageContent() {
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.08, duration: 0.5 }}
+                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.08 }}
                 className={cn(
                   "flex flex-col rounded-2xl border bg-white/60 p-6 backdrop-blur",
                   plan.highlight
@@ -153,7 +156,7 @@ function PricingPageContent() {
                   onClick={() => handleSelect(plan.tier)}
                   disabled={loading === plan.tier}
                   className={cn(
-                    "mt-7 rounded-full px-5 py-3 text-sm font-medium transition",
+                    "mt-7 rounded-full px-5 py-3 text-sm font-medium transition active:scale-[0.97] active:opacity-90",
                     plan.highlight
                       ? "bg-ink text-paper hover:bg-nordic-900"
                       : "border border-ink/20 hover:border-ink/40",
@@ -228,7 +231,7 @@ function PricingPageContent() {
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
+                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.06 }}
                 className="rounded-2xl border hairline bg-paper p-6"
               >
                 <h3 className="font-display text-lg">
@@ -253,7 +256,7 @@ function PricingPageContent() {
             </p>
             <Link
               href="/register"
-              className="mt-8 inline-block rounded-full bg-ink px-8 py-3.5 text-sm font-medium text-paper transition hover:bg-nordic-900"
+              className="mt-8 inline-block rounded-full bg-ink px-8 py-3.5 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.97] active:opacity-90"
             >
               {t.startFree}
             </Link>

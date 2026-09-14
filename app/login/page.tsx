@@ -93,7 +93,7 @@ function LoginForm() {
             placeholder="E-post"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600"
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
           />
           <input
             type="password"
@@ -101,7 +101,7 @@ function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600"
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
           />
           {notice && !error && <p className="text-sm text-nordic-700">{notice}</p>}
           {error && <p className="text-sm text-red-600">{error}</p>}
@@ -124,7 +124,7 @@ function LoginForm() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper hover:bg-nordic-900 disabled:opacity-60"
+            className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
           >
             {loading ? "Loggar in…" : "Logga in"}
           </button>

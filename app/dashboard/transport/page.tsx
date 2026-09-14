@@ -88,7 +88,7 @@ export default function TransportPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">{t.trTitle}</h1>
+        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.trTitle}</h1>
         <p className="text-gray-500 dark:text-gray-400">{t.trSubtitle}</p>
       </div>
 

@@ -35,6 +35,7 @@ function AboutContent() {
           <motion.h1
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.5 }}
             className="mt-4 max-w-3xl font-display text-5xl leading-[1.05] md:text-6xl"
           >
             {t.aboutTitle}
@@ -42,7 +43,7 @@ function AboutContent() {
           <motion.p
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.08 }}
             className="mt-6 max-w-2xl text-lg leading-relaxed text-ink/70"
           >
             {t.aboutLead}
@@ -74,7 +75,7 @@ function AboutContent() {
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
+                  transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.08 }}
                   className="bg-paper p-8"
                 >
                   <p className="font-display text-4xl text-ink">{s.val}</p>
@@ -95,7 +96,7 @@ function AboutContent() {
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
+                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.08 }}
                 className="border-t-2 border-ink pt-6"
               >
                 <h3 className="font-display text-2xl">{v.title}</h3>
@@ -114,7 +115,7 @@ function AboutContent() {
             </div>
             <Link
               href="/register"
-              className="shrink-0 rounded-full bg-paper px-7 py-3.5 text-sm font-medium text-ink transition hover:bg-paper/90"
+              className="shrink-0 rounded-full bg-paper px-7 py-3.5 text-sm font-medium text-ink transition hover:bg-paper/90 active:scale-[0.97] active:opacity-90"
             >
               {t.startFree}
             </Link>

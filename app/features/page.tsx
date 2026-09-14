@@ -58,6 +58,7 @@ function FeaturesPageContent() {
             <motion.h1
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", bounce: 0, duration: 0.5 }}
               className="mt-4 max-w-2xl font-display text-5xl leading-[1.05] md:text-6xl"
             >
               {t.featuresHeadline}
@@ -65,7 +66,7 @@ function FeaturesPageContent() {
             <motion.p
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08 }}
+              transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.08 }}
               className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70"
             >
               {t.featuresPageSubtitle}
@@ -82,8 +83,8 @@ function FeaturesPageContent() {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="bg-paper p-8"
+                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.05 }}
+                className="bg-paper p-8 transition-colors hover:bg-ink/[0.02]"
               >
                 <h3 className="font-display text-xl">{f.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-ink/70">
@@ -141,6 +142,7 @@ function FeaturesPageContent() {
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ type: "spring", bounce: 0, duration: 0.5 }}
             className="flex flex-col gap-6 rounded-3xl border hairline bg-paper p-8 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
@@ -153,7 +155,7 @@ function FeaturesPageContent() {
             </div>
             <Link
               href="/register"
-              className="shrink-0 rounded-full bg-ink px-7 py-3.5 text-sm font-medium text-paper transition hover:bg-nordic-900"
+              className="shrink-0 rounded-full bg-ink px-7 py-3.5 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.97] active:opacity-90"
             >
               {t.startFree}
             </Link>

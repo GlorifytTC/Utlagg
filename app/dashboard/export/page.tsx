@@ -15,7 +15,7 @@ export default async function ExportPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navExport}</h1>
+        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navExport}</h1>
       </div>
       <ExportPanel />
     </div>

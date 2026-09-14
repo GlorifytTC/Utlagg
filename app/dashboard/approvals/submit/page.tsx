@@ -52,7 +52,7 @@ export default function SubmitApprovalPage() {
   if (allowed === false) {
     return (
       <div className="max-w-xl space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
+        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
         <UpsellCard
           title={t.apUpsellTitle}
           requiredPlan="Företag"
@@ -64,7 +64,7 @@ export default function SubmitApprovalPage() {
 
   return (
     <div className="max-w-xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
+      <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
       <Card>
         <CardHeader>
           <CardTitle>{t.apRequest}</CardTitle>

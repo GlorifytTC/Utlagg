@@ -76,7 +76,7 @@ export default function CompanyPage() {
   if (!company) {
     return (
       <div className="max-w-xl space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navCompany}</h1>
+        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navCompany}</h1>
         <Card>
           <CardHeader>
             <CardTitle>{t.btnCreateCompany}</CardTitle>
@@ -98,7 +98,7 @@ export default function CompanyPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{company.name}</h1>
+      <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{company.name}</h1>
 
       <Card>
         <CardHeader><CardTitle>{t.coMembers}</CardTitle><CardDescription>{t.coYourRole} {role}</CardDescription></CardHeader>

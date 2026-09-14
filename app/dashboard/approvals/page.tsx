@@ -54,7 +54,7 @@ export default function ApprovalsPage() {
   if (allowed === false) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navApprovals}</h1>
+        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navApprovals}</h1>
         <UpsellCard title={t.navApprovals} requiredPlan="Företag" description={t.apUpsellDesc} />
       </div>
     );
@@ -63,7 +63,7 @@ export default function ApprovalsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navApprovals}</h1>
+        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navApprovals}</h1>
         <div className="flex gap-2">
           <Link href="/dashboard/approvals/submit"><Button variant="outline">{t.btnSubmitApproval}</Button></Link>
           <Link href="/dashboard/approvals/history"><Button variant="outline">{t.btnHistory}</Button></Link>

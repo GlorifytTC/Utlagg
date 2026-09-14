@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/brand/Logo";
@@ -28,7 +29,7 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b hairline bg-paper/90">
+    <header className="sticky top-0 z-50 border-b hairline bg-paper/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" onClick={() => setOpen(false)}>
           <Logo size={30} wordmarkClassName="text-xl" adaptive={false} />
@@ -62,7 +63,7 @@ export function Navbar() {
             (isAuthed ? (
               <Link
                 href="/dashboard"
-                className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-nordic-700"
+                className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
               >
                 {t.dashboard}
               </Link>
@@ -70,13 +71,13 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="text-ink/60 transition hover:text-ink"
+                  className="text-ink/60 transition hover:text-ink active:opacity-60"
                 >
                   {t.login}
                 </Link>
                 <Link
                   href="/register"
-                  className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-nordic-700"
+                  className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
                 >
                   {t.startFree}
                 </Link>
@@ -96,59 +97,67 @@ export function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      {open && (
-        <div className="border-t hairline bg-paper md:hidden">
-          <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4 text-base">
-            {links.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "rounded-lg px-3 py-3 transition",
-                  pathname === l.href ? "bg-ink/5 text-ink" : "text-ink/70 hover:bg-ink/5 hover:text-ink",
-                )}
-              >
-                {l.label}
-              </Link>
-            ))}
-            <div className="my-2 h-px bg-ink/10" />
-            <button
-              onClick={() => { toggleLanguage(); setOpen(false); }}
-              className="rounded-lg px-3 py-3 text-left text-ink/70 transition hover:bg-ink/5 hover:text-ink"
-            >
-              {lang === "sv" ? "Svenska / English" : "English / Svenska"}
-            </button>
-            {authResolved &&
-              (isAuthed ? (
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.25 }}
+            className="border-t hairline bg-paper/95 backdrop-blur-xl md:hidden"
+          >
+            <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4 text-base">
+              {links.map((l) => (
                 <Link
-                  href="/dashboard"
+                  key={l.href}
+                  href={l.href}
                   onClick={() => setOpen(false)}
-                  className="mt-1 rounded-full bg-nordic-600 px-5 py-3 text-center font-medium text-white transition hover:bg-nordic-700"
+                  className={cn(
+                    "rounded-lg px-3 py-3 transition active:scale-[0.98] active:opacity-80",
+                    pathname === l.href ? "bg-ink/5 text-ink" : "text-ink/70 hover:bg-ink/5 hover:text-ink",
+                  )}
                 >
-                  {t.dashboard}
+                  {l.label}
                 </Link>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    onClick={() => setOpen(false)}
-                    className="rounded-lg px-3 py-3 text-ink/70 transition hover:bg-ink/5 hover:text-ink"
-                  >
-                    {t.login}
-                  </Link>
-                  <Link
-                    href="/register"
-                    onClick={() => setOpen(false)}
-                    className="mt-1 rounded-full bg-nordic-600 px-5 py-3 text-center font-medium text-white transition hover:bg-nordic-700"
-                  >
-                    {t.startFree}
-                  </Link>
-                </>
               ))}
-          </nav>
-        </div>
-      )}
+              <div className="my-2 h-px bg-ink/10" />
+              <button
+                onClick={() => { toggleLanguage(); setOpen(false); }}
+                className="rounded-lg px-3 py-3 text-left text-ink/70 transition hover:bg-ink/5 hover:text-ink active:scale-[0.98] active:opacity-80"
+              >
+                {lang === "sv" ? "Svenska / English" : "English / Svenska"}
+              </button>
+              {authResolved &&
+                (isAuthed ? (
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setOpen(false)}
+                    className="mt-1 rounded-full bg-nordic-600 px-5 py-3 text-center font-medium text-white transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
+                  >
+                    {t.dashboard}
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg px-3 py-3 text-ink/70 transition hover:bg-ink/5 hover:text-ink active:scale-[0.98] active:opacity-80"
+                    >
+                      {t.login}
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setOpen(false)}
+                      className="mt-1 rounded-full bg-nordic-600 px-5 py-3 text-center font-medium text-white transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
+                    >
+                      {t.startFree}
+                    </Link>
+                  </>
+                ))}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

@@ -23,7 +23,7 @@ export default async function IntegrationsPage() {
   if (!ctx || !hasFeature(ctx.tier, "fortnox")) {
     return (
       <div className="max-w-2xl space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navIntegrations}</h1>
+        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navIntegrations}</h1>
         <UpsellCard
           title={t.intUpsellTitle}
           requiredPlan="Pro"
@@ -48,7 +48,7 @@ export default async function IntegrationsPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navIntegrations}</h1>
+      <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navIntegrations}</h1>
       <Card>
         <CardHeader>
           <CardTitle>Fortnox</CardTitle>

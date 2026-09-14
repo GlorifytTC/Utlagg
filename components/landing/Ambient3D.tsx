@@ -4,6 +4,7 @@
 import { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
+import { useReducedMotion } from "framer-motion";
 import type { Group } from "three";
 
 function BgReceipt({
@@ -70,9 +71,8 @@ function Scene({ animated }: { animated: boolean }) {
 }
 
 export default function Ambient3D() {
-  const animated =
-    typeof window === "undefined" ||
-    !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reducedMotion = useReducedMotion();
+  const animated = !reducedMotion;
 
   return (
     <Canvas

@@ -52,10 +52,10 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
         <Link href="/" className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nordic-600/30 focus-visible:rounded-md">
           <Logo size={26} wordmarkClassName="text-[17px] text-gray-900 dark:text-white" />
         </Link>
-        <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-400">Expense Management</p>
+        <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-400">{t.sidebarSubtitle}</p>
       </div>
       <nav className="flex-1 min-h-0 overflow-y-auto px-3 py-4">
-        <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-400">Menu</p>
+        <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-400">{t.navMenu}</p>
         <ul className="space-y-px">
           {nav.map((item) => {
             const Icon = item.icon;
@@ -82,15 +82,15 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
         </ul>
       </nav>
       <div className="space-y-px border-t border-gray-900/[0.06] p-3 dark:border-white/[0.06]">
-        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => { toggleLanguage(); router.refresh(); }} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white">
+        <motion.button whileTap={{ scale: 0.98 }} onClick={() => { toggleLanguage(); router.refresh(); }} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white">
           <span className="h-[15px] w-[15px] text-center text-xs font-bold">{lang === "sv" ? "EN" : "SV"}</span>
           <span>{lang === "sv" ? "English" : "Svenska"}</span>
         </motion.button>
-        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={toggleTheme} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white">
+        <motion.button whileTap={{ scale: 0.98 }} onClick={toggleTheme} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white">
           {dark ? <Sun className="h-[15px] w-[15px]" /> : <Moon className="h-[15px] w-[15px]" />}
           <span>{dark ? t.btnLightMode : t.btnDarkMode}</span>
         </motion.button>
-        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => signOut({ callbackUrl: "/" })} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-red-600 hover:bg-red-50/70 dark:hover:bg-red-950/25">
+        <motion.button whileTap={{ scale: 0.98 }} onClick={() => signOut({ callbackUrl: "/" })} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-red-600 hover:bg-red-50/70 dark:hover:bg-red-950/25">
           <LogOut className="h-[15px] w-[15px]" />
           <span>{t.navLogout}</span>
         </motion.button>

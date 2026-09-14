@@ -190,17 +190,17 @@ export default function RegisterPage() {
 
         <div className="mt-6 space-y-4">
           <input placeholder="Namn" value={form.name} onChange={update("name")}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600" />
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
           <input placeholder={accountType === "accountant" ? "Byrå (valfritt)" : "Företag (valfritt)"} value={form.companyName} onChange={update("companyName")}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600" />
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
           <input type="email" placeholder="E-post" value={form.email} onChange={update("email")}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600" />
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
           <input type="password" placeholder="Lösenord (min 8 tecken)" value={form.password} onChange={update("password")}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600" />
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button onClick={handleSubmit} disabled={loading}
-            className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper hover:bg-nordic-900 disabled:opacity-60">
+            className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.98] active:opacity-90 disabled:opacity-60">
             {loading ? "Skapar konto…" : "Skapa konto"}
           </button>
           <div className="flex items-center gap-3 text-xs text-ink/40">
