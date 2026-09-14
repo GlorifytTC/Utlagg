@@ -1,16 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
-/**
- * Overview stat cards for the accountant dashboard. Every number is REAL,
- * derived from existing endpoints:
- *   - active clients:  GET /api/accountant/clients (total)
- *   - pending requests: GET /api/accountant/connection-requests (pending count)
- *   - opportunities:   GET /api/accountant/discover/companies (discoverable count)
- * No fabricated metrics.
- */
 export function AccountantOverview() {
   const [clients, setClients] = useState<number | null>(null);
   const [pending, setPending] = useState<number | null>(null);
@@ -47,15 +39,26 @@ export function AccountantOverview() {
   ];
 
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
-      {stats.map((s) => (
-        <Card key={s.label}>
-          <CardContent className="p-5">
-            <p className="text-sm text-ink/50">{s.label}</p>
-            <p className="mt-1 text-2xl font-semibold text-ink">{s.value ?? "—"}</p>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-gray-900/[0.07] dark:border-white/[0.07] dark:bg-white/[0.07]"
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-3">
+        {stats.map((s) => (
+          <div
+            key={s.label}
+            className="bg-[#F5F4F0] p-5 transition-colors hover:bg-gray-900/[0.03] dark:bg-[#0D0D0D] dark:hover:bg-white/[0.04]"
+          >
+            <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+              {s.label}
+            </p>
+            <p className="font-display text-[22px] font-semibold leading-none tracking-tight text-gray-900 dark:text-white">
+              {s.value ?? "—"}
+            </p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
   );
 }

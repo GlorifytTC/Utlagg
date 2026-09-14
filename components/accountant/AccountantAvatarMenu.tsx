@@ -70,24 +70,25 @@ export function AccountantAvatarMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-20 mt-2 w-72 rounded-2xl border border-gray-200 bg-paper p-4 shadow-lg dark:border-white/10 dark:bg-[#111]">
-          <p className="mb-3 text-sm font-semibold text-ink">{t.menuProfile}</p>
-
-          <div className="space-y-4">
+        <div className="absolute right-0 z-20 mt-2 w-72 overflow-hidden rounded-xl border border-gray-900/[0.12] bg-white/75 py-1 shadow-lg backdrop-blur-xl dark:border-white/[0.12] dark:bg-[#111]">
+          <div className="px-4 py-3">
+            <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+              {t.menuProfile}
+            </p>
             <LogoUploader value={logo} label={t.menuFirmLogo} onSave={saveLogo} />
           </div>
 
-          <div className="mt-4 border-t border-gray-100 pt-3 dark:border-white/[0.07]">
-            <div className="mb-2 flex gap-2">
+          <div className="border-t border-gray-900/[0.07] pt-1 dark:border-white/[0.07]">
+            <div className="flex gap-1.5 px-4 py-2">
               <button
                 onClick={() => setLanguage("sv")}
-                className={`rounded-full border px-3 py-1 text-xs ${lang === "sv" ? "border-ink bg-ink text-paper" : "border-gray-200 text-ink/60 dark:border-white/10"}`}
+                className={`rounded-full border px-3 py-1 text-xs transition-colors ${lang === "sv" ? "border-ink bg-ink text-paper" : "border-gray-900/[0.12] text-gray-500 hover:border-gray-900/30 dark:border-white/[0.12] dark:text-gray-400"}`}
               >
                 Svenska
               </button>
               <button
                 onClick={() => setLanguage("en")}
-                className={`rounded-full border px-3 py-1 text-xs ${lang === "en" ? "border-ink bg-ink text-paper" : "border-gray-200 text-ink/60 dark:border-white/10"}`}
+                className={`rounded-full border px-3 py-1 text-xs transition-colors ${lang === "en" ? "border-ink bg-ink text-paper" : "border-gray-900/[0.12] text-gray-500 hover:border-gray-900/30 dark:border-white/[0.12] dark:text-gray-400"}`}
               >
                 English
               </button>
@@ -95,14 +96,14 @@ export function AccountantAvatarMenu() {
 
             <Link
               href="/dashboard"
-              className="block rounded-lg px-2 py-2 text-sm text-ink/80 hover:bg-gray-50 dark:hover:bg-white/[0.04]"
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-900/[0.04] dark:text-gray-300 dark:hover:bg-white/[0.04]"
             >
               {t.menuAccount}
             </Link>
 
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="mt-1 block w-full rounded-lg px-2 py-2 text-left text-sm text-red-600 hover:bg-red-50/70 dark:hover:bg-red-950/25"
+              className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-red-600 transition-colors hover:bg-red-50/70 dark:hover:bg-red-950/25"
             >
               {t.menuLogout}
             </button>

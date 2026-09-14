@@ -1,15 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 
-/**
- * "Din aktivitet" — real throughput (receipts this accountant reviewed this
- * week / month), from GET /api/accountant/attention. Honest momentum, not a
- * fabricated streak.
- */
 export function AccountantActivity() {
   const { lang } = useLanguage();
   const t = accountantStrings(lang);
@@ -29,20 +24,32 @@ export function AccountantActivity() {
   }, []);
 
   if (week === null) return null;
-  if (week === 0 && month === 0) return null; // nothing to celebrate yet — stay quiet
+  if (week === 0 && month === 0) return null;
 
   return (
-    <Card>
-      <CardContent className="flex flex-wrap gap-8 p-6">
-        <div>
-          <p className="text-2xl font-semibold text-ink">{week}</p>
-          <p className="text-sm text-ink/50">{t.activityReviewedWeek}</p>
-        </div>
-        <div>
-          <p className="text-2xl font-semibold text-ink">{month}</p>
-          <p className="text-sm text-ink/50">{t.activityReviewedMonth}</p>
-        </div>
-      </CardContent>
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-gray-900/[0.07] dark:border-white/[0.07] dark:bg-white/[0.07]"
+    >
+      <div className="grid grid-cols-2">
+        {[
+          { value: week, label: t.activityReviewedWeek },
+          { value: month, label: t.activityReviewedMonth },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="bg-[#F5F4F0] p-5 dark:bg-[#0D0D0D]"
+          >
+            <p className="font-display text-[22px] font-semibold leading-none tracking-tight text-gray-900 dark:text-white">
+              {s.value}
+            </p>
+            <p className="mt-2 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+              {s.label}
+            </p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
   );
 }

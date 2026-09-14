@@ -1,11 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 
 interface CompanyRow {
   id: string;
@@ -17,12 +14,6 @@ interface CompanyRow {
   myStatus: "pending" | "active" | "revoked" | null;
 }
 
-/**
- * "Companies looking for an accountant" — accountant-side discovery, bound to
- * GET /api/accountant/discover/companies. Sending a request uses
- * POST /api/accountant/connection-requests/company (reverse-direction; reuses
- * the existing lifecycle). Discovery grants no access; a company must accept.
- */
 export function AccountantDiscovery({ compact = false }: { compact?: boolean }) {
   const [q, setQ] = useState("");
   const [city, setCity] = useState("");
@@ -85,77 +76,95 @@ export function AccountantDiscovery({ compact = false }: { compact?: boolean }) 
     <div className="space-y-4">
       {!compact && (
         <div className="flex flex-wrap gap-3">
-          <Input
+          <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Sök företag…"
-            className="flex-1 min-w-[180px]"
+            className="min-w-[180px] flex-1 rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
           />
-          <Input
+          <input
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="Ort"
-            className="w-40"
+            className="w-40 rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
           />
         </div>
       )}
 
       {status === "loading" ? (
-        <p className="text-sm text-ink/50">Laddar företag…</p>
+        <div className="flex items-center justify-center p-10">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
+        </div>
       ) : status === "error" ? (
         <p className="text-sm text-red-600">Kunde inte ladda företag.</p>
       ) : rows.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-center text-sm text-ink/60">
-            Inga företag söker revisor just nu.
-          </CardContent>
-        </Card>
+        <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400">
+          Inga företag söker revisor just nu.
+        </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {rows.map((c) => (
-            <Card key={c.id}>
-              <CardContent className="flex h-full flex-col gap-2 p-5">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-start gap-3">
-                    {c.logoUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={c.logoUrl}
-                        alt={c.name}
-                        className="h-10 w-10 shrink-0 rounded-lg border border-gray-200 object-contain dark:border-white/10"
-                      />
-                    )}
-                    <div>
-                      <p className="font-medium text-ink">{c.name}</p>
-                      <p className="text-xs text-ink/50">
-                        {[c.city, c.industry].filter(Boolean).join(" · ") || "—"}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge className="bg-nordic-600/10 text-nordic-700 dark:bg-nordic-400/10 dark:text-nordic-300">
-                    Söker revisor
-                  </Badge>
-                </div>
-                {c.description && (
-                  <p className="line-clamp-3 text-sm text-ink/70">{c.description}</p>
-                )}
-                <div className="mt-auto pt-2">
-                  {c.myStatus === "active" ? (
-                    <Badge className="bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300">
-                      Kopplad
-                    </Badge>
-                  ) : c.myStatus === "pending" ? (
-                    <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
-                      Förfrågan skickad
-                    </Badge>
-                  ) : (
-                    <Button disabled={busy === c.id} onClick={() => request(c.id)}>
-                      {busy === c.id ? "Skickar…" : "Skicka förfrågan"}
-                    </Button>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {rows.map((c, i) => (
+            <motion.div
+              key={c.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="flex flex-col rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  {c.logoUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={c.logoUrl}
+                      alt={c.name}
+                      className="h-10 w-10 shrink-0 rounded-lg border border-gray-900/[0.07] object-contain dark:border-white/[0.08]"
+                    />
                   )}
+                  <div>
+                    <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
+                      {c.name}
+                    </p>
+                    {(c.city || c.industry) && (
+                      <p className="mt-0.5 text-xs uppercase tracking-[0.14em] text-nordic-600">
+                        {[c.city, c.industry].filter(Boolean).join(" · ")}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+                <span className="shrink-0 rounded-full bg-nordic-600/10 px-2.5 py-1 text-xs font-medium text-nordic-600 dark:bg-nordic-600/20">
+                  Söker revisor
+                </span>
+              </div>
+
+              {c.description && (
+                <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+                  {c.description}
+                </p>
+              )}
+
+              <div className="mt-auto pt-4">
+                {c.myStatus === "active" ? (
+                  <span className="rounded-full bg-green-100/50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
+                    Kopplad
+                  </span>
+                ) : c.myStatus === "pending" ? (
+                  <span className="rounded-full bg-amber-100/50 px-2.5 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                    Förfrågan skickad
+                  </span>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    disabled={busy === c.id}
+                    onClick={() => request(c.id)}
+                    className="rounded-full bg-nordic-600 px-5 py-2 text-xs font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-60"
+                  >
+                    {busy === c.id ? "Skickar…" : "Skicka förfrågan"}
+                  </motion.button>
+                )}
+              </div>
+            </motion.div>
           ))}
         </div>
       )}

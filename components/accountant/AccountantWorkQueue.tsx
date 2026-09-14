@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 
@@ -10,12 +10,6 @@ interface Attention {
   clients: Array<{ companyId: string; companyName: string; toReview: number; attention: number }>;
 }
 
-/**
- * "Att göra" — the dashboard hero. A real work queue built from
- * GET /api/accountant/attention: receipts to review, missing info, uncertain
- * reads, pending approvals across all clients. This is what an accountant opens
- * the app to answer: "where do I start today?"
- */
 export function AccountantWorkQueue() {
   const { lang } = useLanguage();
   const t = accountantStrings(lang);
@@ -43,25 +37,35 @@ export function AccountantWorkQueue() {
   ].filter((r) => r.value > 0);
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <h2 className="text-lg font-semibold text-ink">{t.todoTitle}</h2>
-        {nothing ? (
-          <p className="mt-2 text-sm text-ink/60">{t.todoEmpty}</p>
-        ) : (
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+    >
+      <p className="mb-0.5 text-[9.5px] font-medium uppercase tracking-[0.2em] text-nordic-600">
+        {t.todoTitle}
+      </p>
+      {nothing ? (
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{t.todoEmpty}</p>
+      ) : (
+        <div className="mt-4 overflow-hidden rounded-xl border border-gray-900/[0.07] bg-gray-900/[0.07] dark:border-white/[0.07] dark:bg-white/[0.07]">
+          <div className="grid grid-cols-2 sm:grid-cols-4">
             {rows.map((r) => (
               <div
                 key={r.key}
-                className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50/60 px-4 py-3 dark:border-white/[0.06] dark:bg-white/[0.02]"
+                className="bg-[#F5F4F0] p-4 dark:bg-[#0D0D0D]"
               >
-                <span className="text-sm text-ink/70">{r.label}</span>
-                <span className="text-xl font-semibold text-ink">{r.value}</span>
+                <p className="font-display text-[22px] font-semibold leading-none tracking-tight text-gray-900 dark:text-white">
+                  {r.value}
+                </p>
+                <p className="mt-2 text-[9.5px] font-medium uppercase tracking-[0.14em] text-gray-400">
+                  {r.label}
+                </p>
               </div>
             ))}
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </motion.div>
   );
 }

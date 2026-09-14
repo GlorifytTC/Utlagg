@@ -2,10 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 interface BoostState {
   active: boolean;
@@ -13,12 +11,6 @@ interface BoostState {
   daysLeft: number | null;
 }
 
-/**
- * Boost card. Reads authoritative state from GET /api/accountant/boost and
- * starts payment via POST (→ Stripe Checkout URL → redirect). Boost is NEVER
- * activated by the browser or the success URL — only the verified webhook does
- * that; on return from Checkout we just poll the server state.
- */
 export function AccountantBoostCard() {
   const params = useSearchParams();
   const [state, setState] = useState<BoostState | null>(null);
@@ -38,8 +30,6 @@ export function AccountantBoostCard() {
     load();
   }, [load]);
 
-  // Returned from Stripe: show a processing note and poll a few times for the
-  // webhook to land — without ever claiming active before the server says so.
   useEffect(() => {
     if (params.get("boost") === "processing") {
       toast.info("Betalningen behandlas…");
@@ -64,7 +54,7 @@ export function AccountantBoostCard() {
       const res = await fetch("/api/accountant/boost", { method: "POST" });
       const d = await res.json().catch(() => ({}));
       if (res.ok && d.url) {
-        window.location.href = d.url; // → Stripe Checkout
+        window.location.href = d.url;
         return;
       }
       if (res.status === 409 && d.alreadyActive) {
@@ -84,45 +74,70 @@ export function AccountantBoostCard() {
 
   if (state?.active) {
     const until = state.expiresAt
-      ? new Date(state.expiresAt).toLocaleDateString("sv-SE", { year: "numeric", month: "long", day: "numeric" })
+      ? new Date(state.expiresAt).toLocaleDateString("sv-SE", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
       : null;
+
     return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <CardTitle>Boostad</CardTitle>
-            <Badge className="bg-nordic-600 text-white">Aktiv</Badge>
-          </div>
-          <CardDescription>Din profil får ökad synlighet bland relevanta företag.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-ink/70">
-            Aktiv till: <span className="font-medium text-ink">{until ?? "—"}</span>
-            {state.daysLeft != null && (
-              <span className="text-ink/50"> · {state.daysLeft} dagar kvar</span>
-            )}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl border border-l-2 border-gray-900/[0.07] border-l-nordic-600 bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+      >
+        <div className="flex items-center gap-2">
+          <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
+            Boostad
           </p>
-        </CardContent>
-      </Card>
+          <span className="rounded-full bg-nordic-600/10 px-2.5 py-1 text-xs font-medium text-nordic-600 dark:bg-nordic-600/20">
+            Aktiv
+          </span>
+        </div>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Din profil får ökad synlighet bland relevanta företag.
+        </p>
+        <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+          Aktiv till:{" "}
+          <span className="font-medium text-gray-900 dark:text-white">{until ?? "—"}</span>
+          {state.daysLeft != null && (
+            <span className="text-gray-400"> · {state.daysLeft} dagar kvar</span>
+          )}
+        </p>
+      </motion.div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Boosta din synlighet</CardTitle>
-        <CardDescription>
-          Få fler möjligheter att bli hittad av företag som söker revisor.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-ink/70">
-          <span className="text-lg font-semibold text-ink">49 kr</span> · 7 dagar · engångsbetalning
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-2xl border border-l-2 border-gray-900/[0.07] border-l-nordic-600 bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+    >
+      <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
+        Boosta din synlighet
+      </p>
+      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Få fler möjligheter att bli hittad av företag som söker revisor.
+      </p>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="font-display text-lg font-semibold text-gray-900 dark:text-white">
+            49 kr
+          </span>{" "}
+          · 7 dagar · engångsbetalning
         </p>
-        <Button onClick={buy} disabled={busy}>
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={buy}
+          disabled={busy}
+          className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-nordic-900 disabled:opacity-60"
+        >
           {busy ? "Öppnar…" : "Boosta min profil"}
-        </Button>
-      </CardContent>
-    </Card>
+        </motion.button>
+      </div>
+    </motion.div>
   );
 }

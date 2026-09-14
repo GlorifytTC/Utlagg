@@ -1,10 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { motion, AnimatePresence } from "framer-motion";
 import { AccountantReceiptEditor } from "@/components/accountant/AccountantReceiptEditor";
 
 interface ReceiptRow {
@@ -19,13 +16,12 @@ interface ReceiptRow {
   status: string;
 }
 
-/**
- * Receipts for a client, bound to GET /api/accountant/clients/[id]/receipts
- * using the API's own params (page/pageSize/q/from/to/sort/dir) and response
- * ({ receipts, total, page, pageSize }). A row expands into the editor, which
- * PATCHes the whitelisted fields. No client-side authorization — the server is
- * the boundary; a 404 is surfaced as an empty/unavailable state.
- */
+const statusBadge: Record<string, string> = {
+  approved: "bg-green-100/50 text-green-700 dark:bg-green-900/20 dark:text-green-300",
+  pending: "bg-amber-100/50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
+  rejected: "bg-red-100/50 text-red-700 dark:bg-red-900/20 dark:text-red-300",
+};
+
 export function AccountantReceipts({ companyId }: { companyId: string }) {
   const [rows, setRows] = useState<ReceiptRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -79,129 +75,206 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
+  const inputCls =
+    "rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600";
+
   return (
     <div className="space-y-4">
+      {/* Filters */}
       <div className="flex flex-wrap items-end gap-3">
-        <div className="flex-1 min-w-[180px]">
-          <label className="mb-1 block text-xs text-ink/50">Sök</label>
-          <Input
+        <div className="min-w-[180px] flex-1">
+          <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+            Sök
+          </label>
+          <input
             value={q}
             onChange={(e) => {
               setQ(e.target.value);
               setPage(1);
             }}
             placeholder="Leverantör, BAS, belopp…"
+            className={inputCls}
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-ink/50">Från</label>
-          <Input type="date" value={from} onChange={(e) => { setFrom(e.target.value); setPage(1); }} />
+          <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+            Från
+          </label>
+          <input
+            type="date"
+            value={from}
+            onChange={(e) => {
+              setFrom(e.target.value);
+              setPage(1);
+            }}
+            className={inputCls}
+          />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-ink/50">Till</label>
-          <Input type="date" value={to} onChange={(e) => { setTo(e.target.value); setPage(1); }} />
+          <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+            Till
+          </label>
+          <input
+            type="date"
+            value={to}
+            onChange={(e) => {
+              setTo(e.target.value);
+              setPage(1);
+            }}
+            className={inputCls}
+          />
         </div>
       </div>
 
-      {status === "loading" ? (
-        <p className="text-sm text-ink/50">Laddar kvitton…</p>
-      ) : status === "error" ? (
-        <p className="text-sm text-red-600">Kunde inte ladda kvitton.</p>
-      ) : rows.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center text-sm text-ink/60">
+      <AnimatePresence mode="wait">
+        {status === "loading" ? (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex items-center justify-center p-10 text-sm text-gray-500 dark:text-gray-400"
+          >
+            <div className="mr-3 h-6 w-6 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
+            Laddar kvitton…
+          </motion.div>
+        ) : status === "error" ? (
+          <motion.p
+            key="error"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-sm text-red-600"
+          >
+            Kunde inte ladda kvitton.
+          </motion.p>
+        ) : rows.length === 0 ? (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400"
+          >
             Inga kvitton matchar.
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200 text-left text-ink/50 dark:border-white/[0.08]">
-                  <SortTh label="Datum" k="date" sort={sort} dir={dir} onClick={toggleSort} />
-                  <SortTh label="Leverantör" k="vendor" sort={sort} dir={dir} onClick={toggleSort} />
-                  <SortTh label="BAS" k="bas" sort={sort} dir={dir} onClick={toggleSort} />
-                  <SortTh label="Belopp" k="amount" sort={sort} dir={dir} onClick={toggleSort} />
-                  <SortTh label="Moms" k="vat" sort={sort} dir={dir} onClick={toggleSort} />
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3" />
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <>
-                    <tr
-                      key={r.id}
-                      className="cursor-pointer border-b border-gray-100 last:border-0 hover:bg-gray-50 dark:border-white/[0.05] dark:hover:bg-white/[0.03]"
-                      onClick={() => setOpenId(openId === r.id ? null : r.id)}
-                    >
-                      <td className="px-4 py-3 text-ink/70">{r.date ? r.date.slice(0, 10) : "—"}</td>
-                      <td className="px-4 py-3 font-medium text-ink">{r.vendorName || "—"}</td>
-                      <td className="px-4 py-3 text-ink/70">{r.basCode || "—"}</td>
-                      <td className="px-4 py-3 text-ink/70">{r.totalAmount ?? "—"}</td>
-                      <td className="px-4 py-3 text-ink/70">{r.vatAmount ?? "—"}</td>
-                      <td className="px-4 py-3">
-                        <Badge className="bg-gray-100 text-gray-700 dark:bg-white/[0.08] dark:text-gray-200">
-                          {r.status}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-right text-nordic-600">
-                        {openId === r.id ? "Stäng" : "Granska"}
-                      </td>
-                    </tr>
-                    {openId === r.id && (
-                      <tr key={`${r.id}-editor`}>
-                        <td colSpan={7} className="bg-gray-50 px-4 py-4 dark:bg-white/[0.02]">
-                          <AccountantReceiptEditor
-                            companyId={companyId}
-                            receiptId={r.id}
-                            onSaved={load}
-                          />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="table"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="text-left">
+                    {[
+                      { label: "Datum", k: "date" },
+                      { label: "Leverantör", k: "vendor" },
+                      { label: "BAS", k: "bas" },
+                      { label: "Belopp", k: "amount" },
+                      { label: "Moms", k: "vat" },
+                    ].map(({ label, k }) => (
+                      <th
+                        key={k}
+                        onClick={() => toggleSort(k)}
+                        className="cursor-pointer select-none px-5 py-3"
+                      >
+                        <span
+                          className={`inline-flex items-center gap-1 text-[9.5px] font-medium uppercase tracking-[0.16em] transition-colors ${sort === k ? "text-nordic-600" : "text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"}`}
+                        >
+                          {label}
+                          <span className="text-[9px] leading-none">
+                            {sort === k ? (dir === "asc" ? "↑" : "↓") : ""}
+                          </span>
+                        </span>
+                      </th>
+                    ))}
+                    <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+                      Status
+                    </th>
+                    <th className="px-5 py-3" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <>
+                      <tr
+                        key={r.id}
+                        className="cursor-pointer border-t border-gray-900/[0.07] transition-colors hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
+                        onClick={() => setOpenId(openId === r.id ? null : r.id)}
+                      >
+                        <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
+                          {r.date ? r.date.slice(0, 10) : "—"}
+                        </td>
+                        <td className="px-5 py-3 text-sm font-medium text-gray-900 dark:text-white">
+                          {r.vendorName || "—"}
+                        </td>
+                        <td className="px-5 py-3 font-mono text-sm text-gray-500 dark:text-gray-400">
+                          {r.basCode || "—"}
+                        </td>
+                        <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
+                          {r.totalAmount ?? "—"}
+                        </td>
+                        <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
+                          {r.vatAmount ?? "—"}
+                        </td>
+                        <td className="px-5 py-3">
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusBadge[r.status] ?? "bg-gray-100/80 text-gray-600 dark:bg-white/[0.06] dark:text-gray-400"}`}
+                          >
+                            {r.status}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3 text-right text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70">
+                          {openId === r.id ? "Stäng" : "Granska"}
                         </td>
                       </tr>
-                    )}
-                  </>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-      )}
+                      {openId === r.id && (
+                        <tr key={`${r.id}-editor`}>
+                          <td
+                            colSpan={7}
+                            className="border-t border-gray-900/[0.07] bg-gray-900/[0.02] px-5 py-4 dark:border-white/[0.07] dark:bg-white/[0.02]"
+                          >
+                            <AccountantReceiptEditor
+                              companyId={companyId}
+                              receiptId={r.id}
+                              onSaved={load}
+                            />
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-      {totalPages > 1 && status === "ok" && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-ink/50">Sida {page} av {totalPages}</span>
-          <div className="flex gap-2">
-            <Button variant="outline" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Föregående</Button>
-            <Button variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Nästa</Button>
-          </div>
-        </div>
-      )}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 dark:border-white/[0.07]">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  Sida {page} av {totalPages}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    disabled={page <= 1}
+                    onClick={() => setPage((p) => p - 1)}
+                    className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
+                  >
+                    ← Föregående
+                  </button>
+                  <button
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
+                  >
+                    Nästa →
+                  </button>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
-  );
-}
-
-function SortTh({
-  label,
-  k,
-  sort,
-  dir,
-  onClick,
-}: {
-  label: string;
-  k: string;
-  sort: string;
-  dir: string;
-  onClick: (k: string) => void;
-}) {
-  return (
-    <th
-      className="cursor-pointer select-none px-4 py-3 font-medium hover:text-ink"
-      onClick={() => onClick(k)}
-    >
-      {label}
-      {sort === k ? (dir === "asc" ? " ↑" : " ↓") : ""}
-    </th>
   );
 }

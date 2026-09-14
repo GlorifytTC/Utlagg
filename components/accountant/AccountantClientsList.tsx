@@ -2,9 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 interface ClientRow {
   companyId: string;
@@ -15,11 +13,6 @@ interface ClientRow {
   receiptCount: number;
 }
 
-/**
- * Active-clients list for the accountant. Binds to GET /api/accountant/clients
- * ({ clients, total, page, pageSize }). Renders the app's card/table language
- * with explicit loading / empty / error states.
- */
 export function AccountantClientsList() {
   const [rows, setRows] = useState<ClientRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -47,31 +40,37 @@ export function AccountantClientsList() {
   }, [load, page]);
 
   if (status === "loading") {
-    return <p className="text-sm text-ink/50">Laddar klienter…</p>;
-  }
-  if (status === "error") {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-sm text-red-600">Kunde inte ladda klienter. Försök igen.</p>
-          <Button variant="outline" className="mt-3" onClick={() => load(page)}>
-            Försök igen
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center p-10">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
+      </div>
     );
   }
+
+  if (status === "error") {
+    return (
+      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <p className="text-sm text-red-600">Kunde inte ladda klienter.</p>
+        <button
+          onClick={() => load(page)}
+          className="mt-3 rounded-full border border-gray-900/[0.15] px-4 py-1.5 text-xs transition-colors hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40"
+        >
+          Försök igen
+        </button>
+      </div>
+    );
+  }
+
   if (rows.length === 0) {
     return (
-      <Card>
-        <CardContent className="p-8 text-center">
-          <p className="font-medium text-ink">Inga klienter ännu</p>
-          <p className="mt-1 text-sm text-ink/60">
-            När ett företag kopplar dig som revisor dyker det upp här. Du kan också se
-            inkommande förfrågningar under Förfrågningar.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
+          Inga klienter ännu
+        </p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          När ett företag kopplar dig som revisor dyker det upp här.
+        </p>
+      </div>
     );
   }
 
@@ -79,15 +78,27 @@ export function AccountantClientsList() {
 
   return (
     <div className="space-y-4">
-      <Card>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+      >
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 text-left text-ink/50 dark:border-white/[0.08]">
-                <th className="px-5 py-3 font-medium">Företag</th>
-                <th className="px-5 py-3 font-medium">Ort</th>
-                <th className="px-5 py-3 font-medium">Kvitton</th>
-                <th className="px-5 py-3 font-medium">Status</th>
+              <tr className="text-left">
+                <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+                  Företag
+                </th>
+                <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+                  Ort
+                </th>
+                <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+                  Kvitton
+                </th>
+                <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+                  Status
+                </th>
                 <th className="px-5 py-3" />
               </tr>
             </thead>
@@ -95,22 +106,28 @@ export function AccountantClientsList() {
               {rows.map((c) => (
                 <tr
                   key={c.companyId}
-                  className="border-b border-gray-100 last:border-0 dark:border-white/[0.05]"
+                  className="border-t border-gray-900/[0.07] transition-colors hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
                 >
-                  <td className="px-5 py-3 font-medium text-ink">{c.companyName}</td>
-                  <td className="px-5 py-3 text-ink/70">{c.city || "—"}</td>
-                  <td className="px-5 py-3 text-ink/70">{c.receiptCount}</td>
+                  <td className="px-5 py-3 text-sm font-medium text-gray-900 dark:text-white">
+                    {c.companyName}
+                  </td>
+                  <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
+                    {c.city || "—"}
+                  </td>
+                  <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
+                    {c.receiptCount}
+                  </td>
                   <td className="px-5 py-3">
-                    <Badge className="bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300">
+                    <span className="rounded-full bg-green-100/50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
                       Aktiv
-                    </Badge>
+                    </span>
                   </td>
                   <td className="px-5 py-3 text-right">
                     <Link
                       href={`/accountant/clients/${c.companyId}`}
-                      className="text-nordic-600 hover:underline"
+                      className="text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70"
                     >
-                      Öppna
+                      Öppna →
                     </Link>
                   </td>
                 </tr>
@@ -118,27 +135,31 @@ export function AccountantClientsList() {
             </tbody>
           </table>
         </div>
-      </Card>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-ink/50">
-            Sida {page} av {totalPages}
-          </span>
-          <div className="flex gap-2">
-            <Button variant="outline" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-              Föregående
-            </Button>
-            <Button
-              variant="outline"
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Nästa
-            </Button>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 dark:border-white/[0.07]">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              Sida {page} av {totalPages}
+            </span>
+            <div className="flex gap-2">
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage((p) => p - 1)}
+                className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
+              >
+                ← Föregående
+              </button>
+              <button
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => p + 1)}
+                className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
+              >
+                Nästa →
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </motion.div>
     </div>
   );
 }

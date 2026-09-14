@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { AccountantReceipts } from "@/components/accountant/AccountantReceipts";
 import { AccountantExports } from "@/components/accountant/AccountantExports";
@@ -14,11 +14,6 @@ interface Detail {
 
 type Tab = "overview" | "receipts" | "exports";
 
-/**
- * Client workspace with Overview / Receipts / Exports tabs. Binds detail to
- * GET /api/accountant/clients/[id]. Handles loading / not-found (404 =
- * revoked/unauthorized/unknown, indistinguishable) / error.
- */
 export function AccountantClientWorkspace({ companyId }: { companyId: string }) {
   const [detail, setDetail] = useState<Detail | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "notfound" | "error">("loading");
@@ -44,19 +39,27 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
     load();
   }, [load]);
 
-  if (status === "loading") return <p className="text-sm text-ink/50">Laddar…</p>;
-  if (status === "notfound") {
+  if (status === "loading") {
     return (
-      <Card>
-        <CardContent className="p-8 text-center">
-          <p className="font-medium text-ink">Klienten är inte tillgänglig</p>
-          <p className="mt-1 text-sm text-ink/60">
-            Åtkomsten kan ha tagits bort, eller så finns klienten inte.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center p-10">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
+      </div>
     );
   }
+
+  if (status === "notfound") {
+    return (
+      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
+          Klienten är inte tillgänglig
+        </p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Åtkomsten kan ha tagits bort, eller så finns klienten inte.
+        </p>
+      </div>
+    );
+  }
+
   if (status === "error" || !detail) {
     return <p className="text-sm text-red-600">Kunde inte ladda klienten.</p>;
   }
@@ -69,21 +72,31 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-ink">{detail.companyName}</h1>
-        <p className="text-ink/60">{detail.receiptCount} kvitton</p>
-      </div>
+      {/* Client header */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+      >
+        <h1 className="font-display text-xl font-semibold text-gray-900 dark:text-white">
+          {detail.companyName}
+        </h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {detail.receiptCount} kvitton
+        </p>
+      </motion.div>
 
-      <div className="flex gap-2 border-b border-gray-200 dark:border-white/[0.08]">
+      {/* Pill tab bar */}
+      <div className="inline-flex gap-1 rounded-full border border-gray-900/[0.07] bg-white/60 p-1 backdrop-blur-sm dark:border-white/[0.08] dark:bg-white/[0.04]">
         {tabs.map((t) => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
             className={cn(
-              "-mb-px border-b-2 px-4 py-2 text-sm font-medium transition-colors",
+              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
               tab === t.key
-                ? "border-ink text-ink"
-                : "border-transparent text-ink/50 hover:text-ink",
+                ? "bg-nordic-600 text-white"
+                : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white",
             )}
           >
             {t.label}
@@ -91,18 +104,49 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
         ))}
       </div>
 
-      {tab === "overview" && (
-        <Card>
-          <CardContent className="grid gap-4 p-6 sm:grid-cols-3">
-            <div>
-              <p className="text-sm text-ink/50">Kvitton totalt</p>
-              <p className="text-2xl font-semibold text-ink">{detail.receiptCount}</p>
+      <AnimatePresence mode="wait">
+        {tab === "overview" && (
+          <motion.div
+            key="overview"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-gray-900/[0.07] dark:border-white/[0.07] dark:bg-white/[0.07]"
+          >
+            <div className="bg-[#F5F4F0] p-5 dark:bg-[#0D0D0D]">
+              <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+                Kvitton totalt
+              </p>
+              <p className="font-display text-[22px] font-semibold leading-none tracking-tight text-gray-900 dark:text-white">
+                {detail.receiptCount}
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      )}
-      {tab === "receipts" && <AccountantReceipts companyId={companyId} />}
-      {tab === "exports" && <AccountantExports companyId={companyId} />}
+          </motion.div>
+        )}
+        {tab === "receipts" && (
+          <motion.div
+            key="receipts"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+          >
+            <AccountantReceipts companyId={companyId} />
+          </motion.div>
+        )}
+        {tab === "exports" && (
+          <motion.div
+            key="exports"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+          >
+            <AccountantExports companyId={companyId} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
