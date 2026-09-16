@@ -31,6 +31,22 @@ type ReceiptRow = {
 
 const PAGE_SIZE = 25;
 
+type CacheEntry = { receipts: ReceiptRow[]; total: number };
+
+function buildQs(
+  page: number,
+  sort: { key: SortKey; dir: "asc" | "desc" },
+  query: string,
+  from: string,
+  to: string,
+) {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE), sort: sort.key, dir: sort.dir });
+  if (query) params.set("q", query);
+  if (from) params.set("from", from);
+  if (to) params.set("to", to);
+  return params.toString();
+}
+
 export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
   const { t } = useLanguage();
   const router = useRouter();
@@ -46,6 +62,8 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
   const [exportOpen, setExportOpen] = useState(false);
   const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({ key: "date", dir: "desc" });
   const exportRef = useRef<HTMLDivElement>(null);
+  // ponytail: in-memory page cache; cleared when data changes (refreshKey) so stale pages aren't served after upload/delete
+  const cache = useRef<Map<string, CacheEntry>>(new Map());
 
   const statusLabel: Record<string, string> = {
     pending: t.statusPending,
@@ -64,22 +82,38 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
     setPage(1);
   }, [debouncedQuery, from, to, sort]);
 
+  // New receipt saved → invalidate cache so stale page data isn't served.
+  useEffect(() => { cache.current.clear(); }, [refreshKey]);
+
   const load = useCallback(async () => {
+    const qs = buildQs(page, sort, debouncedQuery, from, to);
+    const hit = cache.current.get(qs);
+    if (hit) {
+      setReceipts(hit.receipts);
+      setTotal(hit.total);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
-      const params = new URLSearchParams({
-        page: String(page),
-        pageSize: String(PAGE_SIZE),
-        sort: sort.key,
-        dir: sort.dir,
-      });
-      if (debouncedQuery) params.set("q", debouncedQuery);
-      if (from) params.set("from", from);
-      if (to) params.set("to", to);
-      const res = await fetch(`/api/receipts?${params.toString()}`);
+      const res = await fetch(`/api/receipts?${qs}`);
       const data = await res.json();
-      setReceipts(data.receipts ?? []);
-      setTotal(data.total ?? 0);
+      const rows: ReceiptRow[] = data.receipts ?? [];
+      const fetchedTotal: number = data.total ?? 0;
+      cache.current.set(qs, { receipts: rows, total: fetchedTotal });
+      setReceipts(rows);
+      setTotal(fetchedTotal);
+      // prefetch prev/next pages so navigation is instant
+      const totalPages = Math.ceil(fetchedTotal / PAGE_SIZE);
+      [page - 1, page + 1].forEach((p) => {
+        if (p < 1 || p > totalPages) return;
+        const pqs = buildQs(p, sort, debouncedQuery, from, to);
+        if (cache.current.has(pqs)) return;
+        fetch(`/api/receipts?${pqs}`)
+          .then((r) => r.json())
+          .then((d) => cache.current.set(pqs, { receipts: d.receipts ?? [], total: d.total ?? 0 }))
+          .catch(() => {});
+      });
     } catch {
       setReceipts([]);
       setTotal(0);
