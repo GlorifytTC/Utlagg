@@ -88,6 +88,7 @@ export async function GET(
   // Viewer state
   const viewerCompany = await getUserCompany(session.user.id);
   let myStatus: string | null = null;
+  let clientId: string | null = null;
   let viewerCanRequest = false;
   let viewerCanReview = false;
   let viewerExistingReview: { rating: number; comment: string | null } | null = null;
@@ -107,7 +108,7 @@ export async function GET(
       .limit(1);
 
     const [rel] = await db
-      .select({ status: accountantClients.status })
+      .select({ status: accountantClients.status, id: accountantClients.id })
       .from(accountantClients)
       .where(
         and(
@@ -124,6 +125,7 @@ export async function GET(
     } else if (req) {
       myStatus = req.status;
     }
+    clientId = rel?.id ?? null;
 
     if (viewerCanReview) {
       const [existing] = await db
@@ -158,6 +160,7 @@ export async function GET(
     },
     reviews: reviewRows,
     myStatus,
+    clientId: clientId ?? null,
     viewerCanRequest,
     viewerCanReview,
     viewerExistingReview,

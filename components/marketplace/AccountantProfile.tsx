@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { MessageSquare } from "lucide-react";
+import { AccountantChat } from "@/components/AccountantChat";
 
 interface Review {
   id: string;
@@ -29,6 +31,7 @@ interface ProfileData {
   };
   reviews: Review[];
   myStatus: string | null;
+  clientId: string | null;
   viewerCanRequest: boolean;
   viewerCanReview: boolean;
   viewerExistingReview: { rating: number; comment: string | null } | null;
@@ -49,10 +52,13 @@ interface Props {
   viewerAccountantId?: string;
   /** Back-link href (e.g. "/dashboard/marketplace" or "/accountant/marketplace"). */
   backHref: string;
+  /** The signed-in user's id — needed to align chat bubbles. */
+  currentUserId?: string;
 }
 
-export function AccountantProfile({ accountantId, viewerAccountantId, backHref }: Props) {
+export function AccountantProfile({ accountantId, viewerAccountantId, backHref, currentUserId }: Props) {
   const [data, setData] = useState<ProfileData | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
   const [loadState, setLoadState] = useState<"loading" | "ok" | "error">("loading");
   const [busy, setBusy] = useState(false);
 
@@ -259,7 +265,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref }
         </div>
 
         {/* CTA */}
-        <div className="shrink-0">
+        <div className="flex shrink-0 flex-col items-end gap-2">
           {isSelf ? (
             <button
               onClick={() => setEditing((v) => !v)}
@@ -268,9 +274,20 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref }
               {editing ? "Avbryt" : "Redigera profil"}
             </button>
           ) : data.myStatus === "active" ? (
-            <span className="rounded-full bg-green-100/50 px-3 py-1.5 text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
-              Kopplad
-            </span>
+            <div className="flex flex-col items-end gap-2">
+              <span className="rounded-full bg-green-100/50 px-3 py-1.5 text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
+                Kopplad
+              </span>
+              {data.clientId && currentUserId && (
+                <button
+                  onClick={() => setChatOpen((v) => !v)}
+                  className="flex items-center gap-1.5 rounded-full border border-gray-900/[0.12] px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 dark:border-white/[0.12] dark:text-gray-300 dark:hover:bg-white/[0.06]"
+                >
+                  <MessageSquare size={14} />
+                  {chatOpen ? "Stäng chatt" : "Skicka meddelande"}
+                </button>
+              )}
+            </div>
           ) : data.myStatus === "pending" ? (
             <span className="rounded-full bg-amber-100/50 px-3 py-1.5 text-sm font-medium text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
               Förfrågan skickad
@@ -288,6 +305,18 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref }
           ) : null}
         </div>
       </motion.div>
+
+      {/* Chat panel — visible when connected and toggled open */}
+      {data.myStatus === "active" && data.clientId && currentUserId && chatOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.15 }}
+        >
+          <AccountantChat clientId={data.clientId} currentUserId={currentUserId} />
+        </motion.div>
+      )}
 
       {/* Inline profile editor (own profile only) */}
       {isSelf && editing && (

@@ -19,6 +19,7 @@ export default async function CompanyAccountantProfilePage({
       <AccountantProfile
         accountantId={id}
         backHref="/dashboard/marketplace"
+        currentUserId={session.user.id}
       />
     </div>
   );
