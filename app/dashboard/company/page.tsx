@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CompanyAccountantAccess } from "@/components/dashboard/CompanyAccountantAccess";
 import { CompanyDiscoverySettings } from "@/components/dashboard/CompanyDiscoverySettings";
-import { FindAccountant } from "@/components/dashboard/FindAccountant";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface Company { id: string; name: string; orgNumber?: string; vatNumber?: string; }
@@ -147,7 +147,24 @@ export default function CompanyPage() {
 
       {canManage && <CompanyAccountantAccess />}
       {canManage && <CompanyDiscoverySettings />}
-      {canManage && <FindAccountant />}
+      {canManage && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Hitta revisor</CardTitle>
+            <CardDescription>
+              Bläddra bland redovisningskonsulter och skicka en förfrågan.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link
+              href="/dashboard/marketplace"
+              className="inline-flex items-center justify-center rounded-lg bg-nordic-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-900"
+            >
+              Öppna marknadsplatsen
+            </Link>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

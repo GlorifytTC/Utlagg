@@ -9,7 +9,7 @@ import type { Lang } from "@/lib/translations";
 const strings = {
   sv: {
     navOverview: "Översikt",
-    navDiscover: "Upptäck företag",
+    navMarketplace: "Marknadsplatsen",
     navRequests: "Förfrågningar",
 
     overviewTitle: "Översikt",
@@ -40,8 +40,8 @@ const strings = {
 
     // Growth section
     growthTitle: "Väx din byrå",
-    discoverTitle: "Företag som söker revisor",
-    discoverViewAll: "Visa alla",
+    marketplaceTitle: "Din synlighet i marknadsplatsen",
+    marketplaceViewAll: "Visa marknadsplatsen",
 
     // Boost
     boostTitle: "Boosta din synlighet",
@@ -68,7 +68,7 @@ const strings = {
   },
   en: {
     navOverview: "Overview",
-    navDiscover: "Discover companies",
+    navMarketplace: "Marketplace",
     navRequests: "Requests",
 
     overviewTitle: "Overview",
@@ -95,8 +95,8 @@ const strings = {
     activityNone: "No activity yet.",
 
     growthTitle: "Grow your firm",
-    discoverTitle: "Companies looking for an accountant",
-    discoverViewAll: "View all",
+    marketplaceTitle: "Your visibility in the marketplace",
+    marketplaceViewAll: "View marketplace",
 
     boostTitle: "Boost your visibility",
     boostDesc: "Get more chances to be found by companies looking for an accountant.",

@@ -12,7 +12,7 @@ export function AccountantNav() {
   const t = accountantStrings(lang);
   const items = [
     { href: "/accountant", label: t.navOverview, exact: true },
-    { href: "/accountant/discover", label: t.navDiscover },
+    { href: "/accountant/marketplace", label: t.navMarketplace },
     { href: "/accountant/requests", label: t.navRequests },
   ];
   return (

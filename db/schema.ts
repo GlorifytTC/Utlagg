@@ -163,6 +163,10 @@ export const users = pgTable("users", {
   // Optional logo/avatar (base64 data URL), e.g. an accountant firm's logo
   // shown in the discovery directory. Nullable/additive.
   logoUrl: text("logo_url"),
+  // Accountant marketplace profile fields (all nullable/additive).
+  accountantCity: varchar("accountant_city", { length: 100 }),
+  accountantBio: text("accountant_bio"),
+  accountantSpecializations: jsonb("accountant_specializations").$type<string[]>(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

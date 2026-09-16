@@ -13,6 +13,7 @@ import {
   LogOut,
   Moon,
   Sun,
+  Store,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ import { Logo } from "@/components/brand/Logo";
 const NAV_ITEMS = [
   { name: "Översikt", href: "/dashboard", icon: Home },
   { name: "Kvitton", href: "/dashboard/receipts", icon: Receipt },
+  { name: "Hitta revisor", href: "/dashboard/marketplace", icon: Store },
   { name: "Prenumeration", href: "/dashboard/subscription", icon: CreditCard },
   { name: "Statistik", href: "/dashboard/stats", icon: BarChart3 },
   { name: "Inställningar", href: "/dashboard/settings", icon: Settings },

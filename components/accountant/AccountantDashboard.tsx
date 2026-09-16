@@ -7,7 +7,6 @@ import { accountantStrings } from "@/lib/accountant-i18n";
 import { AccountantWorkQueue } from "@/components/accountant/AccountantWorkQueue";
 import { AccountantClientsList } from "@/components/accountant/AccountantClientsList";
 import { AccountantActivity } from "@/components/accountant/AccountantActivity";
-import { AccountantDiscovery } from "@/components/accountant/AccountantDiscovery";
 import { AccountantBoostCard } from "@/components/accountant/AccountantBoostCard";
 
 /**
@@ -50,14 +49,16 @@ export function AccountantDashboard() {
           <AccountantBoostCard />
         </Suspense>
 
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-ink/80">{t.discoverTitle}</h3>
-            <Link href="/accountant/discover" className="text-sm text-nordic-600 hover:underline">
-              {t.discoverViewAll} →
-            </Link>
+        <div className="flex items-center justify-between rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+          <div>
+            <p className="text-sm font-semibold text-ink/80">{t.marketplaceTitle}</p>
+            <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+              Företag söker revisor direkt i marknadsplatsen.
+            </p>
           </div>
-          <AccountantDiscovery compact />
+          <Link href="/accountant/marketplace" className="shrink-0 text-sm text-nordic-600 hover:underline">
+            {t.marketplaceViewAll} →
+          </Link>
         </div>
       </section>
     </div>
