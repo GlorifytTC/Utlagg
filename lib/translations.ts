@@ -74,6 +74,7 @@ export interface Translations {
   navStats: string;
   navInvoices: string;
   navCompany: string;
+  navMarketplace: string;
   navSettings: string;
   navProfile: string;
   navLogout: string;
@@ -1427,6 +1428,7 @@ export const strings: Record<Lang, Translations> = {
     navStats: "Statistik",
     navInvoices: "Fakturor",
     navCompany: "Företag",
+    navMarketplace: "Hitta revisor",
     navSettings: "Inställningar",
     navProfile: "Profil",
     navLogout: "Logga ut",
@@ -2365,6 +2367,7 @@ export const strings: Record<Lang, Translations> = {
     navStats: "Statistics",
     navInvoices: "Invoices",
     navCompany: "Company",
+    navMarketplace: "Find accountant",
     navSettings: "Settings",
     navProfile: "Profile",
     navLogout: "Log out",

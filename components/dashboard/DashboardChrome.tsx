@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
-  Home, Receipt, CreditCard, BarChart3, Settings, User, LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug, Lock, Building2, FileText, TrainFront, Download,
+  Home, Receipt, CreditCard, BarChart3, Settings, User, LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug, Lock, Building2, FileText, TrainFront, Download, Store,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
@@ -28,6 +28,7 @@ const nav = [
   { key: "navSubscription", href: "/dashboard/subscription", icon: CreditCard },
   { key: "navStats", href: "/dashboard/stats", icon: BarChart3 },
   { key: "navInvoices", href: "/dashboard/invoices", icon: FileText, feature: "invoicing" as Feature },
+  { key: "navMarketplace", href: "/dashboard/marketplace", icon: Store },
   { key: "navCompany", href: "/dashboard/company", icon: Building2 },
   { key: "navSettings", href: "/dashboard/settings", icon: Settings },
   { key: "navProfile", href: "/dashboard/profile", icon: User },
