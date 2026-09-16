@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { and, eq, ilike, or, sql } from "drizzle-orm";
+import { and, avg, count, eq, ilike, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import {
@@ -9,6 +9,7 @@ import {
   accountantClients,
   accountantConnectionRequests,
   accountantBoosts,
+  accountantReviews,
 } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { getUserCompany, canManageCompany } from "@/lib/company";
@@ -37,6 +38,8 @@ type AccountantRow = {
 type RankedItem = AccountantRow & {
   activeClientCount: number;
   relevance: number;
+  avgRating: number | null;
+  reviewCount: number;
 };
 
 /**
@@ -90,7 +93,7 @@ export async function GET(req: NextRequest) {
 
   const ids = rows.map((r) => r.id);
 
-  const [clientCounts, activeBoosts, viewerCompany] = await Promise.all([
+  const [clientCounts, activeBoosts, reviewStats, viewerCompany] = await Promise.all([
     db
       .select({
         accountantId: accountantClients.accountantId,
@@ -108,6 +111,14 @@ export async function GET(req: NextRequest) {
           sql`${accountantBoosts.expiresAt} > now()`,
         ),
       ),
+    db
+      .select({
+        accountantId: accountantReviews.accountantId,
+        avgRating: avg(accountantReviews.rating),
+        reviewCount: count(),
+      })
+      .from(accountantReviews)
+      .groupBy(accountantReviews.accountantId),
     getUserCompany(session.user.id),
   ]);
 
@@ -120,6 +131,14 @@ export async function GET(req: NextRequest) {
     activeBoosts
       .filter((r: { accountantId: string }) => ids.includes(r.accountantId))
       .map((r: { accountantId: string }) => r.accountantId),
+  );
+  const reviewStatsMap = new Map<string, { avgRating: number | null; reviewCount: number }>(
+    reviewStats
+      .filter((r: { accountantId: string }) => ids.includes(r.accountantId))
+      .map((r: { accountantId: string; avgRating: string | null; reviewCount: number }) => [
+        r.accountantId,
+        { avgRating: r.avgRating ? Number(r.avgRating) : null, reviewCount: r.reviewCount },
+      ]),
   );
 
   let viewerIndustry: string | null = null;
@@ -175,7 +194,14 @@ export async function GET(req: NextRequest) {
         relevance += 3;
       }
     }
-    return { ...a, activeClientCount: clientCount, relevance };
+    const stats = reviewStatsMap.get(a.id);
+    return {
+      ...a,
+      activeClientCount: clientCount,
+      relevance,
+      avgRating: stats?.avgRating ?? null,
+      reviewCount: stats?.reviewCount ?? 0,
+    };
   });
 
   // ponytail: same logic as rankAccountants() in lib/accountant-boost.ts
@@ -202,6 +228,8 @@ export async function GET(req: NextRequest) {
       specializations: a.accountantSpecializations,
       activeClientCount: a.activeClientCount,
       isBoosted: boostedIds.has(a.id),
+      avgRating: a.avgRating,
+      reviewCount: a.reviewCount,
       myStatus: statusMap.get(a.id) ?? null,
     })),
     page,

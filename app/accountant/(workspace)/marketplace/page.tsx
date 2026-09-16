@@ -19,7 +19,10 @@ export default async function AccountantMarketplacePage() {
           relevans, popularitet och om du har en aktiv boost.
         </p>
       </div>
-      <AccountantMarketplace viewerAccountantId={session.user.id} />
+      <AccountantMarketplace
+        viewerAccountantId={session.user.id}
+        profileBasePath="/accountant/marketplace"
+      />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -147,24 +146,6 @@ export default function CompanyPage() {
 
       {canManage && <CompanyAccountantAccess />}
       {canManage && <CompanyDiscoverySettings />}
-      {canManage && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Hitta revisor</CardTitle>
-            <CardDescription>
-              Bläddra bland redovisningskonsulter och skicka en förfrågan.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link
-              href="/dashboard/marketplace"
-              className="inline-flex items-center justify-center rounded-lg bg-nordic-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-900"
-            >
-              Öppna marknadsplatsen
-            </Link>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

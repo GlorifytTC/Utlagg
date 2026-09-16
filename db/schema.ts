@@ -570,6 +570,34 @@ export const accountantBoosts = pgTable(
 export type AccountantBoost = typeof accountantBoosts.$inferSelect;
 
 /* ------------------------------------------------------------------ */
+/* accountant_reviews — one review per company per accountant.         */
+/* Only companies with an active accountant_clients relationship may   */
+/* submit. Rating 1-5 enforced by DB CHECK constraint.                 */
+/* ------------------------------------------------------------------ */
+export const accountantReviews = pgTable(
+  "accountant_reviews",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    accountantId: uuid("accountant_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    reviewedBy: uuid("reviewed_by").references(() => users.id, { onDelete: "set null" }),
+    rating: integer("rating").notNull(), // 1-5, enforced by DB CHECK
+    comment: text("comment"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    acctIdx: index("accountant_reviews_acct_idx").on(t.accountantId),
+    pairIdx: uniqueIndex("accountant_reviews_pair_idx").on(t.accountantId, t.companyId),
+  }),
+);
+export type AccountantReview = typeof accountantReviews.$inferSelect;
+
+/* ------------------------------------------------------------------ */
 /* customer_invoices (kundfakturor — invoices the company sends out)    */
 /* ------------------------------------------------------------------ */
 
