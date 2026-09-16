@@ -10,6 +10,7 @@ const nav = [
   { name: "Intäkter", href: "/admin/revenue" },
   { name: "Systemhälsa", href: "/admin/health" },
   { name: "Efterlevnad", href: "/admin/compliance" },
+  { name: "Chatrapporter", href: "/admin/chat-reports" },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

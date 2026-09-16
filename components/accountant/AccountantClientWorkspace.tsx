@@ -5,16 +5,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { AccountantReceipts } from "@/components/accountant/AccountantReceipts";
 import { AccountantExports } from "@/components/accountant/AccountantExports";
+import { AccountantChat } from "@/components/AccountantChat";
 
 interface Detail {
   companyId: string;
   companyName: string;
   receiptCount: number;
+  clientId: string | null;
 }
 
-type Tab = "overview" | "receipts" | "exports";
+type Tab = "overview" | "receipts" | "exports" | "chat";
 
-export function AccountantClientWorkspace({ companyId }: { companyId: string }) {
+export function AccountantClientWorkspace({
+  companyId,
+  currentUserId,
+}: {
+  companyId: string;
+  currentUserId: string;
+}) {
   const [detail, setDetail] = useState<Detail | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "notfound" | "error">("loading");
   const [tab, setTab] = useState<Tab>("overview");
@@ -68,6 +76,7 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
     { key: "overview", label: "Översikt" },
     { key: "receipts", label: "Kvitton" },
     { key: "exports", label: "Export" },
+    { key: "chat", label: "Chatt" },
   ];
 
   return (
@@ -144,6 +153,21 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
             transition={{ duration: 0.15 }}
           >
             <AccountantExports companyId={companyId} />
+          </motion.div>
+        )}
+        {tab === "chat" && (
+          <motion.div
+            key="chat"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+          >
+            {detail.clientId ? (
+              <AccountantChat clientId={detail.clientId} currentUserId={currentUserId} />
+            ) : (
+              <p className="text-sm text-gray-500">Chatt är inte tillgänglig.</p>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

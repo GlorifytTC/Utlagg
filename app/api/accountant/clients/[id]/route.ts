@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { count, inArray } from "drizzle-orm";
+import { and, count, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
-import { receipts } from "@/db/schema";
+import { accountantClients, receipts } from "@/db/schema";
 import { requireAccountant, requireCompanyAccess } from "@/lib/accountant";
 
 export const runtime = "nodejs";
@@ -47,9 +47,23 @@ export async function GET(
           )[0]?.total ?? 0,
         );
 
+  // Fetch the relationship row id so the client can address the chat channel.
+  const [rel] = await db
+    .select({ id: accountantClients.id })
+    .from(accountantClients)
+    .where(
+      and(
+        eq(accountantClients.accountantId, acct.userId),
+        eq(accountantClients.companyId, params.id),
+        eq(accountantClients.status, "active"),
+      ),
+    )
+    .limit(1);
+
   return NextResponse.json({
     companyId: access.companyId,
     companyName: access.companyName,
     receiptCount,
+    clientId: rel?.id ?? null,
   });
 }

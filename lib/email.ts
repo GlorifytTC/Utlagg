@@ -862,6 +862,28 @@ Vill du skanna igen? Aktivera en betald plan när som helst.
   );
 }
 
+export function sendChatMessageNotification(
+  to: string,
+  params: { senderName: string; preview: string; chatUrl: string },
+) {
+  const body = `# Nytt meddelande i Kvittino
+
+Du har fått ett meddelande från **${params.senderName}**.
+
+${params.preview.length > 200 ? params.preview.slice(0, 200) + "…" : params.preview}
+
+[button] ${params.chatUrl} | Öppna chatten
+
+— ${APP_NAME}`;
+  const html = buildEmailHtml(body, {
+    user_name: "",
+    app_name: APP_NAME,
+    action_url: params.chatUrl,
+    support_email: SUPPORT_EMAIL,
+  });
+  return send(to, `Nytt meddelande från ${params.senderName}`, html);
+}
+
 // ─── Legacy compatibility wrappers ───────────────────────────
 
 export function sendCompanyInviteEmail(to: string, token: string) {

@@ -1101,3 +1101,70 @@ export const mileageRoutes = pgTable(
 
 export type MileageRoute = typeof mileageRoutes.$inferSelect;
 export type VendorCorrection = typeof vendorCorrections.$inferSelect;
+
+/* ------------------------------------------------------------------ */
+/* chat_messages — per accountant<->company relationship              */
+/* ------------------------------------------------------------------ */
+export const chatMessages = pgTable(
+  "chat_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // The accountant_clients row this message belongs to.
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => accountantClients.id, { onDelete: "cascade" }),
+    senderId: uuid("sender_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // 'accountant' | 'company' — denormalised so queries need no join.
+    senderRole: varchar("sender_role", { length: 10 }).notNull(),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => ({
+    clientIdx: index("chat_messages_client_idx").on(t.clientId),
+  }),
+);
+export type ChatMessage = typeof chatMessages.$inferSelect;
+
+/* ------------------------------------------------------------------ */
+/* chat_reports — user reports moderator reviews in admin panel        */
+/* ------------------------------------------------------------------ */
+export const chatReportStatus = pgEnum("chat_report_status", [
+  "pending",
+  "resolved",
+  "dismissed",
+]);
+
+export const chatReports = pgTable(
+  "chat_reports",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    reporterId: uuid("reporter_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    reportedUserId: uuid("reported_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // Nullable: could be reporting the user generally, not a specific message.
+    messageId: uuid("message_id").references(() => chatMessages.id, {
+      onDelete: "set null",
+    }),
+    reason: text("reason").notNull(),
+    status: chatReportStatus("status").notNull().default("pending"),
+    moderatorId: uuid("moderator_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    moderatorNote: text("moderator_note"),
+    moderatedAt: timestamp("moderated_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => ({
+    statusIdx: index("chat_reports_status_idx").on(t.status),
+  }),
+);
+export type ChatReport = typeof chatReports.$inferSelect;
