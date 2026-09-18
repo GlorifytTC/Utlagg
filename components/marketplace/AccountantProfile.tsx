@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { MessageSquare } from "lucide-react";
+import { MapPin, MessageSquare } from "lucide-react";
 import { AccountantChat } from "@/components/AccountantChat";
 
 interface Review {
@@ -61,6 +61,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
   const [chatOpen, setChatOpen] = useState(false);
   const [loadState, setLoadState] = useState<"loading" | "ok" | "error">("loading");
   const [busy, setBusy] = useState(false);
+  const chatRef = useRef<HTMLDivElement>(null);
 
   // Review form state
   const [reviewRating, setReviewRating] = useState(5);
@@ -179,7 +180,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
 
   if (loadState === "loading") {
     return (
-      <div className="flex items-center justify-center p-20">
+      <div className="flex min-h-[40vh] items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
       </div>
     );
@@ -233,7 +234,10 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
           </div>
 
           {accountant.city && (
-            <p className="text-sm uppercase tracking-[0.12em] text-gray-400">{accountant.city}</p>
+            <p className="flex items-center gap-1 text-sm text-gray-400">
+              <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+              {accountant.city}
+            </p>
           )}
 
           {/* Stats row */}
@@ -274,20 +278,9 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               {editing ? "Avbryt" : "Redigera profil"}
             </button>
           ) : data.myStatus === "active" ? (
-            <div className="flex flex-col items-end gap-2">
-              <span className="rounded-full bg-green-100/50 px-3 py-1.5 text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
-                Kopplad
-              </span>
-              {data.clientId && currentUserId && (
-                <button
-                  onClick={() => setChatOpen((v) => !v)}
-                  className="flex items-center gap-1.5 rounded-full border border-gray-900/[0.12] px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 dark:border-white/[0.12] dark:text-gray-300 dark:hover:bg-white/[0.06]"
-                >
-                  <MessageSquare size={14} />
-                  {chatOpen ? "Stäng chatt" : "Skicka meddelande"}
-                </button>
-              )}
-            </div>
+            <span className="rounded-full bg-green-100/50 px-3 py-1.5 text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
+              Kopplad
+            </span>
           ) : data.myStatus === "pending" ? (
             <span className="rounded-full bg-amber-100/50 px-3 py-1.5 text-sm font-medium text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
               Förfrågan skickad
@@ -307,6 +300,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       </motion.div>
 
       {/* Chat panel — visible when connected and toggled open */}
+      <div ref={chatRef} />
       {data.myStatus === "active" && data.clientId && currentUserId && chatOpen && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -316,6 +310,28 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         >
           <AccountantChat clientId={data.clientId} currentUserId={currentUserId} />
         </motion.div>
+      )}
+
+      {/* FAB — sticky message shortcut when connected */}
+      {data.myStatus === "active" && data.clientId && currentUserId && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.85, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ delay: 0.3, type: "spring", bounce: 0, duration: 0.35 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            setChatOpen((v) => {
+              if (!v) chatRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+              return !v;
+            });
+          }}
+          className="fixed right-6 z-50 flex items-center gap-2 rounded-full bg-nordic-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-nordic-600/30 transition-colors hover:bg-nordic-700"
+          style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
+        >
+          <MessageSquare size={16} />
+          {chatOpen ? "Stäng chatt" : "Meddelande"}
+        </motion.button>
       )}
 
       {/* Inline profile editor (own profile only) */}
@@ -375,19 +391,17 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       {/* Bio */}
       {accountant.bio && (
         <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500">Om</h2>
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">Om</h2>
           <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{accountant.bio}</p>
         </div>
       )}
 
       {/* Reviews */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h2 className="flex items-baseline gap-2 text-base font-semibold text-gray-900 dark:text-white">
           Recensioner
           {accountant.reviewCount > 0 && (
-            <span className="ml-2 text-base font-normal text-gray-400">
-              ({accountant.reviewCount})
-            </span>
+            <span className="text-sm font-normal text-gray-400">({accountant.reviewCount})</span>
           )}
         </h2>
 

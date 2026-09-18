@@ -14,9 +14,8 @@ export default async function MarketplacePage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-ink">Hitta revisor</h1>
-        <p className="text-ink/60">
-          Bläddra bland redovisningskonsulter. Skicka en förfrågan — du får åtkomst till din
-          revisor först när hen accepterar.
+        <p className="text-sm text-ink/50">
+          Bläddra bland redovisningskonsulter och skicka en förfrågan — åtkomst ges när revisorn accepterar.
         </p>
       </div>
       <AccountantMarketplace />

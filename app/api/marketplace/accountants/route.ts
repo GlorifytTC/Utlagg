@@ -33,6 +33,7 @@ type AccountantRow = {
   accountantCity: string | null;
   accountantBio: string | null;
   accountantSpecializations: string[] | null;
+  createdAt: Date | null;
 };
 
 type RankedItem = AccountantRow & {
@@ -83,6 +84,7 @@ export async function GET(req: NextRequest) {
       accountantCity: users.accountantCity,
       accountantBio: users.accountantBio,
       accountantSpecializations: users.accountantSpecializations,
+      createdAt: users.createdAt,
     })
     .from(users)
     .where(and(...conds))) as AccountantRow[];
@@ -231,6 +233,7 @@ export async function GET(req: NextRequest) {
       avgRating: a.avgRating,
       reviewCount: a.reviewCount,
       myStatus: statusMap.get(a.id) ?? null,
+      joinedYear: a.createdAt ? new Date(a.createdAt).getFullYear() : null,
     })),
     page,
     pageSize,
