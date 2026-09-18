@@ -13,8 +13,8 @@ export default async function AccountantMarketplacePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-ink">Marknadsplatsen</h1>
-        <p className="text-ink/60">
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">Marknadsplatsen</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           Så här ser företag dig. Din profil visas bland alla revisorer — rankad efter
           relevans, popularitet och om du har en aktiv boost.
         </p>

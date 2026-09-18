@@ -59,13 +59,13 @@ export function AccountantAvatarMenu() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="Profil"
-        className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-gray-200 bg-white hover:border-ink/40 dark:border-white/15 dark:bg-white/[0.06]"
+        className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-gray-200 bg-white transition-colors hover:border-gray-900/40 dark:border-white/[0.15] dark:bg-white/[0.06] dark:hover:border-white/40"
       >
         {logo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={logo} alt="Profil" className="h-full w-full object-cover" />
         ) : (
-          <span className="text-sm font-medium text-ink/60">R</span>
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">R</span>
         )}
       </button>
 
@@ -82,13 +82,13 @@ export function AccountantAvatarMenu() {
             <div className="flex gap-1.5 px-4 py-2">
               <button
                 onClick={() => setLanguage("sv")}
-                className={`rounded-full border px-3 py-1 text-xs transition-colors ${lang === "sv" ? "border-ink bg-ink text-paper" : "border-gray-900/[0.12] text-gray-500 hover:border-gray-900/30 dark:border-white/[0.12] dark:text-gray-400"}`}
+                className={`rounded-full border px-3 py-1 text-xs transition-colors ${lang === "sv" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/[0.12] text-gray-500 hover:border-gray-900/30 dark:border-white/[0.12] dark:text-gray-400"}`}
               >
                 Svenska
               </button>
               <button
                 onClick={() => setLanguage("en")}
-                className={`rounded-full border px-3 py-1 text-xs transition-colors ${lang === "en" ? "border-ink bg-ink text-paper" : "border-gray-900/[0.12] text-gray-500 hover:border-gray-900/30 dark:border-white/[0.12] dark:text-gray-400"}`}
+                className={`rounded-full border px-3 py-1 text-xs transition-colors ${lang === "en" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/[0.12] text-gray-500 hover:border-gray-900/30 dark:border-white/[0.12] dark:text-gray-400"}`}
               >
                 English
               </button>

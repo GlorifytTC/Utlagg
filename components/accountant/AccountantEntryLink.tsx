@@ -31,7 +31,7 @@ export function AccountantEntryLink() {
   return (
     <Link
       href="/accountant"
-      className="inline-flex items-center gap-2 rounded-full border hairline px-4 py-2 text-sm font-medium text-ink/80 transition-colors hover:border-ink/40"
+      className="inline-flex items-center gap-2 rounded-full border border-gray-900/[0.12] px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-gray-900/40 dark:border-white/[0.12] dark:text-gray-300 dark:hover:border-white/40"
     >
       <Briefcase size={15} />
       Revisorsvyn

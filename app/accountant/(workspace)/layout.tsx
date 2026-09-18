@@ -30,11 +30,11 @@ export default async function AccountantWorkspaceLayout({
   if (!acct) redirect("/dashboard");
 
   return (
-    <main className="min-h-screen bg-[#F5F4F0]">
+    <main className="min-h-screen bg-[#F5F4F0] dark:bg-black dark:text-gray-100">
       <header className="sticky top-0 z-30 border-b border-gray-900/[0.07] bg-white/75 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#0A0A0A]">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <Link href="/accountant">
-            <Logo size={28} wordmarkClassName="text-[17px]" />
+            <Logo size={28} wordmarkClassName="text-[17px] text-gray-900 dark:text-white" />
           </Link>
           <AccountantAvatarMenu />
         </div>

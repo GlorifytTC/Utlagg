@@ -151,7 +151,7 @@ export function AccountantChat({ clientId, currentUserId }: Props) {
           }}
           rows={2}
           placeholder="Skriv ett meddelande…"
-          className="flex-1 resize-none rounded-xl border border-gray-900/[0.10] bg-transparent px-3 py-2 text-sm outline-none focus:border-nordic-500 dark:border-white/[0.10] dark:text-white"
+          className="flex-1 resize-none rounded-xl border border-gray-900/[0.10] bg-transparent px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-nordic-500 dark:border-white/[0.10] dark:text-white dark:placeholder:text-gray-600"
         />
         <button
           onClick={send}

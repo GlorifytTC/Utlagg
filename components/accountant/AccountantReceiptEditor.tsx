@@ -106,7 +106,7 @@ export function AccountantReceiptEditor({
     await save({ reviewed: next });
   }
 
-  if (status === "loading") return <p className="text-sm text-ink/50">Laddar kvitto…</p>;
+  if (status === "loading") return <p className="text-sm text-gray-500 dark:text-gray-400">Laddar kvitto…</p>;
   if (status === "error" || !detail) return <p className="text-sm text-red-600">Kunde inte ladda kvittot.</p>;
 
   return (
@@ -119,7 +119,7 @@ export function AccountantReceiptEditor({
           <select
             value={vatRate}
             onChange={(e) => setVatRate(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm dark:border-white/[0.12]"
+            className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
           >
             <option value="">—</option>
             <option value="6">6</option>
@@ -137,7 +137,7 @@ export function AccountantReceiptEditor({
           {reviewed ? "Markera som ogranskad" : "Markera som granskad"}
         </Button>
         {reviewed && <span className="text-xs text-green-700 dark:text-green-300">✓ Granskad</span>}
-        {msg && <span className="text-xs text-ink/60">{msg}</span>}
+        {msg && <span className="text-xs text-gray-500 dark:text-gray-400">{msg}</span>}
       </div>
     </div>
   );
@@ -146,7 +146,7 @@ export function AccountantReceiptEditor({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="mb-1 block text-xs text-ink/50">{label}</label>
+      <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">{label}</label>
       {children}
     </div>
   );

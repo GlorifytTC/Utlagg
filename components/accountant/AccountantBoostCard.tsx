@@ -133,7 +133,7 @@ export function AccountantBoostCard() {
           whileTap={{ scale: 0.98 }}
           onClick={buy}
           disabled={busy}
-          className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-nordic-900 disabled:opacity-60"
+          className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-nordic-900 disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
         >
           {busy ? "Öppnar…" : "Boosta min profil"}
         </motion.button>
