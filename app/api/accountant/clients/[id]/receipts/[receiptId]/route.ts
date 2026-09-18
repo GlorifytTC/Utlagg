@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { receipts } from "@/db/schema";
 import { requireAccountant, requireCompanyAccess } from "@/lib/accountant";
 import { logAuditEvent, clientIp } from "@/lib/audit";
+import { resolveReceiptImageSrc } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
@@ -54,7 +55,11 @@ export async function GET(
     return NextResponse.json({ error: "Hittades inte" }, { status: 404 });
   }
 
-  return NextResponse.json({ receipt });
+  // Resolve image server-side: the accountant is authorized but not the image owner,
+  // so we sign using the receipt owner's userId.
+  const imageSrc = await resolveReceiptImageSrc(receipt.imageUrl, receipt.userId);
+
+  return NextResponse.json({ receipt, imageSrc });
 }
 
 /**

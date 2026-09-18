@@ -32,6 +32,7 @@ export function AccountantReceiptEditor({
   onSaved?: () => void;
 }) {
   const [detail, setDetail] = useState<ReceiptDetail | null>(null);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -50,8 +51,9 @@ export function AccountantReceiptEditor({
     try {
       const res = await fetch(`/api/accountant/clients/${companyId}/receipts/${receiptId}`);
       if (!res.ok) throw new Error();
-      const { receipt } = await res.json();
+      const { receipt, imageSrc: src } = await res.json();
       setDetail(receipt);
+      setImageSrc(src ?? null);
       setVendorName(receipt.vendorName ?? "");
       setCategory(receipt.category ?? "");
       setVatAmount(receipt.vatAmount ?? "");
@@ -110,34 +112,53 @@ export function AccountantReceiptEditor({
   if (status === "error" || !detail) return <p className="text-sm text-red-600">Kunde inte ladda kvittot.</p>;
 
   return (
-    <div className="space-y-3">
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="Leverantör"><Input value={vendorName} onChange={(e) => setVendorName(e.target.value)} /></Field>
-        <Field label="Kategori"><Input value={category} onChange={(e) => setCategory(e.target.value)} /></Field>
-        <Field label="Moms (SEK)"><Input value={vatAmount} onChange={(e) => setVatAmount(e.target.value)} inputMode="decimal" /></Field>
-        <Field label="Momssats (%)">
-          <select
-            value={vatRate}
-            onChange={(e) => setVatRate(e.target.value)}
-            className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
-          >
-            <option value="">—</option>
-            <option value="6">6</option>
-            <option value="12">12</option>
-            <option value="25">25</option>
-          </select>
-        </Field>
-        <Field label="BAS-konto"><Input value={basCode} onChange={(e) => setBasCode(e.target.value)} /></Field>
-        <Field label="Notering"><Input value={note} onChange={(e) => setNote(e.target.value)} /></Field>
+    <div className="grid gap-6 md:grid-cols-[1fr_280px]">
+      <div className="space-y-3">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Leverantör"><Input value={vendorName} onChange={(e) => setVendorName(e.target.value)} /></Field>
+          <Field label="Kategori"><Input value={category} onChange={(e) => setCategory(e.target.value)} /></Field>
+          <Field label="Moms (SEK)"><Input value={vatAmount} onChange={(e) => setVatAmount(e.target.value)} inputMode="decimal" /></Field>
+          <Field label="Momssats (%)">
+            <select
+              value={vatRate}
+              onChange={(e) => setVatRate(e.target.value)}
+              className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+            >
+              <option value="">—</option>
+              <option value="6">6</option>
+              <option value="12">12</option>
+              <option value="25">25</option>
+            </select>
+          </Field>
+          <Field label="BAS-konto"><Input value={basCode} onChange={(e) => setBasCode(e.target.value)} /></Field>
+          <Field label="Notering"><Input value={note} onChange={(e) => setNote(e.target.value)} /></Field>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Button onClick={() => save()} disabled={saving}>{saving ? "Sparar…" : "Spara"}</Button>
+          <Button variant="outline" onClick={toggleReviewed} disabled={saving}>
+            {reviewed ? "Markera som ogranskad" : "Markera som granskad"}
+          </Button>
+          {reviewed && <span className="text-xs text-green-700 dark:text-green-300">✓ Granskad</span>}
+          {msg && <span className="text-xs text-gray-500 dark:text-gray-400">{msg}</span>}
+        </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Button onClick={() => save()} disabled={saving}>{saving ? "Sparar…" : "Spara"}</Button>
-        <Button variant="outline" onClick={toggleReviewed} disabled={saving}>
-          {reviewed ? "Markera som ogranskad" : "Markera som granskad"}
-        </Button>
-        {reviewed && <span className="text-xs text-green-700 dark:text-green-300">✓ Granskad</span>}
-        {msg && <span className="text-xs text-gray-500 dark:text-gray-400">{msg}</span>}
+      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-3 dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        {imageSrc ? (
+          <a href={imageSrc} target="_blank" rel="noreferrer">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={imageSrc}
+              alt={detail.vendorName ?? ""}
+              className="w-full rounded-lg object-contain"
+            />
+          </a>
+        ) : (
+          <div className="flex aspect-[3/4] items-center justify-center rounded-lg bg-gray-900/[0.03] p-6 text-center text-sm text-gray-400 dark:bg-white/[0.03]">
+            Ingen bild
+          </div>
+        )}
       </div>
     </div>
   );
