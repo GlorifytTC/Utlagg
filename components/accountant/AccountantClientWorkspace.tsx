@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { AccountantReceipts } from "@/components/accountant/AccountantReceipts";
 import { AccountantExports } from "@/components/accountant/AccountantExports";
-import { AccountantChat } from "@/components/AccountantChat";
 
 interface Detail {
   companyId: string;
@@ -14,15 +15,9 @@ interface Detail {
   clientId: string | null;
 }
 
-type Tab = "overview" | "receipts" | "exports" | "chat";
+type Tab = "overview" | "receipts" | "exports";
 
-export function AccountantClientWorkspace({
-  companyId,
-  currentUserId,
-}: {
-  companyId: string;
-  currentUserId: string;
-}) {
+export function AccountantClientWorkspace({ companyId }: { companyId: string }) {
   const [detail, setDetail] = useState<Detail | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "notfound" | "error">("loading");
   const [tab, setTab] = useState<Tab>("overview");
@@ -76,12 +71,18 @@ export function AccountantClientWorkspace({
     { key: "overview", label: "Översikt" },
     { key: "receipts", label: "Kvitton" },
     { key: "exports", label: "Export" },
-    { key: "chat", label: "Chatt" },
   ];
+
+  const tabCls = (active: boolean) =>
+    cn(
+      "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+      active
+        ? "bg-nordic-600 text-white"
+        : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white",
+    );
 
   return (
     <div className="space-y-6">
-      {/* Client header */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -95,22 +96,23 @@ export function AccountantClientWorkspace({
         </p>
       </motion.div>
 
-      {/* Pill tab bar */}
-      <div className="inline-flex gap-1 rounded-full border border-gray-900/[0.07] bg-white/60 p-1 backdrop-blur-sm dark:border-white/[0.08] dark:bg-white/[0.04]">
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-              tab === t.key
-                ? "bg-nordic-600 text-white"
-                : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white",
-            )}
+      <div className="flex items-center gap-2">
+        <div className="inline-flex gap-1 rounded-full border border-gray-900/[0.07] bg-white/60 p-1 backdrop-blur-sm dark:border-white/[0.08] dark:bg-white/[0.04]">
+          {tabs.map((t) => (
+            <button key={t.key} onClick={() => setTab(t.key)} className={tabCls(tab === t.key)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+        {detail.clientId && (
+          <Link
+            href={`/accountant/clients/${companyId}/chat`}
+            className="inline-flex items-center gap-1.5 rounded-full border border-gray-900/[0.07] bg-white/60 px-4 py-1.5 text-sm font-medium text-gray-500 backdrop-blur-sm transition-colors hover:text-gray-800 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-gray-400 dark:hover:text-white"
           >
-            {t.label}
-          </button>
-        ))}
+            <MessageSquare className="h-3.5 w-3.5" />
+            Chatt
+          </Link>
+        )}
       </div>
 
       <AnimatePresence mode="wait">
@@ -153,21 +155,6 @@ export function AccountantClientWorkspace({
             transition={{ duration: 0.15 }}
           >
             <AccountantExports companyId={companyId} />
-          </motion.div>
-        )}
-        {tab === "chat" && (
-          <motion.div
-            key="chat"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15 }}
-          >
-            {detail.clientId ? (
-              <AccountantChat clientId={detail.clientId} currentUserId={currentUserId} />
-            ) : (
-              <p className="text-sm text-gray-500">Chatt är inte tillgänglig.</p>
-            )}
           </motion.div>
         )}
       </AnimatePresence>

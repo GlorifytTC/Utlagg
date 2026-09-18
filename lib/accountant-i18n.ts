@@ -11,6 +11,8 @@ const strings = {
     navOverview: "Översikt",
     navMarketplace: "Marknadsplatsen",
     navRequests: "Förfrågningar",
+    sidebarSubtitle: "Revisorspanel",
+    chatTitle: "Chatt",
 
     overviewTitle: "Översikt",
     overviewSubtitle: "Ditt arbete idag och nya möjligheter.",
@@ -70,6 +72,8 @@ const strings = {
     navOverview: "Overview",
     navMarketplace: "Marketplace",
     navRequests: "Requests",
+    sidebarSubtitle: "Accountant",
+    chatTitle: "Chat",
 
     overviewTitle: "Overview",
     overviewSubtitle: "Your work today and new opportunities.",
