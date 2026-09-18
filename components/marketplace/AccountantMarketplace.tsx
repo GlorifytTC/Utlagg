@@ -172,7 +172,7 @@ export function AccountantMarketplace({
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Sök namn eller e-post…"
+              placeholder="Sök namn, e-post eller tagg…"
               aria-label="Sök revisor"
               className="w-full rounded-xl border border-gray-900/[0.12] bg-white py-2.5 pl-10 pr-9 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
             />

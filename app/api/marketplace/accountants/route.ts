@@ -67,7 +67,11 @@ export async function GET(req: NextRequest) {
   const conds = [eq(users.isAccountant, true)];
   if (q) {
     const like = `%${q}%`;
-    conds.push(or(ilike(users.name, like), ilike(users.email, like))!);
+    conds.push(or(
+      ilike(users.name, like),
+      ilike(users.email, like),
+      sql`${users.accountantSpecializations}::text ilike ${like}`,
+    )!);
   }
   if (city) conds.push(ilike(users.accountantCity, `%${city}%`));
   if (specialization) {
