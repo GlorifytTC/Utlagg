@@ -197,6 +197,12 @@ export async function GET(req: NextRequest) {
       }
     }
     const stats = reviewStatsMap.get(a.id);
+    // Average rating: 0-2 pts (>= 4.0 = 1pt, >= 4.5 = 2pt).
+    if (stats?.avgRating) {
+      relevance += stats.avgRating >= 4.5 ? 2 : stats.avgRating >= 4.0 ? 1 : 0;
+    }
+    // Review volume: +1 pt for 3+ reviews.
+    if ((stats?.reviewCount ?? 0) >= 3) relevance += 1;
     return {
       ...a,
       activeClientCount: clientCount,
@@ -212,6 +218,9 @@ export async function GET(req: NextRequest) {
     const ab = boostedIds.has(a.id) ? 1 : 0;
     const bb = boostedIds.has(b.id) ? 1 : 0;
     if (bb !== ab) return bb - ab;
+    // Secondary tie-breaks on raw signals before stable id sort.
+    if (b.activeClientCount !== a.activeClientCount) return b.activeClientCount - a.activeClientCount;
+    if (b.reviewCount !== a.reviewCount) return b.reviewCount - a.reviewCount;
     return a.id.localeCompare(b.id);
   });
 
