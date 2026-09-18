@@ -884,6 +884,11 @@ export interface Translations {
   terms19P1: string;
   terms19P2: string;
   termsFooter: string;
+
+  // Live notifications (toast). {name} is replaced with the actor's name.
+  notifConnectionRequest: string;
+  notifAccepted: string;
+  notifMessage: string;
 }
 
 export const strings: Record<Lang, Translations> = {
@@ -1825,6 +1830,9 @@ export const strings: Record<Lang, Translations> = {
     terms19P1: "Om en bestämmelse i dessa villkor befinns ogiltig eller icke-verkställbar ska övriga bestämmelser förbli i full kraft. Den ogiltiga bestämmelsen ersätts med en giltig bestämmelse som så nära som möjligt återspeglar dess avsedda innebörd.",
     terms19P2: "Dessa villkor utgör det fullständiga avtalet mellan parterna avseende tjänstens användning och ersätter alla tidigare överenskommelser i samma ämne.",
     termsFooter: "Kontakt: legal@kvittino.se · GlorifyTC · Org.nr [xxxxxx-xxxx]",
+    notifConnectionRequest: "{name} vill ansluta till dig",
+    notifAccepted: "{name} accepterade din förfrågan",
+    notifMessage: "Nytt meddelande från {name}",
   },
   en: {
     rcScanningLocally: "Reading receipt locally…",
@@ -2760,5 +2768,8 @@ export const strings: Record<Lang, Translations> = {
     terms19P1: "If a provision of these terms is found to be invalid or unenforceable the remaining provisions shall remain in full force. The invalid provision shall be replaced by a valid provision that as closely as possible reflects its intended meaning.",
     terms19P2: "These terms constitute the entire agreement between the parties regarding the use of the service and supersede all prior agreements on the same subject matter.",
     termsFooter: "Contact: legal@kvittino.se · GlorifyTC · Reg. no. [xxxxxx-xxxx]",
+    notifConnectionRequest: "{name} wants to connect with you",
+    notifAccepted: "{name} accepted your request",
+    notifMessage: "New message from {name}",
   },
 };
