@@ -463,7 +463,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                     </span>
                     <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
                       <div
-                        className="h-full rounded-full bg-amber-400 transition-[width] duration-300"
+                        className="h-1.5 rounded-full bg-amber-400 transition-[width] duration-300"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
