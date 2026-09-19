@@ -67,6 +67,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [ratingFilter, setRatingFilter] = useState<number | null>(null);
 
   // Inline edit state (accountant's own profile)
   const [editing, setEditing] = useState(false);
@@ -441,13 +442,58 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
           </div>
         )}
 
+        {reviews.length > 0 && (
+          <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+            <div className="space-y-0.5">
+              {[5, 4, 3, 2, 1].map((star) => {
+                const count = reviews.filter((r) => r.rating === star).length;
+                const pct = reviews.length ? (count / reviews.length) * 100 : 0;
+                const active = ratingFilter === star;
+                return (
+                  <button
+                    key={star}
+                    onClick={() => setRatingFilter(active ? null : star)}
+                    aria-pressed={active}
+                    aria-label={`Filtrera på ${star} stjärnor (${count} recensioner)`}
+                    className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-white/5 ${active ? "bg-amber-50 ring-1 ring-inset ring-amber-300/60 dark:bg-amber-900/20 dark:ring-amber-500/30" : ""}`}
+                  >
+                    <span className="w-[4.5rem] shrink-0 select-none text-right text-xs">
+                      <span className="text-amber-400">{"★".repeat(star)}</span>
+                      <span className="text-gray-300 dark:text-gray-600">{"☆".repeat(5 - star)}</span>
+                    </span>
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-amber-400 transition-[width] duration-300"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="w-6 shrink-0 text-right text-xs tabular-nums text-gray-400">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {ratingFilter !== null && (
+              <button
+                onClick={() => setRatingFilter(null)}
+                className="mt-3 text-xs text-nordic-600 hover:text-nordic-700 dark:text-nordic-400 dark:hover:text-nordic-300"
+              >
+                Rensa filter
+              </button>
+            )}
+          </div>
+        )}
+
         {reviews.length === 0 ? (
           <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400">
             Inga recensioner ännu.
           </div>
+        ) : reviews.filter((r) => ratingFilter === null || r.rating === ratingFilter).length === 0 ? (
+          <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400">
+            Inga {ratingFilter}-stjärniga recensioner.
+          </div>
         ) : (
           <div className="space-y-3">
-            {reviews.map((r) => (
+            {reviews.filter((r) => ratingFilter === null || r.rating === ratingFilter).map((r) => (
               <motion.div
                 key={r.id}
                 initial={{ opacity: 0, y: 8 }}
