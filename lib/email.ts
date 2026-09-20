@@ -932,6 +932,25 @@ En redovisningskonsult har bjudit in dig att ge dem åtkomst till ditt företags
   );
 }
 
+export function sendFirmInviteEmail(to: string, token: string) {
+  const url = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/firm/accept?token=${encodeURIComponent(token)}`;
+  const body = `# Du har bjudits in till en revisorsbyrå på ${APP_NAME}
+
+Du har blivit inbjuden att gå med i ett byråkonto på ${APP_NAME}. Logga in med den här e-postadressen och acceptera för att gå med i teamet. Länken gäller i 7 dagar.
+
+[button] ${url} | Gå med i byrån
+
+— ${APP_NAME}`;
+  const html = buildEmailHtml(body, {
+    user_name: "",
+    app_name: APP_NAME,
+    action_url: url,
+    support_email: SUPPORT_EMAIL,
+    expiration_minutes: "10080",
+  });
+  return send(to, `Inbjudan att gå med i en byrå på ${APP_NAME}`, html);
+}
+
 export function sendEnterpriseInquiry(
   ownerEmail: string,
   fromEmail: string,

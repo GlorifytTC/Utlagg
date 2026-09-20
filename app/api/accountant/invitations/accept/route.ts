@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { accountantInvites, accountantClients } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { getUserCompany } from "@/lib/company";
+import { getUserFirm } from "@/lib/accountant";
 import { logAudit, clientIp } from "@/lib/audit";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
@@ -102,8 +103,10 @@ export async function POST(req: NextRequest) {
         .where(eq(accountantClients.id, existingRel.id));
     }
   } else {
+    const firm = await getUserFirm(invite.accountantId);
     await db.insert(accountantClients).values({
       accountantId: invite.accountantId,
+      firmId: firm?.firmId ?? null,
       companyId,
       status: "active",
       activatedAt: new Date(),

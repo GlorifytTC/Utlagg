@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { companies, accountantConnectionRequests, accountantClients } from "@/db/schema";
-import { requireAccountant } from "@/lib/accountant";
+import { requireAccountant, getUserFirm } from "@/lib/accountant";
 import { logAuditEvent, clientIp } from "@/lib/audit";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
@@ -77,8 +77,10 @@ export async function POST(
         .where(eq(accountantClients.id, existingRel.id));
     }
   } else {
+    const firm = await getUserFirm(acct.userId);
     await db.insert(accountantClients).values({
       accountantId: acct.userId,
+      firmId: firm?.firmId ?? null,
       companyId: reqRow.companyId,
       status: "active",
       activatedAt: new Date(),

@@ -3,39 +3,42 @@ import { getServerSession } from "next-auth";
 import { and, eq } from "drizzle-orm";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
-import { users, companies, companyMembers, accountantClients } from "@/db/schema";
+import {
+  users,
+  companies,
+  companyMembers,
+  accountantClients,
+  firmMembers,
+  workerAssignments,
+} from "@/db/schema";
 
 /**
- * Accountant authorization layer (COMPANY-level).
+ * Accountant authorization layer — FIRM-scoped, role-aware, with per-worker
+ * customer assignments.
  *
- * The accountant connects to a BUSINESS (company), not an individual. Access
- * to a company's receipts is resolved through the company's CURRENT
- * membership — NOT through receipts.companyId, which is a nullable snapshot
- * set at creation time and would silently miss receipts a member logged
- * before joining the company. receipts.userId is notNull and immutable, so
- * "receipts owned by any current member of the company" is the complete,
- * reliable scope.
+ * Firm roles: owner > admin > member (worker).
+ *   - owner  : full firm control; the ONLY role that may remove a
+ *              firm<->customer relationship.
+ *   - admin  : sees ALL firm customers; manages people (not the owner) and
+ *              worker assignments; adds customers. Cannot remove a
+ *              firm<->customer relationship.
+ *   - member : a WORKER. Sees ONLY customers explicitly assigned to them via
+ *              worker_assignments. No management.
  *
- * SECURITY MODEL: every accountant API must, server-side:
- *   1. authenticate the caller
- *   2. confirm they are an accountant (users.isAccountant, read fresh)
- *   3. confirm the target company exists
- *   4. confirm an ACTIVE accountant<->company relationship exists
- *   5. resolve the member userIds and scope every query to them
+ * ACCESS RULE (requireCompanyAccess), enforced server-side on every request:
+ *   1. authenticate + confirm isAccountant (fresh from DB)
+ *   2. resolve the caller's firm + role (firmMembers)
+ *   3. confirm the FIRM has an ACTIVE relationship with the customer company
+ *   4. owner/admin -> allowed. member/worker -> allowed ONLY if a
+ *      worker_assignments row connects them to that company.
+ *   5. resolve the company's CURRENT member userIds -> the query scope.
  *
- * The frontend is never trusted. A companyId in a URL means nothing until
- * requireCompanyAccess() has confirmed an active relationship. Callers MUST
- * treat a null return as 403/404 and never fall through to a query.
+ * The browser is never trusted: a companyId means nothing until this returns
+ * non-null. Callers MUST treat null as 403/404 and never fall through.
  */
 
 export type AccountantSession = { userId: string; email: string | null };
 
-/**
- * Returns the session if the caller is a signed-in accountant, else null.
- * "Accountant" is users.isAccountant — deliberately SEPARATE from
- * subscription tier and from the platform/company role, and read fresh from
- * the DB on every call (never cached in the JWT).
- */
 export async function requireAccountant(): Promise<AccountantSession | null> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return null;
@@ -48,23 +51,74 @@ export async function requireAccountant(): Promise<AccountantSession | null> {
   return { userId: session.user.id, email: u.email };
 }
 
+export type FirmRole = "owner" | "admin" | "member";
+export type FirmMembership = { firmId: string; role: FirmRole };
+
+/**
+ * Resolve a user's firm membership from the DB at request time (never cached).
+ * A user belongs to at most one firm (app rule + backfill); if several rows
+ * somehow exist, the earliest is chosen deterministically. Null if in no firm.
+ */
+export async function getUserFirm(userId: string): Promise<FirmMembership | null> {
+  if (!userId) return null;
+  const [m] = await db
+    .select({ firmId: firmMembers.firmId, role: firmMembers.role })
+    .from(firmMembers)
+    .where(eq(firmMembers.userId, userId))
+    .orderBy(firmMembers.createdAt)
+    .limit(1);
+  return m ? { firmId: m.firmId, role: m.role as FirmRole } : null;
+}
+
+const ROLE_RANK: Record<FirmRole, number> = { member: 0, admin: 1, owner: 2 };
+
+/** True if `role` is at least `min` in the firm hierarchy. */
+export function firmRoleAtLeast(role: FirmRole, min: FirmRole): boolean {
+  return ROLE_RANK[role] >= ROLE_RANK[min];
+}
+
+/** Owner or admin — the roles that manage people, assignments, and customers. */
+export function canManageFirm(role: FirmRole): boolean {
+  return firmRoleAtLeast(role, "admin");
+}
+
+/** Requires the caller to be an accountant AND a firm member. */
+export async function requireFirmMembership(): Promise<
+  { userId: string; email: string | null; firmId: string; role: FirmRole } | null
+> {
+  const acct = await requireAccountant();
+  if (!acct) return null;
+  const firm = await getUserFirm(acct.userId);
+  if (!firm) return null;
+  return { userId: acct.userId, email: acct.email, firmId: firm.firmId, role: firm.role };
+}
+
+/** Requires firm membership with at least role `min`. */
+export async function requireFirmRole(
+  min: FirmRole,
+): Promise<{ userId: string; email: string | null; firmId: string; role: FirmRole } | null> {
+  const m = await requireFirmMembership();
+  if (!m) return null;
+  return firmRoleAtLeast(m.role, min) ? m : null;
+}
+
 export type CompanyAccess = {
   companyId: string;
   companyName: string;
+  firmId: string;
+  role: FirmRole;
   /** userIds of the company's CURRENT members — the scope for every query. */
   memberIds: string[];
 };
 
 /**
- * Confirms the accountant has an ACTIVE relationship with companyId, and
- * returns the company plus its current member userIds. Returns null on any
- * failure (not an accountant's company, relationship pending/revoked, company
- * gone). Callers MUST treat null as 403/404 and never fall through to a query.
- *
- * The returned memberIds are what every downstream receipt query filters on
- * (WHERE receipts.userId IN memberIds), so a revoked or unrelated company can
- * never leak data. A relationship whose status is anything other than "active"
- * yields no access — revocation therefore takes effect immediately.
+ * The access gate. `accountantId` is the authenticated caller's user id (kept
+ * for signature compatibility). Returns access ONLY when:
+ *   - caller is in a firm, AND
+ *   - the firm has an ACTIVE relationship with companyId, AND
+ *   - caller is owner/admin (see all) OR a worker assigned to this company.
+ * Otherwise null (403/404). Revocation, wrong firm, or an unassigned worker all
+ * yield null immediately.
  */
 export async function requireCompanyAccess(
   accountantId: string,
@@ -72,13 +126,17 @@ export async function requireCompanyAccess(
 ): Promise<CompanyAccess | null> {
   if (!accountantId || !companyId) return null;
 
+  const firm = await getUserFirm(accountantId);
+  if (!firm) return null;
+
+  // The firm must actively work with this customer.
   const [rel] = await db
     .select({ companyName: companies.name })
     .from(accountantClients)
     .innerJoin(companies, eq(companies.id, accountantClients.companyId))
     .where(
       and(
-        eq(accountantClients.accountantId, accountantId),
+        eq(accountantClients.firmId, firm.firmId),
         eq(accountantClients.companyId, companyId),
         eq(accountantClients.status, "active"),
       ),
@@ -86,11 +144,27 @@ export async function requireCompanyAccess(
     .limit(1);
   if (!rel) return null;
 
+  // Workers (members) need an explicit assignment; owner/admin see all.
+  if (firm.role === "member") {
+    const [assigned] = await db
+      .select({ id: workerAssignments.id })
+      .from(workerAssignments)
+      .where(
+        and(
+          eq(workerAssignments.firmId, firm.firmId),
+          eq(workerAssignments.workerId, accountantId),
+          eq(workerAssignments.companyId, companyId),
+        ),
+      )
+      .limit(1);
+    if (!assigned) return null;
+  }
+
   const members = await db
     .select({ userId: companyMembers.userId })
     .from(companyMembers)
     .where(eq(companyMembers.companyId, companyId));
   const memberIds = members.map((m: { userId: string }) => m.userId);
 
-  return { companyId, companyName: rel.companyName, memberIds };
+  return { companyId, companyName: rel.companyName, firmId: firm.firmId, role: firm.role, memberIds };
 }

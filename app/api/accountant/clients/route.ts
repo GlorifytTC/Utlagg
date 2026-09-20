@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { and, count, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
-import { accountantClients, companies, companyMembers, receipts } from "@/db/schema";
-import { requireAccountant } from "@/lib/accountant";
+import { accountantClients, companies, companyMembers, receipts, workerAssignments } from "@/db/schema";
+import { requireAccountant, getUserFirm } from "@/lib/accountant";
 
 export const runtime = "nodejs";
 
@@ -23,13 +23,32 @@ export async function GET(req: NextRequest) {
   const acct = await requireAccountant();
   if (!acct) return NextResponse.json({ error: "Saknar behörighet" }, { status: 403 });
 
+  const firm = await getUserFirm(acct.userId);
+  if (!firm) return NextResponse.json({ clients: [], total: 0, page: 1, pageSize: 25 });
+
   const sp = req.nextUrl.searchParams;
   const page = Math.max(1, Number(sp.get("page")) || 1);
   const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, Number(sp.get("pageSize")) || 25));
 
+  // Owner/admin see all the firm's active customers; a worker sees only the
+  // customers explicitly assigned to them.
+  let companyFilter;
+  if (firm.role === "member") {
+    const assigned = await db
+      .select({ companyId: workerAssignments.companyId })
+      .from(workerAssignments)
+      .where(and(eq(workerAssignments.firmId, firm.firmId), eq(workerAssignments.workerId, acct.userId)));
+    const ids = assigned.map((a: { companyId: string }) => a.companyId);
+    if (ids.length === 0) {
+      return NextResponse.json({ clients: [], total: 0, page, pageSize });
+    }
+    companyFilter = inArray(accountantClients.companyId, ids);
+  }
+
   const where = and(
-    eq(accountantClients.accountantId, acct.userId),
+    eq(accountantClients.firmId, firm.firmId),
     eq(accountantClients.status, "active"),
+    companyFilter,
   );
 
   const [rows, totals] = await Promise.all([

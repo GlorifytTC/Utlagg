@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { accountantConnectionRequests, accountantClients } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { getUserCompany, canManageCompany } from "@/lib/company";
+import { getUserFirm } from "@/lib/accountant";
 import { logAudit, clientIp } from "@/lib/audit";
 
 export const runtime = "nodejs";
@@ -62,8 +63,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         .where(eq(accountantClients.id, existingRel.id));
     }
   } else {
+    const firm = await getUserFirm(reqRow.accountantId);
     await db.insert(accountantClients).values({
       accountantId: reqRow.accountantId,
+      firmId: firm?.firmId ?? null,
       companyId: membership.companyId,
       status: "active",
       activatedAt: new Date(),

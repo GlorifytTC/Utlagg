@@ -429,6 +429,11 @@ export const accountantClients = pgTable(
     accountantId: uuid("accountant_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    // The FIRM that owns this customer relationship. Owner/admin of the firm see
+    // it; workers see it only via a worker_assignments row. Nullable only so
+    // existing rows validate before backfill; the migration sets it for every
+    // row and new rows always set it. accountantId stays as "who initiated".
+    firmId: uuid("firm_id").references(() => accountingFirms.id, { onDelete: "cascade" }),
     companyId: uuid("company_id")
       .notNull()
       .references(() => companies.id, { onDelete: "cascade" }),
@@ -444,6 +449,7 @@ export const accountantClients = pgTable(
     // The lookups the authorization layer runs on every request.
     acctIdx: index("accountant_clients_acct_idx").on(t.accountantId),
     companyIdx: index("accountant_clients_company_idx").on(t.companyId),
+    firmIdx: index("accountant_clients_firm_idx").on(t.firmId),
     // At most one relationship row per (accountant, company) pair.
     pairIdx: uniqueIndex("accountant_clients_pair_idx").on(t.accountantId, t.companyId),
   }),
@@ -596,6 +602,115 @@ export const accountantReviews = pgTable(
   }),
 );
 export type AccountantReview = typeof accountantReviews.$inferSelect;
+
+/* ------------------------------------------------------------------ */
+/* Accounting firms (revisorbyrå) — multi-user teams with roles and    */
+/* per-worker customer assignments.                                    */
+/*                                                                     */
+/* Roles: owner (main account) > admin > member (worker).             */
+/*  - owner: everything, incl. the ONLY role that can remove a         */
+/*    firm<->customer relationship.                                    */
+/*  - admin: see ALL firm customers, add/remove people (not owner),    */
+/*    connect customers to workers, add customers. Cannot remove a     */
+/*    firm<->customer relationship.                                    */
+/*  - member (worker): sees ONLY customers explicitly assigned to them */
+/*    (worker_assignments); works with that data. No management.       */
+/*                                                                     */
+/* Access model, enforced in lib/accountant.ts:                        */
+/*  owner/admin  -> any customer the FIRM is connected to.             */
+/*  worker       -> only customers assigned to them.                   */
+/* ------------------------------------------------------------------ */
+export const firmRole = pgEnum("firm_role", ["owner", "admin", "member"]);
+
+export const accountingFirms = pgTable(
+  "accounting_firms",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: varchar("name", { length: 255 }).notNull(),
+    logoUrl: text("logo_url"),
+    ownerId: uuid("owner_id").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({ ownerIdx: index("accounting_firms_owner_idx").on(t.ownerId) }),
+);
+export type AccountingFirm = typeof accountingFirms.$inferSelect;
+
+export const firmMembers = pgTable(
+  "firm_members",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    firmId: uuid("firm_id")
+      .notNull()
+      .references(() => accountingFirms.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: firmRole("role").notNull().default("member"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    firmIdx: index("firm_members_firm_idx").on(t.firmId),
+    userIdx: index("firm_members_user_idx").on(t.userId),
+    // One membership per (firm, user); one firm per user by app rule.
+    pairIdx: uniqueIndex("firm_members_pair_idx").on(t.firmId, t.userId),
+  }),
+);
+export type FirmMember = typeof firmMembers.$inferSelect;
+
+export const firmInvites = pgTable(
+  "firm_invites",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    firmId: uuid("firm_id")
+      .notNull()
+      .references(() => accountingFirms.id, { onDelete: "cascade" }),
+    email: varchar("email", { length: 320 }).notNull(),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull(),
+    role: firmRole("role").notNull().default("member"),
+    status: accountantRelStatus("status").notNull().default("pending"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    acceptedBy: uuid("accepted_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    firmIdx: index("firm_invites_firm_idx").on(t.firmId),
+    emailIdx: index("firm_invites_email_idx").on(t.email),
+    tokenIdx: index("firm_invites_token_idx").on(t.tokenHash),
+  }),
+);
+export type FirmInvite = typeof firmInvites.$inferSelect;
+
+// Worker <-> customer assignment. A worker (member) can access a firm customer
+// ONLY if a row here connects them. Owner/admin bypass this entirely. Scoped to
+// a firm so an assignment can't leak a customer outside the firm relationship.
+export const workerAssignments = pgTable(
+  "worker_assignments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    firmId: uuid("firm_id")
+      .notNull()
+      .references(() => accountingFirms.id, { onDelete: "cascade" }),
+    // The worker (a firm member) being granted access.
+    workerId: uuid("worker_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // The customer company.
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    assignedBy: uuid("assigned_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    workerIdx: index("worker_assignments_worker_idx").on(t.workerId),
+    companyIdx: index("worker_assignments_company_idx").on(t.companyId),
+    firmIdx: index("worker_assignments_firm_idx").on(t.firmId),
+    // At most one assignment per (worker, company).
+    pairIdx: uniqueIndex("worker_assignments_pair_idx").on(t.workerId, t.companyId),
+  }),
+);
+export type WorkerAssignment = typeof workerAssignments.$inferSelect;
 
 /* ------------------------------------------------------------------ */
 /* customer_invoices (kundfakturor — invoices the company sends out)    */
