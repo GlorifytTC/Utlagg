@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, Inbox, Store, LogOut, Moon, Sun, Menu, X, Users } from "lucide-react";
+import { Home, Inbox, Store, LogOut, Moon, Sun, Menu, X, Users, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
@@ -16,6 +16,7 @@ import { AccountantAvatarMenu } from "@/components/accountant/AccountantAvatarMe
 const nav = [
   { key: "navOverview" as const, href: "/accountant", icon: Home },
   { key: "navRequests" as const, href: "/accountant/requests", icon: Inbox },
+  { key: "navChats" as const, href: "/accountant/chats", icon: MessageSquare },
   { key: "navMarketplace" as const, href: "/accountant/marketplace", icon: Store },
   { key: "navTeam" as const, href: "/accountant/team", icon: Users },
 ];
@@ -156,7 +157,7 @@ export function AccountantChrome({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
       <main className="min-h-screen p-4 pb-24 sm:p-6 md:pb-8 lg:ml-64 lg:p-8 print:ml-0 print:min-h-0 print:p-0">{children}</main>
-      <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-3 border-t border-gray-900/[0.07] bg-white/75 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#0A0A0A] md:hidden print:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-5 border-t border-gray-900/[0.07] bg-white/75 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#0A0A0A] md:hidden print:hidden">
         {nav.map((item) => {
           const Icon = item.icon;
           const active = isActive(pathname, item.href);

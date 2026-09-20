@@ -66,6 +66,7 @@ const strings = {
     menuFirmLogo: "Byråns logotyp",
 
     // Team / firm management
+    navChats: "Chattar",
     navTeam: "Team",
     teamTitle: "Byråns team",
     teamSubtitle: "Hantera medarbetare och vilka kunder de arbetar med.",
@@ -168,6 +169,7 @@ const strings = {
     menuFirmLogo: "Firm logo",
 
     // Team / firm management
+    navChats: "Chats",
     navTeam: "Team",
     teamTitle: "Firm team",
     teamSubtitle: "Manage co-workers and which customers they work with.",
