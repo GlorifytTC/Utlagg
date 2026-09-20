@@ -113,6 +113,20 @@ const strings = {
     clientStatsRecent: "Senaste kvitton",
     clientStatsViewAll: "Visa alla kvitton",
 
+    // Client distribution pie charts
+    clientDistTitle: "Klientfördelning",
+    clientDistCount: "Antal kvitton",
+    clientDistAmount: "Belopp (SEK)",
+    clientDistEmpty: "Ingen aktivitet för vald period",
+    clientDistOthers: "Övriga",
+    distReceiptUnit: "kvitton",
+    distRangeDay: "Senaste 24h",
+    distRangeWeek: "Senaste 7 dagar",
+    distRangeMonth: "Denna månad",
+    distRange3m: "3 månader",
+    distRange6m: "6 månader",
+    distRangeYear: "12 månader",
+
     loading: "Laddar…",
     error: "Något gick fel.",
   },
@@ -215,6 +229,20 @@ const strings = {
     clientStatsTrend: "Monthly overview (12 mo)",
     clientStatsRecent: "Recent receipts",
     clientStatsViewAll: "View all receipts",
+
+    // Client distribution pie charts
+    clientDistTitle: "Client distribution",
+    clientDistCount: "Receipt count",
+    clientDistAmount: "Amount (SEK)",
+    clientDistEmpty: "No activity for the selected period",
+    clientDistOthers: "Others",
+    distReceiptUnit: "receipts",
+    distRangeDay: "Last 24h",
+    distRangeWeek: "Last 7 days",
+    distRangeMonth: "This month",
+    distRange3m: "3 months",
+    distRange6m: "6 months",
+    distRangeYear: "12 months",
 
     loading: "Loading…",
     error: "Something went wrong.",

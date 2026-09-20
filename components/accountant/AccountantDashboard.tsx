@@ -9,6 +9,7 @@ import { AccountantWorkQueue } from "@/components/accountant/AccountantWorkQueue
 import { AccountantClientsList } from "@/components/accountant/AccountantClientsList";
 import { AccountantActivity } from "@/components/accountant/AccountantActivity";
 import { AccountantBoostCard } from "@/components/accountant/AccountantBoostCard";
+import { AccountantClientDistribution } from "@/components/accountant/AccountantClientDistribution";
 
 /**
  * Work-focused accountant dashboard. Information architecture, in priority of
@@ -34,6 +35,7 @@ export function AccountantDashboard() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.firmStatsTitle}</h2>
         <AccountantFirmStats />
+        <AccountantClientDistribution />
       </section>
 
       {/* 2. Hero work queue */}
