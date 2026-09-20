@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, Inbox, Store, LogOut, Moon, Sun, Menu, X } from "lucide-react";
+import { Home, Inbox, Store, LogOut, Moon, Sun, Menu, X, Users } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
@@ -17,6 +17,7 @@ const nav = [
   { key: "navOverview" as const, href: "/accountant", icon: Home },
   { key: "navRequests" as const, href: "/accountant/requests", icon: Inbox },
   { key: "navMarketplace" as const, href: "/accountant/marketplace", icon: Store },
+  { key: "navTeam" as const, href: "/accountant/team", icon: Users },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -78,7 +79,23 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
           <LogOut className="h-[15px] w-[15px]" />
           <span>{t.navLogout}</span>
         </motion.button>
+        <div className="mt-1 border-t border-gray-900/[0.06] pt-2 dark:border-white/[0.06]">
+          <SidebarProfile />
+        </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Profile row at the bottom of the desktop sidebar: shows the accountant's
+ * picture (their logoUrl) and opens the same profile/logo/settings menu, so the
+ * profile picture is visible on desktop, not only in the mobile header.
+ */
+function SidebarProfile() {
+  return (
+    <div className="flex items-center gap-2 px-1.5">
+      <AccountantAvatarMenu />
     </div>
   );
 }
