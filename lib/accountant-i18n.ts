@@ -8,8 +8,8 @@ import type { Lang } from "@/lib/translations";
  */
 const strings = {
   sv: {
-    navOverview: "Översikt",
-    navMarketplace: "Marknadsplatsen",
+    navOverview: "Klienter",
+    navMarketplace: "Min profil",
     navRequests: "Förfrågningar",
     sidebarSubtitle: "Revisorspanel",
     chatTitle: "Chatt",
@@ -117,8 +117,8 @@ const strings = {
     error: "Något gick fel.",
   },
   en: {
-    navOverview: "Overview",
-    navMarketplace: "Marketplace",
+    navOverview: "Clients",
+    navMarketplace: "My Profile",
     navRequests: "Requests",
     sidebarSubtitle: "Accountant",
     chatTitle: "Chat",

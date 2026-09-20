@@ -22,6 +22,7 @@ export default function ApprovalsPage() {
   const [reqs, setReqs] = useState<Req[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [allowed, setAllowed] = useState<boolean | null>(null);
+  const [commenting, setCommenting] = useState<{id: string; decision: "approved" | "rejected"; comment: string} | null>(null);
 
   useEffect(() => {
     fetch("/api/me")
@@ -36,8 +37,7 @@ export default function ApprovalsPage() {
   }, []);
   useEffect(() => { if (allowed) load(); }, [load, allowed]);
 
-  async function decide(id: string, decision: "approved" | "rejected") {
-    const comment = window.prompt(decision === "approved" ? t.promptComment : t.promptReason) ?? "";
+  async function decide(id: string, decision: "approved" | "rejected", comment: string) {
     setBusy(id);
     const res = await fetch(`/api/approvals/${id}/decide`, {
       method: "POST",
@@ -89,10 +89,32 @@ export default function ApprovalsPage() {
                     {r.requesterComment && <p className="text-sm text-gray-500">{r.requesterComment}</p>}
                     <p className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString("sv-SE")}</p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button disabled={busy === r.id} onClick={() => decide(r.id, "approved")}>{t.btnApprove}</Button>
-                    <Button variant="destructive" disabled={busy === r.id} onClick={() => decide(r.id, "rejected")}>{t.btnReject}</Button>
-                  </div>
+                  {commenting?.id === r.id ? (
+                    <div className="flex flex-col gap-2 w-full">
+                      <input
+                        autoFocus
+                        className="w-full rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm dark:border-white/10 dark:bg-white/5"
+                        placeholder={commenting.decision === "approved" ? t.promptComment : t.promptReason}
+                        value={commenting.comment}
+                        onChange={(e) => setCommenting((s) => s && { ...s, comment: e.target.value })}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") { decide(r.id, commenting.decision, commenting.comment); setCommenting(null); }
+                          if (e.key === "Escape") setCommenting(null);
+                        }}
+                      />
+                      <div className="flex gap-2">
+                        <Button disabled={busy === r.id} onClick={() => { decide(r.id, commenting.decision, commenting.comment); setCommenting(null); }}>
+                          {commenting.decision === "approved" ? t.btnApprove : t.btnReject}
+                        </Button>
+                        <Button variant="outline" onClick={() => setCommenting(null)}>{t.btnCancel}</Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Button disabled={busy === r.id} onClick={() => setCommenting({id: r.id, decision: "approved", comment: ""})}>{t.btnApprove}</Button>
+                      <Button variant="destructive" disabled={busy === r.id} onClick={() => setCommenting({id: r.id, decision: "rejected", comment: ""})}>{t.btnReject}</Button>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

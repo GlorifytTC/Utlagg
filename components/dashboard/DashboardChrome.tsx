@@ -17,22 +17,43 @@ import { hasFeature, type Feature } from "@/lib/features";
 import type { Tier } from "@/lib/plans";
 import { Logo, LogoMark } from "@/components/brand/Logo";
 
-const nav = [
-  { key: "navOverview", href: "/dashboard", icon: Home },
-  { key: "navReceipts", href: "/dashboard/receipts", icon: Receipt },
-  { key: "navMileage", href: "/dashboard/mileage", icon: Car, feature: "mileage" as Feature },
-  { key: "navTransport", href: "/dashboard/transport", icon: TrainFront },
-  { key: "navApprovals", href: "/dashboard/approvals", icon: CheckSquare, feature: "approvals" as Feature },
-  { key: "navExport", href: "/dashboard/export", icon: Download },
-  { key: "navIntegrations", href: "/dashboard/integrations", icon: Plug, feature: "fortnox" as Feature },
-  { key: "navSubscription", href: "/dashboard/subscription", icon: CreditCard },
-  { key: "navStats", href: "/dashboard/stats", icon: BarChart3 },
-  { key: "navInvoices", href: "/dashboard/invoices", icon: FileText, feature: "invoicing" as Feature },
-  { key: "navMarketplace", href: "/dashboard/marketplace", icon: Store },
-  { key: "navCompany", href: "/dashboard/company", icon: Building2 },
-  { key: "navSettings", href: "/dashboard/settings", icon: Settings },
-  { key: "navProfile", href: "/dashboard/profile", icon: User },
+const navGroups = [
+  {
+    labelSv: "Utgifter",
+    labelEn: "Expenses",
+    items: [
+      { key: "navOverview", href: "/dashboard", icon: Home },
+      { key: "navReceipts", href: "/dashboard/receipts", icon: Receipt },
+      { key: "navMileage", href: "/dashboard/mileage", icon: Car, feature: "mileage" as Feature },
+      { key: "navTransport", href: "/dashboard/transport", icon: TrainFront },
+    ],
+  },
+  {
+    labelSv: "Arbetsyta",
+    labelEn: "Workspace",
+    items: [
+      { key: "navApprovals", href: "/dashboard/approvals", icon: CheckSquare, feature: "approvals" as Feature },
+      { key: "navExport", href: "/dashboard/export", icon: Download },
+      { key: "navIntegrations", href: "/dashboard/integrations", icon: Plug, feature: "fortnox" as Feature },
+      { key: "navStats", href: "/dashboard/stats", icon: BarChart3 },
+      { key: "navInvoices", href: "/dashboard/invoices", icon: FileText, feature: "invoicing" as Feature },
+    ],
+  },
+  {
+    labelSv: "Konto",
+    labelEn: "Account",
+    items: [
+      { key: "navMarketplace", href: "/dashboard/marketplace", icon: Store },
+      { key: "navCompany", href: "/dashboard/company", icon: Building2 },
+      { key: "navSubscription", href: "/dashboard/subscription", icon: CreditCard },
+      { key: "navSettings", href: "/dashboard/settings", icon: Settings },
+      { key: "navProfile", href: "/dashboard/profile", icon: User },
+    ],
+  },
 ];
+
+// Keep this flat array for the mobile bottom nav — it reads by href
+const nav = navGroups.flatMap((g) => g.items);
 
 const bottomNav = nav.filter((n) => ["/dashboard", "/dashboard/receipts", "/dashboard/stats", "/dashboard/subscription", "/dashboard/profile"].includes(n.href));
 
@@ -55,32 +76,38 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
         </Link>
         <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-400">{t.sidebarSubtitle}</p>
       </div>
-      <nav className="flex-1 min-h-0 overflow-y-auto px-3 py-4">
-        <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-400">{t.navMenu}</p>
-        <ul className="space-y-px">
-          {nav.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(pathname, item.href);
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  onClick={onNavigate}
-                  className={cn(
-                    "group flex items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm transition-colors duration-150",
-                    active
-                      ? "bg-nordic-600/10 text-nordic-600 font-medium dark:bg-nordic-600/[0.16] dark:text-nordic-600"
-                      : "text-gray-500 hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white",
-                  )}
-                >
-                  <Icon className={cn("h-[15px] w-[15px] shrink-0 transition-opacity", active ? "opacity-90" : "opacity-40 group-hover:opacity-60")} strokeWidth={1.75} />
-                  <span className="flex-1">{t[item.key as keyof Translations]}</span>
-                  {tier && "feature" in item && !hasFeature(tier, (item as { feature: Feature }).feature) && <Lock className="h-3.5 w-3.5 text-gray-400" />}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+      <nav className="flex-1 min-h-0 overflow-y-auto px-3 py-4 space-y-4">
+        {navGroups.map((group) => (
+          <div key={group.labelEn}>
+            <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-400">
+              {lang === "sv" ? group.labelSv : group.labelEn}
+            </p>
+            <ul className="space-y-px">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(pathname, item.href);
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      onClick={onNavigate}
+                      className={cn(
+                        "group flex items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm transition-colors duration-150",
+                        active
+                          ? "bg-nordic-600/10 text-nordic-600 font-medium dark:bg-nordic-600/[0.16] dark:text-nordic-600"
+                          : "text-gray-500 hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white",
+                      )}
+                    >
+                      <Icon className={cn("h-[15px] w-[15px] shrink-0 transition-opacity", active ? "opacity-90" : "opacity-40 group-hover:opacity-60")} strokeWidth={1.75} />
+                      <span className="flex-1">{t[item.key as keyof Translations]}</span>
+                      {tier && "feature" in item && !hasFeature(tier, (item as { feature: Feature }).feature) && <Lock className="h-3.5 w-3.5 text-gray-400" />}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
       </nav>
       <div className="space-y-px border-t border-gray-900/[0.06] p-3 dark:border-white/[0.06]">
         <motion.button whileTap={{ scale: 0.98 }} onClick={() => { toggleLanguage(); router.refresh(); }} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white">

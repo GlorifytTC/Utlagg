@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface Req { id: string; amount: string; status: string; approverEmail?: string; approverComment: string | null; createdAt: string; }
@@ -23,6 +24,9 @@ export default function ApprovalHistoryPage() {
 
   return (
     <div className="space-y-6">
+      <Link href="/dashboard/approvals" className="mb-2 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+        ← {t.navApprovals}
+      </Link>
       <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.apHistoryTitle}</h1>
       <Card>
         <CardHeader><CardTitle>{t.apHistoryDesc}</CardTitle></CardHeader>

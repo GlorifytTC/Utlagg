@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, Inbox, Store, LogOut, Moon, Sun, Menu, X, Users, MessageSquare } from "lucide-react";
+import { Home, Inbox, User, LogOut, Moon, Sun, Menu, X, Users, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
@@ -17,7 +17,7 @@ const nav = [
   { key: "navOverview" as const, href: "/accountant", icon: Home },
   { key: "navRequests" as const, href: "/accountant/requests", icon: Inbox },
   { key: "navChats" as const, href: "/accountant/chats", icon: MessageSquare },
-  { key: "navMarketplace" as const, href: "/accountant/marketplace", icon: Store },
+  { key: "navMarketplace" as const, href: "/accountant/marketplace", icon: User },
   { key: "navTeam" as const, href: "/accountant/team", icon: Users },
 ];
 

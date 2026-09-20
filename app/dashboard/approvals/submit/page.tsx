@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UpsellCard } from "@/components/UpsellCard";
+import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface Receipt { id: string; vendorName: string | null; totalAmount: string | null; }
@@ -52,6 +53,9 @@ export default function SubmitApprovalPage() {
   if (allowed === false) {
     return (
       <div className="max-w-xl space-y-6">
+        <Link href="/dashboard/approvals" className="mb-2 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          ← {t.navApprovals}
+        </Link>
         <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
         <UpsellCard
           title={t.apUpsellTitle}
@@ -64,6 +68,9 @@ export default function SubmitApprovalPage() {
 
   return (
     <div className="max-w-xl space-y-6">
+      <Link href="/dashboard/approvals" className="mb-2 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+        ← {t.navApprovals}
+      </Link>
       <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
       <Card>
         <CardHeader>

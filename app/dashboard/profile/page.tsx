@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function ProfilePage() {
-  const { t } = useLanguage();
+  const { t, lang, toggleLanguage } = useLanguage();
+  const router = useRouter();
   const { data: session, update } = useSession();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState(session?.user?.name ?? "");
@@ -115,6 +117,29 @@ export default function ProfilePage() {
           <Button onClick={changePassword} disabled={loading}>
             {t.btnChangePw}
           </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t.prLanguageTitle ?? "Language"}</CardTitle>
+          <CardDescription>{t.prLanguageDesc ?? "Choose your preferred language."}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { if (lang !== "sv") { toggleLanguage(); router.refresh(); } }}
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition ${lang === "sv" ? "bg-nordic-600 text-white" : "border border-gray-900/[0.10] text-gray-700 hover:bg-gray-900/[0.04] dark:border-white/[0.10] dark:text-gray-300 dark:hover:bg-white/[0.06]"}`}
+            >
+              Svenska
+            </button>
+            <button
+              onClick={() => { if (lang !== "en") { toggleLanguage(); router.refresh(); } }}
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition ${lang === "en" ? "bg-nordic-600 text-white" : "border border-gray-900/[0.10] text-gray-700 hover:bg-gray-900/[0.04] dark:border-white/[0.10] dark:text-gray-300 dark:hover:bg-white/[0.06]"}`}
+            >
+              English
+            </button>
+          </div>
         </CardContent>
       </Card>
 
