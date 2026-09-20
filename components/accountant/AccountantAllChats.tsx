@@ -2,14 +2,16 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { MessageSquare, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
+import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 
 interface Client {
   companyId: string;
   companyName: string;
+  logoUrl: string | null;
   receiptCount: number;
 }
 
@@ -65,9 +67,7 @@ export function AccountantAllChats() {
           href={`/accountant/clients/${c.companyId}/chat`}
           className="flex items-center gap-3 px-5 py-4 transition-colors hover:bg-gray-900/[0.02] dark:hover:bg-white/[0.03] first:rounded-t-2xl last:rounded-b-2xl"
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-white/[0.08]">
-            <MessageSquare className="h-4 w-4 text-gray-500 dark:text-gray-400" strokeWidth={1.75} />
-          </div>
+          <ClientAvatar name={c.companyName} logoUrl={c.logoUrl} size="sm" />
           <div className="flex-1 min-w-0">
             <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{c.companyName}</p>
           </div>

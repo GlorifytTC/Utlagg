@@ -3,10 +3,12 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 
 interface ClientRow {
   companyId: string;
   companyName: string;
+  logoUrl: string | null;
   city: string | null;
   country: string | null;
   connectedAt: string | null;
@@ -108,8 +110,11 @@ export function AccountantClientsList() {
                   key={c.companyId}
                   className="border-t border-gray-900/[0.07] transition-colors hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
                 >
-                  <td className="px-5 py-3 text-sm font-medium text-gray-900 dark:text-white">
-                    {c.companyName}
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-3">
+                      <ClientAvatar name={c.companyName} logoUrl={c.logoUrl} size="sm" />
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">{c.companyName}</span>
+                    </div>
                   </td>
                   <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
                     {c.city || "—"}

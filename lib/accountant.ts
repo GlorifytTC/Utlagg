@@ -105,6 +105,7 @@ export async function requireFirmRole(
 export type CompanyAccess = {
   companyId: string;
   companyName: string;
+  logoUrl: string | null;
   firmId: string;
   role: FirmRole;
   /** userIds of the company's CURRENT members — the scope for every query. */
@@ -131,7 +132,7 @@ export async function requireCompanyAccess(
 
   // The firm must actively work with this customer.
   const [rel] = await db
-    .select({ companyName: companies.name })
+    .select({ companyName: companies.name, logoUrl: companies.logoUrl })
     .from(accountantClients)
     .innerJoin(companies, eq(companies.id, accountantClients.companyId))
     .where(
@@ -166,5 +167,5 @@ export async function requireCompanyAccess(
     .where(eq(companyMembers.companyId, companyId));
   const memberIds = members.map((m: { userId: string }) => m.userId);
 
-  return { companyId, companyName: rel.companyName, firmId: firm.firmId, role: firm.role, memberIds };
+  return { companyId, companyName: rel.companyName, logoUrl: rel.logoUrl ?? null, firmId: firm.firmId, role: firm.role, memberIds };
 }

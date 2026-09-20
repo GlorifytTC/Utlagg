@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 import { AccountantClientStats } from "@/components/accountant/AccountantClientStats";
 import { AccountantReceipts } from "@/components/accountant/AccountantReceipts";
 import { AccountantExports } from "@/components/accountant/AccountantExports";
@@ -12,6 +13,7 @@ import { AccountantExports } from "@/components/accountant/AccountantExports";
 interface Detail {
   companyId: string;
   companyName: string;
+  logoUrl: string | null;
   receiptCount: number;
   clientId: string | null;
 }
@@ -89,12 +91,17 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
         animate={{ opacity: 1, y: 0 }}
         className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
       >
-        <h1 className="font-display text-xl font-semibold text-gray-900 dark:text-white">
-          {detail.companyName}
-        </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {detail.receiptCount} kvitton
-        </p>
+        <div className="flex items-center gap-4">
+          <ClientAvatar name={detail.companyName} logoUrl={detail.logoUrl} size="lg" />
+          <div>
+            <h1 className="font-display text-xl font-semibold text-gray-900 dark:text-white">
+              {detail.companyName}
+            </h1>
+            <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+              {detail.receiptCount} kvitton
+            </p>
+          </div>
+        </div>
       </motion.div>
 
       <div className="flex items-center gap-2">

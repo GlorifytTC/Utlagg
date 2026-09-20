@@ -63,6 +63,7 @@ export async function GET(
   return NextResponse.json({
     companyId: access.companyId,
     companyName: access.companyName,
+    logoUrl: access.logoUrl,
     receiptCount,
     clientId: rel?.id ?? null,
   });
