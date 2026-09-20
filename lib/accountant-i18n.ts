@@ -90,6 +90,28 @@ const strings = {
     teamNoAssignments: "Ingen medarbetare kopplad än.",
     teamOnlyOwnerRemove: "Endast ägaren kan ta bort en kund.",
 
+    // Firm stats dashboard
+    firmStatsTitle: "Nyckeltal",
+    firmStatsClients: "Aktiva klienter",
+    firmStatsPending: "Väntar på granskning",
+    firmStatsMonthAmount: "Spenderat denna månad",
+    firmStatsMonthVat: "Moms denna månad",
+    firmStatsNeedsAttention: "Behöver åtgärd",
+    firmStatsAllClear: "Alla klienter är i ordning ✓",
+    firmStatsCategories: "Utgifter denna månad",
+    firmStatsThroughput: "Granskade kvitton (12 månader)",
+    firmStatsPendingLabel: "väntande",
+
+    // Per-client stats dashboard
+    clientStatsMonthAmount: "Spenderat denna månad",
+    clientStatsMonthVat: "Moms denna månad",
+    clientStatsApproved: "Kvitton denna månad",
+    clientStatsPending: "Väntar på granskning",
+    clientStatsCategories: "Utgiftsfördelning",
+    clientStatsTrend: "Månadsöversikt (12 mån)",
+    clientStatsRecent: "Senaste kvitton",
+    clientStatsViewAll: "Visa alla kvitton",
+
     loading: "Laddar…",
     error: "Något gick fel.",
   },
@@ -169,6 +191,28 @@ const strings = {
     teamAssignedTo: "Assigned co-workers",
     teamNoAssignments: "No co-worker assigned yet.",
     teamOnlyOwnerRemove: "Only the owner can remove a customer.",
+
+    // Firm stats dashboard
+    firmStatsTitle: "Key metrics",
+    firmStatsClients: "Active clients",
+    firmStatsPending: "Awaiting review",
+    firmStatsMonthAmount: "Month spend",
+    firmStatsMonthVat: "Month VAT",
+    firmStatsNeedsAttention: "Needs attention",
+    firmStatsAllClear: "All clients are up to date ✓",
+    firmStatsCategories: "Expenses this month",
+    firmStatsThroughput: "Reviewed receipts (12 months)",
+    firmStatsPendingLabel: "pending",
+
+    // Per-client stats dashboard
+    clientStatsMonthAmount: "Month spend",
+    clientStatsMonthVat: "Month VAT",
+    clientStatsApproved: "Receipts this month",
+    clientStatsPending: "Awaiting review",
+    clientStatsCategories: "By category",
+    clientStatsTrend: "Monthly overview (12 mo)",
+    clientStatsRecent: "Recent receipts",
+    clientStatsViewAll: "View all receipts",
 
     loading: "Loading…",
     error: "Something went wrong.",

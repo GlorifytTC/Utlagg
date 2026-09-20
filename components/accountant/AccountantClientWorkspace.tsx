@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { AccountantClientStats } from "@/components/accountant/AccountantClientStats";
 import { AccountantReceipts } from "@/components/accountant/AccountantReceipts";
 import { AccountantExports } from "@/components/accountant/AccountantExports";
 
@@ -123,16 +124,11 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-gray-900/[0.07] dark:border-white/[0.07] dark:bg-white/[0.07]"
           >
-            <div className="bg-[#F5F4F0] p-5 dark:bg-[#0D0D0D]">
-              <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-                Kvitton totalt
-              </p>
-              <p className="font-display text-[22px] font-semibold leading-none tracking-tight text-gray-900 dark:text-white">
-                {detail.receiptCount}
-              </p>
-            </div>
+            <AccountantClientStats
+              companyId={companyId}
+              onViewAllReceipts={() => setTab("receipts")}
+            />
           </motion.div>
         )}
         {tab === "receipts" && (
