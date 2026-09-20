@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { MessageSquare } from "lucide-react";
+import Link from "next/link";
+import { MessageSquare, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AccountantChat } from "@/components/AccountantChat";
@@ -70,8 +71,19 @@ export function CompanyAccountantAccess() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Revisorsåtkomst</CardTitle>
-        <CardDescription>Revisorer som har åtkomst till företagets kvitton.</CardDescription>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <CardTitle>Revisorsåtkomst</CardTitle>
+            <CardDescription>Revisorer som har åtkomst till företagets kvitton.</CardDescription>
+          </div>
+          <Link
+            href="/dashboard/accountant-activity"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-gray-900/[0.10] px-3 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:border-gray-900/20 hover:text-gray-800 dark:border-white/[0.10] dark:text-gray-400 dark:hover:text-white"
+          >
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Aktivitetslogg
+          </Link>
+        </div>
       </CardHeader>
       <CardContent>
         {status === "loading" ? (

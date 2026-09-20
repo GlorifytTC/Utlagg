@@ -9,6 +9,7 @@ import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 import { AccountantClientStats } from "@/components/accountant/AccountantClientStats";
 import { AccountantReceipts } from "@/components/accountant/AccountantReceipts";
 import { AccountantExports } from "@/components/accountant/AccountantExports";
+import { AccountantAuditLog } from "@/components/accountant/AccountantAuditLog";
 
 interface Detail {
   companyId: string;
@@ -18,7 +19,7 @@ interface Detail {
   clientId: string | null;
 }
 
-type Tab = "overview" | "receipts" | "exports";
+type Tab = "overview" | "receipts" | "exports" | "activity";
 
 export function AccountantClientWorkspace({ companyId }: { companyId: string }) {
   const [detail, setDetail] = useState<Detail | null>(null);
@@ -74,6 +75,7 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
     { key: "overview", label: "Översikt" },
     { key: "receipts", label: "Kvitton" },
     { key: "exports", label: "Export" },
+    { key: "activity", label: "Aktivitet" },
   ];
 
   const tabCls = (active: boolean) =>
@@ -158,6 +160,17 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
             transition={{ duration: 0.15 }}
           >
             <AccountantExports companyId={companyId} />
+          </motion.div>
+        )}
+        {tab === "activity" && (
+          <motion.div
+            key="activity"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+          >
+            <AccountantAuditLog companyId={companyId} />
           </motion.div>
         )}
       </AnimatePresence>

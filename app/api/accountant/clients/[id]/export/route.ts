@@ -5,7 +5,7 @@ import { db } from "@/db";
 import { receipts, companies, accountantExports } from "@/db/schema";
 import { requireAccountant, requireCompanyAccess } from "@/lib/accountant";
 import { buildSie, SieBalanceError } from "@/lib/sie-export";
-import { logAudit, clientIp } from "@/lib/audit";
+import { logAuditEvent, clientIp } from "@/lib/audit";
 import { logger } from "@/lib/logger";
 import { eq } from "drizzle-orm";
 
@@ -134,10 +134,13 @@ export async function POST(
     const csv = "\uFEFF" + lines.join("\r\n");
 
     await recordHistory(rows.length);
-    await logAudit({
+    await logAuditEvent({
       userId: acct.userId,
       action: "accountant.export.csv",
-      details: `company ${access.companyId}, ${rows.length} kvitton`,
+      entityType: "company",
+      entityId: access.companyId,
+      targetCompanyId: access.companyId,
+      details: `${rows.length} kvitton`,
       ipAddress: clientIp(req),
     });
 
@@ -192,10 +195,13 @@ export async function POST(
   }
 
   await recordHistory(rows.length);
-  await logAudit({
+  await logAuditEvent({
     userId: acct.userId,
     action: "accountant.export.sie",
-    details: `company ${access.companyId}, ${rows.length} verifikationer`,
+    entityType: "company",
+    entityId: access.companyId,
+    targetCompanyId: access.companyId,
+    details: `${rows.length} verifikationer`,
     ipAddress: clientIp(req),
   });
 

@@ -49,6 +49,7 @@ export async function logAuditEvent(params: {
   details?: string;
   ipAddress?: string | null;
   userAgent?: string | null;
+  targetCompanyId?: string | null;
 }): Promise<void> {
   try {
     await db.insert(auditLogs).values({
@@ -68,6 +69,7 @@ export async function logAuditEvent(params: {
       details: params.details,
       ipAddress: params.ipAddress ?? null,
       userAgent: params.userAgent ?? null,
+      targetCompanyId: params.targetCompanyId ?? null,
     });
   } catch (err) {
     console.error("audit log failed:", err);

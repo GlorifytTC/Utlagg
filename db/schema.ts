@@ -275,6 +275,9 @@ export const auditLogs = pgTable(
     oldValues: jsonb("old_values"),
     newValues: jsonb("new_values"),
     userAgent: text("user_agent"),
+    // Which client company the accountant was acting on — enables company-scoped
+    // audit queries without string-parsing the details field.
+    targetCompanyId: uuid("target_company_id"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -282,6 +285,7 @@ export const auditLogs = pgTable(
   (t) => ({
     userIdx: index("audit_user_idx").on(t.userId),
     createdIdx: index("audit_created_idx").on(t.createdAt),
+    targetCompanyIdx: index("audit_target_company_idx").on(t.targetCompanyId),
   }),
 );
 

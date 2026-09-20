@@ -23,7 +23,7 @@ export const runtime = "nodejs";
  * used for authorization.
  */
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: { id: string; receiptId: string } },
 ) {
   const acct = await requireAccountant();
@@ -58,6 +58,15 @@ export async function GET(
   // Resolve image server-side: the accountant is authorized but not the image owner,
   // so we sign using the receipt owner's userId.
   const imageSrc = await resolveReceiptImageSrc(receipt.imageUrl, receipt.userId);
+
+  void logAuditEvent({
+    userId: acct.userId,
+    action: "accountant.receipt.view",
+    entityType: "receipt",
+    entityId: params.receiptId,
+    targetCompanyId: params.id,
+    ipAddress: clientIp(req),
+  });
 
   return NextResponse.json({ receipt, imageSrc });
 }
@@ -183,9 +192,9 @@ export async function PATCH(
     action: "accountant.receipt.update",
     entityType: "receipt",
     entityId: params.receiptId,
+    targetCompanyId: access.companyId,
     oldValues,
     newValues,
-    details: `company ${access.companyId}`,
     ipAddress: clientIp(req),
   });
 
