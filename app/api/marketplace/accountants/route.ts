@@ -185,7 +185,12 @@ export async function GET(req: NextRequest) {
           status: accountantConnectionRequests.status,
         })
         .from(accountantConnectionRequests)
-        .where(eq(accountantConnectionRequests.companyId, viewerCompany.companyId)),
+        .where(
+          and(
+            eq(accountantConnectionRequests.companyId, viewerCompany.companyId),
+            eq(accountantConnectionRequests.status, "pending"),
+          ),
+        ),
       db
         .select({ accountantId: accountantClients.accountantId })
         .from(accountantClients)

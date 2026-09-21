@@ -132,6 +132,7 @@ export async function GET(
         and(
           eq(accountantConnectionRequests.companyId, viewerCompany.companyId),
           eq(accountantConnectionRequests.accountantId, id),
+          eq(accountantConnectionRequests.status, "pending"),
         ),
       )
       .limit(1);
