@@ -27,7 +27,6 @@ const config: Config = {
         },
         // Semantic alias for new code — same accent token.
         accent: "rgb(var(--accent) / <alpha-value>)",
-        amber: "#D98A37",
       },
       fontFamily: {
         // All-sans system per the rebrand — Plus Jakarta Sans replaces the old
