@@ -9,6 +9,8 @@ import {
   accountantConnectionRequests,
   accountantBoosts,
   accountantReviews,
+  firmMembers,
+  accountingFirms,
 } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { getUserCompany, canManageCompany } from "@/lib/company";
@@ -48,7 +50,7 @@ export async function GET(
 
   if (!acct) return NextResponse.json({ error: "Revisorn hittades inte." }, { status: 404 });
 
-  const [clientCountRow, boostRow, reviewStats, reviewRows] = await Promise.all([
+  const [clientCountRow, boostRow, reviewStats, reviewRows, membershipRows] = await Promise.all([
     db
       .select({ count: count() })
       .from(accountantClients)
@@ -83,7 +85,34 @@ export async function GET(
       .innerJoin(companies, eq(companies.id, accountantReviews.companyId))
       .where(eq(accountantReviews.accountantId, id))
       .orderBy(desc(accountantReviews.createdAt)),
+    db
+      .select({
+        firmId: firmMembers.firmId,
+        firmName: accountingFirms.name,
+        firmLogoUrl: accountingFirms.logoUrl,
+      })
+      .from(firmMembers)
+      .innerJoin(accountingFirms, eq(accountingFirms.id, firmMembers.firmId))
+      .where(eq(firmMembers.userId, id))
+      .limit(1),
   ]);
+
+  let firm: { id: string; name: string; logoUrl: string | null; members: { id: string; name: string | null; email: string; logoUrl: string | null; role: string }[] } | null = null;
+  if (membershipRows[0]) {
+    const { firmId, firmName, firmLogoUrl } = membershipRows[0];
+    const members = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        logoUrl: users.logoUrl,
+        role: firmMembers.role,
+      })
+      .from(firmMembers)
+      .innerJoin(users, eq(users.id, firmMembers.userId))
+      .where(eq(firmMembers.firmId, firmId));
+    firm = { id: firmId, name: firmName, logoUrl: firmLogoUrl, members };
+  }
 
   // Viewer state
   const viewerCompany = await getUserCompany(session.user.id);
@@ -164,5 +193,6 @@ export async function GET(
     viewerCanRequest,
     viewerCanReview,
     viewerExistingReview,
+    firm,
   });
 }

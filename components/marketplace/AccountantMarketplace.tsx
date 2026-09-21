@@ -20,6 +20,9 @@ interface AccountantRow {
   reviewCount: number;
   joinedYear: number | null;
   myStatus: "pending" | "active" | "revoked" | null;
+  firmId: string | null;
+  firmName: string | null;
+  firmLogoUrl: string | null;
 }
 
 interface Props {
@@ -32,23 +35,29 @@ function Avatar({
   name,
   email,
   logoUrl,
+  firmLogoUrl,
+  firmName,
   isBoosted,
 }: {
   name: string | null;
   email: string;
   logoUrl: string | null;
+  firmLogoUrl?: string | null;
+  firmName?: string | null;
   isBoosted?: boolean;
 }) {
+  const displayLogoUrl = firmLogoUrl ?? logoUrl;
+  const displayAlt = firmName ?? name ?? email;
   const label = (name ?? email).charAt(0).toUpperCase();
   const ring = isBoosted
     ? "ring-2 ring-offset-2 ring-nordic-600/50 dark:ring-offset-[#0D0D0D]"
     : "";
-  if (logoUrl) {
+  if (displayLogoUrl) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        src={logoUrl}
-        alt={name ?? email}
+        src={displayLogoUrl}
+        alt={displayAlt}
         className={`h-14 w-14 shrink-0 rounded-full object-cover ${ring}`}
       />
     );
@@ -279,6 +288,8 @@ export function AccountantMarketplace({
                         name={a.name}
                         email={a.email}
                         logoUrl={a.logoUrl}
+                        firmLogoUrl={a.firmLogoUrl}
+                        firmName={a.firmName}
                         isBoosted={a.isBoosted}
                       />
 
@@ -298,6 +309,11 @@ export function AccountantMarketplace({
                             </span>
                           )}
                         </div>
+                        {a.firmName && (
+                          <span className="mt-0.5 block text-xs font-medium text-nordic-600/80 dark:text-nordic-400/80">
+                            {a.firmName}
+                          </span>
+                        )}
                         {a.city && (
                           <span className="mt-0.5 flex items-center gap-1 text-xs text-gray-400">
                             <MapPin className="h-3 w-3 shrink-0" strokeWidth={2} />

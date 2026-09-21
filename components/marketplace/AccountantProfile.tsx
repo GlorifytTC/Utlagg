@@ -15,6 +15,21 @@ interface Review {
   createdAt: string;
 }
 
+interface FirmMember {
+  id: string;
+  name: string | null;
+  email: string;
+  logoUrl: string | null;
+  role: string;
+}
+
+interface Firm {
+  id: string;
+  name: string;
+  logoUrl: string | null;
+  members: FirmMember[];
+}
+
 interface ProfileData {
   accountant: {
     id: string;
@@ -35,6 +50,7 @@ interface ProfileData {
   viewerCanRequest: boolean;
   viewerCanReview: boolean;
   viewerExistingReview: { rating: number; comment: string | null } | null;
+  firm: Firm | null;
 }
 
 function Stars({ rating, max = 5 }: { rating: number; max?: number }) {
@@ -43,6 +59,65 @@ function Stars({ rating, max = 5 }: { rating: number; max?: number }) {
       {"★".repeat(Math.round(rating))}
       {"☆".repeat(max - Math.round(rating))}
     </span>
+  );
+}
+
+const ROLE_LABELS: Record<string, string> = { owner: "Ägare", admin: "Admin", member: "Medarbetare" };
+
+function FirmSidebar({ firm }: { firm: Firm }) {
+  return (
+    <div className="lg:sticky lg:top-6 space-y-4">
+      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        {/* Firm header */}
+        <div className="mb-4 flex items-center gap-3">
+          {firm.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={firm.logoUrl}
+              alt={firm.name}
+              className="h-12 w-12 shrink-0 rounded-xl border border-gray-900/[0.07] object-contain dark:border-white/[0.08]"
+            />
+          ) : (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-nordic-600/10 text-lg font-bold text-nordic-600">
+              {firm.name.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-400">Byrå</p>
+            <p className="font-semibold text-gray-900 dark:text-white">{firm.name}</p>
+          </div>
+        </div>
+
+        {/* Members list */}
+        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">
+          Medarbetare ({firm.members.length})
+        </p>
+        <ul className="space-y-2">
+          {firm.members.map((m) => (
+            <li key={m.id} className="flex items-center gap-2.5">
+              {m.logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={m.logoUrl}
+                  alt={m.name ?? m.email}
+                  className="h-8 w-8 shrink-0 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-nordic-600/10 text-sm font-bold text-nordic-600">
+                  {(m.name ?? m.email).charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm text-gray-900 dark:text-white">{m.name ?? m.email}</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-gray-100/80 px-2 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-white/[0.08] dark:text-gray-400">
+                {ROLE_LABELS[m.role] ?? m.role}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
 
@@ -194,13 +269,16 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
   const isSelf = accountantId === viewerAccountantId;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <Link
         href={backHref}
         className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 dark:hover:text-white"
       >
         ← Tillbaka
       </Link>
+
+      <div className={data.firm ? "lg:grid lg:grid-cols-[1fr_260px] lg:items-start lg:gap-6" : "space-y-8"}>
+      <div className="space-y-8">
 
       {/* Hero */}
       <motion.div
@@ -520,6 +598,10 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
             ))}
           </div>
         )}
+      </div>
+
+      </div>
+      {data.firm && <FirmSidebar firm={data.firm} />}
       </div>
     </div>
   );
