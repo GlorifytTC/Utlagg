@@ -13,8 +13,8 @@ export default async function MarketplacePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-ink">Hitta revisor</h1>
-        <p className="text-sm text-ink/50">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Hitta revisor</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           Bläddra bland redovisningskonsulter och skicka en förfrågan — åtkomst ges när revisorn accepterar.
         </p>
       </div>

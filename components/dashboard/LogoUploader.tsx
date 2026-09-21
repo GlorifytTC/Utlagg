@@ -59,11 +59,11 @@ export function LogoUploader({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt={label} className="h-full w-full object-contain" />
         ) : (
-          <span className="text-xs text-ink/40">Ingen</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500">Ingen</span>
         )}
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-xs text-ink/50">{label}</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">{label}</span>
         <div className="flex gap-2">
           <Button variant="outline" disabled={busy} onClick={() => inputRef.current?.click()}>
             {busy ? "Laddar…" : preview ? "Byt" : "Ladda upp"}

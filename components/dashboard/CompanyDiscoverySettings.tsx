@@ -123,7 +123,7 @@ export function CompanyDiscoverySettings() {
         {profile.accountantDiscoverable && (
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs text-ink/50">Bransch</label>
+              <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Bransch</label>
               <Input
                 defaultValue={profile.industry ?? ""}
                 onBlur={(e) => save({ industry: e.target.value || null })}
@@ -131,7 +131,7 @@ export function CompanyDiscoverySettings() {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-xs text-ink/50">Kort beskrivning</label>
+              <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Kort beskrivning</label>
               <Input
                 defaultValue={profile.discoveryDescription ?? ""}
                 onBlur={(e) => save({ discoveryDescription: e.target.value || null })}
@@ -143,7 +143,7 @@ export function CompanyDiscoverySettings() {
 
         {incoming.length > 0 && (
           <div className="border-t border-gray-100 pt-4 dark:border-white/[0.07]">
-            <p className="mb-2 text-sm font-semibold text-ink">Förfrågningar från revisorer</p>
+            <p className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Förfrågningar från revisorer</p>
             <ul className="divide-y divide-gray-100 dark:divide-white/[0.07]">
               {incoming.map((r) => (
                 <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 py-3">

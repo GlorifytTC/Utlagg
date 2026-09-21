@@ -7,10 +7,10 @@ export default function TermsPage() {
   const { t } = useLanguage();
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
+    <main className="mx-auto max-w-2xl px-6 py-16 text-ink dark:text-gray-100">
       <h1 className="font-display text-3xl">{t.termsTitle}</h1>
-      <p className="mt-4 text-ink/70">{t.termsIntro}</p>
-      <p className="mt-2 text-sm text-ink/50">{t.termsUpdated}</p>
+      <p className="mt-4 text-ink/70 dark:text-gray-300">{t.termsIntro}</p>
+      <p className="mt-2 text-sm text-ink/50 dark:text-gray-500">{t.termsUpdated}</p>
 
       <div className="mt-10 space-y-8 text-sm leading-relaxed">
 
@@ -115,7 +115,7 @@ export default function TermsPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg">{t.terms10Title}</h2>
           <p>{t.terms10Intro}</p>
-          <ul className="ml-4 list-disc space-y-1 text-ink/80">
+          <ul className="ml-4 list-disc space-y-1 text-ink/80 dark:text-gray-300">
             <li>{t.terms10Li1}</li>
             <li>{t.terms10Li2}</li>
             <li>{t.terms10Li3}</li>
@@ -159,7 +159,7 @@ export default function TermsPage() {
           <p>{t.terms13P2}</p>
           <p>{t.terms13P3}</p>
           <p>{t.terms13P4}</p>
-          <p className="text-ink/60">{t.terms13P5}</p>
+          <p className="text-ink/60 dark:text-gray-400">{t.terms13P5}</p>
         </section>
 
         <section className="space-y-3">
@@ -223,7 +223,7 @@ export default function TermsPage() {
 
       </div>
 
-      <p className="mt-10 text-xs text-ink/50">{t.termsFooter}</p>
+      <p className="mt-10 text-xs text-ink/50 dark:text-gray-500">{t.termsFooter}</p>
     </main>
   );
 }
