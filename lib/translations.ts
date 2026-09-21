@@ -889,6 +889,99 @@ export interface Translations {
   notifConnectionRequest: string;
   notifAccepted: string;
   notifMessage: string;
+
+  // Accountant dashboard
+  overviewTitle: string;
+  overviewSubtitle: string;
+  firmStatsTitle: string;
+  firmStatsClients: string;
+  firmStatsPending: string;
+  firmStatsPendingLabel: string;
+  firmStatsMonthAmount: string;
+  firmStatsMonthVat: string;
+  firmStatsThroughput: string;
+  firmStatsCategories: string;
+  firmStatsAllClear: string;
+  firmStatsNeedsAttention: string;
+  clientsTitle: string;
+  clientsEmpty: string;
+  openClient: string;
+  growthTitle: string;
+  marketplaceTitle: string;
+  marketplaceViewAll: string;
+  // Work queue
+  todoTitle: string;
+  todoToReview: string;
+  todoLowConfidence: string;
+  todoMissingInfo: string;
+  todoPending: string;
+  todoEmpty: string;
+  // Activity
+  activityReviewedWeek: string;
+  activityReviewedMonth: string;
+  // Client distribution
+  clientDistTitle: string;
+  clientDistEmpty: string;
+  clientDistCount: string;
+  clientDistAmount: string;
+  clientDistOthers: string;
+  distRangeDay: string;
+  distRangeWeek: string;
+  distRangeMonth: string;
+  distRange3m: string;
+  distRange6m: string;
+  distRangeYear: string;
+  distReceiptUnit: string;
+  // Client stats
+  clientStatsMonthAmount: string;
+  clientStatsMonthVat: string;
+  clientStatsApproved: string;
+  clientStatsPending: string;
+  clientStatsCategories: string;
+  clientStatsRecent: string;
+  clientStatsTrend: string;
+  clientStatsViewAll: string;
+  // Accountant nav / avatar menu
+  navRequests: string;
+  menuProfile: string;
+  menuAccount: string;
+  menuFirmLogo: string;
+  menuLogout: string;
+  // Team management
+  teamTitle: string;
+  teamSubtitle: string;
+  teamMembers: string;
+  teamNoMembers: string;
+  teamRoleOwner: string;
+  teamRoleAdmin: string;
+  teamRoleMember: string;
+  teamRemove: string;
+  teamRemoveConfirm: string;
+  teamInvite: string;
+  teamInviteEmail: string;
+  teamInviteRole: string;
+  teamSend: string;
+  teamPending: string;
+  teamAssignTitle: string;
+  teamAssignHint: string;
+  teamAssignedTo: string;
+  teamNoAssignments: string;
+  teamAssign: string;
+  teamUnassign: string;
+  // Dashboard getting started
+  dashGettingStartedKicker: string;
+  dashGettingStartedTitle: string;
+  dashGsReceipt: string;
+  dashGsSub1: string;
+  dashGsCompany: string;
+  dashGsSub2: string;
+  dashGsMarketplace: string;
+  dashGsSub3: string;
+  // Profile language
+  prLanguageTitle: string;
+  prLanguageDesc: string;
+  // Generic
+  error: string;
 }
 
 export const strings: Record<Lang, Translations> = {
@@ -1833,6 +1926,88 @@ export const strings: Record<Lang, Translations> = {
     notifConnectionRequest: "{name} vill ansluta till dig",
     notifAccepted: "{name} accepterade din förfrågan",
     notifMessage: "Nytt meddelande från {name}",
+    overviewTitle: "Kontorsöversikt",
+    overviewSubtitle: "Välkommen tillbaka",
+    firmStatsTitle: "Byråöversikt",
+    firmStatsClients: "Klienter",
+    firmStatsPending: "Väntande",
+    firmStatsPendingLabel: "väntar granskning",
+    firmStatsMonthAmount: "Belopp denna månad",
+    firmStatsMonthVat: "Moms denna månad",
+    firmStatsThroughput: "Genomflöde",
+    firmStatsCategories: "Kategorier",
+    firmStatsAllClear: "Inga klienter behöver uppmärksamhet",
+    firmStatsNeedsAttention: "Behöver uppmärksamhet",
+    clientsTitle: "Klienter",
+    clientsEmpty: "Inga klienter ännu",
+    openClient: "Öppna klient",
+    growthTitle: "Tillväxt",
+    marketplaceTitle: "Marknadsplats",
+    marketplaceViewAll: "Visa alla",
+    todoTitle: "Att granska",
+    todoToReview: "att granska",
+    todoLowConfidence: "Låg säkerhet",
+    todoMissingInfo: "Saknar info",
+    todoPending: "Väntande",
+    todoEmpty: "Inga kvitton att granska",
+    activityReviewedWeek: "granskade denna vecka",
+    activityReviewedMonth: "granskade denna månad",
+    clientDistTitle: "Klientdistribution",
+    clientDistEmpty: "Inga data",
+    clientDistCount: "Antal",
+    clientDistAmount: "Belopp",
+    clientDistOthers: "Övriga",
+    distRangeDay: "Idag",
+    distRangeWeek: "Vecka",
+    distRangeMonth: "Månad",
+    distRange3m: "3 mån",
+    distRange6m: "6 mån",
+    distRangeYear: "År",
+    distReceiptUnit: "kvitton",
+    clientStatsMonthAmount: "Belopp denna månad",
+    clientStatsMonthVat: "Moms denna månad",
+    clientStatsApproved: "Godkända",
+    clientStatsPending: "Väntande",
+    clientStatsCategories: "Kategorier",
+    clientStatsRecent: "Senaste kvitton",
+    clientStatsTrend: "Trend (12 månader)",
+    clientStatsViewAll: "Visa alla",
+    navRequests: "Förfrågningar",
+    menuProfile: "Profil",
+    menuAccount: "Konto",
+    menuFirmLogo: "Byrålogotyp",
+    menuLogout: "Logga ut",
+    teamTitle: "Team",
+    teamSubtitle: "Hantera teammedlemmar och klienttilldelningar",
+    teamMembers: "Medlemmar",
+    teamNoMembers: "Inga teammedlemmar ännu",
+    teamRoleOwner: "Ägare",
+    teamRoleAdmin: "Admin",
+    teamRoleMember: "Medlem",
+    teamRemove: "Ta bort",
+    teamRemoveConfirm: "Är du säker?",
+    teamInvite: "Bjud in",
+    teamInviteEmail: "E-postadress",
+    teamInviteRole: "Roll",
+    teamSend: "Skicka inbjudan",
+    teamPending: "Väntande",
+    teamAssignTitle: "Tilldela klienter",
+    teamAssignHint: "Välj en klient och tilldela teammedlemmar",
+    teamAssignedTo: "Tilldelad till",
+    teamNoAssignments: "Inga tilldelningar",
+    teamAssign: "Tilldela",
+    teamUnassign: "Avdela",
+    dashGettingStartedKicker: "Kom igång",
+    dashGettingStartedTitle: "Välkommen! Här är tre saker att göra först.",
+    dashGsReceipt: "Lägg till ditt första kvitto",
+    dashGsSub1: "Skanna eller ladda upp",
+    dashGsCompany: "Skapa ett företag",
+    dashGsSub2: "Bjud in kollegor och mer",
+    dashGsMarketplace: "Hitta en revisor",
+    dashGsSub3: "Bläddra på marknadsplatsen",
+    prLanguageTitle: "Språk",
+    prLanguageDesc: "Välj ditt föredragna språk.",
+    error: "Något gick fel",
   },
   en: {
     rcScanningLocally: "Reading receipt locally…",
@@ -2771,5 +2946,87 @@ export const strings: Record<Lang, Translations> = {
     notifConnectionRequest: "{name} wants to connect with you",
     notifAccepted: "{name} accepted your request",
     notifMessage: "New message from {name}",
+    overviewTitle: "Dashboard",
+    overviewSubtitle: "Welcome back",
+    firmStatsTitle: "Firm Overview",
+    firmStatsClients: "Clients",
+    firmStatsPending: "Pending",
+    firmStatsPendingLabel: "pending review",
+    firmStatsMonthAmount: "Amount this month",
+    firmStatsMonthVat: "VAT this month",
+    firmStatsThroughput: "Throughput",
+    firmStatsCategories: "Categories",
+    firmStatsAllClear: "All clients are up to date",
+    firmStatsNeedsAttention: "Needs attention",
+    clientsTitle: "Clients",
+    clientsEmpty: "No clients yet",
+    openClient: "Open client",
+    growthTitle: "Growth",
+    marketplaceTitle: "Marketplace",
+    marketplaceViewAll: "View all",
+    todoTitle: "To review",
+    todoToReview: "to review",
+    todoLowConfidence: "Low confidence",
+    todoMissingInfo: "Missing info",
+    todoPending: "Pending",
+    todoEmpty: "No receipts to review",
+    activityReviewedWeek: "reviewed this week",
+    activityReviewedMonth: "reviewed this month",
+    clientDistTitle: "Client Distribution",
+    clientDistEmpty: "No data",
+    clientDistCount: "Count",
+    clientDistAmount: "Amount",
+    clientDistOthers: "Others",
+    distRangeDay: "Today",
+    distRangeWeek: "Week",
+    distRangeMonth: "Month",
+    distRange3m: "3 months",
+    distRange6m: "6 months",
+    distRangeYear: "Year",
+    distReceiptUnit: "receipts",
+    clientStatsMonthAmount: "Amount this month",
+    clientStatsMonthVat: "VAT this month",
+    clientStatsApproved: "Approved",
+    clientStatsPending: "Pending",
+    clientStatsCategories: "Categories",
+    clientStatsRecent: "Recent receipts",
+    clientStatsTrend: "Trend (12 months)",
+    clientStatsViewAll: "View all",
+    navRequests: "Requests",
+    menuProfile: "Profile",
+    menuAccount: "Account",
+    menuFirmLogo: "Firm Logo",
+    menuLogout: "Log out",
+    teamTitle: "Team",
+    teamSubtitle: "Manage team members and client assignments",
+    teamMembers: "Members",
+    teamNoMembers: "No team members yet",
+    teamRoleOwner: "Owner",
+    teamRoleAdmin: "Admin",
+    teamRoleMember: "Member",
+    teamRemove: "Remove",
+    teamRemoveConfirm: "Are you sure?",
+    teamInvite: "Invite",
+    teamInviteEmail: "Email address",
+    teamInviteRole: "Role",
+    teamSend: "Send invite",
+    teamPending: "Pending",
+    teamAssignTitle: "Assign clients",
+    teamAssignHint: "Select a client and assign team members",
+    teamAssignedTo: "Assigned to",
+    teamNoAssignments: "No assignments",
+    teamAssign: "Assign",
+    teamUnassign: "Unassign",
+    dashGettingStartedKicker: "Get started",
+    dashGettingStartedTitle: "Welcome! Here are three things to do first.",
+    dashGsReceipt: "Add your first receipt",
+    dashGsSub1: "Scan or upload",
+    dashGsCompany: "Set up a company",
+    dashGsSub2: "Invite teammates and more",
+    dashGsMarketplace: "Find an accountant",
+    dashGsSub3: "Browse the marketplace",
+    prLanguageTitle: "Language",
+    prLanguageDesc: "Choose your preferred language.",
+    error: "Something went wrong",
   },
 };
