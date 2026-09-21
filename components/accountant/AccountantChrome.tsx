@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -12,17 +12,34 @@ import { accountantStrings } from "@/lib/accountant-i18n";
 import { cn } from "@/lib/utils";
 import { Logo, LogoMark } from "@/components/brand/Logo";
 import { AccountantAvatarMenu } from "@/components/accountant/AccountantAvatarMenu";
+import { useNotifications } from "@/context/NotificationContext";
 
 const nav = [
-  { key: "navOverview" as const, href: "/accountant", icon: Home },
-  { key: "navRequests" as const, href: "/accountant/requests", icon: Inbox },
-  { key: "navChats" as const, href: "/accountant/chats", icon: MessageSquare },
-  { key: "navMarketplace" as const, href: "/accountant/marketplace", icon: User },
-  { key: "navTeam" as const, href: "/accountant/team", icon: Users },
+  { key: "navOverview" as const, href: "/accountant", icon: Home, badge: null as "chat" | "requests" | null },
+  { key: "navRequests" as const, href: "/accountant/requests", icon: Inbox, badge: "requests" as const },
+  { key: "navChats" as const, href: "/accountant/chats", icon: MessageSquare, badge: "chat" as const },
+  { key: "navMarketplace" as const, href: "/accountant/marketplace", icon: User, badge: null },
+  { key: "navTeam" as const, href: "/accountant/team", icon: Users, badge: null },
 ];
 
 function isActive(pathname: string, href: string) {
   return href === "/accountant" ? pathname === href : pathname.startsWith(href);
+}
+
+function NotifBadge({ n }: { n: number }) {
+  if (!n) return null;
+  return (
+    <motion.span
+      key="badge"
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0, opacity: 0 }}
+      transition={{ type: "spring", stiffness: 500, damping: 24 }}
+      className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-nordic-600 text-[9px] font-bold leading-none text-white ring-2 ring-white dark:ring-[#0A0A0A]"
+    >
+      {n > 9 ? "9+" : n}
+    </motion.span>
+  );
 }
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
@@ -32,6 +49,14 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const { t, lang, toggleLanguage } = useLanguage();
   const at = accountantStrings(lang);
   const dark = theme === "dark";
+  const { chat, requests, clear } = useNotifications();
+
+  useEffect(() => {
+    if (pathname.startsWith("/accountant/chats")) clear("chat");
+    if (pathname.startsWith("/accountant/requests")) clear("requests");
+  }, [pathname, clear]);
+
+  const badgeCounts: Record<string, number> = { chat, requests };
 
   return (
     <div className="flex h-full flex-col">
@@ -47,6 +72,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
           {nav.map((item) => {
             const Icon = item.icon;
             const active = isActive(pathname, item.href);
+            const count = item.badge ? badgeCounts[item.badge] : 0;
             return (
               <li key={item.href}>
                 <Link
@@ -59,7 +85,10 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
                       : "text-gray-500 hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white",
                   )}
                 >
-                  <Icon className={cn("h-[15px] w-[15px] shrink-0 transition-opacity", active ? "opacity-90" : "opacity-40 group-hover:opacity-60")} strokeWidth={1.75} />
+                  <span className="relative shrink-0">
+                    <Icon className={cn("h-[15px] w-[15px] transition-opacity", active ? "opacity-90" : "opacity-40 group-hover:opacity-60")} strokeWidth={1.75} />
+                    <AnimatePresence><NotifBadge n={count} /></AnimatePresence>
+                  </span>
                   <span className="flex-1">{at[item.key]}</span>
                 </Link>
               </li>
@@ -106,6 +135,8 @@ export function AccountantChrome({ children }: { children: React.ReactNode }) {
   const at = accountantStrings(lang);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { chat, requests } = useNotifications();
+  const badgeCounts: Record<string, number> = { chat, requests };
 
   return (
     <div className="relative min-h-screen bg-[#F5F4F0] dark:bg-black dark:text-gray-100 print:bg-white print:min-h-0">
@@ -161,6 +192,7 @@ export function AccountantChrome({ children }: { children: React.ReactNode }) {
         {nav.map((item) => {
           const Icon = item.icon;
           const active = isActive(pathname, item.href);
+          const count = item.badge ? badgeCounts[item.badge] : 0;
           return (
             <motion.div key={item.href} whileTap={{ scale: 0.95 }}>
               <Link
@@ -170,7 +202,10 @@ export function AccountantChrome({ children }: { children: React.ReactNode }) {
                   active ? "text-nordic-600 dark:text-nordic-600" : "text-gray-500 dark:text-gray-400",
                 )}
               >
-                <Icon className="h-5 w-5" />
+                <span className="relative">
+                  <Icon className="h-5 w-5" />
+                  <AnimatePresence><NotifBadge n={count} /></AnimatePresence>
+                </span>
                 {at[item.key]}
               </Link>
             </motion.div>
