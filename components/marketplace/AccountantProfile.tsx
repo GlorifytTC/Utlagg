@@ -66,7 +66,7 @@ const ROLE_LABELS: Record<string, string> = { owner: "Ägare", admin: "Admin", m
 
 function FirmSidebar({ firm }: { firm: Firm }) {
   return (
-    <div className="lg:sticky lg:top-6 space-y-4">
+    <div className="self-start lg:sticky lg:top-6 space-y-4">
       <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
         {/* Firm header */}
         <div className="mb-4 flex items-center gap-3">
@@ -284,7 +284,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col gap-5 rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] sm:flex-row sm:items-start"
+        className="flex flex-col gap-4 rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] sm:flex-row sm:items-start"
       >
         {/* Avatar */}
         {accountant.logoUrl ? (
@@ -300,16 +300,49 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
           </div>
         )}
 
-        <div className="flex-1 space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-white">
-              {accountant.name ?? accountant.email}
-            </h1>
-            {accountant.isBoosted && (
-              <span className="rounded-full bg-nordic-600/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-widest text-nordic-600 dark:bg-nordic-600/20">
-                Boostad
-              </span>
-            )}
+        {/* Content + CTA together so CTA never overflows card */}
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-white">
+                {accountant.name ?? accountant.email}
+              </h1>
+              {accountant.isBoosted && (
+                <span className="rounded-full bg-nordic-600/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-widest text-nordic-600 dark:bg-nordic-600/20">
+                  Boostad
+                </span>
+              )}
+            </div>
+
+            {/* CTA — inside content col, no risk of overflowing card */}
+            <div className="shrink-0">
+              {isSelf ? (
+                <button
+                  onClick={() => setEditing((v) => !v)}
+                  className="rounded-full border border-gray-900/[0.12] px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 active:scale-[0.98] dark:border-white/[0.12] dark:text-gray-300 dark:hover:bg-white/[0.06]"
+                >
+                  {editing ? "Avbryt" : "Redigera profil"}
+                </button>
+              ) : data.myStatus === "active" ? (
+                <span className="rounded-full bg-green-100/50 px-3 py-1.5 text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
+                  Kopplad
+                </span>
+              ) : data.myStatus === "pending" ? (
+                <span className="rounded-full bg-amber-100/50 px-3 py-1.5 text-sm font-medium text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                  Förfrågan skickad
+                </span>
+              ) : data.viewerCanRequest ? (
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  disabled={busy}
+                  onClick={sendRequest}
+                  className="rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-60"
+                >
+                  {busy ? "Skickar…" : "Skicka förfrågan"}
+                </motion.button>
+              ) : null}
+            </div>
           </div>
 
           {accountant.city && (
@@ -345,36 +378,6 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               ))}
             </div>
           )}
-        </div>
-
-        {/* CTA */}
-        <div className="flex shrink-0 flex-col items-end gap-2">
-          {isSelf ? (
-            <button
-              onClick={() => setEditing((v) => !v)}
-              className="rounded-full border border-gray-900/[0.12] px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 dark:border-white/[0.12] dark:text-gray-300 dark:hover:bg-white/[0.06]"
-            >
-              {editing ? "Avbryt" : "Redigera profil"}
-            </button>
-          ) : data.myStatus === "active" ? (
-            <span className="rounded-full bg-green-100/50 px-3 py-1.5 text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
-              Kopplad
-            </span>
-          ) : data.myStatus === "pending" ? (
-            <span className="rounded-full bg-amber-100/50 px-3 py-1.5 text-sm font-medium text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
-              Förfrågan skickad
-            </span>
-          ) : data.viewerCanRequest ? (
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              disabled={busy}
-              onClick={sendRequest}
-              className="rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-60"
-            >
-              {busy ? "Skickar…" : "Skicka förfrågan"}
-            </motion.button>
-          ) : null}
         </div>
       </motion.div>
 
