@@ -295,6 +295,7 @@ export interface Translations {
   toastCompanySaved: string;
   toastSaveFail: string;
   toastEnterCompanyName: string;
+  toastEnterOrgNumber: string;
   toastCompanyCreated: string;
   toastCreateFail: string;
   toastEnterEmail: string;
@@ -1297,6 +1298,7 @@ export const strings: Record<Lang, Translations> = {
     toastCompanySaved: "Företagsnamn sparat",
     toastSaveFail: "Kunde inte spara",
     toastEnterCompanyName: "Ange företagsnamn",
+    toastEnterOrgNumber: "Ange organisationsnummer",
     toastCompanyCreated: "Företag skapat",
     toastCreateFail: "Kunde inte skapa",
     toastEnterEmail: "Ange e-post",
@@ -2321,6 +2323,7 @@ export const strings: Record<Lang, Translations> = {
     toastCompanySaved: "Company name saved",
     toastSaveFail: "Could not save",
     toastEnterCompanyName: "Enter a company name",
+    toastEnterOrgNumber: "Enter a company registration number",
     toastCompanyCreated: "Company created",
     toastCreateFail: "Could not create",
     toastEnterEmail: "Enter an email",

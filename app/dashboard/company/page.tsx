@@ -39,6 +39,7 @@ export default function CompanyPage() {
 
   async function createCompany() {
     if (!form.name) { toast.error(t.toastEnterCompanyName); return; }
+    if (!form.orgNumber) { toast.error(t.toastEnterOrgNumber); return; }
     const r = await fetch("/api/company", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form),
     });
