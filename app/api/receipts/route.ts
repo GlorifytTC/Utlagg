@@ -1,15 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { and, count, desc, eq, gte, ilike, inArray, lte, ne, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, ilike, lte, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { receipts, companyMembers } from "@/db/schema";
+import { receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
-import { logAudit, clientIp } from "@/lib/audit";
-import { getUserCompany } from "@/lib/company";
-import { suggestBasCode } from "@/lib/auto-categorize";
-import { getBasAccount } from "@/lib/bas";
-import { meterScan } from "@/lib/billing/metering";
+import { clientIp } from "@/lib/audit";
+import { createReceipt } from "@/lib/receipts/create";
 
 export const runtime = "nodejs";
 
@@ -132,12 +129,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Scan metering — the single choke-point (lib/billing/metering.ts) enforces
-    // the monthly cap, consumes credits before overage, applies the tapered
-    // overage rate and honours the spend cap. Do NOT add cap checks anywhere
-    // else. When PRICING_V2 is off this transparently uses the legacy counter.
-    const meter = await meterScan(userId);
-    if (!meter.allowed) {
+    const result = await createReceipt(userId, parsed.data, clientIp(req));
+    if (!result.ok) {
+      const { meter } = result;
       return NextResponse.json(
         {
           error:
@@ -156,61 +150,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const d = parsed.data;
-    const membership = await getUserCompany(userId);
-    // Members need approval only if the company actually has an approver
-    // (owner/admin/approver besides them). Otherwise auto-approve.
-    let receiptStatus: "pending" | "approved" = "approved";
-    if (membership && membership.role === "member") {
-      const approvers = await db
-        .select({ id: companyMembers.id })
-        .from(companyMembers)
-        .where(
-          and(
-            eq(companyMembers.companyId, membership.companyId),
-            ne(companyMembers.userId, userId),
-            inArray(companyMembers.role, ["owner", "admin", "approver"]),
-          ),
-        );
-      if (approvers.length > 0) receiptStatus = "pending";
-    }
-    // Safety net: if the client didn't send a category (e.g. an older app
-    // build, or a direct API call), suggest one from the vendor name here
-    // too, so receipts never silently land in "no category" when a known
-    // merchant was recognized.
-    const basCode = d.basCode ?? suggestBasCode(d.vendorName) ?? undefined;
-    const category = d.category ?? (basCode ? getBasAccount(basCode)?.name : undefined);
-
-    const [created] = await db
-      .insert(receipts)
-      .values({
-        userId,
-        companyId: membership?.companyId ?? null,
-        imageUrl: d.imageUrl,
-        receiptNumber: d.receiptNumber,
-        vendorName: d.vendorName,
-        date: d.date ? new Date(d.date) : undefined,
-        totalAmount: d.totalAmount?.toFixed(2),
-        vatAmount: d.vatAmount?.toFixed(2),
-        vatRate: d.vatRate,
-        category,
-        basCode,
-        aiConfidence: d.aiConfidence,
-        receiptText: d.receiptText,
-        // Only regular employees (member) need manager approval; owners,
-        // admins, approvers and solo users (no company) are auto-approved.
-        status: receiptStatus,
-      })
-      .returning();
-
-    await logAudit({
-      userId,
-      action: "receipt.create",
-      details: `Receipt ${created.id} (${d.vendorName ?? "okänd"})`,
-      ipAddress: clientIp(req),
-    });
-
-    return NextResponse.json({ receipt: created }, { status: 201 });
+    return NextResponse.json({ receipt: result.receipt }, { status: 201 });
   } catch (err) {
     console.error("receipt create error:", err);
     return NextResponse.json({ error: "Kunde inte spara kvittot" }, { status: 500 });

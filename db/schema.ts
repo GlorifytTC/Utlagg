@@ -127,6 +127,10 @@ export const users = pgTable("users", {
   // --- Referral program (Pricing V2 §4, all nullable / backfilled) ---
   // Unique, non-guessable share code (base32). Backfilled for existing users.
   referralCode: varchar("referral_code", { length: 32 }).unique(),
+  // Per-user inbound-email token (base32, non-guessable). Forms the forwarding
+  // address kvitto+<token>@<inbound domain>; digital receipts (email / Kivra
+  // PDFs) sent there are ingested without OCR. Lazily generated on first view.
+  inboundToken: varchar("inbound_token", { length: 32 }).unique(),
   // Who referred THIS user (immutable once set on signup). Self-ref FK added in
   // the migration to avoid a forward-reference here.
   referredByUserId: uuid("referred_by_user_id"),

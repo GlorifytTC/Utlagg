@@ -290,6 +290,11 @@ export interface Translations {
   phCompany: string;
   setExportTitle: string;
   setExportDesc: string;
+  setEmailIntakeTitle: string;
+  setEmailIntakeDesc: string;
+  setEmailIntakeHint: string;
+  btnCopy: string;
+  btnCopied: string;
   setSkvTitle: string;
   setSkvDesc: string;
   toastCompanySaved: string;
@@ -1293,6 +1298,11 @@ export const strings: Record<Lang, Translations> = {
     phCompany: "Ditt företag AB",
     setExportTitle: "Export & integrationer",
     setExportDesc: "Ladda ner dina data eller koppla bokföring",
+    setEmailIntakeTitle: "Vidarebefordra kvitton via e-post",
+    setEmailIntakeDesc: "Mejla eller vidarebefordra digitala kvitton och Kivra-PDF:er till din personliga adress – de läses in automatiskt utan skanning.",
+    setEmailIntakeHint: "Skicka e-postkvitton och vidarebefordrade Kivra-kvitton (PDF) hit.",
+    btnCopy: "Kopiera",
+    btnCopied: "Kopierad!",
     setSkvTitle: "Skatteverket-export (PRO)",
     setSkvDesc: "Välj period och ladda ner alla kvitton med moms och BAS-konto",
     toastCompanySaved: "Företagsnamn sparat",
@@ -2318,6 +2328,11 @@ export const strings: Record<Lang, Translations> = {
     phCompany: "Your Company Ltd",
     setExportTitle: "Export & integrations",
     setExportDesc: "Download your data or connect accounting",
+    setEmailIntakeTitle: "Forward receipts by email",
+    setEmailIntakeDesc: "Email or forward digital receipts and Kivra PDFs to your personal address — they're read in automatically, no scanning.",
+    setEmailIntakeHint: "Send email receipts and forwarded Kivra receipts (PDF) here.",
+    btnCopy: "Copy",
+    btnCopied: "Copied!",
     setSkvTitle: "Swedish Tax Agency export (PRO)",
     setSkvDesc: "Choose a period and download all receipts with VAT and BAS account",
     toastCompanySaved: "Company name saved",

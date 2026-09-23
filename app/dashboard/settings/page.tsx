@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
+import { EmailIntakeCard } from "@/components/dashboard/EmailIntakeCard";
 
 export default function SettingsPage() {
   const { t } = useLanguage();
@@ -11,6 +12,8 @@ export default function SettingsPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navSettings}</h1>
+
+      <EmailIntakeCard />
 
       <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] dark:border-white/[0.08]">
         <div className="border-b border-gray-900/[0.07] bg-[#F5F4F0] px-6 py-4 dark:border-white/[0.08] dark:bg-[#0D0D0D]">
