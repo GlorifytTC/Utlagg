@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+import { HeroVisual, HeroVisualMobile } from "./HeroVisual";
 
 export function HeroSection() {
   const { t } = useLanguage();
@@ -51,17 +52,17 @@ export function HeroSection() {
               {t.heroCtaPrimary}
             </Link>
             <Link
-              href="#priser"
+              href="/pricing"
               className="rounded-full border border-ink/20 px-7 py-3.5 text-sm font-medium transition hover:border-ink/40 active:scale-[0.97] active:opacity-80"
             >
               {t.heroCtaSecondary}
             </Link>
           </motion.div>
           <p className="mt-5 text-xs text-ink/45">{t.heroDisclaimer}</p>
+          <HeroVisualMobile />
         </div>
 
-        {/* Height placeholder keeps the 2-col grid intact; receipt rendered in the shared Landing3D canvas */}
-        <div className="hidden h-[520px] md:block" aria-hidden />
+        <HeroVisual />
       </div>
     </section>
   );

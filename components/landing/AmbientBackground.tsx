@@ -1,9 +1,14 @@
 // components/landing/AmbientBackground.tsx
 "use client";
 
-import dynamic from "next/dynamic";
-
-const Landing3D = dynamic(() => import("./Landing3D"), { ssr: false });
+// Faint paper receipts drifting behind the content — plain DOM, so crisp at any DPR.
+const BG_RECEIPTS: { pos: React.CSSProperties; w: number; r: number; dur: number; mdOnly?: boolean }[] = [
+  { pos: { top: "62%", left: "3%" }, w: 96, r: -12, dur: 9, mdOnly: true },
+  { pos: { top: "20%", right: "3%" }, w: 80, r: 14, dur: 11 },
+  { pos: { top: "7%", left: "7%" }, w: 64, r: 8, dur: 8 },
+  { pos: { top: "80%", right: "9%" }, w: 84, r: -9, dur: 10 },
+  { pos: { top: "3%", left: "50%" }, w: 60, r: -16, dur: 12, mdOnly: true },
+];
 
 export function AmbientBackground() {
   return (
@@ -39,9 +44,19 @@ export function AmbientBackground() {
         }}
       />
 
-      <div className="absolute inset-0">
-        <Landing3D />
-      </div>
+      {BG_RECEIPTS.map(({ pos, w, r, dur, mdOnly }, i) => (
+        <div
+          key={i}
+          className={mdOnly ? "bg-receipt hidden md:block" : "bg-receipt"}
+          style={{ ...pos, width: w, ["--r" as string]: `${r}deg`, animationDuration: `${dur}s` }}
+        >
+          <div className="mx-auto h-1.5 w-2/3 rounded-full bg-nordic-600/70" />
+          {[70, 55, 80, 45, 65].map((lw, j) => (
+            <div key={j} className="mt-2 h-1 rounded-full bg-[#C7C0B0]" style={{ width: `${lw}%` }} />
+          ))}
+          <div className="mx-auto mt-4 h-1 w-3/4 rounded-full bg-ink/70" />
+        </div>
+      ))}
 
       {/* Paper tint + grain overlay. No backdrop-filter — the tint keeps text
           contrast and everything underneath is already soft. */}

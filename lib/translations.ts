@@ -16,7 +16,18 @@ export interface Translations {
   heroCtaPrimary: string;
   heroCtaSecondary: string;
   heroDisclaimer: string;
-  loading3D: string;
+  heroVisualNewExpense: string;
+  heroVisualReading: string;
+  heroVisualVendor: string;
+  heroVisualAmount: string;
+  heroVisualVat: string;
+  heroVisualAccount: string;
+  heroVisualAccountValue: string;
+  heroVisualItem1: string;
+  heroVisualItem2: string;
+  heroVisualTotal: string;
+  heroVisualReady: string;
+  heroVisualFortnox: string;
 
   // Features
   featuresHeadline: string;
@@ -1558,7 +1569,18 @@ export const strings: Record<Lang, Translations> = {
     heroCtaPrimary: "Starta gratis",
     heroCtaSecondary: "Se priser",
     heroDisclaimer: "25 skanningar/mån gratis · inget kort krävs",
-    loading3D: "Laddar 3D…",
+    heroVisualNewExpense: "Nytt utlägg",
+    heroVisualReading: "Läser…",
+    heroVisualVendor: "Leverantör",
+    heroVisualAmount: "Belopp",
+    heroVisualVat: "Moms",
+    heroVisualAccount: "Konto",
+    heroVisualAccountValue: "6071 Representation",
+    heroVisualItem1: "Dagens lunch ×2",
+    heroVisualItem2: "Kaffe ×2",
+    heroVisualTotal: "Totalt",
+    heroVisualReady: "Godkänt · redo för utbetalning",
+    heroVisualFortnox: "Exporteras till Fortnox",
 
     // Features
     featuresHeadline: "Allt för svensk kvittohantering — på ett ställe.",
@@ -2588,7 +2610,18 @@ export const strings: Record<Lang, Translations> = {
     heroCtaPrimary: "Start free",
     heroCtaSecondary: "See pricing",
     heroDisclaimer: "25 scans/month free · no card required",
-    loading3D: "Loading 3D…",
+    heroVisualNewExpense: "New expense",
+    heroVisualReading: "Reading…",
+    heroVisualVendor: "Vendor",
+    heroVisualAmount: "Amount",
+    heroVisualVat: "VAT",
+    heroVisualAccount: "Account",
+    heroVisualAccountValue: "6071 Entertainment",
+    heroVisualItem1: "Lunch special ×2",
+    heroVisualItem2: "Coffee ×2",
+    heroVisualTotal: "Total",
+    heroVisualReady: "Approved · ready for payout",
+    heroVisualFortnox: "Exports to Fortnox",
 
     // Features
     featuresHeadline:
