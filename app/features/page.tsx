@@ -7,6 +7,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { ChatBox } from "@/components/ChatBox";
+import { VatSplitVisual } from "@/components/landing/PageVisuals";
 
 const COMPARISON_ROWS = [
   {
@@ -51,26 +52,53 @@ function FeaturesPageContent() {
       <main>
         {/* Hero strip */}
         <section className="border-b hairline bg-grain">
-          <div className="mx-auto max-w-6xl px-6 py-20">
-            <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-              {t.features}
-            </p>
-            <motion.h1
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-              className="mt-4 max-w-2xl font-display text-5xl leading-[1.05] md:text-6xl"
-            >
-              {t.featuresHeadline}
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.08 }}
-              className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70"
-            >
-              {t.featuresPageSubtitle}
-            </motion.p>
+          <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center">
+            <div>
+              <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
+                {t.features}
+              </p>
+              <motion.h1
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: "spring", bounce: 0, duration: 0.5 }}
+                className="mt-4 max-w-2xl font-display text-5xl leading-[1.05] md:text-6xl"
+              >
+                {t.featuresHeadline}
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  type: "spring",
+                  bounce: 0,
+                  duration: 0.5,
+                  delay: 0.08,
+                }}
+                className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70"
+              >
+                {t.featuresPageSubtitle}
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  type: "spring",
+                  bounce: 0,
+                  duration: 0.5,
+                  delay: 0.14,
+                }}
+                className="mt-9"
+              >
+                <Link
+                  href="/register"
+                  className="inline-block rounded-full bg-nordic-600 px-7 py-3.5 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
+                >
+                  {t.startFree}
+                </Link>
+                <p className="mt-4 text-xs text-ink/45">{t.heroDisclaimer}</p>
+              </motion.div>
+            </div>
+            <VatSplitVisual />
           </div>
         </section>
 
@@ -83,7 +111,12 @@ function FeaturesPageContent() {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.05 }}
+                transition={{
+                  type: "spring",
+                  bounce: 0,
+                  duration: 0.5,
+                  delay: i * 0.05,
+                }}
                 className="bg-paper p-8 transition-colors hover:bg-ink/[0.02]"
               >
                 <h3 className="font-display text-xl">{f.title}</h3>
@@ -146,12 +179,8 @@ function FeaturesPageContent() {
             className="flex flex-col gap-6 rounded-3xl border hairline bg-paper p-8 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
-              <h2 className="font-display text-2xl">
-                {t.featuresCtaTitle}
-              </h2>
-              <p className="mt-1 text-sm text-ink/60">
-                {t.featuresCtaBody}
-              </p>
+              <h2 className="font-display text-2xl">{t.featuresCtaTitle}</h2>
+              <p className="mt-1 text-sm text-ink/60">{t.featuresCtaBody}</p>
             </div>
             <Link
               href="/register"

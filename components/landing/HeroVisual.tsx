@@ -241,7 +241,7 @@ function ExpenseCard({
   );
 }
 
-function Check({ className }: { className: string }) {
+export function Check({ className }: { className: string }) {
   return (
     <svg
       viewBox="0 0 16 16"

@@ -78,33 +78,42 @@ function ContactContent() {
             <p className="mt-2 text-sm text-ink/60">{t.contactFormDesc}</p>
             <div className="mt-6 space-y-4">
               <div>
-                <label className="text-sm text-ink/70">{t.contactName}</label>
+                <label htmlFor="contact-name" className="text-sm text-ink/70">{t.contactName}</label>
                 <input
+                  id="contact-name"
+                  autoComplete="name"
+                  required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1.5 w-full rounded-xl border border-ink/15 bg-paper px-4 py-3 text-sm outline-none transition focus:border-nordic-600"
+                  className="mt-1.5 w-full rounded-xl border border-ink/15 bg-paper px-4 py-3 text-sm outline-none transition focus:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
                 />
               </div>
               <div>
-                <label className="text-sm text-ink/70">{t.contactEmailField}</label>
+                <label htmlFor="contact-email" className="text-sm text-ink/70">{t.contactEmailField}</label>
                 <input
+                  id="contact-email"
                   type="email"
+                  autoComplete="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1.5 w-full rounded-xl border border-ink/15 bg-paper px-4 py-3 text-sm outline-none transition focus:border-nordic-600"
+                  className="mt-1.5 w-full rounded-xl border border-ink/15 bg-paper px-4 py-3 text-sm outline-none transition focus:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
                 />
               </div>
               <div>
-                <label className="text-sm text-ink/70">{t.contactMessage}</label>
+                <label htmlFor="contact-message" className="text-sm text-ink/70">{t.contactMessage}</label>
                 <textarea
+                  id="contact-message"
+                  required
                   rows={5}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder={t.contactMessagePh}
-                  className="mt-1.5 w-full resize-none rounded-xl border border-ink/15 bg-paper px-4 py-3 text-sm outline-none transition focus:border-nordic-600"
+                  className="mt-1.5 w-full resize-none rounded-xl border border-ink/15 bg-paper px-4 py-3 text-sm outline-none transition focus:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
                 />
               </div>
               <button
+                type="button"
                 onClick={send}
                 disabled={!name || !email || !message}
                 className="w-full rounded-full bg-ink px-6 py-3.5 text-sm font-medium text-paper transition hover:bg-nordic-900 disabled:opacity-40"

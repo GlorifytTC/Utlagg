@@ -28,6 +28,19 @@ export interface Translations {
   heroVisualTotal: string;
   heroVisualReady: string;
   heroVisualFortnox: string;
+  fvRecLodging: string;
+  fvRecBreakfast: string;
+  fvRecParking: string;
+  fvRecToApprove: string;
+  trialTitle: string;
+  trialToday: string;
+  trialTodayBody: string;
+  trialDuring: string;
+  trialDuringBody: string;
+  trialEnd: string;
+  trialEndBody: string;
+  trialNoCard: string;
+  pricingCheckoutError: string;
 
   // Features
   featuresHeadline: string;
@@ -74,7 +87,6 @@ export interface Translations {
   footerGDPR: string;
   footerAudit: string;
   footerCopyright: string;
-  footerDisclaimer: string;
   // Dashboard navigation
   navOverview: string;
   navReceipts: string;
@@ -1188,7 +1200,7 @@ export const strings: Record<Lang, Translations> = {
     aboutStat3Val: "7 år",
     aboutStat3Label: "Arkiv enligt Bokföringslagen",
     aboutCtaTitle: "Redo att förenkla era utlägg?",
-    aboutCtaBody: "Kom igång gratis på några minuter. Inget kort krävs.",
+    aboutCtaBody: "Testa gratis i 30 dagar. Inget kort krävs.",
     contactKicker: "Kontakt",
     contactTitle: "Hör av dig.",
     contactLead: "Frågor om produkten, priser eller din bokföring? Vi svarar normalt inom en arbetsdag.",
@@ -1568,7 +1580,7 @@ export const strings: Record<Lang, Translations> = {
       "Skanna, bokför moms automatiskt och exportera till Skatteverket. Byggd för svenska regler — från BAS-konton till 7-årig revisionslogg.",
     heroCtaPrimary: "Starta gratis",
     heroCtaSecondary: "Se priser",
-    heroDisclaimer: "25 skanningar/mån gratis · inget kort krävs",
+    heroDisclaimer: "30 dagar gratis · inget kort krävs",
     heroVisualNewExpense: "Nytt utlägg",
     heroVisualReading: "Läser…",
     heroVisualVendor: "Leverantör",
@@ -1581,6 +1593,19 @@ export const strings: Record<Lang, Translations> = {
     heroVisualTotal: "Totalt",
     heroVisualReady: "Godkänt · redo för utbetalning",
     heroVisualFortnox: "Exporteras till Fortnox",
+    fvRecLodging: "Logi 1 natt",
+    fvRecBreakfast: "Frukost",
+    fvRecParking: "Parkering",
+    fvRecToApprove: "Att attestera",
+    trialTitle: "Din provperiod",
+    trialToday: "Idag",
+    trialTodayBody: "Full Pro-åtkomst · 500 skanningar",
+    trialDuring: "Dag 1–30",
+    trialDuringBody: "Skanna, attestera, exportera",
+    trialEnd: "Dag 30",
+    trialEndBody: "Välj paket eller avsluta — din data finns kvar",
+    trialNoCard: "Inget kort krävs",
+    pricingCheckoutError: "Kunde inte starta betalningen. Försök igen.",
 
     // Features
     featuresHeadline: "Allt för svensk kvittohantering — på ett ställe.",
@@ -1652,14 +1677,12 @@ export const strings: Record<Lang, Translations> = {
     ],
 
     // Footer
-    footerTitle: "Kvitto",
+    footerTitle: "Kvittino",
     footerDescription:
       "AI-driven kvittohantering byggd för svenska moms- och bokföringsregler.",
     footerGDPR: "GDPR-säker",
     footerAudit: "7-årig revisionslogg",
     footerCopyright: "© {year} GlorifyTC.",
-    footerDisclaimer:
-      "Detta är en startmall — verifiera moms- och bokföringsregler med din revisor innan produktion.",
 
 
     // lib/translations.ts — ADD these values to strings.sv
@@ -1668,9 +1691,9 @@ export const strings: Record<Lang, Translations> = {
     featuresCompareCapability: "Funktion",
     featuresCompareUtlagg: "Kvittino",
     featuresCompareTraditional: "Traditionella verktyg",
-    featuresCompareOcrLabel: "OCR-träffsäkerhet",
-    featuresCompareOcrUtlagg: "98 %+",
-    featuresCompareOcrTraditional: "70–85 %",
+    featuresCompareOcrLabel: "Kvittoläsning",
+    featuresCompareOcrUtlagg: "Leverantör, datum, belopp och moms läses av automatiskt",
+    featuresCompareOcrTraditional: "Manuell inmatning",
     featuresCompareBasLabel: "BAS-kontoplan",
     featuresCompareBasUtlagg: "Automatisk, självkorrigerande",
     featuresCompareBasTraditional: "Manuell eller mallbaserad",
@@ -1678,24 +1701,24 @@ export const strings: Record<Lang, Translations> = {
     featuresCompareVatUtlagg: "6 / 12 / 25 % identifieras automatiskt",
     featuresCompareVatTraditional: "Ofta konfigurerat per leverantör",
     featuresCompareDataLabel: "Datalagring",
-    featuresCompareDataUtlagg: "Sverige",
-    featuresCompareDataTraditional: "EU eller USA",
+    featuresCompareDataUtlagg: "Primärt i Sverige, inom EU/EES",
+    featuresCompareDataTraditional: "Varierar mellan leverantörer",
     featuresCtaTitle: "Redo att testa funktionerna?",
-    featuresCtaBody: "Skapa ett gratis konto och ladda upp ditt första kvitto på under en minut.",
-    pricingPageSubtitle: "Börja gratis. Uppgradera när teamet växer. Alla paket inkluderar obegränsad kvittolagring och sju års regelefterlevnad.",
+    featuresCtaBody: "Testa gratis i 30 dagar och ladda upp ditt första kvitto på under en minut.",
+    pricingPageSubtitle: "Testa allt i Pro gratis i 30 dagar. Välj paket när du är redo — ingen bindningstid.",
     pricingComparisonTitle: "Fullständig funktionsjämförelse",
     pricingFaqTitle: "Vanliga frågor",
-    pricingBottomTitle: "Börja med gratisplanen",
-    pricingBottomSubtitle: "Inget kort krävs. Uppgradera när du behöver mer.",
-    pricingCalloutSubtitle: "Gratisplan tillgänglig. Inget kort krävs.",
+    pricingBottomTitle: "Testa Kvittino gratis i 30 dagar",
+    pricingBottomSubtitle: "Inget kort krävs. Full Pro-åtkomst från dag ett.",
+    pricingCalloutSubtitle: "Testa Pro gratis i 30 dagar. Inget kort krävs.",
     pricingFaq1Q: "Kan jag byta paket senare?",
     pricingFaq1A: "Ja. Uppgradera eller nedgradera när som helst. Om du nedgraderar mitt i en period träder det nya paketet i kraft vid nästa faktureringsperiod.",
     pricingFaq2Q: "Finns det någon bindningstid?",
     pricingFaq2A: "Nej. Alla betalda paket faktureras månadsvis. Avsluta när som helst från dina kontoinställningar.",
     pricingFaq3Q: "Hanterar ni icke-svenska kvitton?",
     pricingFaq3A: "Ja. Vår OCR-modell hanterar kvitton på svenska, engelska, norska, danska, finska och tyska — med automatisk valutaomvandling.",
-    pricingFaq4Q: "Hur fungerar gratisperioden?",
-    pricingFaq4A: "Pro-paketet inkluderar 14 dagars gratis provperiod. Ingen debitering förrän provperioden löper ut. Du kan nedgradera till Gratis under provperioden och behålla din data.",
+    pricingFaq4Q: "Hur fungerar provperioden?",
+    pricingFaq4A: "30 dagar med full Pro-åtkomst och 500 skanningar, utan kort. När perioden är slut väljer du paket — din data finns kvar.",
     pricingTableReceipts: "Kvitton per månad",
     pricingTableMembers: "Teammedlemmar",
     pricingTableOcr: "AI-OCR",
@@ -2229,7 +2252,7 @@ export const strings: Record<Lang, Translations> = {
     aboutStat3Val: "7 years",
     aboutStat3Label: "Archive per the Bookkeeping Act",
     aboutCtaTitle: "Ready to simplify your expenses?",
-    aboutCtaBody: "Get started free in minutes. No card required.",
+    aboutCtaBody: "Try it free for 30 days. No card required.",
     contactKicker: "Contact",
     contactTitle: "Get in touch.",
     contactLead: "Questions about the product, pricing or your bookkeeping? We usually reply within one business day.",
@@ -2609,7 +2632,7 @@ export const strings: Record<Lang, Translations> = {
       "Scan, automate VAT bookkeeping and export to the Swedish Tax Agency. Built for Swedish regulations — from BAS accounts to 7-year audit logs.",
     heroCtaPrimary: "Start free",
     heroCtaSecondary: "See pricing",
-    heroDisclaimer: "25 scans/month free · no card required",
+    heroDisclaimer: "30 days free · no card required",
     heroVisualNewExpense: "New expense",
     heroVisualReading: "Reading…",
     heroVisualVendor: "Vendor",
@@ -2622,6 +2645,19 @@ export const strings: Record<Lang, Translations> = {
     heroVisualTotal: "Total",
     heroVisualReady: "Approved · ready for payout",
     heroVisualFortnox: "Exports to Fortnox",
+    fvRecLodging: "Lodging, 1 night",
+    fvRecBreakfast: "Breakfast",
+    fvRecParking: "Parking",
+    fvRecToApprove: "To approve",
+    trialTitle: "Your trial",
+    trialToday: "Today",
+    trialTodayBody: "Full Pro access · 500 scans",
+    trialDuring: "Days 1–30",
+    trialDuringBody: "Scan, approve, export",
+    trialEnd: "Day 30",
+    trialEndBody: "Pick a plan or cancel — your data stays",
+    trialNoCard: "No card required",
+    pricingCheckoutError: "Couldn't start checkout. Please try again.",
 
     // Features
     featuresHeadline:
@@ -2690,14 +2726,12 @@ export const strings: Record<Lang, Translations> = {
     ],
 
     // Footer
-    footerTitle: "Receipt",
+    footerTitle: "Kvittino",
     footerDescription:
       "AI-driven receipt management built for Swedish VAT and bookkeeping regulations.",
     footerGDPR: "GDPR-safe",
     footerAudit: "7-year audit log",
     footerCopyright: "© {year} GlorifyTC.",
-    footerDisclaimer:
-      "This is a starter template — verify VAT and bookkeeping rules with your accountant before production.",
 
     // lib/translations.ts — ADD these values to strings.en (mirror the Swedish keys)
     featuresPageSubtitle: "Six capabilities purpose-built for Swedish companies, sole traders, and accounting firms.",
@@ -2705,9 +2739,9 @@ export const strings: Record<Lang, Translations> = {
     featuresCompareCapability: "Capability",
     featuresCompareUtlagg: "Kvittino",
     featuresCompareTraditional: "Traditional tools",
-    featuresCompareOcrLabel: "Receipt OCR accuracy",
-    featuresCompareOcrUtlagg: "98 %+",
-    featuresCompareOcrTraditional: "70–85 %",
+    featuresCompareOcrLabel: "Receipt capture",
+    featuresCompareOcrUtlagg: "Vendor, date, amount and VAT read automatically",
+    featuresCompareOcrTraditional: "Manual entry",
     featuresCompareBasLabel: "BAS mapping",
     featuresCompareBasUtlagg: "Automatic, self-correcting",
     featuresCompareBasTraditional: "Manual or template-based",
@@ -2715,24 +2749,24 @@ export const strings: Record<Lang, Translations> = {
     featuresCompareVatUtlagg: "6 / 12 / 25 % auto-detected",
     featuresCompareVatTraditional: "Often configured per-vendor",
     featuresCompareDataLabel: "Data residency",
-    featuresCompareDataUtlagg: "Sweden",
-    featuresCompareDataTraditional: "EU or US",
+    featuresCompareDataUtlagg: "Primarily in Sweden, within the EU/EEA",
+    featuresCompareDataTraditional: "Varies by vendor",
     featuresCtaTitle: "Ready to try the features?",
-    featuresCtaBody: "Create a free account and upload your first receipt in under a minute.",
-    pricingPageSubtitle: "Start for free. Upgrade when your team grows. Every plan includes unlimited receipt storage and seven-year compliance archiving.",
+    featuresCtaBody: "Try it free for 30 days and upload your first receipt in under a minute.",
+    pricingPageSubtitle: "Try everything in Pro free for 30 days. Pick a plan when you're ready — no lock-in.",
     pricingComparisonTitle: "Full feature comparison",
     pricingFaqTitle: "Common questions",
-    pricingBottomTitle: "Start with the free plan",
-    pricingBottomSubtitle: "No credit card required. Upgrade when you need more.",
-    pricingCalloutSubtitle: "Free plan available. No credit card required.",
+    pricingBottomTitle: "Try Kvittino free for 30 days",
+    pricingBottomSubtitle: "No card required. Full Pro access from day one.",
+    pricingCalloutSubtitle: "Try Pro free for 30 days. No card required.",
     pricingFaq1Q: "Can I switch plans later?",
     pricingFaq1A: "Yes. Upgrade or downgrade at any time. If you downgrade mid-cycle, the new plan takes effect at the next billing period.",
     pricingFaq2Q: "Is there a long-term commitment?",
     pricingFaq2A: "No. All paid plans are billed monthly. Cancel anytime from your account settings.",
     pricingFaq3Q: "Do you handle non-Swedish receipts?",
     pricingFaq3A: "Yes. Our OCR model handles receipts in Swedish, English, Norwegian, Danish, Finnish, and German — with automatic currency conversion.",
-    pricingFaq4Q: "How does the free trial work?",
-    pricingFaq4A: "The Pro plan includes a 14-day free trial. No charge until the trial ends. You can downgrade to Free during the trial and keep your data.",
+    pricingFaq4Q: "How does the trial work?",
+    pricingFaq4A: "30 days of full Pro access and 500 scans, no card. When it ends you pick a plan — your data stays.",
     pricingTableReceipts: "Receipts per month",
     pricingTableMembers: "Team members",
     pricingTableOcr: "AI OCR",
