@@ -14,6 +14,7 @@ export function Footer() {
       links: [
         { href: "/features", label: t.features },
         { href: "/pricing", label: t.pricing },
+        { href: "/for-accountants", label: t.forFirms },
       ],
     },
     {

@@ -173,7 +173,7 @@ function ExpenseCard({
       style={style}
     >
       <div className="flex items-center gap-3">
-        <div className="grid h-9 w-9 place-items-center rounded-full bg-nordic-50 text-xs font-semibold text-nordic-700">
+        <div className="grid h-9 w-9 place-items-center rounded-full light-surface bg-nordic-50 text-xs font-semibold text-nordic-700">
           AL
         </div>
         <div className="min-w-0 flex-1">

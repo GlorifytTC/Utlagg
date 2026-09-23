@@ -10,11 +10,12 @@ import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { StructuredData } from "@/components/StructuredData";
 import { useLanguage } from "@/context/LanguageContext";
 import { ChatBox } from "@/components/ChatBox";
+import { Testimonials } from "@/components/landing/Testimonials";
 
 const TEASER_FEATURES = [
-  { key: "feature1" },
-  { key: "feature2" },
-  { key: "feature3" },
+  { key: "feature7" },
+  { key: "feature8" },
+  { key: "feature9" },
 ] as const;
 
 function HomeContent() {
@@ -28,6 +29,65 @@ function HomeContent() {
 
       <main>
         <HeroSection />
+
+        {/* Audience split: businesses and accounting firms are both buyers */}
+        <section className="mx-auto grid max-w-6xl gap-4 px-6 pb-20 md:grid-cols-2">
+          {[
+            {
+              href: "/features",
+              kicker: t.audienceCompanyKicker,
+              title: t.audienceCompanyTitle,
+              body: t.audienceCompanyBody,
+              cta: t.audienceCompanyCta,
+            },
+            {
+              href: "/for-accountants",
+              kicker: t.audienceFirmKicker,
+              title: t.audienceFirmTitle,
+              body: t.audienceFirmBody,
+              cta: t.audienceFirmCta,
+              tag: t.audienceFree,
+            },
+          ].map((a, i) => (
+            <motion.div
+              key={a.href}
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                type: "spring",
+                bounce: 0,
+                duration: 0.5,
+                delay: i * 0.08,
+              }}
+            >
+              <Link
+                href={a.href}
+                className="group flex h-full flex-col rounded-3xl border hairline bg-paper p-8 transition hover:border-ink/30"
+              >
+                <p className="flex items-center gap-2 font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
+                  {a.kicker}
+                  {a.tag && (
+                    <span className="light-surface rounded-full bg-nordic-50 px-2 py-0.5 text-[10px] font-semibold tracking-wider text-nordic-700">
+                      {a.tag}
+                    </span>
+                  )}
+                </p>
+                <h2 className="mt-3 font-display text-3xl leading-tight">
+                  {a.title}
+                </h2>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-ink/65">
+                  {a.body}
+                </p>
+                <span className="mt-6 text-sm font-medium text-ink transition group-hover:text-nordic-600">
+                  {a.cta} →
+                </span>
+              </Link>
+            </motion.div>
+          ))}
+        </section>
+
+        <Testimonials audience="company" />
 
         {/* Feature teaser */}
         <section className="border-y hairline bg-grain">
@@ -51,7 +111,12 @@ function HomeContent() {
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.07 }}
+                  transition={{
+                    type: "spring",
+                    bounce: 0,
+                    duration: 0.5,
+                    delay: i * 0.07,
+                  }}
                   className="bg-paper p-8 transition-colors hover:bg-ink/[0.02]"
                 >
                   <h3 className="font-display text-xl">
@@ -93,12 +158,21 @@ function HomeContent() {
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.1 }}
+                transition={{
+                  type: "spring",
+                  bounce: 0,
+                  duration: 0.5,
+                  delay: i * 0.1,
+                }}
                 className="relative border-t-2 border-ink pt-6"
               >
-                <span className="font-display text-5xl text-nordic-600/90">{s.n}</span>
+                <span className="font-display text-5xl text-nordic-600/90">
+                  {s.n}
+                </span>
                 <h3 className="mt-4 font-display text-2xl">{s.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-ink/65">{s.body}</p>
+                <p className="mt-3 text-sm leading-relaxed text-ink/65">
+                  {s.body}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -121,6 +195,14 @@ function HomeContent() {
               <p className="mt-1 text-sm text-ink/60">
                 {t.pricingCalloutSubtitle}
               </p>
+              <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-xs text-ink/55">
+                {[t.trustBankid, t.trustAudit, t.trustEu].map((x) => (
+                  <li key={x} className="flex items-center gap-1.5">
+                    <span className="h-1 w-1 rounded-full bg-nordic-600" />
+                    {x}
+                  </li>
+                ))}
+              </ul>
             </div>
             <div className="flex shrink-0 flex-wrap gap-3">
               <Link

@@ -26,6 +26,11 @@ const COMPARISON_ROWS = [
     tradKey: "featuresCompareVatTraditional",
   },
   {
+    labelKey: "featuresCompareFirmLabel",
+    utlaggKey: "featuresCompareFirmUtlagg",
+    tradKey: "featuresCompareFirmTraditional",
+  },
+  {
     labelKey: "featuresCompareDataLabel",
     utlaggKey: "featuresCompareDataUtlagg",
     tradKey: "featuresCompareDataTraditional",
@@ -35,13 +40,32 @@ const COMPARISON_ROWS = [
 function FeaturesPageContent() {
   const { t } = useLanguage();
 
-  const FEATURES = [
-    { title: t.feature1Title, body: t.feature1Body },
-    { title: t.feature2Title, body: t.feature2Body },
-    { title: t.feature3Title, body: t.feature3Body },
-    { title: t.feature4Title, body: t.feature4Body },
-    { title: t.feature5Title, body: t.feature5Body },
-    { title: t.feature6Title, body: t.feature6Body },
+  // Grouped by where the receipt is in its life: capture → review → deliver.
+  const GROUPS = [
+    {
+      label: t.featuresGroupCapture,
+      items: [
+        { title: t.feature1Title, body: t.feature1Body },
+        { title: t.feature7Title, body: t.feature7Body },
+        { title: t.feature6Title, body: t.feature6Body },
+      ],
+    },
+    {
+      label: t.featuresGroupReview,
+      items: [
+        { title: t.feature2Title, body: t.feature2Body },
+        { title: t.feature3Title, body: t.feature3Body },
+        { title: t.feature8Title, body: t.feature8Body },
+      ],
+    },
+    {
+      label: t.featuresGroupDeliver,
+      items: [
+        { title: t.feature5Title, body: t.feature5Body },
+        { title: t.feature9Title, body: t.feature9Body },
+        { title: t.feature4Title, body: t.feature4Body },
+      ],
+    },
   ];
 
   return (
@@ -103,29 +127,37 @@ function FeaturesPageContent() {
         </section>
 
         {/* Grid */}
-        <section className="mx-auto max-w-6xl px-6 py-24">
-          <div className="grid gap-px overflow-hidden rounded-2xl border hairline bg-ink/10 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f, i) => (
-              <motion.div
-                key={f.title}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{
-                  type: "spring",
-                  bounce: 0,
-                  duration: 0.5,
-                  delay: i * 0.05,
-                }}
-                className="bg-paper p-8 transition-colors hover:bg-ink/[0.02]"
-              >
-                <h3 className="font-display text-xl">{f.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-ink/70">
-                  {f.body}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+        <section className="mx-auto max-w-6xl space-y-14 px-6 py-24">
+          {GROUPS.map((g) => (
+            <div key={g.label}>
+              <h2 className="mb-5 flex items-center gap-4 font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
+                {g.label}
+                <span className="h-px flex-1 bg-ink/10" />
+              </h2>
+              <div className="grid gap-px overflow-hidden rounded-2xl border hairline bg-ink/10 sm:grid-cols-2 lg:grid-cols-3">
+                {g.items.map((f, i) => (
+                  <motion.div
+                    key={f.title}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{
+                      type: "spring",
+                      bounce: 0,
+                      duration: 0.5,
+                      delay: i * 0.05,
+                    }}
+                    className="bg-paper p-8 transition-colors hover:bg-ink/[0.02]"
+                  >
+                    <h3 className="font-display text-xl">{f.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-ink/70">
+                      {f.body}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          ))}
         </section>
 
         {/* Comparison table */}
@@ -189,6 +221,12 @@ function FeaturesPageContent() {
               {t.startFree}
             </Link>
           </motion.div>
+          <Link
+            href="/for-accountants"
+            className="mt-6 inline-block text-sm text-nordic-600 transition hover:underline"
+          >
+            {t.featuresFirmLink} →
+          </Link>
         </section>
       </main>
 

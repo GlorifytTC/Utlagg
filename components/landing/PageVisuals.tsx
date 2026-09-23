@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { Check } from "./HeroVisual";
 
@@ -43,7 +44,7 @@ export function VatSplitVisual() {
                 <span className="min-w-0 flex-1 truncate">{l.name}</span>
                 <motion.span
                   {...chip(i)}
-                  className="rounded-full bg-nordic-50 px-2 py-0.5 font-sans text-[10px] font-semibold text-nordic-700"
+                  className="rounded-full light-surface bg-nordic-50 px-2 py-0.5 font-sans text-[10px] font-semibold text-nordic-700"
                 >
                   {l.vat}
                 </motion.span>
@@ -139,6 +140,115 @@ export function TrialVisual() {
         <Check className="h-3.5 w-3.5" />
         {t.trialNoCard}
       </p>
+    </div>
+  );
+}
+
+const QUEUE_CLIENTS = [
+  { name: "Bageri Norrsken AB", n: 4 },
+  { name: "Fjällbygg HB", n: 3 },
+  { name: "Studio Ljung", n: 2 },
+  { name: "Kaffebaren i Umeå", n: 1 },
+];
+const QUEUE_AMOUNTS = ["428,00", "1 250,00", "89,00", "3 120,00", "215,50"];
+
+/** For-firms hero: the accountant's "Att göra" queue working itself down. The client
+ *  with the most unreviewed receipts sorts to the top, one receipt is stamped at a time,
+ *  and it stops at "all clear" (plays once, ~11 s, only while in view: no endless loop).
+ *  Mirrors the real queue in app/api/accountant/attention. Reduced motion = static start. */
+export function WorkQueueVisual() {
+  const { t } = useLanguage();
+  const reduced = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref);
+  const [q, setQ] = useState({ counts: QUEUE_CLIENTS.map((c) => c.n), last: -1, tick: 0 });
+
+  const total = q.counts.reduce((a, b) => a + b, 0);
+  const done = total === 0;
+
+  useEffect(() => {
+    if (reduced || !inView || done) return;
+    const id = setInterval(() => {
+      setQ(({ counts, tick }) => {
+        const i = counts.indexOf(Math.max(...counts));
+        const next = [...counts];
+        next[i]--;
+        return { counts: next, last: i, tick: tick + 1 };
+      });
+    }, 1100);
+    return () => clearInterval(id);
+  }, [reduced, inView, done]);
+  const rows = QUEUE_CLIENTS.map((c, i) => ({ ...c, i, n: q.counts[i] })).sort(
+    (a, b) => b.n - a.n || a.i - b.i,
+  );
+
+  return (
+    <div ref={ref} aria-hidden className="relative mx-auto w-full max-w-md select-none pb-20">
+      <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(var(--accent)/0.14),transparent_70%)]" />
+
+      <div className="relative rounded-2xl bg-white/95 p-5 shadow-[0_1px_2px_rgba(26,26,26,0.06),0_24px_60px_-16px_rgba(26,26,26,0.3)] ring-1 ring-ink/5">
+        <div className="flex items-baseline justify-between">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-nordic-600">
+            {t.fbVisTitle}
+          </p>
+          <p className="text-xs tabular-nums text-ink/50">
+            {done ? t.fbVisAllClear : `${total} ${t.fbVisToReview}`}
+          </p>
+        </div>
+        <ul className="mt-4 space-y-1.5">
+          {rows.map((r) => (
+            <motion.li
+              key={r.name}
+              layout={!reduced}
+              transition={{ type: "spring", bounce: 0, duration: 0.45 }}
+              className="flex items-center gap-3 rounded-xl bg-ink/[0.03] px-3 py-2.5"
+            >
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink/5 text-[11px] font-semibold text-ink/60">
+                {r.name[0]}
+              </span>
+              <span className="min-w-0 flex-1 truncate text-sm text-ink">{r.name}</span>
+              {r.n > 0 ? (
+                <motion.span
+                  key={r.n}
+                  initial={reduced ? false : { scale: 0.7 }}
+                  animate={{ scale: 1 }}
+                  transition={pop}
+                  className="min-w-7 rounded-full light-surface bg-nordic-50 px-2 py-0.5 text-center text-xs font-semibold tabular-nums text-nordic-700"
+                >
+                  {r.n}
+                </motion.span>
+              ) : (
+                <Check className="h-4 w-4 text-emerald-600" />
+              )}
+            </motion.li>
+          ))}
+        </ul>
+      </div>
+
+      {/* The receipt that was just stamped */}
+      <AnimatePresence mode="popLayout">
+        {q.last >= 0 && (
+          <motion.div
+            key={q.tick}
+            initial={{ opacity: 0, y: 14, rotate: -4 }}
+            animate={{ opacity: 1, y: 0, rotate: -2 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={pop}
+            className="absolute bottom-0 right-2 w-56 rounded-xl bg-[#FFFDF8] p-3.5 font-mono text-[11px] text-ink/70 shadow-[0_18px_40px_-14px_rgba(26,26,26,0.35)] ring-1 ring-ink/5"
+          >
+            <p className="truncate font-sans text-xs font-semibold text-ink">
+              {QUEUE_CLIENTS[q.last].name}
+            </p>
+            <div className="mt-1 flex items-center justify-between">
+              <span>{QUEUE_AMOUNTS[q.tick % QUEUE_AMOUNTS.length]} kr</span>
+              <span className="inline-flex -rotate-6 items-center gap-1 rounded border-2 border-emerald-600/70 px-1.5 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                <Check className="h-3 w-3" />
+                {t.fbVisReviewed}
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

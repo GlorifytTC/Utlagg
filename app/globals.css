@@ -21,6 +21,14 @@
   --accent-tint: 45 26 18;     /* deep terracotta tint */
 }
 
+/* Marketing cards and chips stay light in both themes, so pin the light accent
+   there; otherwise nordic-50 turns into a dark-brown pill on a white card. */
+.light-surface {
+  --accent: 196 82 47;
+  --accent-strong: 165 64 31;
+  --accent-tint: 246 236 231;
+}
+
 html {
   scroll-behavior: smooth;
 }

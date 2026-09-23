@@ -253,6 +253,87 @@ export interface Translations {
   featuresCompareDataTraditional: string;
   featuresCtaTitle: string;
   featuresCtaBody: string;
+  feature7Title: string;
+  feature7Body: string;
+  feature8Title: string;
+  feature8Body: string;
+  feature9Title: string;
+  feature9Body: string;
+  featuresGroupCapture: string;
+  featuresGroupReview: string;
+  featuresGroupDeliver: string;
+  featuresCompareFirmLabel: string;
+  featuresCompareFirmUtlagg: string;
+  featuresCompareFirmTraditional: string;
+  featuresFirmLink: string;
+  forFirms: string;
+  audienceCompanyKicker: string;
+  audienceCompanyTitle: string;
+  audienceCompanyBody: string;
+  audienceCompanyCta: string;
+  audienceFirmKicker: string;
+  audienceFirmTitle: string;
+  audienceFirmBody: string;
+  audienceFirmCta: string;
+  audienceFree: string;
+  trustBankid: string;
+  trustAudit: string;
+  trustEu: string;
+  fbKicker: string;
+  fbTitle: string;
+  fbSubtitle: string;
+  fbCta: string;
+  fbCtaSecondary: string;
+  fbDisclaimer: string;
+  fbQueueKicker: string;
+  fbQueueTitle: string;
+  fbQueueBody: string;
+  fbQueue1Title: string;
+  fbQueue1Body: string;
+  fbQueue2Title: string;
+  fbQueue2Body: string;
+  fbQueue3Title: string;
+  fbQueue3Body: string;
+  fbQueue4Title: string;
+  fbQueue4Body: string;
+  fbWorkTitle: string;
+  fbWork1Title: string;
+  fbWork1Body: string;
+  fbWork2Title: string;
+  fbWork2Body: string;
+  fbWork3Title: string;
+  fbWork3Body: string;
+  fbWork4Title: string;
+  fbWork4Body: string;
+  fbWork5Title: string;
+  fbWork5Body: string;
+  fbWork6Title: string;
+  fbWork6Body: string;
+  fbGrowKicker: string;
+  fbGrowTitle: string;
+  fbGrowBody: string;
+  fbGrow1Title: string;
+  fbGrow1Body: string;
+  fbGrow2Title: string;
+  fbGrow2Body: string;
+  fbGrow3Title: string;
+  fbGrow3Body: string;
+  fbHowKicker: string;
+  fbHowTitle: string;
+  fbStep1Title: string;
+  fbStep1Body: string;
+  fbStep2Title: string;
+  fbStep2Body: string;
+  fbStep3Title: string;
+  fbStep3Body: string;
+  fbStep4Title: string;
+  fbStep4Body: string;
+  fbCtaTitle: string;
+  fbCtaBody: string;
+  fbVisTitle: string;
+  fbVisReviewed: string;
+  fbVisAllClear: string;
+  fbVisToReview: string;
   pricingPageSubtitle: string;
   pricingComparisonTitle: string;
   pricingFaqTitle: string;
@@ -1621,12 +1702,12 @@ export const strings: Record<Lang, Translations> = {
     feature4Title: "7-årig revisionslogg",
     feature4Body:
       "Varje åtgärd loggas med tidsstämpel och IP enligt bokföringslagen.",
-    feature5Title: "Export till Skatteverket",
+    feature5Title: "SIE, CSV, PDF & Fortnox",
     feature5Body:
-      "Ladda ner som CSV eller PDF — redo för din revisor eller bokföring.",
-    feature6Title: "Kollektivtrafik & ersättning",
+      "Exportera i formatet din bokföring vill ha, eller skicka direkt till Fortnox.",
+    feature6Title: "Milersättning & kollektivtrafik",
     feature6Body:
-      "Registrera resor med kollektivtrafik och beräkna ersättning automatiskt enligt företagets regler eller Skatteverkets schabloner.",
+      "Logga körda mil med sparade rutter och fordon, eller registrera kollektivtrafikbiljetter. Ersättningen räknas ut enligt Skatteverkets schabloner eller företagets regler.",
 
     // Pricing
     pricingTagline: "Priser",
@@ -1686,7 +1767,7 @@ export const strings: Record<Lang, Translations> = {
 
 
     // lib/translations.ts — ADD these values to strings.sv
-    featuresPageSubtitle: "Sex funktioner byggda för svenska företag, enskilda firmor och redovisningsbyråer.",
+    featuresPageSubtitle: "Från kvittot till bokföringen: fånga, granska och leverera. Byggt för svenska företag, enskilda firmor och redovisningsbyråer.",
     featuresCompareTitle: "Så jämför sig Kvittino",
     featuresCompareCapability: "Funktion",
     featuresCompareUtlagg: "Kvittino",
@@ -1705,6 +1786,87 @@ export const strings: Record<Lang, Translations> = {
     featuresCompareDataTraditional: "Varierar mellan leverantörer",
     featuresCtaTitle: "Redo att testa funktionerna?",
     featuresCtaBody: "Testa gratis i 30 dagar och ladda upp ditt första kvitto på under en minut.",
+    feature7Title: "Vidarebefordra kvitton",
+    feature7Body: "Mejlkvitton och Kivra-PDF:er skickas till din egen Kvittino-adress och läses in automatiskt. Ingen skanning.",
+    feature8Title: "Attest och roller",
+    feature8Body: "Utlägg går till rätt attestant innan de bokförs. Ägare, administratörer, attestanter och medlemmar har olika behörighet.",
+    feature9Title: "Din byrå i appen",
+    feature9Body: "Koppla din redovisningskonsult till företaget. Byrån granskar och rättar direkt, och ni chattar om kvittot där det ligger.",
+    featuresGroupCapture: "Fånga",
+    featuresGroupReview: "Granska",
+    featuresGroupDeliver: "Leverera",
+    featuresCompareFirmLabel: "Samarbete med byrån",
+    featuresCompareFirmUtlagg: "Byrån granskar i appen, chatt per kvitto",
+    featuresCompareFirmTraditional: "Pärmar och mejl med bilagor",
+    featuresFirmLink: "Är du redovisningskonsult? Se hur byråer använder Kvittino",
+    forFirms: "För byråer",
+    audienceCompanyKicker: "För företag",
+    audienceCompanyTitle: "Kvitton in, bokföringsunderlag ut",
+    audienceCompanyBody: "Fota, mejla eller vidarebefordra kvitton. Moms, BAS-konto och attest sköts innan det når bokföringen.",
+    audienceCompanyCta: "Se funktionerna",
+    audienceFirmKicker: "För redovisningsbyråer",
+    audienceFirmTitle: "Alla klienters kvitton i en kö",
+    audienceFirmBody: "Se vad som behöver granskas hos varje klient, rätta direkt och exportera SIE per klient.",
+    audienceFirmCta: "Så fungerar det för byråer",
+    audienceFree: "Gratis",
+    trustBankid: "Inloggning med BankID",
+    trustAudit: "7-årig revisionslogg",
+    trustEu: "Primär lagring i Sverige och EU",
+    fbKicker: "För redovisningsbyråer",
+    fbTitle: "Alla klienters kvitton. En lista att beta av.",
+    fbSubtitle: "Kvittino samlar klienternas utlägg i en arbetsyta och visar exakt vad som behöver granskas. Byråkontot är gratis. Klienterna betalar sitt eget abonnemang.",
+    fbCta: "Skapa gratis byråkonto",
+    fbCtaSecondary: "Så fungerar det",
+    fbDisclaimer: "Gratis för byråer · inget kort krävs",
+    fbQueueKicker: "Att göra",
+    fbQueueTitle: "Kön sorterar sig själv",
+    fbQueueBody: "Du ser vad som väntar hos alla klienter på en gång. Klienten som behöver mest uppmärksamhet ligger överst.",
+    fbQueue1Title: "Att granska",
+    fbQueue1Body: "Nya kvitton som ingen på byrån har tittat på ännu.",
+    fbQueue2Title: "Saknar moms eller BAS",
+    fbQueue2Body: "Kvitton där moms, kategori eller konto saknas. Du hittar dem före bokslutet, inte under.",
+    fbQueue3Title: "Osäkra AI-avläsningar",
+    fbQueue3Body: "När AI:n är osäker på en avläsning flaggas kvittot, så du dubbelkollar bara det som behövs.",
+    fbQueue4Title: "Väntar på attest",
+    fbQueue4Body: "Utlägg som klientens attestant inte har godkänt ännu.",
+    fbWorkTitle: "En arbetsyta för hela byrån",
+    fbWork1Title: "Nyckeltal per klient",
+    fbWork1Body: "Månadens utgifter, moms och en tolvmånaderstrend för varje klient. Byråvyn visar granskade kvitton över året.",
+    fbWork2Title: "Rätta direkt",
+    fbWork2Body: "Ändra belopp, moms eller BAS-konto på klientens kvitto och markera det som granskat. Inget mejlande fram och tillbaka.",
+    fbWork3Title: "SIE och CSV per klient",
+    fbWork3Body: "Exportera en klients period och läs in den i ert bokföringsprogram.",
+    fbWork4Title: "Chatt per klient",
+    fbWork4Body: "Frågor om ett kvitto ställs där kvittot finns. Alla klientchattar samlas i en inkorg.",
+    fbWork5Title: "Team och kunduppdrag",
+    fbWork5Body: "Bjud in medarbetare som ägare, administratör eller medarbetare. Medarbetare ser bara de kunder de är kopplade till.",
+    fbWork6Title: "Spårbart för klienten",
+    fbWork6Body: "Allt du gör loggas. Klienten ser din aktivitet i sin egen vy.",
+    fbGrowKicker: "Väx",
+    fbGrowTitle: "Nya klienter hittar dig",
+    fbGrowBody: "Företag i Kvittino kan söka redovisningskonsult direkt i appen. Fyll i din profil så syns du.",
+    fbGrow1Title: "Profil i marknadsplatsen",
+    fbGrow1Body: "Stad, specialiseringar, beskrivning och byråns logotyp.",
+    fbGrow2Title: "Förfrågningar åt båda hållen",
+    fbGrow2Body: "Företag kan be dig bli deras byrå, och du kan kontakta företag som valt att synas.",
+    fbGrow3Title: "Boost",
+    fbGrow3Body: "Öka din synlighet i sju dagar för 49 kr. Engångsbetalning, ingen bindning.",
+    fbHowKicker: "Kom igång",
+    fbHowTitle: "Från registrering till första export",
+    fbStep1Title: "Registrera byrån",
+    fbStep1Body: "Registrera dig som redovisningskonsult. Det kostar ingenting.",
+    fbStep2Title: "Koppla klienter",
+    fbStep2Body: "Bjud in befintliga klienter via e-post eller ta emot förfrågningar från nya.",
+    fbStep3Title: "Jobba i kön",
+    fbStep3Body: "Granska och rätta det som flaggats, per klient eller för hela byrån.",
+    fbStep4Title: "Exportera",
+    fbStep4Body: "Ta ut SIE eller CSV per klient och period, redo för bokföringen.",
+    fbCtaTitle: "Sluta jaga kvitton i mejlkorgen",
+    fbCtaBody: "Byråkontot är gratis. Dina klienter får 30 dagars provperiod utan kort.",
+    fbVisTitle: "Att göra · alla klienter",
+    fbVisReviewed: "Granskad",
+    fbVisAllClear: "Allt granskat",
+    fbVisToReview: "att granska",
     pricingPageSubtitle: "Testa allt i Pro gratis i 30 dagar. Välj paket när du är redo — ingen bindningstid.",
     pricingComparisonTitle: "Fullständig funktionsjämförelse",
     pricingFaqTitle: "Vanliga frågor",
@@ -2674,12 +2836,12 @@ export const strings: Record<Lang, Translations> = {
     feature4Title: "7-year audit log",
     feature4Body:
       "Every action logged with timestamp and IP per the Accounting Act.",
-    feature5Title: "Export to Swedish Tax Agency",
+    feature5Title: "SIE, CSV, PDF & Fortnox",
     feature5Body:
-      "Download as CSV or PDF — ready for your accountant or bookkeeping.",
-    feature6Title: "Public transport & reimbursement",
+      "Export in the format your bookkeeping wants, or send straight to Fortnox.",
+    feature6Title: "Mileage & public transport",
     feature6Body:
-      "Track public transport trips and automatically calculate reimbursements based on company policies or Swedish Tax Agency standards",
+      "Log mileage with saved routes and vehicles, or register public transport tickets. Reimbursement follows Swedish Tax Agency rates or company policy.",
 
     // Pricing
     pricingTagline: "Pricing",
@@ -2734,7 +2896,7 @@ export const strings: Record<Lang, Translations> = {
     footerCopyright: "© {year} GlorifyTC.",
 
     // lib/translations.ts — ADD these values to strings.en (mirror the Swedish keys)
-    featuresPageSubtitle: "Six capabilities purpose-built for Swedish companies, sole traders, and accounting firms.",
+    featuresPageSubtitle: "From receipt to books: capture, review and deliver. Built for Swedish companies, sole traders and accounting firms.",
     featuresCompareTitle: "How Kvittino compares",
     featuresCompareCapability: "Capability",
     featuresCompareUtlagg: "Kvittino",
@@ -2753,6 +2915,87 @@ export const strings: Record<Lang, Translations> = {
     featuresCompareDataTraditional: "Varies by vendor",
     featuresCtaTitle: "Ready to try the features?",
     featuresCtaBody: "Try it free for 30 days and upload your first receipt in under a minute.",
+    feature7Title: "Forward receipts",
+    feature7Body: "Email receipts and Kivra PDFs go to your own Kvittino address and are read in automatically. No scanning.",
+    feature8Title: "Approvals and roles",
+    feature8Body: "Expenses go to the right approver before they are booked. Owners, admins, approvers and members have different permissions.",
+    feature9Title: "Your accountant, in the app",
+    feature9Body: "Connect your accountant to the company. They review and correct receipts directly, and you chat about each receipt where it lives.",
+    featuresGroupCapture: "Capture",
+    featuresGroupReview: "Review",
+    featuresGroupDeliver: "Deliver",
+    featuresCompareFirmLabel: "Working with your accountant",
+    featuresCompareFirmUtlagg: "Accountant reviews in the app, chat per receipt",
+    featuresCompareFirmTraditional: "Binders and emails with attachments",
+    featuresFirmLink: "Are you an accountant? See how firms use Kvittino",
+    forFirms: "For firms",
+    audienceCompanyKicker: "For businesses",
+    audienceCompanyTitle: "Receipts in, bookkeeping-ready out",
+    audienceCompanyBody: "Snap, email or forward receipts. VAT, BAS account and approval are handled before anything reaches the books.",
+    audienceCompanyCta: "See the features",
+    audienceFirmKicker: "For accounting firms",
+    audienceFirmTitle: "Every client's receipts in one queue",
+    audienceFirmBody: "See what needs review at each client, correct it directly and export SIE per client.",
+    audienceFirmCta: "How it works for firms",
+    audienceFree: "Free",
+    trustBankid: "BankID login",
+    trustAudit: "7-year audit log",
+    trustEu: "Stored primarily in Sweden and the EU",
+    fbKicker: "For accounting firms",
+    fbTitle: "Every client's receipts. One to-do list.",
+    fbSubtitle: "Kvittino gathers your clients' expenses in one workspace and shows exactly what needs review. The firm account is free. Clients pay for their own plan.",
+    fbCta: "Create free firm account",
+    fbCtaSecondary: "How it works",
+    fbDisclaimer: "Free for firms · no card required",
+    fbQueueKicker: "To do",
+    fbQueueTitle: "The queue sorts itself",
+    fbQueueBody: "See what is waiting at every client at once. The client that needs the most attention is at the top.",
+    fbQueue1Title: "To review",
+    fbQueue1Body: "New receipts nobody at the firm has looked at yet.",
+    fbQueue2Title: "Missing VAT or BAS",
+    fbQueue2Body: "Receipts without VAT, category or account. You find them before year-end, not during it.",
+    fbQueue3Title: "Uncertain AI reads",
+    fbQueue3Body: "When the AI is unsure about a read, the receipt is flagged, so you only double-check what needs it.",
+    fbQueue4Title: "Awaiting approval",
+    fbQueue4Body: "Expenses the client's approver has not signed off yet.",
+    fbWorkTitle: "One workspace for the whole firm",
+    fbWork1Title: "Key figures per client",
+    fbWork1Body: "Monthly spend, VAT and a 12-month trend for every client. The firm view shows receipts reviewed over the year.",
+    fbWork2Title: "Correct directly",
+    fbWork2Body: "Change amount, VAT or BAS account on the client's receipt and mark it reviewed. No emailing back and forth.",
+    fbWork3Title: "SIE and CSV per client",
+    fbWork3Body: "Export a client's period and import it into your bookkeeping software.",
+    fbWork4Title: "Chat per client",
+    fbWork4Body: "Questions about a receipt are asked where the receipt lives. All client chats gather in one inbox.",
+    fbWork5Title: "Team and client assignments",
+    fbWork5Body: "Invite colleagues as owner, admin or member. Members only see the clients they are assigned to.",
+    fbWork6Title: "Traceable for the client",
+    fbWork6Body: "Everything you do is logged. The client sees your activity in their own view.",
+    fbGrowKicker: "Grow",
+    fbGrowTitle: "New clients find you",
+    fbGrowBody: "Businesses on Kvittino can search for an accountant right in the app. Fill in your profile to be found.",
+    fbGrow1Title: "Marketplace profile",
+    fbGrow1Body: "City, specializations, description and your firm's logo.",
+    fbGrow2Title: "Requests both ways",
+    fbGrow2Body: "Businesses can ask you to be their firm, and you can reach out to businesses that chose to be visible.",
+    fbGrow3Title: "Boost",
+    fbGrow3Body: "Raise your visibility for seven days for 49 SEK. One-time payment, no commitment.",
+    fbHowKicker: "Get started",
+    fbHowTitle: "From sign-up to first export",
+    fbStep1Title: "Register your firm",
+    fbStep1Body: "Sign up as an accountant (Redovisningskonsult). It costs nothing.",
+    fbStep2Title: "Connect clients",
+    fbStep2Body: "Invite existing clients by email or accept requests from new ones.",
+    fbStep3Title: "Work the queue",
+    fbStep3Body: "Review and correct what has been flagged, per client or across the firm.",
+    fbStep4Title: "Export",
+    fbStep4Body: "Export SIE or CSV per client and period, ready for the books.",
+    fbCtaTitle: "Stop hunting receipts in your inbox",
+    fbCtaBody: "The firm account is free. Your clients get a 30-day trial, no card needed.",
+    fbVisTitle: "To do · all clients",
+    fbVisReviewed: "Reviewed",
+    fbVisAllClear: "All reviewed",
+    fbVisToReview: "to review",
     pricingPageSubtitle: "Try everything in Pro free for 30 days. Pick a plan when you're ready — no lock-in.",
     pricingComparisonTitle: "Full feature comparison",
     pricingFaqTitle: "Common questions",
