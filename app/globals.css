@@ -57,6 +57,13 @@ body {
   background-color: #FAF8F3;
 }
 
+/* Dark app shells: paint the canvas too, otherwise overscroll (Firefox rubber-band,
+   mobile toolbar resize) reveals the light body behind the dark wrapper.
+   Marketing pages have no .app-shell and stay light. */
+html.dark:has(.app-shell) {
+  background-color: #000;
+}
+
 /* Ambient drifting background — slow, soft, premium. Reduced-motion safe. */
 @keyframes amb1 {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
