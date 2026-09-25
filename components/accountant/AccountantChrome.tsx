@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, Inbox, User, LogOut, Moon, Sun, Menu, X, Users, MessageSquare } from "lucide-react";
+import { Home, Inbox, User, LogOut, Moon, Sun, Menu, X, Users, MessageSquare, ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
@@ -42,7 +42,9 @@ export function NotifBadge({ n }: { n: number }) {
   );
 }
 
-function NavList({ onNavigate }: { onNavigate?: () => void }) {
+const iconBtn = "grid h-10 w-10 place-items-center rounded-lg text-gray-500 transition-[color,background-color,transform] duration-150 hover:bg-gray-900/[0.05] hover:text-gray-900 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nordic-600/30 dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-white lg:h-8 lg:w-8";
+
+function NavList({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
@@ -60,15 +62,22 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="px-5 pb-5 pt-6">
-        <Link href="/" className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nordic-600/30 focus-visible:rounded-md">
-          <Logo size={26} wordmarkClassName="text-[17px] text-gray-900 dark:text-white" />
+      <div className="flex h-16 shrink-0 items-center gap-1 pl-5 pr-3">
+        <Link href="/accountant" onClick={onNavigate} className="mr-auto rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nordic-600/30">
+          <Logo size={24} wordmarkClassName="text-[16px] text-gray-900 dark:text-white" />
+          <span className="mt-0.5 block text-[10px] uppercase tracking-[0.14em] text-gray-400">{at.sidebarSubtitle}</span>
         </Link>
-        <p className="mt-0.5 text-[9.5px] uppercase tracking-[0.15em] text-gray-400 dark:text-gray-400">{at.sidebarSubtitle}</p>
+        <Link href="/" aria-label={t.navWebsite} title={t.navWebsite} className={iconBtn}>
+          <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} />
+        </Link>
+        {onClose && (
+          <button onClick={onClose} aria-label={t.navClose} className={iconBtn}>
+            <X className="h-4 w-4" strokeWidth={1.75} />
+          </button>
+        )}
       </div>
-      <nav className="flex-1 min-h-0 overflow-y-auto px-3 py-4">
-        <p className="mb-1.5 px-2.5 text-[9px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-gray-400">{t.navMenu}</p>
-        <ul className="space-y-px">
+      <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-3 pt-1">
+        <ul>
           {nav.map((item) => {
             const Icon = item.icon;
             const active = isActive(pathname, item.href);
@@ -78,38 +87,47 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
                 <Link
                   href={item.href}
                   onClick={onNavigate}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
-                    "group flex items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm transition-colors duration-150",
+                    "group flex items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-[15px] transition-[color,background-color,transform] duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nordic-600/30 lg:py-1.5 lg:text-sm",
                     active
-                      ? "bg-nordic-600/10 text-nordic-600 font-medium dark:bg-nordic-600/[0.16] dark:text-nordic-600"
-                      : "text-gray-500 hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white",
+                      ? "bg-nordic-600/10 font-medium text-nordic-600 dark:bg-nordic-600/[0.16]"
+                      : "text-gray-600 hover:bg-gray-900/[0.04] hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white",
                   )}
                 >
                   <span className="relative shrink-0">
-                    <Icon className={cn("h-[15px] w-[15px] transition-opacity", active ? "opacity-90" : "opacity-40 group-hover:opacity-60")} strokeWidth={1.75} />
+                    <Icon className={cn("h-4 w-4 transition-opacity", active ? "opacity-90" : "opacity-50 group-hover:opacity-80")} strokeWidth={1.75} />
                     <AnimatePresence><NotifBadge n={count} /></AnimatePresence>
                   </span>
-                  <span className="flex-1">{at[item.key]}</span>
+                  <span className="flex-1 truncate">{at[item.key]}</span>
                 </Link>
               </li>
             );
           })}
         </ul>
       </nav>
-      <div className="space-y-px border-t border-gray-900/[0.06] p-3 dark:border-white/[0.06]">
-        <motion.button whileTap={{ scale: 0.98 }} onClick={() => { toggleLanguage(); router.refresh(); }} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white">
-          <span className="h-[15px] w-[15px] text-center text-xs font-bold">{lang === "sv" ? "EN" : "SV"}</span>
-          <span>{lang === "sv" ? "English" : "Svenska"}</span>
-        </motion.button>
-        <motion.button whileTap={{ scale: 0.98 }} onClick={toggleTheme} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white">
-          {dark ? <Sun className="h-[15px] w-[15px]" /> : <Moon className="h-[15px] w-[15px]" />}
-          <span>{dark ? t.btnLightMode : t.btnDarkMode}</span>
-        </motion.button>
-        <motion.button whileTap={{ scale: 0.98 }} onClick={() => signOut({ callbackUrl: "/" })} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-sm text-red-600 hover:bg-red-50/70 dark:hover:bg-red-950/25">
-          <LogOut className="h-[15px] w-[15px]" />
-          <span>{t.navLogout}</span>
-        </motion.button>
-        <div className="mt-1 border-t border-gray-900/[0.06] pt-2 dark:border-white/[0.06]">
+      <div className="shrink-0 border-t border-gray-900/[0.06] px-3 py-2.5 dark:border-white/[0.06]">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => { toggleLanguage(); router.refresh(); }}
+            aria-label={lang === "sv" ? "Switch to English" : "Byt till svenska"}
+            title={lang === "sv" ? "English" : "Svenska"}
+            className={cn(iconBtn, "text-[11px] font-semibold tracking-wide")}
+          >
+            {lang === "sv" ? "EN" : "SV"}
+          </button>
+          <button onClick={toggleTheme} aria-label={dark ? t.btnLightMode : t.btnDarkMode} title={dark ? t.btnLightMode : t.btnDarkMode} className={iconBtn}>
+            {dark ? <Sun className="h-4 w-4" strokeWidth={1.75} /> : <Moon className="h-4 w-4" strokeWidth={1.75} />}
+          </button>
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="ml-auto flex h-10 items-center gap-2 rounded-lg px-2.5 text-sm text-gray-500 transition-[color,background-color,transform] duration-150 hover:bg-red-50/70 hover:text-red-600 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 dark:text-gray-400 dark:hover:bg-red-950/25 dark:hover:text-red-400 lg:h-8"
+          >
+            <LogOut className="h-4 w-4" strokeWidth={1.75} />
+            <span>{t.navLogout}</span>
+          </button>
+        </div>
+        <div className="mt-2 border-t border-gray-900/[0.06] pt-2 dark:border-white/[0.06]">
           <SidebarProfile />
         </div>
       </div>
@@ -153,7 +171,7 @@ export function AccountantChrome({ children }: { children: React.ReactNode }) {
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setOpen(true)} aria-label="Öppna meny" className="rounded-lg p-2 hover:bg-gray-900/[0.04] dark:text-white dark:hover:bg-white/[0.04]">
             <Menu className="h-6 w-6" />
           </motion.button>
-          <Link href="/" aria-label="Kvittino"><LogoMark size={26} /></Link>
+          <Link href="/accountant" aria-label="Kvittino"><LogoMark size={26} /></Link>
         </div>
         <AccountantAvatarMenu />
       </header>
@@ -179,10 +197,7 @@ export function AccountantChrome({ children }: { children: React.ReactNode }) {
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
               className="absolute left-0 top-0 h-full w-72 max-w-[80%] bg-white shadow-xl dark:bg-[#0A0A0A]"
             >
-              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setOpen(false)} aria-label="Stäng meny" className="absolute right-3 top-3 rounded-lg p-2 hover:bg-gray-900/[0.04] dark:text-white dark:hover:bg-white/[0.04]">
-                <X className="h-5 w-5" />
-              </motion.button>
-              <NavList onNavigate={() => setOpen(false)} />
+              <NavList onNavigate={() => setOpen(false)} onClose={() => setOpen(false)} />
             </motion.aside>
           </motion.div>
         )}
