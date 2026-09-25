@@ -77,7 +77,7 @@ function RatingBadge({ rating, count }: { rating: number; count: number }) {
       <span className="font-display text-xl font-bold leading-none text-gray-900 dark:text-white">
         {rating.toFixed(1)}
       </span>
-      <span className="text-[11px] leading-none text-amber-400">
+      <span className="text-[11px] leading-none text-nordic-600">
         {"★".repeat(Math.round(rating))}{"☆".repeat(5 - Math.round(rating))}
       </span>
       <span className="text-[10px] text-gray-400">({count})</span>
@@ -94,7 +94,7 @@ function StatusBadge({ status }: { status: "active" | "pending" }) {
     );
   }
   return (
-    <span className="rounded-full bg-amber-100/60 px-3 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+    <span className="rounded-full bg-nordic-600/10 px-3 py-1 text-xs font-medium text-nordic-600 dark:bg-nordic-600/20">
       Förfrågan skickad
     </span>
   );

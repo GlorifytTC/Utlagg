@@ -15,7 +15,7 @@ export default async function AccountantProfilePage({
   const { id } = await params;
 
   return (
-    <div className="max-w-4xl">
+    <div>
       <AccountantProfile
         accountantId={id}
         viewerAccountantId={session.user.id}

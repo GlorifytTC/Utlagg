@@ -56,7 +56,7 @@ interface ProfileData {
 
 function Stars({ rating, max = 5 }: { rating: number; max?: number }) {
   return (
-    <span className="text-amber-400" aria-label={`${rating} av ${max} stjärnor`}>
+    <span className="text-nordic-600" aria-label={`${rating} av ${max} stjärnor`}>
       {"★".repeat(Math.round(rating))}
       {"☆".repeat(max - Math.round(rating))}
     </span>
@@ -65,37 +65,23 @@ function Stars({ rating, max = 5 }: { rating: number; max?: number }) {
 
 const ROLE_LABELS: Record<string, string> = { owner: "Ägare", admin: "Admin", member: "Medarbetare" };
 
-async function saveFirmLogo(logoUrl: string | null) {
-  const res = await fetch("/api/accountant/firm/logo", {
+/** Rename and/or set the logo of the caller's firm. Owner/admin only — enforced server-side. Toasts on failure. */
+async function patchFirm(body: { name?: string; logoUrl?: string | null }): Promise<boolean> {
+  const res = await fetch("/api/accountant/firm", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ logoUrl }),
+    body: JSON.stringify(body),
   });
-  if (!res.ok) {
-    const d = await res.json().catch(() => ({}));
-    toast.error(d.error ?? "Kunde inte spara");
-    throw new Error();
-  }
+  if (res.ok) return true;
+  const d = await res.json().catch(() => ({}));
+  toast.error(d.error ?? "Kunde inte spara byrån");
+  return false;
 }
 
-/** `canEditLogo`: own profile in edit mode, and the viewer is the firm's owner or admin (enforced again server-side). */
-function FirmSidebar({ firm, canEditLogo, onLogoSaved }: { firm: Firm; canEditLogo: boolean; onLogoSaved: (logoUrl: string | null) => void }) {
+function FirmSidebar({ firm }: { firm: Firm }) {
   return (
     <div className="self-start lg:sticky lg:top-6 space-y-4">
       <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
-        {canEditLogo ? (
-          <div className="mb-4 space-y-2">
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-400">Byråns logotyp</p>
-            <LogoUploader
-              value={firm.logoUrl}
-              label={firm.name}
-              onSave={async (logoUrl) => {
-                await saveFirmLogo(logoUrl);
-                onLogoSaved(logoUrl);
-              }}
-            />
-          </div>
-        ) : null}
         {/* Firm header */}
         <div className="mb-4 flex items-center gap-3">
           {firm.logoUrl ? (
@@ -177,6 +163,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
   const [editCity, setEditCity] = useState("");
   const [editBio, setEditBio] = useState("");
   const [editSpecializations, setEditSpecializations] = useState("");
+  const [editFirmName, setEditFirmName] = useState("");
   const [editSaving, setEditSaving] = useState(false);
 
   const load = useCallback(async () => {
@@ -194,6 +181,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       setEditCity(d.accountant.city ?? "");
       setEditBio(d.accountant.bio ?? "");
       setEditSpecializations((d.accountant.specializations ?? []).join(", "));
+      setEditFirmName(d.firm?.name ?? "");
     } catch {
       setLoadState("error");
     }
@@ -264,14 +252,16 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
           accountantSpecializations: specializations.length ? specializations : null,
         }),
       });
-      if (res.ok) {
-        toast.success("Profil sparad");
-        setEditing(false);
-        load();
-      } else {
+      if (!res.ok) {
         const d = await res.json().catch(() => ({}));
         toast.error(d.error ?? "Kunde inte spara");
+        return;
       }
+      const firmName = editFirmName.trim();
+      if (data?.firm && firmName && firmName !== data.firm.name && !(await patchFirm({ name: firmName }))) return;
+      toast.success("Profil sparad");
+      setEditing(false);
+      load();
     } catch {
       toast.error("Kunde inte spara");
     } finally {
@@ -296,7 +286,12 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
   const { accountant, reviews } = data;
   const isSelf = accountantId === viewerAccountantId;
   const viewerRole = data.firm?.members.find((m) => m.id === viewerAccountantId)?.role;
-  const canManageFirmLogo = viewerRole === "owner" || viewerRole === "admin";
+  const canManageFirm = viewerRole === "owner" || viewerRole === "admin";
+  // Firm members are presented under the firm's picture (same rule as the marketplace cards)
+  const heroLogo = data.firm?.logoUrl ?? accountant.logoUrl;
+  const heroAlt = data.firm?.logoUrl ? data.firm.name : (accountant.name ?? accountant.email);
+  const heroInitial = (data.firm?.name ?? accountant.name ?? accountant.email).charAt(0).toUpperCase();
+  const labelClass = "mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500";
 
   return (
     <div className="space-y-6">
@@ -307,7 +302,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         ← Tillbaka
       </Link>
 
-      <div className={data.firm ? "lg:grid lg:grid-cols-[1fr_260px] lg:items-start lg:gap-6" : "space-y-8"}>
+      <div className={data.firm ? "lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start lg:gap-6 xl:grid-cols-[minmax(0,1fr)_320px]" : "space-y-8"}>
       <div className="space-y-8">
 
       {/* Hero */}
@@ -317,16 +312,16 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         className="flex flex-col gap-4 rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] sm:flex-row sm:items-start"
       >
         {/* Avatar */}
-        {accountant.logoUrl ? (
+        {heroLogo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={accountant.logoUrl}
-            alt={accountant.name ?? accountant.email}
+            src={heroLogo}
+            alt={heroAlt}
             className="h-20 w-20 shrink-0 rounded-xl border border-gray-900/[0.07] object-contain dark:border-white/[0.08]"
           />
         ) : (
           <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-nordic-600/10 text-2xl font-bold text-nordic-600">
-            {(accountant.name ?? accountant.email).charAt(0).toUpperCase()}
+            {heroInitial}
           </div>
         )}
 
@@ -358,7 +353,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                   Kopplad
                 </span>
               ) : data.myStatus === "pending" ? (
-                <span className="rounded-full bg-amber-100/50 px-3 py-1.5 text-sm font-medium text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                <span className="rounded-full bg-nordic-600/10 px-3 py-1.5 text-sm font-medium text-nordic-600 dark:bg-nordic-600/20">
                   Förfrågan skickad
                 </span>
               ) : data.viewerCanRequest ? (
@@ -455,13 +450,39 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         >
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Redigera profil</h2>
           <p className="mb-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Namn och profilbild ändrar du i{" "}
+            Ditt namn och din profilbild ändrar du i{" "}
             <Link href="/accountant/settings" className="text-nordic-600 hover:underline">Inställningar</Link>.
-            {data.firm && (canManageFirmLogo
-              ? " Byråns logotyp ändrar du i byråkortet."
-              : " Byråns logotyp kan bara ändras av ägare och admin.")}
           </p>
           <div className="space-y-3">
+            {data.firm && (canManageFirm ? (
+              <div className="space-y-3 border-b border-gray-900/[0.07] pb-4 dark:border-white/[0.08]">
+                <div>
+                  <label htmlFor="firm-name" className={labelClass}>Byråns namn</label>
+                  <input
+                    id="firm-name"
+                    value={editFirmName}
+                    onChange={(e) => setEditFirmName(e.target.value)}
+                    maxLength={255}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <p className={labelClass}>Byråns logotyp</p>
+                  <LogoUploader
+                    value={data.firm.logoUrl}
+                    label={data.firm.name}
+                    onSave={async (logoUrl) => {
+                      if (!(await patchFirm({ logoUrl }))) throw new Error();
+                      setData((prev) => (prev?.firm ? { ...prev, firm: { ...prev.firm, logoUrl } } : prev));
+                    }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <p className="border-b border-gray-900/[0.07] pb-4 text-sm text-gray-500 dark:border-white/[0.08] dark:text-gray-400">
+                Byråns namn och logotyp kan bara ändras av ägare och admin.
+              </p>
+            ))}
             <div>
               <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500">
                 Ort
@@ -536,7 +557,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                   <button
                     key={n}
                     onClick={() => setReviewRating(n)}
-                    className={`text-2xl transition-transform hover:scale-110 ${n <= reviewRating ? "text-amber-400" : "text-gray-300 dark:text-gray-600"}`}
+                    className={`text-2xl transition-transform hover:scale-110 ${n <= reviewRating ? "text-nordic-600" : "text-gray-300 dark:text-gray-600"}`}
                   >
                     ★
                   </button>
@@ -573,15 +594,15 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                     onClick={() => setRatingFilter(active ? null : star)}
                     aria-pressed={active}
                     aria-label={`Filtrera på ${star} stjärnor (${count} recensioner)`}
-                    className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-white/5 ${active ? "bg-amber-50 ring-1 ring-inset ring-amber-300/60 dark:bg-amber-900/20 dark:ring-amber-500/30" : ""}`}
+                    className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-white/5 ${active ? "bg-nordic-600/10 ring-1 ring-inset ring-nordic-600/30 dark:bg-nordic-600/[0.16] dark:ring-nordic-600/40" : ""}`}
                   >
                     <span className="w-[4.5rem] shrink-0 select-none text-right text-xs">
-                      <span className="text-amber-400">{"★".repeat(star)}</span>
+                      <span className="text-nordic-600">{"★".repeat(star)}</span>
                       <span className="text-gray-300 dark:text-gray-600">{"☆".repeat(5 - star)}</span>
                     </span>
                     <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
                       <div
-                        className="h-1.5 rounded-full bg-amber-400 transition-[width] duration-300"
+                        className="h-1.5 rounded-full bg-nordic-600 transition-[width] duration-300"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -641,13 +662,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       </div>
 
       </div>
-      {data.firm && (
-        <FirmSidebar
-          firm={data.firm}
-          canEditLogo={isSelf && editing && canManageFirmLogo}
-          onLogoSaved={(logoUrl) => setData((prev) => (prev?.firm ? { ...prev, firm: { ...prev.firm, logoUrl } } : prev))}
-        />
-      )}
+      {data.firm && <FirmSidebar firm={data.firm} />}
       </div>
     </div>
   );
