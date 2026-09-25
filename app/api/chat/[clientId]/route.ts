@@ -122,7 +122,7 @@ export async function POST(
       sendChatMessageNotification(recipient.email, {
         senderName: sender?.name ?? "Revisor",
         preview: trimmed,
-        chatUrl: `${appUrl}/dashboard/company#accountants`,
+        chatUrl: `${appUrl}/dashboard/chats?c=${access.rel.id}`,
       }).catch(() => {/* fire-and-forget */});
     }
   } else {
@@ -136,7 +136,7 @@ export async function POST(
       sendChatMessageNotification(recipient.email, {
         senderName: sender?.name ?? "Klient",
         preview: trimmed,
-        chatUrl: `${appUrl}/accountant/clients/${access.rel.companyId}`,
+        chatUrl: `${appUrl}/accountant/chats?c=${access.rel.id}`,
       }).catch(() => {/* fire-and-forget */});
     }
   }

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
-  Home, Receipt, CreditCard, BarChart3, Settings, User, LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug, Lock, Building2, FileText, TrainFront, Download, Store,
+  Home, Receipt, CreditCard, BarChart3, Settings, User, LogOut, Moon, Sun, Menu, X, Car, CheckSquare, Plug, Lock, Building2, FileText, TrainFront, Download, Store, MessageSquare,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
@@ -16,6 +16,8 @@ import { cn } from "@/lib/utils";
 import { hasFeature, type Feature } from "@/lib/features";
 import type { Tier } from "@/lib/plans";
 import { Logo, LogoMark } from "@/components/brand/Logo";
+import { NotifBadge } from "@/components/accountant/AccountantChrome";
+import { useNotifications } from "@/context/NotificationContext";
 
 const navGroups = [
   {
@@ -33,6 +35,7 @@ const navGroups = [
     labelEn: "Workspace",
     items: [
       { key: "navApprovals", href: "/dashboard/approvals", icon: CheckSquare, feature: "approvals" as Feature },
+      { key: "navChats", href: "/dashboard/chats", icon: MessageSquare },
       { key: "navExport", href: "/dashboard/export", icon: Download },
       { key: "navIntegrations", href: "/dashboard/integrations", icon: Plug, feature: "fortnox" as Feature },
       { key: "navStats", href: "/dashboard/stats", icon: BarChart3 },
@@ -67,6 +70,11 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
   const { theme, toggleTheme } = useTheme();
   const { t, lang, toggleLanguage } = useLanguage();
   const dark = theme === "dark";
+  const { chat, clear } = useNotifications();
+
+  useEffect(() => {
+    if (pathname.startsWith("/dashboard/chats")) clear("chat");
+  }, [pathname, clear]);
 
   return (
     <div className="flex h-full flex-col">
@@ -98,7 +106,10 @@ function NavList({ onNavigate, tier }: { onNavigate?: () => void; tier?: Tier })
                           : "text-gray-500 hover:bg-gray-900/[0.04] hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white",
                       )}
                     >
-                      <Icon className={cn("h-[15px] w-[15px] shrink-0 transition-opacity", active ? "opacity-90" : "opacity-40 group-hover:opacity-60")} strokeWidth={1.75} />
+                      <span className="relative shrink-0">
+                        <Icon className={cn("h-[15px] w-[15px] transition-opacity", active ? "opacity-90" : "opacity-40 group-hover:opacity-60")} strokeWidth={1.75} />
+                        {item.href === "/dashboard/chats" && <AnimatePresence><NotifBadge n={chat} /></AnimatePresence>}
+                      </span>
                       <span className="flex-1">{t[item.key as keyof Translations]}</span>
                       {tier && "feature" in item && !hasFeature(tier, (item as { feature: Feature }).feature) && <Lock className="h-3.5 w-3.5 text-gray-400" />}
                     </Link>

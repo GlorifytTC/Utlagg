@@ -96,7 +96,7 @@ export async function GET(req: NextRequest) {
         .from(chatMessages)
         .innerJoin(users, eq(users.id, chatMessages.senderId))
         .where(and(inArray(chatMessages.clientId, clientIds), ne(chatMessages.senderId, me), gt(chatMessages.createdAt, cutoff)));
-      const msgHref = isAccountant ? "/accountant" : "/dashboard/company";
+      const msgHref = isAccountant ? "/accountant/chats" : "/dashboard/chats";
       for (const m of msgs) events.push({ type: "message", actorName: m.actorName ?? "", at: m.at, href: msgHref });
     }
   }

@@ -999,6 +999,37 @@ export interface Translations {
   notifConnectionRequest: string;
   notifAccepted: string;
   notifMessage: string;
+  navChats: string;
+  chatsTitle: string;
+  chatsSubtitle: string;
+  chatsSubtitleAccountant: string;
+  chatsEmpty: string;
+  chatsEmptyAccountant: string;
+  chatsFindAccountant: string;
+  chatsSearch: string;
+  chatsNoMatch: string;
+  chatsYou: string;
+  chatsNoMessages: string;
+  chatsSelect: string;
+  chatsYesterday: string;
+  chatsToday: string;
+  chatsBack: string;
+  chatsOpenClient: string;
+  chatsLoadError: string;
+  chatPlaceholder: string;
+  chatSend: string;
+  chatSendFailed: string;
+  chatLoadError: string;
+  chatEmptyThread: string;
+  chatReport: string;
+  chatReportUser: string;
+  chatReportPlaceholder: string;
+  chatReportSend: string;
+  chatReportSent: string;
+  chatReportFailed: string;
+  chatCancel: string;
+  chatRoleAccountant: string;
+  chatRoleClient: string;
 
   // Accountant dashboard
   overviewTitle: string;
@@ -2145,6 +2176,37 @@ export const strings: Record<Lang, Translations> = {
     notifConnectionRequest: "{name} vill ansluta till dig",
     notifAccepted: "{name} accepterade din förfrågan",
     notifMessage: "Nytt meddelande från {name}",
+    navChats: "Chattar",
+    chatsTitle: "Chattar",
+    chatsSubtitle: "Dina konversationer med revisorer.",
+    chatsSubtitleAccountant: "Senaste konversationer med dina klienter.",
+    chatsEmpty: "Inga konversationer än. När du är kopplad till en revisor kan ni chatta här.",
+    chatsEmptyAccountant: "Inga konversationer än. När en klient är kopplad kan ni chatta här.",
+    chatsFindAccountant: "Hitta revisor",
+    chatsSearch: "Sök konversationer",
+    chatsNoMatch: "Inga konversationer matchar.",
+    chatsYou: "Du",
+    chatsNoMessages: "Inga meddelanden än",
+    chatsSelect: "Välj en konversation för att läsa och svara.",
+    chatsYesterday: "Igår",
+    chatsToday: "Idag",
+    chatsBack: "Alla chattar",
+    chatsOpenClient: "Visa klient",
+    chatsLoadError: "Kunde inte ladda chattarna. Ladda om sidan för att försöka igen.",
+    chatPlaceholder: "Skriv ett meddelande…",
+    chatSend: "Skicka",
+    chatSendFailed: "Kunde inte skicka meddelandet",
+    chatLoadError: "Kunde inte ladda chatten.",
+    chatEmptyThread: "Inga meddelanden än. Skriv det första.",
+    chatReport: "Rapportera",
+    chatReportUser: "Rapportera användaren",
+    chatReportPlaceholder: "Beskriv varför du rapporterar…",
+    chatReportSend: "Skicka rapport",
+    chatReportSent: "Rapport skickad — vi granskar den",
+    chatReportFailed: "Kunde inte skicka rapporten",
+    chatCancel: "Avbryt",
+    chatRoleAccountant: "Revisor",
+    chatRoleClient: "Klient",
     overviewTitle: "Kontorsöversikt",
     overviewSubtitle: "Välkommen tillbaka",
     firmStatsTitle: "Byråöversikt",
@@ -3274,6 +3336,37 @@ export const strings: Record<Lang, Translations> = {
     notifConnectionRequest: "{name} wants to connect with you",
     notifAccepted: "{name} accepted your request",
     notifMessage: "New message from {name}",
+    navChats: "Chats",
+    chatsTitle: "Chats",
+    chatsSubtitle: "Your conversations with accountants.",
+    chatsSubtitleAccountant: "Latest conversations with your clients.",
+    chatsEmpty: "No conversations yet. Once you're connected to an accountant, you can chat here.",
+    chatsEmptyAccountant: "No conversations yet. Once a client is connected, you can chat here.",
+    chatsFindAccountant: "Find an accountant",
+    chatsSearch: "Search conversations",
+    chatsNoMatch: "No conversations match.",
+    chatsYou: "You",
+    chatsNoMessages: "No messages yet",
+    chatsSelect: "Select a conversation to read and reply.",
+    chatsYesterday: "Yesterday",
+    chatsToday: "Today",
+    chatsBack: "All chats",
+    chatsOpenClient: "View client",
+    chatsLoadError: "Couldn't load chats. Reload the page to try again.",
+    chatPlaceholder: "Write a message…",
+    chatSend: "Send",
+    chatSendFailed: "Couldn't send the message",
+    chatLoadError: "Couldn't load the chat.",
+    chatEmptyThread: "No messages yet. Write the first one.",
+    chatReport: "Report",
+    chatReportUser: "Report user",
+    chatReportPlaceholder: "Describe why you're reporting…",
+    chatReportSend: "Send report",
+    chatReportSent: "Report sent — we'll review it",
+    chatReportFailed: "Couldn't send the report",
+    chatCancel: "Cancel",
+    chatRoleAccountant: "Accountant",
+    chatRoleClient: "Client",
     overviewTitle: "Dashboard",
     overviewSubtitle: "Welcome back",
     firmStatsTitle: "Firm Overview",

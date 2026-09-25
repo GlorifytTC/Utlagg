@@ -26,7 +26,7 @@ function isActive(pathname: string, href: string) {
   return href === "/accountant" ? pathname === href : pathname.startsWith(href);
 }
 
-function NotifBadge({ n }: { n: number }) {
+export function NotifBadge({ n }: { n: number }) {
   if (!n) return null;
   return (
     <motion.span
