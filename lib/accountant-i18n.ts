@@ -65,6 +65,16 @@ const strings = {
     menuProfilePic: "Profilbild",
     menuFirmLogo: "Byråns logotyp",
 
+    // Personal settings
+    navSettings: "Inställningar",
+    settingsTitle: "Inställningar",
+    settingsSubtitle: "Dina personliga uppgifter. Byråns logotyp ändras på byråns profilsida.",
+    settingsName: "Namn",
+    settingsEmail: "E-post",
+    settingsSave: "Spara",
+    settingsSaving: "Sparar…",
+    settingsSaved: "Sparat",
+
     // Team / firm management
     navChats: "Chattar",
     navTeam: "Team",
@@ -181,6 +191,16 @@ const strings = {
     menuLogout: "Sign out",
     menuProfilePic: "Profile picture",
     menuFirmLogo: "Firm logo",
+
+    // Personal settings
+    navSettings: "Settings",
+    settingsTitle: "Settings",
+    settingsSubtitle: "Your personal details. The firm logo is changed on the firm's profile page.",
+    settingsName: "Name",
+    settingsEmail: "Email",
+    settingsSave: "Save",
+    settingsSaving: "Saving…",
+    settingsSaved: "Saved",
 
     // Team / firm management
     navChats: "Chats",

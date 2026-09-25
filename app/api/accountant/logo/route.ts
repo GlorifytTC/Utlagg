@@ -3,20 +3,11 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { requireAccountant } from "@/lib/accountant";
+import { requireAccountant, validateLogo } from "@/lib/accountant";
 
 export const runtime = "nodejs";
 
 const schema = z.object({ logoUrl: z.string().nullable() });
-
-function validLogo(v: string | null): { ok: boolean; error?: string } {
-  if (v == null) return { ok: true };
-  if (!/^data:image\/(png|jpeg|jpg|webp|svg\+xml);base64,/.test(v)) {
-    return { ok: false, error: "Ogiltigt bildformat." };
-  }
-  if (v.length > 2_000_000) return { ok: false, error: "Bilden är för stor (max ~1,5 MB)." };
-  return { ok: true };
-}
 
 /**
  * GET / PATCH the authenticated accountant's own logo (base64 data URL).
@@ -41,7 +32,7 @@ export async function PATCH(req: NextRequest) {
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Ogiltiga uppgifter" }, { status: 400 });
 
-  const check = validLogo(parsed.data.logoUrl);
+  const check = validateLogo(parsed.data.logoUrl);
   if (!check.ok) return NextResponse.json({ error: check.error }, { status: 400 });
 
   await db.update(users).set({ logoUrl: parsed.data.logoUrl }).where(eq(users.id, acct.userId));

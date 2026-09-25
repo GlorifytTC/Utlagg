@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
-import { Home, Inbox, User, LogOut, Moon, Sun, Menu, X, Users, MessageSquare, ArrowUpRight } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import { Home, Inbox, User, LogOut, Moon, Sun, Menu, X, Users, MessageSquare, ArrowUpRight, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
@@ -20,7 +20,11 @@ const nav = [
   { key: "navChats" as const, href: "/accountant/chats", icon: MessageSquare, badge: "chat" as const },
   { key: "navMarketplace" as const, href: "/accountant/marketplace", icon: User, badge: null },
   { key: "navTeam" as const, href: "/accountant/team", icon: Users, badge: null },
+  { key: "navSettings" as const, href: "/accountant/settings", icon: Settings, badge: null },
 ];
+
+// Mobile bottom bar has 5 slots; settings stays reachable via the drawer and the avatar menu
+const bottomNav = nav.slice(0, 5);
 
 function isActive(pathname: string, href: string) {
   return href === "/accountant" ? pathname === href : pathname.startsWith(href);
@@ -106,7 +110,7 @@ function NavList({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: (
           })}
         </ul>
       </nav>
-      <div className="shrink-0 border-t border-gray-900/[0.06] px-3 py-2.5 dark:border-white/[0.06]">
+      <div className="flex shrink-0 items-center justify-between border-t border-gray-900/[0.06] px-3 py-2.5 dark:border-white/[0.06]">
         <div className="flex items-center gap-1">
           <button
             onClick={() => { toggleLanguage(); router.refresh(); }}
@@ -119,32 +123,54 @@ function NavList({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: (
           <button onClick={toggleTheme} aria-label={dark ? t.btnLightMode : t.btnDarkMode} title={dark ? t.btnLightMode : t.btnDarkMode} className={iconBtn}>
             {dark ? <Sun className="h-4 w-4" strokeWidth={1.75} /> : <Moon className="h-4 w-4" strokeWidth={1.75} />}
           </button>
-          <button
-            onClick={() => signOut({ callbackUrl: "/" })}
-            className="ml-auto flex h-10 items-center gap-2 rounded-lg px-2.5 text-sm text-gray-500 transition-[color,background-color,transform] duration-150 hover:bg-red-50/70 hover:text-red-600 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 dark:text-gray-400 dark:hover:bg-red-950/25 dark:hover:text-red-400 lg:h-8"
-          >
-            <LogOut className="h-4 w-4" strokeWidth={1.75} />
-            <span>{t.navLogout}</span>
-          </button>
         </div>
-        <div className="mt-2 border-t border-gray-900/[0.06] pt-2 dark:border-white/[0.06]">
-          <SidebarProfile />
-        </div>
+        <SidebarProfile label={at.navMarketplace} onNavigate={onNavigate} />
+        <button
+          onClick={() => signOut({ callbackUrl: "/" })}
+          className="flex h-10 items-center gap-2 rounded-lg px-2.5 text-sm text-gray-500 transition-[color,background-color,transform] duration-150 hover:bg-red-50/70 hover:text-red-600 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 dark:text-gray-400 dark:hover:bg-red-950/25 dark:hover:text-red-400 lg:h-8"
+        >
+          <LogOut className="h-4 w-4" strokeWidth={1.75} />
+          <span>{t.navLogout}</span>
+        </button>
       </div>
     </div>
   );
 }
 
 /**
- * Profile row at the bottom of the desktop sidebar: shows the accountant's
- * picture (their logoUrl) and opens the same profile/logo/settings menu, so the
- * profile picture is visible on desktop, not only in the mobile header.
+ * Accountant's picture (their logoUrl) in the sidebar footer, linking to their
+ * own public marketplace profile — the page companies see.
  */
-function SidebarProfile() {
+function SidebarProfile({ label, onNavigate }: { label: string; onNavigate?: () => void }) {
+  const { data: session } = useSession();
+  const [logo, setLogo] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/accountant/logo")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setLogo(d.logoUrl ?? null))
+      .catch(() => {});
+    // Settings page announces a new picture so the sidebar doesn't show a stale one
+    const onUpdate = (e: Event) => setLogo((e as CustomEvent<string | null>).detail);
+    window.addEventListener("accountant-logo-updated", onUpdate);
+    return () => window.removeEventListener("accountant-logo-updated", onUpdate);
+  }, []);
+
   return (
-    <div className="flex items-center gap-2 px-1.5">
-      <AccountantAvatarMenu />
-    </div>
+    <Link
+      href={session?.user?.id ? `/accountant/marketplace/${session.user.id}` : "/accountant/marketplace"}
+      onClick={onNavigate}
+      aria-label={label}
+      title={label}
+      className="grid h-10 w-10 place-items-center overflow-hidden rounded-full border border-gray-200 bg-white transition-[border-color,transform] duration-150 hover:border-nordic-600/50 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nordic-600/30 dark:border-white/[0.15] dark:bg-white/[0.06] dark:hover:border-nordic-600/60 lg:h-8 lg:w-8"
+    >
+      {logo ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={logo} alt="" className="h-full w-full object-cover" />
+      ) : (
+        <span className="text-sm font-medium text-gray-600 dark:text-gray-300">R</span>
+      )}
+    </Link>
   );
 }
 
@@ -204,7 +230,7 @@ export function AccountantChrome({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
       <main className="min-h-screen p-4 pb-24 sm:p-6 md:pb-8 lg:ml-64 lg:p-8 print:ml-0 print:min-h-0 print:p-0">{children}</main>
       <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-5 border-t border-gray-900/[0.07] bg-white/75 backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#0A0A0A] md:hidden print:hidden">
-        {nav.map((item) => {
+        {bottomNav.map((item) => {
           const Icon = item.icon;
           const active = isActive(pathname, item.href);
           const count = item.badge ? badgeCounts[item.badge] : 0;

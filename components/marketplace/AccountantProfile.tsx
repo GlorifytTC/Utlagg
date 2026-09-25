@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { MapPin, MessageSquare } from "lucide-react";
 import { AccountantChat } from "@/components/AccountantChat";
+import { LogoUploader } from "@/components/dashboard/LogoUploader";
 
 interface Review {
   id: string;
@@ -64,10 +65,37 @@ function Stars({ rating, max = 5 }: { rating: number; max?: number }) {
 
 const ROLE_LABELS: Record<string, string> = { owner: "Ägare", admin: "Admin", member: "Medarbetare" };
 
-function FirmSidebar({ firm }: { firm: Firm }) {
+async function saveFirmLogo(logoUrl: string | null) {
+  const res = await fetch("/api/accountant/firm/logo", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ logoUrl }),
+  });
+  if (!res.ok) {
+    const d = await res.json().catch(() => ({}));
+    toast.error(d.error ?? "Kunde inte spara");
+    throw new Error();
+  }
+}
+
+/** `canEditLogo`: own profile in edit mode, and the viewer is the firm's owner or admin (enforced again server-side). */
+function FirmSidebar({ firm, canEditLogo, onLogoSaved }: { firm: Firm; canEditLogo: boolean; onLogoSaved: (logoUrl: string | null) => void }) {
   return (
     <div className="self-start lg:sticky lg:top-6 space-y-4">
       <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        {canEditLogo ? (
+          <div className="mb-4 space-y-2">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-400">Byråns logotyp</p>
+            <LogoUploader
+              value={firm.logoUrl}
+              label={firm.name}
+              onSave={async (logoUrl) => {
+                await saveFirmLogo(logoUrl);
+                onLogoSaved(logoUrl);
+              }}
+            />
+          </div>
+        ) : null}
         {/* Firm header */}
         <div className="mb-4 flex items-center gap-3">
           {firm.logoUrl ? (
@@ -267,6 +295,8 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
 
   const { accountant, reviews } = data;
   const isSelf = accountantId === viewerAccountantId;
+  const viewerRole = data.firm?.members.find((m) => m.id === viewerAccountantId)?.role;
+  const canManageFirmLogo = viewerRole === "owner" || viewerRole === "admin";
 
   return (
     <div className="space-y-6">
@@ -423,7 +453,14 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
           animate={{ opacity: 1, y: 0 }}
           className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
         >
-          <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Redigera profil</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Redigera profil</h2>
+          <p className="mb-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Namn och profilbild ändrar du i{" "}
+            <Link href="/accountant/settings" className="text-nordic-600 hover:underline">Inställningar</Link>.
+            {data.firm && (canManageFirmLogo
+              ? " Byråns logotyp ändrar du i byråkortet."
+              : " Byråns logotyp kan bara ändras av ägare och admin.")}
+          </p>
           <div className="space-y-3">
             <div>
               <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -604,7 +641,13 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       </div>
 
       </div>
-      {data.firm && <FirmSidebar firm={data.firm} />}
+      {data.firm && (
+        <FirmSidebar
+          firm={data.firm}
+          canEditLogo={isSelf && editing && canManageFirmLogo}
+          onLogoSaved={(logoUrl) => setData((prev) => (prev?.firm ? { ...prev, firm: { ...prev.firm, logoUrl } } : prev))}
+        />
+      )}
       </div>
     </div>
   );

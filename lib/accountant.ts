@@ -93,6 +93,19 @@ export async function requireFirmMembership(): Promise<
   return { userId: acct.userId, email: acct.email, firmId: firm.firmId, role: firm.role };
 }
 
+/**
+ * Validates an uploaded picture (base64 data URL) for the personal and firm
+ * logo routes: image type only, ~1.5 MB cap. Null means "remove".
+ */
+export function validateLogo(v: string | null): { ok: boolean; error?: string } {
+  if (v == null) return { ok: true };
+  if (!/^data:image\/(png|jpeg|jpg|webp|svg\+xml);base64,/.test(v)) {
+    return { ok: false, error: "Ogiltigt bildformat." };
+  }
+  if (v.length > 2_000_000) return { ok: false, error: "Bilden är för stor (max ~1,5 MB)." };
+  return { ok: true };
+}
+
 /** Requires firm membership with at least role `min`. */
 export async function requireFirmRole(
   min: FirmRole,

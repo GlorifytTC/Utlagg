@@ -75,7 +75,7 @@ export function AccountantAvatarMenu() {
             <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
               {t.menuProfile}
             </p>
-            <LogoUploader value={logo} label={t.menuFirmLogo} onSave={saveLogo} />
+            <LogoUploader value={logo} label={t.menuProfilePic} onSave={saveLogo} />
           </div>
 
           <div className="border-t border-gray-900/[0.07] pt-1 dark:border-white/[0.07]">
@@ -93,6 +93,14 @@ export function AccountantAvatarMenu() {
                 English
               </button>
             </div>
+
+            <Link
+              href="/accountant/settings"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-900/[0.04] dark:text-gray-300 dark:hover:bg-white/[0.04]"
+            >
+              {t.navSettings}
+            </Link>
 
             <Link
               href="/dashboard"
