@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import type { ModerationAction } from "@/lib/moderation";
+import { isBanned, type ModerationAction } from "@/lib/moderation";
 
 interface Report {
   id: string;
@@ -22,6 +22,7 @@ interface Report {
 interface ReportDetail extends Report {
   reporterId: string;
   reportedUserId: string;
+  reportedBannedUntil: string | null;
 }
 
 interface Message {
@@ -90,6 +91,20 @@ export default function AdminChatReportsPage() {
       );
       setSelectedId(null);
       load();
+    } else {
+      toast.error("Åtgärd misslyckades");
+    }
+  }
+
+  async function unban(id: string) {
+    const res = await fetch(`/api/admin/chat-reports/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "unban" }),
+    });
+    if (res.ok) {
+      toast.success("Avstängningen är hävd");
+      setDetail((d) => d && { ...d, report: { ...d.report, reportedBannedUntil: null } });
     } else {
       toast.error("Åtgärd misslyckades");
     }
@@ -166,6 +181,7 @@ export default function AdminChatReportsPage() {
               note={note}
               setNote={setNote}
               onModerate={(status, action) => moderate(detail.report.id, status, action)}
+              onUnban={() => unban(detail.report.id)}
             />
           )}
         </div>
@@ -179,11 +195,13 @@ function ReportView({
   note,
   setNote,
   onModerate,
+  onUnban,
 }: {
   detail: { report: ReportDetail; messages: Message[] };
   note: string;
   setNote: (v: string) => void;
   onModerate: (status: "resolved" | "dismissed", action?: ModerationAction) => void;
+  onUnban: () => void;
 }) {
   const nameOf = (id: string) =>
     id === r.reporterId
@@ -293,11 +311,29 @@ function ReportView({
             </div>
           </>
         ) : (
-          <p className="text-xs text-gray-500">
-            {r.status === "resolved" ? "Hanterad" : "Avvisad"}
-            {r.moderatedAt && ` ${new Date(r.moderatedAt).toLocaleString("sv-SE")}`}
-            {r.moderatorNote && ` · Anteckning: ${r.moderatorNote}`}
-          </p>
+          <>
+            <p className="text-xs text-gray-500">
+              {r.status === "resolved" ? "Hanterad" : "Avvisad"}
+              {r.moderatedAt && ` ${new Date(r.moderatedAt).toLocaleString("sv-SE")}`}
+              {r.moderatorNote && ` · Anteckning: ${r.moderatorNote}`}
+            </p>
+            {isBanned(r.reportedBannedUntil ? new Date(r.reportedBannedUntil) : null) && (
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-red-200 p-3 dark:border-red-900/50">
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {r.reportedName ?? r.reportedEmail} är avstängd till{" "}
+                  {new Date(r.reportedBannedUntil!).toLocaleDateString("sv-SE")}
+                </p>
+                <button
+                  onClick={() => {
+                    if (window.confirm(`Häv avstängningen för ${r.reportedName ?? r.reportedEmail}?`)) onUnban();
+                  }}
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-white/[0.08] dark:text-gray-300 dark:hover:bg-white/[0.04]"
+                >
+                  Häv avstängning
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

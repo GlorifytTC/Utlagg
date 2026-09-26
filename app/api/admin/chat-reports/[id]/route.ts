@@ -53,6 +53,7 @@ export async function GET(
       reportedUserId: chatReports.reportedUserId,
       reportedEmail: reported.email,
       reportedName: reported.name,
+      reportedBannedUntil: reported.bannedUntil,
       clientId: chatMessages.clientId,
     })
     .from(chatReports)
@@ -90,6 +91,19 @@ export async function PATCH(
   if (!admin) return NextResponse.json({ error: "Saknar behörighet" }, { status: 403 });
 
   const { status, moderatorNote, action } = await req.json();
+
+  // Lifts the reported user's ban; leaves the handled report itself untouched.
+  if (action === "unban") {
+    const [report] = await db
+      .select({ reportedUserId: chatReports.reportedUserId })
+      .from(chatReports)
+      .where(eq(chatReports.id, params.id))
+      .limit(1);
+    if (!report) return NextResponse.json({ error: "Rapporten hittades inte" }, { status: 404 });
+    await db.update(users).set({ bannedUntil: null }).where(eq(users.id, report.reportedUserId));
+    return NextResponse.json({ ok: true });
+  }
+
   if (status !== "resolved" && status !== "dismissed") {
     return NextResponse.json({ error: "Ogiltigt status" }, { status: 400 });
   }
