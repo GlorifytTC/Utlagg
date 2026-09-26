@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import type Stripe from "stripe";
 import { stripe, tierFromPriceId } from "@/lib/stripe";
 import { db } from "@/db";
-import { users, subscriptions, webhookEvents } from "@/db/schema";
+import { users, subscriptions, webhookEvents, receipts } from "@/db/schema";
 import { logAudit } from "@/lib/audit";
 import {
   sendWelcomeEmail,
@@ -13,6 +13,7 @@ import {
   sendTrialStarted,
 } from "@/lib/email";
 import { planForTier, type Tier } from "@/lib/plans";
+import { getUserCompany } from "@/lib/company";
 import {
   onReferredFirstPaid,
   applyReferralEventForReferred,
@@ -385,6 +386,43 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     action: "subscription.invoice_paid",
     details: `invoice=${invoice.id} amount=${invoice.amount_paid}`,
   });
+
+  // Put the subscription payment into the customer's OWN books as a receipt, so
+  // it lands in their tax/expense records automatically. Idempotent on the
+  // Stripe invoice id (fileHash), so a re-delivered webhook never duplicates it.
+  // Non-blocking: a bookkeeping failure must never break the billing webhook.
+  if (invoice.amount_paid > 0 && invoice.id) {
+    try {
+      const invoiceKey = `stripe_invoice:${invoice.id}`;
+      const [dupe] = await db
+        .select({ id: receipts.id })
+        .from(receipts)
+        .where(and(eq(receipts.userId, user.id), eq(receipts.fileHash, invoiceKey)))
+        .limit(1);
+      if (!dupe) {
+        // amount_paid is in öre; Swedish SaaS carries 25% moms. Split gross into
+        // net + VAT: vat = gross * 0.25 / 1.25.
+        const gross = invoice.amount_paid / 100;
+        const vat = Math.round((gross * 0.25 / 1.25) * 100) / 100;
+        const company = await getUserCompany(user.id).catch(() => null);
+        await db.insert(receipts).values({
+          userId: user.id,
+          companyId: company?.companyId ?? null,
+          vendorName: "Kvittino",
+          date: new Date((invoice.created ?? Math.floor(Date.now() / 1000)) * 1000),
+          totalAmount: gross.toFixed(2),
+          vatAmount: vat.toFixed(2),
+          vatRate: 25,
+          category: "IT / Programvara",
+          basCode: "5420",
+          status: "approved",
+          fileHash: invoiceKey, // idempotency key
+        });
+      }
+    } catch (e) {
+      console.error("subscription receipt creation failed (non-blocking):", e);
+    }
+  }
 
   // Referral reward trigger (spec §4): the referred user's FIRST *paid* invoice
   // (amount > 0 → not a trial / 100% coupon) puts any referral reward into the

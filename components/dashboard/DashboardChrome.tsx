@@ -76,6 +76,22 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
   const dark = theme === "dark";
   const { chat, clear } = useNotifications();
 
+  // Subscription is owner-only: hide it for admins/members of a company.
+  const [companyRole, setCompanyRole] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/company")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled) setCompanyRole(d?.role ?? null);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const hideSubscription = companyRole !== null && companyRole !== "owner";
+
   useEffect(() => {
     if (pathname.startsWith("/dashboard/chats")) clear("chat");
   }, [pathname, clear]);
@@ -103,6 +119,7 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
             </p>
             <ul>
               {group.items.map((item) => {
+                if (item.href === "/dashboard/subscription" && hideSubscription) return null;
                 const Icon = item.icon;
                 const active = isActive(pathname, item.href);
                 return (

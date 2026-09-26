@@ -51,7 +51,7 @@ export async function GET() {
     .from(companies)
     .where(eq(companies.id, membership.companyId))
     .limit(1);
-  return NextResponse.json({ profile: c ?? null, canManage: canManageCompany(membership.role) });
+  return NextResponse.json({ profile: c ?? null, canManage: canManageCompany(membership.role), role: membership.role });
 }
 
 export async function PATCH(req: NextRequest) {
@@ -71,6 +71,11 @@ export async function PATCH(req: NextRequest) {
   if ("industry" in parsed.data) updates.industry = parsed.data.industry ?? null;
   if ("discoveryDescription" in parsed.data) updates.discoveryDescription = parsed.data.discoveryDescription ?? null;
   if ("logoUrl" in parsed.data) {
+    // The company logo/picture is OWNER-only (admins manage discovery text but
+    // not the company's picture).
+    if (membership.role !== "owner") {
+      return NextResponse.json({ error: "Endast ägaren kan ändra företagets logotyp." }, { status: 403 });
+    }
     const check = validLogo(parsed.data.logoUrl);
     if (!check.ok) return NextResponse.json({ error: check.error }, { status: 400 });
     updates.logoUrl = parsed.data.logoUrl ?? null;

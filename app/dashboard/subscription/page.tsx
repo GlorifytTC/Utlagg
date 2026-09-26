@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { users, subscriptions } from "@/db/schema";
+import { getUserCompany } from "@/lib/company";
 import { SubscriptionManager } from "@/components/dashboard/SubscriptionManager";
 import { InvoiceHistory } from "@/components/dashboard/InvoiceHistory";
 import { getT } from "@/lib/i18n-server";
@@ -15,6 +16,12 @@ export const dynamic = "force-dynamic";
 export default async function SubscriptionPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
+
+  // Subscription/billing is the OWNER's responsibility only. A company admin or
+  // member is redirected away; a user with no company (solo) still manages
+  // their own subscription.
+  const membership = await getUserCompany(session.user.id);
+  if (membership && membership.role !== "owner") redirect("/dashboard");
 
   // Read the raw row FIRST (to see if a grant just lapsed), then resolve the
   // effective tier — currentTier() also persists an expired grant, so after

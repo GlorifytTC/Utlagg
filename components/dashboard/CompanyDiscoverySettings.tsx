@@ -31,6 +31,7 @@ interface Incoming {
 export function CompanyDiscoverySettings() {
   const { t } = useLanguage();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [saving, setSaving] = useState(false);
   const [incoming, setIncoming] = useState<Incoming[]>([]);
@@ -45,6 +46,7 @@ export function CompanyDiscoverySettings() {
       ]);
       if (p?.profile) setProfile(p.profile);
       else setProfile({ accountantDiscoverable: false, industry: "", discoveryDescription: "", logoUrl: null });
+      setRole(p?.role ?? null);
       setIncoming(r?.incoming ?? []);
       setStatus("ok");
     } catch {
@@ -102,13 +104,15 @@ export function CompanyDiscoverySettings() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
-        <LogoUploader
-          value={profile.logoUrl}
-          label={t.discCompanyLogo}
-          onSave={async (dataUrl) => {
-            await save({ logoUrl: dataUrl } as Partial<Profile>);
-          }}
-        />
+        {role === "owner" && (
+          <LogoUploader
+            value={profile.logoUrl}
+            label={t.discCompanyLogo}
+            onSave={async (dataUrl) => {
+              await save({ logoUrl: dataUrl } as Partial<Profile>);
+            }}
+          />
+        )}
 
         <label className="flex items-center gap-3">
           <input
