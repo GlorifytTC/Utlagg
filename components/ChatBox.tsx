@@ -25,6 +25,14 @@ const QA_KEYS = [
   ["cbQ6", "cbA6"],
   ["cbQ7", "cbA7"],
   ["cbQ8", "cbA8"],
+  ["cbQ9", "cbA9"],
+  ["cbQ10", "cbA10"],
+  ["cbQ11", "cbA11"],
+  ["cbQ12", "cbA12"],
+  ["cbQ13", "cbA13"],
+  ["cbQ14", "cbA14"],
+  ["cbQ15", "cbA15"],
+  ["cbQ16", "cbA16"],
 ] as const;
 
 // ── ID factory (stable module-scope counter) ──────────────────────────────────

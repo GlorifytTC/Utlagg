@@ -1362,6 +1362,22 @@ export interface Translations {
   cbA7: string;
   cbQ8: string;
   cbA8: string;
+  cbQ9: string;
+  cbA9: string;
+  cbQ10: string;
+  cbA10: string;
+  cbQ11: string;
+  cbA11: string;
+  cbQ12: string;
+  cbA12: string;
+  cbQ13: string;
+  cbA13: string;
+  cbQ14: string;
+  cbA14: string;
+  cbQ15: string;
+  cbA15: string;
+  cbQ16: string;
+  cbA16: string;
   cbGreeting: string;
   cbTyping: string;
   cbOnline: string;
@@ -2806,21 +2822,37 @@ export const strings: Record<Lang, Translations> = {
     bidOpenOnDevice: "Öppna BankID på den här enheten",
     bidScanQr: "Skanna QR-koden med BankID-appen.",
     cbQ1: "Hur fungerar kvittoskanningen?",
-    cbA1: "Ladda upp ett foto eller en PDF. OCR-modellen läser leverantör, datum, totalbelopp, momssats och rader på under tre sekunder — även på skrynkliga eller blekta kvitton.",
+    cbA1: "Fota kvittot, ladda upp en PDF eller vidarebefordra det via mejl — även från Kivra. AI:n läser leverantör, organisationsnummer, datum, totalbelopp och moms på några sekunder och föreslår BAS-konto. Den lär sig av dina rättningar.",
     cbQ2: "Vilka bokföringsprogram stöds?",
-    cbA2: "Fortnox, Visma och Bokio kopplas direkt. Alla andra program fungerar via SIE4-export.",
+    cbA2: "Fortnox kopplas direkt från Pro och uppåt. Visma, Bokio och andra program fungerar via SIE4-export. Du kan också exportera CSV, PDF och underlag till Skatteverket.",
     cbQ3: "Var lagras mina data?",
-    cbA3: "Krypterat i vila på svenska servrar med sju års lagring — fullt i linje med Bokföringslagen.",
+    cbA3: "Främst i Sverige, inom EU/EES. Kvittobilder ligger i privat lagring bakom signerade länkar, all trafik går över TLS och en revisionslogg sparas i sju år enligt Bokföringslagen.",
     cbQ4: "Hur fungerar provperioden?",
-    cbA4: "Du får 30 dagar gratis med full Pro-åtkomst och 500 skanningar. Inget kort krävs. Efter provperioden väljer du paket eller avslutar — din data finns kvar.",
-    cbQ5: "Kan jag säga upp när som helst?",
-    cbA5: "Ja. Alla planer löper månadsvis. Säg upp i kontoinställningarna — åtkomsten gäller till slutet av betalperioden.",
+    cbA4: "Du får 30 dagar gratis med full Pro-åtkomst och 500 skanningar. Inget kort krävs. Efter provperioden väljer du paket — din data finns kvar.",
+    cbQ5: "Vad kostar det?",
+    cbA5: "Pris per företag, inte per användare: Starter 50 kr, Pro 149 kr, Företag 299 kr och Max 699 kr i månaden. Enterprise enligt offert. Alla planer löper månadsvis och kan sägas upp när som helst.",
     cbQ6: "Vilka momssatser känns igen?",
-    cbA6: "6 %, 12 % och 25 % känns igen automatiskt från kvittot — ingen manuell inställning behövs.",
-    cbQ7: "Hur fungerar attest med BankID?",
-    cbA7: "Anställda använder BankID för att signera sina utlägg. Den signerade posten sparas tillsammans med kvittot för revision.",
+    cbA6: "6 %, 12 % och 25 % känns igen automatiskt. Momsen följer kvittots datum, så den tillfälliga matmomsen 2026–2027 hanteras rätt.",
+    cbQ7: "Kan min redovisningskonsult jobba i Kvittino?",
+    cbA7: "Ja. Bjud in din konsult så kan hen granska och rätta kvitton direkt, chatta med dig per kvitto och exportera SIE eller CSV. Byråer får en gratis arbetsyta med en kö över alla klienter.",
     cbQ8: "Kan jag hantera ett team?",
-    cbA8: "Team- och Företagsplanerna stödjer flera användare med rollbaserad åtkomst, beloppsgränser per person och en gemensam attestpanel.",
+    cbA8: "Företag (5–10 användare) och Max (obegränsat) har roller — ägare, admin, attestant och medlem — samt attestflöden. Skanningarna delas av hela teamet.",
+    cbQ9: "Jag har ingen redovisningskonsult — vad gör jag?",
+    cbA9: "Hitta en i marknadsplatsen direkt i appen. Jämför profiler och omdömen och skicka en förfrågan till den du vill anlita.",
+    cbQ10: "Kan jag registrera milersättning och resor?",
+    cbA10: "Ja. Logga körningar med sparade rutter och fordon — 2,50 kr/km för privatbil enligt Skatteverket. Kollektivtrafikbiljetter registreras med 6 % moms.",
+    cbQ11: "Kan jag skicka fakturor?",
+    cbA11: "Ja, från Pro och uppåt. Skapa och skicka kundfakturor direkt i Kvittino — även med omvänd byggmoms.",
+    cbQ12: "Klarar ni kvitton från utlandet?",
+    cbA12: "Ja. Kvitton på svenska, engelska, norska, danska, finska och tyska läses automatiskt, och utländska valutor räknas om åt dig.",
+    cbQ13: "Vad händer om skanningarna tar slut?",
+    cbA13: "Du kan fortsätta skanna. Extra skanningar debiteras per styck — från 0,50 kr på Starter ner till 0,19 kr på Max — upp till ett kostnadstak. Eller uppgradera när som helst.",
+    cbQ14: "Finns det en mobilapp?",
+    cbA14: "Kvittino fungerar i mobilens webbläsare och kan läggas till på hemskärmen som en app — fota kvittot direkt med kameran.",
+    cbQ15: "Jag är redovisningskonsult — vad kostar det?",
+    cbA15: "Inget. Konton för konsulter och byråer är gratis. Vill du synas mer i marknadsplatsen kan du köpa en synlighetsboost i sju dagar för 49 kr.",
+    cbQ16: "Får jag något för att tipsa andra?",
+    cbA16: "Ja. Bjud in ett annat företag med din länk. När de blir betalande kund får du 14 dagar Pro på köpet.",
     cbGreeting: "Hej — jag svarar på vanliga frågor om Kvittino. Välj en nedan för att komma igång.",
     cbTyping: "Skriver…",
     cbOnline: "Online — snabba svar",
@@ -4259,21 +4291,37 @@ export const strings: Record<Lang, Translations> = {
     bidOpenOnDevice: "Open BankID on this device",
     bidScanQr: "Scan the QR code with the BankID app.",
     cbQ1: "How does receipt scanning work?",
-    cbA1: "Upload a photo or PDF. The OCR model reads vendor, date, total, VAT rate, and line items in under three seconds — even on crumpled or faded paper.",
+    cbA1: "Snap a photo, upload a PDF or forward it by email — Kivra included. The AI reads vendor, org number, date, total and VAT in seconds and suggests a BAS account. It learns from your corrections.",
     cbQ2: "Which accounting tools are supported?",
-    cbA2: "Fortnox, Visma, and Bokio connect natively. Any other tool works via SIE4 export.",
+    cbA2: "Fortnox connects directly on Pro and up. Visma, Bokio and other tools work via SIE4 export. You can also export CSV, PDF and a Skatteverket report.",
     cbQ3: "Where is my data stored?",
-    cbA3: "Encrypted at rest on Swedish servers with seven-year retention — full compliance with Bokföringslagen.",
+    cbA3: "Primarily in Sweden, within the EU/EEA. Receipt images sit in private storage behind signed links, all traffic uses TLS, and a seven-year audit log is kept per Bokföringslagen.",
     cbQ4: "How does the free trial work?",
-    cbA4: "You get 30 days free with full Pro access and 500 scans. No credit card required. When the trial ends, pick a plan or cancel — your data stays.",
-    cbQ5: "Can I cancel anytime?",
-    cbA5: "Yes. All plans are month-to-month. Cancel from account settings — access continues to the end of the billing period.",
+    cbA4: "You get 30 days free with full Pro access and 500 scans. No credit card required. When the trial ends, pick a plan — your data stays.",
+    cbQ5: "What does it cost?",
+    cbA5: "Priced per company, not per user: Starter 50 kr, Pro 149 kr, Företag 299 kr and Max 699 kr a month. Enterprise on quote. All plans are month-to-month and can be cancelled anytime.",
     cbQ6: "Which VAT rates are detected?",
-    cbA6: "6 %, 12 %, and 25 % are detected automatically from the receipt — no manual configuration needed.",
-    cbQ7: "How does BankID sign-off work?",
-    cbA7: "Employees use BankID to sign expense submissions. The signed record is stored alongside the receipt for audit purposes.",
+    cbA6: "6 %, 12 % and 25 % are detected automatically. VAT follows the receipt date, so the temporary 2026–2027 food VAT is handled correctly.",
+    cbQ7: "Can my accountant work in Kvittino?",
+    cbA7: "Yes. Invite your accountant to review and correct receipts directly, chat with you per receipt, and export SIE or CSV. Firms get a free workspace with one queue across all clients.",
     cbQ8: "Can I manage a team?",
-    cbA8: "Team and Business plans support multiple users with role-based access, per-person spending limits, and a shared approval dashboard.",
+    cbA8: "Företag (5–10 users) and Max (unlimited) include roles — owner, admin, approver and member — plus approval flows. Scans are shared across the team.",
+    cbQ9: "I don't have an accountant — what now?",
+    cbA9: "Find one in the marketplace right inside the app. Compare profiles and reviews, then send a request to the one you want.",
+    cbQ10: "Can I log mileage and travel?",
+    cbA10: "Yes. Log trips with saved routes and vehicles — 2.50 kr/km for a private car at Skatteverket rates. Public transport tickets are registered with 6 % VAT.",
+    cbQ11: "Can I send invoices?",
+    cbA11: "Yes, on Pro and up. Create and send customer invoices right in Kvittino — reverse-charge construction VAT included.",
+    cbQ12: "Do you handle receipts from abroad?",
+    cbA12: "Yes. Receipts in Swedish, English, Norwegian, Danish, Finnish and German are read automatically, and foreign currencies are converted for you.",
+    cbQ13: "What if I run out of scans?",
+    cbA13: "You can keep scanning. Extra scans are billed per scan — from 0.50 kr on Starter down to 0.19 kr on Max — up to a spending cap. Or upgrade anytime.",
+    cbQ14: "Is there a mobile app?",
+    cbA14: "Kvittino runs in your phone's browser and can be added to your home screen like an app — snap receipts straight from the camera.",
+    cbQ15: "I'm an accountant — what does it cost?",
+    cbA15: "Nothing. Accountant and firm accounts are free. Want more visibility in the marketplace? Buy a seven-day boost for 49 SEK.",
+    cbQ16: "Do I get anything for referring others?",
+    cbA16: "Yes. Invite another company with your link. When they become a paying customer, you get 14 days of Pro for free.",
     cbGreeting: "Hi — I can answer common questions about Kvittino. Select one below to get started.",
     cbTyping: "Typing…",
     cbOnline: "Online — quick answers",
