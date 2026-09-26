@@ -50,9 +50,13 @@ export function isStorageConfigured(): boolean {
   );
 }
 
-/** Accepts a raw base64 string or a `data:image/...;base64,...` data URL. */
+/**
+ * Accepts a raw base64 string or a `data:...;base64,...` data URL. Handles image
+ * types and application/pdf — the latter is a forwarded digital receipt (email /
+ * Kivra) stored as its original document.
+ */
 function decodeImage(input: string): { buffer: Buffer; contentType: string } {
-  const match = /^data:(image\/[a-zA-Z.+-]+);base64,(.*)$/s.exec(input);
+  const match = /^data:(image\/[a-zA-Z.+-]+|application\/pdf);base64,(.*)$/s.exec(input);
   if (match) {
     return { buffer: Buffer.from(match[2], "base64"), contentType: match[1] };
   }
@@ -61,6 +65,7 @@ function decodeImage(input: string): { buffer: Buffer; contentType: string } {
 }
 
 function extFor(contentType: string): string {
+  if (contentType.includes("pdf")) return "pdf";
   if (contentType.includes("png")) return "png";
   if (contentType.includes("webp")) return "webp";
   if (contentType.includes("heic")) return "heic";

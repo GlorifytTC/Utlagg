@@ -52,6 +52,8 @@ export function AccountantTeam() {
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
 
   const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteFirst, setInviteFirst] = useState("");
+  const [inviteLast, setInviteLast] = useState("");
   const [inviteRole, setInviteRole] = useState<"admin" | "member">("member");
   const [inviting, setInviting] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
@@ -78,18 +80,25 @@ export function AccountantTeam() {
   const canManage = myRole === "owner" || myRole === "admin";
 
   async function invite() {
-    if (!inviteEmail.trim()) return;
+    if (!inviteEmail.trim() || !inviteFirst.trim() || !inviteLast.trim()) return;
     setInviting(true);
     try {
       const res = await fetch("/api/firm/members", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: inviteEmail.trim(), role: inviteRole }),
+        body: JSON.stringify({
+          email: inviteEmail.trim(),
+          firstName: inviteFirst.trim(),
+          lastName: inviteLast.trim(),
+          role: inviteRole,
+        }),
       });
       const d = await res.json().catch(() => ({}));
       if (res.ok) {
         toast.success(d.alreadyPending ? t.teamPending : t.teamSend);
         setInviteEmail("");
+        setInviteFirst("");
+        setInviteLast("");
         load();
       } else {
         toast.error(d.error ?? t.error);
@@ -174,6 +183,14 @@ export function AccountantTeam() {
                 <UserPlus className="h-4 w-4" /> {t.teamInvite}
               </h2>
               <div className="flex flex-wrap items-end gap-3">
+                <div className="min-w-[140px] flex-1">
+                  <label className="mb-1 block text-xs text-gray-500">{t.teamFirstName}</label>
+                  <input value={inviteFirst} onChange={(e) => setInviteFirst(e.target.value)} placeholder={t.teamFirstName} className={INPUT} />
+                </div>
+                <div className="min-w-[140px] flex-1">
+                  <label className="mb-1 block text-xs text-gray-500">{t.teamLastName}</label>
+                  <input value={inviteLast} onChange={(e) => setInviteLast(e.target.value)} placeholder={t.teamLastName} className={INPUT} />
+                </div>
                 <div className="min-w-[220px] flex-1">
                   <label className="mb-1 block text-xs text-gray-500">{t.teamInviteEmail}</label>
                   <input value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="namn@byra.se" className={INPUT} />
@@ -185,7 +202,7 @@ export function AccountantTeam() {
                     <option value="admin">{t.teamRoleAdmin}</option>
                   </select>
                 </div>
-                <button onClick={invite} disabled={inviting || !inviteEmail.trim()} className={BTN}>
+                <button onClick={invite} disabled={inviting || !inviteEmail.trim() || !inviteFirst.trim() || !inviteLast.trim()} className={BTN}>
                   {inviting ? t.loading : t.teamSend}
                 </button>
               </div>

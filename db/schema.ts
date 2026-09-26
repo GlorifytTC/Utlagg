@@ -127,6 +127,10 @@ export const users = pgTable("users", {
   // --- Referral program (Pricing V2 §4, all nullable / backfilled) ---
   // Unique, non-guessable share code (base32). Backfilled for existing users.
   referralCode: varchar("referral_code", { length: 32 }).unique(),
+  // Per-user inbound-email token (base32, non-guessable). Forms the forwarding
+  // address kvitto+<token>@<inbound domain>; digital receipts (email / Kivra
+  // PDFs) sent there are ingested without OCR. Lazily generated on first view.
+  inboundToken: varchar("inbound_token", { length: 32 }).unique(),
   // Who referred THIS user (immutable once set on signup). Self-ref FK added in
   // the migration to avoid a forward-reference here.
   referredByUserId: uuid("referred_by_user_id"),
@@ -275,6 +279,9 @@ export const auditLogs = pgTable(
     oldValues: jsonb("old_values"),
     newValues: jsonb("new_values"),
     userAgent: text("user_agent"),
+    // Which client company the accountant was acting on — enables company-scoped
+    // audit queries without string-parsing the details field.
+    targetCompanyId: uuid("target_company_id"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -282,6 +289,7 @@ export const auditLogs = pgTable(
   (t) => ({
     userIdx: index("audit_user_idx").on(t.userId),
     createdIdx: index("audit_created_idx").on(t.createdAt),
+    targetCompanyIdx: index("audit_target_company_idx").on(t.targetCompanyId),
   }),
 );
 
@@ -665,6 +673,8 @@ export const firmInvites = pgTable(
       .notNull()
       .references(() => accountingFirms.id, { onDelete: "cascade" }),
     email: varchar("email", { length: 320 }).notNull(),
+    // The invitee's name, captured by the inviter so the account has it up front.
+    inviteeName: varchar("invitee_name", { length: 200 }),
     tokenHash: varchar("token_hash", { length: 64 }).notNull(),
     role: firmRole("role").notNull().default("member"),
     status: accountantRelStatus("status").notNull().default("pending"),

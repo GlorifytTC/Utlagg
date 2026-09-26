@@ -93,6 +93,19 @@ export async function requireFirmMembership(): Promise<
   return { userId: acct.userId, email: acct.email, firmId: firm.firmId, role: firm.role };
 }
 
+/**
+ * Validates an uploaded picture (base64 data URL) for the personal and firm
+ * logo routes: image type only, ~1.5 MB cap. Null means "remove".
+ */
+export function validateLogo(v: string | null): { ok: boolean; error?: string } {
+  if (v == null) return { ok: true };
+  if (!/^data:image\/(png|jpeg|jpg|webp|svg\+xml);base64,/.test(v)) {
+    return { ok: false, error: "Ogiltigt bildformat." };
+  }
+  if (v.length > 2_000_000) return { ok: false, error: "Bilden är för stor (max ~1,5 MB)." };
+  return { ok: true };
+}
+
 /** Requires firm membership with at least role `min`. */
 export async function requireFirmRole(
   min: FirmRole,
@@ -105,6 +118,7 @@ export async function requireFirmRole(
 export type CompanyAccess = {
   companyId: string;
   companyName: string;
+  logoUrl: string | null;
   firmId: string;
   role: FirmRole;
   /** userIds of the company's CURRENT members — the scope for every query. */
@@ -131,7 +145,7 @@ export async function requireCompanyAccess(
 
   // The firm must actively work with this customer.
   const [rel] = await db
-    .select({ companyName: companies.name })
+    .select({ companyName: companies.name, logoUrl: companies.logoUrl })
     .from(accountantClients)
     .innerJoin(companies, eq(companies.id, accountantClients.companyId))
     .where(
@@ -166,5 +180,5 @@ export async function requireCompanyAccess(
     .where(eq(companyMembers.companyId, companyId));
   const memberIds = members.map((m: { userId: string }) => m.userId);
 
-  return { companyId, companyName: rel.companyName, firmId: firm.firmId, role: firm.role, memberIds };
+  return { companyId, companyName: rel.companyName, logoUrl: rel.logoUrl ?? null, firmId: firm.firmId, role: firm.role, memberIds };
 }

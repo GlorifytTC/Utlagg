@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { and, avg, count, eq, ilike, or, sql } from "drizzle-orm";
+import { and, avg, count, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import {
@@ -10,6 +10,8 @@ import {
   accountantConnectionRequests,
   accountantBoosts,
   accountantReviews,
+  firmMembers,
+  accountingFirms,
 } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { getUserCompany, canManageCompany } from "@/lib/company";
@@ -99,6 +101,21 @@ export async function GET(req: NextRequest) {
 
   const ids = rows.map((r) => r.id);
 
+  const firmRows = await db
+    .select({
+      userId: firmMembers.userId,
+      firmId: firmMembers.firmId,
+      firmName: accountingFirms.name,
+      firmLogoUrl: accountingFirms.logoUrl,
+    })
+    .from(firmMembers)
+    .innerJoin(accountingFirms, eq(accountingFirms.id, firmMembers.firmId))
+    .where(inArray(firmMembers.userId, ids));
+  type FirmRowItem = { userId: string; firmId: string; firmName: string; firmLogoUrl: string | null };
+  const firmMap = new Map<string, FirmRowItem>(
+    (firmRows as FirmRowItem[]).map((f) => [f.userId, f]),
+  );
+
   const [clientCounts, activeBoosts, reviewStats, viewerCompany] = await Promise.all([
     db
       .select({
@@ -168,7 +185,12 @@ export async function GET(req: NextRequest) {
           status: accountantConnectionRequests.status,
         })
         .from(accountantConnectionRequests)
-        .where(eq(accountantConnectionRequests.companyId, viewerCompany.companyId)),
+        .where(
+          and(
+            eq(accountantConnectionRequests.companyId, viewerCompany.companyId),
+            eq(accountantConnectionRequests.status, "pending"),
+          ),
+        ),
       db
         .select({ accountantId: accountantClients.accountantId })
         .from(accountantClients)
@@ -233,21 +255,27 @@ export async function GET(req: NextRequest) {
   const hasMore = start + pageSize < items.length;
 
   return NextResponse.json({
-    accountants: pageItems.map((a) => ({
-      id: a.id,
-      name: a.name,
-      email: a.email,
-      logoUrl: a.logoUrl,
-      city: a.accountantCity,
-      bio: a.accountantBio,
-      specializations: a.accountantSpecializations,
-      activeClientCount: a.activeClientCount,
-      isBoosted: boostedIds.has(a.id),
-      avgRating: a.avgRating,
-      reviewCount: a.reviewCount,
-      myStatus: statusMap.get(a.id) ?? null,
-      joinedYear: a.createdAt ? new Date(a.createdAt).getFullYear() : null,
-    })),
+    accountants: pageItems.map((a) => {
+      const firm = firmMap.get(a.id);
+      return {
+        id: a.id,
+        name: a.name,
+        email: a.email,
+        logoUrl: a.logoUrl,
+        city: a.accountantCity,
+        bio: a.accountantBio,
+        specializations: a.accountantSpecializations,
+        activeClientCount: a.activeClientCount,
+        isBoosted: boostedIds.has(a.id),
+        avgRating: a.avgRating,
+        reviewCount: a.reviewCount,
+        myStatus: statusMap.get(a.id) ?? null,
+        joinedYear: a.createdAt ? new Date(a.createdAt).getFullYear() : null,
+        firmId: firm?.firmId ?? null,
+        firmName: firm?.firmName ?? null,
+        firmLogoUrl: firm?.firmLogoUrl ?? null,
+      };
+    }),
     page,
     pageSize,
     hasMore,

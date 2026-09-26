@@ -60,7 +60,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="sv" className={jakarta.variable}>
+    <html lang="sv" className={jakarta.variable} suppressHydrationWarning>
+      <head>
+        {/* Apply theme before first paint so dark pages don't flash light. Mirrors ThemeProvider. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="bg-paper text-ink font-sans antialiased">
         <Providers>
           {children}

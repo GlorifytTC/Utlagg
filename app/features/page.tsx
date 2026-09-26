@@ -7,6 +7,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { ChatBox } from "@/components/ChatBox";
+import { VatSplitVisual } from "@/components/landing/PageVisuals";
 
 const COMPARISON_ROWS = [
   {
@@ -25,6 +26,11 @@ const COMPARISON_ROWS = [
     tradKey: "featuresCompareVatTraditional",
   },
   {
+    labelKey: "featuresCompareFirmLabel",
+    utlaggKey: "featuresCompareFirmUtlagg",
+    tradKey: "featuresCompareFirmTraditional",
+  },
+  {
     labelKey: "featuresCompareDataLabel",
     utlaggKey: "featuresCompareDataUtlagg",
     tradKey: "featuresCompareDataTraditional",
@@ -34,13 +40,32 @@ const COMPARISON_ROWS = [
 function FeaturesPageContent() {
   const { t } = useLanguage();
 
-  const FEATURES = [
-    { title: t.feature1Title, body: t.feature1Body },
-    { title: t.feature2Title, body: t.feature2Body },
-    { title: t.feature3Title, body: t.feature3Body },
-    { title: t.feature4Title, body: t.feature4Body },
-    { title: t.feature5Title, body: t.feature5Body },
-    { title: t.feature6Title, body: t.feature6Body },
+  // Grouped by where the receipt is in its life: capture → review → deliver.
+  const GROUPS = [
+    {
+      label: t.featuresGroupCapture,
+      items: [
+        { title: t.feature1Title, body: t.feature1Body },
+        { title: t.feature7Title, body: t.feature7Body },
+        { title: t.feature6Title, body: t.feature6Body },
+      ],
+    },
+    {
+      label: t.featuresGroupReview,
+      items: [
+        { title: t.feature2Title, body: t.feature2Body },
+        { title: t.feature3Title, body: t.feature3Body },
+        { title: t.feature8Title, body: t.feature8Body },
+      ],
+    },
+    {
+      label: t.featuresGroupDeliver,
+      items: [
+        { title: t.feature5Title, body: t.feature5Body },
+        { title: t.feature9Title, body: t.feature9Body },
+        { title: t.feature4Title, body: t.feature4Body },
+      ],
+    },
   ];
 
   return (
@@ -51,48 +76,88 @@ function FeaturesPageContent() {
       <main>
         {/* Hero strip */}
         <section className="border-b hairline bg-grain">
-          <div className="mx-auto max-w-6xl px-6 py-20">
-            <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-              {t.features}
-            </p>
-            <motion.h1
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-              className="mt-4 max-w-2xl font-display text-5xl leading-[1.05] md:text-6xl"
-            >
-              {t.featuresHeadline}
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.08 }}
-              className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70"
-            >
-              {t.featuresPageSubtitle}
-            </motion.p>
+          <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center">
+            <div>
+              <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
+                {t.features}
+              </p>
+              <motion.h1
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: "spring", bounce: 0, duration: 0.5 }}
+                className="mt-4 max-w-2xl font-display text-5xl leading-[1.05] md:text-6xl"
+              >
+                {t.featuresHeadline}
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  type: "spring",
+                  bounce: 0,
+                  duration: 0.5,
+                  delay: 0.08,
+                }}
+                className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70"
+              >
+                {t.featuresPageSubtitle}
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  type: "spring",
+                  bounce: 0,
+                  duration: 0.5,
+                  delay: 0.14,
+                }}
+                className="mt-9"
+              >
+                <Link
+                  href="/register"
+                  className="inline-block rounded-full bg-nordic-600 px-7 py-3.5 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
+                >
+                  {t.startFree}
+                </Link>
+                <p className="mt-4 text-xs text-ink/45">{t.heroDisclaimer}</p>
+              </motion.div>
+            </div>
+            <VatSplitVisual />
           </div>
         </section>
 
         {/* Grid */}
-        <section className="mx-auto max-w-6xl px-6 py-24">
-          <div className="grid gap-px overflow-hidden rounded-2xl border hairline bg-ink/10 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f, i) => (
-              <motion.div
-                key={f.title}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.05 }}
-                className="bg-paper p-8 transition-colors hover:bg-ink/[0.02]"
-              >
-                <h3 className="font-display text-xl">{f.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-ink/70">
-                  {f.body}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+        <section className="mx-auto max-w-6xl space-y-14 px-6 py-24">
+          {GROUPS.map((g) => (
+            <div key={g.label}>
+              <h2 className="mb-5 flex items-center gap-4 font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
+                {g.label}
+                <span className="h-px flex-1 bg-ink/10" />
+              </h2>
+              <div className="grid gap-px overflow-hidden rounded-2xl border hairline bg-ink/10 sm:grid-cols-2 lg:grid-cols-3">
+                {g.items.map((f, i) => (
+                  <motion.div
+                    key={f.title}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{
+                      type: "spring",
+                      bounce: 0,
+                      duration: 0.5,
+                      delay: i * 0.05,
+                    }}
+                    className="bg-paper p-8 transition-colors hover:bg-ink/[0.02]"
+                  >
+                    <h3 className="font-display text-xl">{f.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-ink/70">
+                      {f.body}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          ))}
         </section>
 
         {/* Comparison table */}
@@ -146,12 +211,8 @@ function FeaturesPageContent() {
             className="flex flex-col gap-6 rounded-3xl border hairline bg-paper p-8 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
-              <h2 className="font-display text-2xl">
-                {t.featuresCtaTitle}
-              </h2>
-              <p className="mt-1 text-sm text-ink/60">
-                {t.featuresCtaBody}
-              </p>
+              <h2 className="font-display text-2xl">{t.featuresCtaTitle}</h2>
+              <p className="mt-1 text-sm text-ink/60">{t.featuresCtaBody}</p>
             </div>
             <Link
               href="/register"
@@ -160,6 +221,12 @@ function FeaturesPageContent() {
               {t.startFree}
             </Link>
           </motion.div>
+          <Link
+            href="/for-accountants"
+            className="mt-6 inline-block text-sm text-nordic-600 transition hover:underline"
+          >
+            {t.featuresFirmLink} →
+          </Link>
         </section>
       </main>
 

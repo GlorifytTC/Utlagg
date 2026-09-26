@@ -4,10 +4,12 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
+import { AccountantFirmStats } from "@/components/accountant/AccountantFirmStats";
 import { AccountantWorkQueue } from "@/components/accountant/AccountantWorkQueue";
 import { AccountantClientsList } from "@/components/accountant/AccountantClientsList";
 import { AccountantActivity } from "@/components/accountant/AccountantActivity";
 import { AccountantBoostCard } from "@/components/accountant/AccountantBoostCard";
+import { AccountantClientDistribution } from "@/components/accountant/AccountantClientDistribution";
 
 /**
  * Work-focused accountant dashboard. Information architecture, in priority of
@@ -29,10 +31,17 @@ export function AccountantDashboard() {
         <p className="text-sm text-gray-500 dark:text-gray-400">{t.overviewSubtitle}</p>
       </div>
 
-      {/* 1. Hero work queue */}
+      {/* 1. KPI overview — data-first: totals before the task queue */}
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.firmStatsTitle}</h2>
+        <AccountantFirmStats />
+        <AccountantClientDistribution />
+      </section>
+
+      {/* 2. Hero work queue */}
       <AccountantWorkQueue />
 
-      {/* 2. Clients — the working list */}
+      {/* 3. Clients — the working list */}
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.clientsTitle}</h2>
         <AccountantClientsList />

@@ -14,6 +14,7 @@ export function Footer() {
       links: [
         { href: "/features", label: t.features },
         { href: "/pricing", label: t.pricing },
+        { href: "/for-accountants", label: t.forFirms },
       ],
     },
     {
@@ -65,7 +66,6 @@ export function Footer() {
 
         <div className="mt-12 border-t hairline pt-6 text-xs text-ink/40">
           <p>{t.footerCopyright.replace("{year}", String(year))}</p>
-          <p className="mt-1">{t.footerDisclaimer}</p>
         </div>
       </div>
     </footer>

@@ -52,6 +52,8 @@ export async function GET() {
 
 const inviteSchema = z.object({
   email: z.string().email(),
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().min(1).max(100),
   // Owner/admin may invite admins or workers. Nobody invites a second owner.
   role: z.enum(["admin", "member"]).default("member"),
 });
@@ -71,6 +73,7 @@ export async function POST(req: NextRequest) {
   const parsed = inviteSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Ogiltiga uppgifter" }, { status: 400 });
   const email = parsed.data.email.toLowerCase();
+  const fullName = `${parsed.data.firstName.trim()} ${parsed.data.lastName.trim()}`.trim();
 
   // No stacked live invites to the same email in this firm.
   const [existing] = await db
@@ -88,17 +91,41 @@ export async function POST(req: NextRequest) {
     .limit(1);
   if (existing) return NextResponse.json({ ok: true, alreadyPending: true });
 
+  // Pre-create the account (no password yet) so the invitee gets one directly
+  // without self-registration. If a user with this email already exists, we
+  // reuse it and only set the name if it's missing (never overwrite theirs).
+  const [existingUser] = await db
+    .select({ id: users.id, name: users.name })
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1);
+  if (existingUser) {
+    if (!existingUser.name) {
+      await db.update(users).set({ name: fullName }).where(eq(users.id, existingUser.id));
+    }
+  } else {
+    await db.insert(users).values({
+      email,
+      name: fullName,
+      hashedPassword: null, // set by the invitee via the set-password link
+      isAccountant: true, // they will work as a firm accountant
+      scanLimit: 25,
+      subscriptionTier: "free",
+    });
+  }
+
   const raw = crypto.randomBytes(32).toString("hex");
   await db.insert(firmInvites).values({
     firmId: m.firmId,
     email,
+    inviteeName: fullName,
     tokenHash: crypto.createHash("sha256").update(raw).digest("hex"),
     role: parsed.data.role,
     status: "pending",
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   });
 
-  // Reuse the accountant-invite email shell; link points to the firm accept.
+  // Email link goes to the set-password page bound to this invite token.
   await sendFirmInviteEmail(email, raw).catch(() => {});
 
   await logAudit({

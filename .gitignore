@@ -1,3 +1,4 @@
+.gitignore
 # dependencies
 /node_modules
 /.pnp
@@ -33,3 +34,4 @@ yarn-error.log*
 /playwright-report
 /test-results
 .claude/
+/graphify-out

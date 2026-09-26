@@ -5,17 +5,21 @@ import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { ClientAvatar } from "@/components/accountant/ClientAvatar";
+import { AccountantClientStats } from "@/components/accountant/AccountantClientStats";
 import { AccountantReceipts } from "@/components/accountant/AccountantReceipts";
 import { AccountantExports } from "@/components/accountant/AccountantExports";
+import { AccountantAuditLog } from "@/components/accountant/AccountantAuditLog";
 
 interface Detail {
   companyId: string;
   companyName: string;
+  logoUrl: string | null;
   receiptCount: number;
   clientId: string | null;
 }
 
-type Tab = "overview" | "receipts" | "exports";
+type Tab = "overview" | "receipts" | "exports" | "activity";
 
 export function AccountantClientWorkspace({ companyId }: { companyId: string }) {
   const [detail, setDetail] = useState<Detail | null>(null);
@@ -71,6 +75,7 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
     { key: "overview", label: "Översikt" },
     { key: "receipts", label: "Kvitton" },
     { key: "exports", label: "Export" },
+    { key: "activity", label: "Aktivitet" },
   ];
 
   const tabCls = (active: boolean) =>
@@ -88,12 +93,17 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
         animate={{ opacity: 1, y: 0 }}
         className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
       >
-        <h1 className="font-display text-xl font-semibold text-gray-900 dark:text-white">
-          {detail.companyName}
-        </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {detail.receiptCount} kvitton
-        </p>
+        <div className="flex items-center gap-4">
+          <ClientAvatar name={detail.companyName} logoUrl={detail.logoUrl} size="lg" />
+          <div>
+            <h1 className="font-display text-xl font-semibold text-gray-900 dark:text-white">
+              {detail.companyName}
+            </h1>
+            <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+              {detail.receiptCount} kvitton
+            </p>
+          </div>
+        </div>
       </motion.div>
 
       <div className="flex items-center gap-2">
@@ -123,16 +133,11 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-gray-900/[0.07] dark:border-white/[0.07] dark:bg-white/[0.07]"
           >
-            <div className="bg-[#F5F4F0] p-5 dark:bg-[#0D0D0D]">
-              <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-                Kvitton totalt
-              </p>
-              <p className="font-display text-[22px] font-semibold leading-none tracking-tight text-gray-900 dark:text-white">
-                {detail.receiptCount}
-              </p>
-            </div>
+            <AccountantClientStats
+              companyId={companyId}
+              onViewAllReceipts={() => setTab("receipts")}
+            />
           </motion.div>
         )}
         {tab === "receipts" && (
@@ -155,6 +160,17 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
             transition={{ duration: 0.15 }}
           >
             <AccountantExports companyId={companyId} />
+          </motion.div>
+        )}
+        {tab === "activity" && (
+          <motion.div
+            key="activity"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+          >
+            <AccountantAuditLog companyId={companyId} />
           </motion.div>
         )}
       </AnimatePresence>

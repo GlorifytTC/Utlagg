@@ -103,8 +103,50 @@
 		{
 			"idx": 14,
 			"version": "7",
+			"when": 1795001400000,
+			"tag": "0014_accountant_marketplace",
+			"breakpoints": true
+		},
+		{
+			"idx": 15,
+			"version": "7",
+			"when": 1795001500000,
+			"tag": "0015_accountant_reviews",
+			"breakpoints": true
+		},
+		{
+			"idx": 16,
+			"version": "7",
+			"when": 1795001600000,
+			"tag": "0016_chat",
+			"breakpoints": true
+		},
+		{
+			"idx": 17,
+			"version": "7",
 			"when": 1795000000000,
 			"tag": "0017_accounting_firms",
+			"breakpoints": true
+		},
+		{
+			"idx": 18,
+			"version": "7",
+			"when": 1795001800000,
+			"tag": "0018_audit_company_scope",
+			"breakpoints": true
+		},
+		{
+			"idx": 19,
+			"version": "7",
+			"when": 1795500000000,
+			"tag": "0019_inbound_token",
+			"breakpoints": true
+		},
+		{
+			"idx": 20,
+			"version": "7",
+			"when": 1796000000000,
+			"tag": "0020_firm_invitee_name",
 			"breakpoints": true
 		}
 	]

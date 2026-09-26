@@ -3,6 +3,7 @@ import { and, count, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { accountantClients, receipts } from "@/db/schema";
 import { requireAccountant, requireCompanyAccess } from "@/lib/accountant";
+import { logAuditEvent, clientIp } from "@/lib/audit";
 
 export const runtime = "nodejs";
 
@@ -20,7 +21,7 @@ export const runtime = "nodejs";
  * subscription, credential, or private data.
  */
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: { id: string } },
 ) {
   const acct = await requireAccountant();
@@ -60,9 +61,19 @@ export async function GET(
     )
     .limit(1);
 
+  void logAuditEvent({
+    userId: acct.userId,
+    action: "accountant.client.view",
+    entityType: "company",
+    entityId: params.id,
+    targetCompanyId: params.id,
+    ipAddress: clientIp(req),
+  });
+
   return NextResponse.json({
     companyId: access.companyId,
     companyName: access.companyName,
+    logoUrl: access.logoUrl,
     receiptCount,
     clientId: rel?.id ?? null,
   });

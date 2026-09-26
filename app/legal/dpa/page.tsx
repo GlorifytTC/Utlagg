@@ -4,9 +4,9 @@ export const metadata = { title: "Personuppgiftsbiträdesavtal — Kvittino" };
 
 export default function DpaPage() {
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
+    <main className="mx-auto max-w-2xl px-6 py-16 text-ink dark:text-gray-100">
       <h1 className="font-display text-3xl">Personuppgiftsbiträdesavtal (DPA)</h1>
-      <p className="mt-4 text-ink/70">
+      <p className="mt-4 text-ink/70 dark:text-gray-300">
         Detta personuppgiftsbiträdesavtal (&ldquo;DPA&rdquo;) reglerar GlorifyTC:s
         behandling av personuppgifter för din räkning när du använder Kvittino som
         företagskund. DPA:t utgör en integrerad del av användarvillkoren och gäller i
@@ -14,7 +14,7 @@ export default function DpaPage() {
         personer än dig själv (t.ex. dina anställda, uppdragstagare, leverantörer eller
         fakturamottagare).
       </p>
-      <p className="mt-2 text-sm text-ink/50">Senast uppdaterad: 18 juli 2026</p>
+      <p className="mt-2 text-sm text-ink/50 dark:text-gray-500">Senast uppdaterad: 18 juli 2026</p>
 
       <div className="mt-10 space-y-8 text-sm leading-relaxed">
 
@@ -86,7 +86,7 @@ export default function DpaPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg">4. Kvittinos skyldigheter</h2>
           <p>Vi ska:</p>
-          <ul className="ml-4 list-[lower-alpha] space-y-2 text-ink/80">
+          <ul className="ml-4 list-[lower-alpha] space-y-2 text-ink/80 dark:text-gray-300">
             <li>
               behandla personuppgifter enbart enligt dina dokumenterade instruktioner,
               inklusive vad gäller överföring till tredjeland, om vi inte är skyldiga
@@ -219,7 +219,7 @@ export default function DpaPage() {
           </p>
         </section>
 
-        <div className="rounded-xl border border-ink/10 p-4 space-y-2 text-ink/80">
+        <div className="rounded-xl border border-ink/10 dark:border-white/10 p-4 space-y-2 text-ink/80 dark:text-gray-300">
           <p>
             <strong>Bilaga A — Tekniska och organisatoriska säkerhetsåtgärder:</strong>{" "}
             se{" "}
@@ -239,7 +239,7 @@ export default function DpaPage() {
 
       </div>
 
-      <p className="mt-10 text-xs text-ink/50">
+      <p className="mt-10 text-xs text-ink/50 dark:text-gray-500">
         Kontakt: legal@kvittino.se · GlorifyTC · Org.nr [xxxxxx-xxxx]
       </p>
     </main>

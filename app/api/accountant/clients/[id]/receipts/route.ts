@@ -3,6 +3,7 @@ import { and, count, desc, gte, ilike, inArray, lte, or, sql } from "drizzle-orm
 import { db } from "@/db";
 import { receipts } from "@/db/schema";
 import { requireAccountant, requireCompanyAccess } from "@/lib/accountant";
+import { logAuditEvent, clientIp } from "@/lib/audit";
 
 export const runtime = "nodejs";
 
@@ -106,6 +107,15 @@ export async function GET(
       .offset((page - 1) * pageSize),
     db.select({ total: count() }).from(receipts).where(where),
   ]);
+
+  void logAuditEvent({
+    userId: acct.userId,
+    action: "accountant.receipt.list",
+    entityType: "company",
+    entityId: access.companyId,
+    targetCompanyId: access.companyId,
+    ipAddress: clientIp(req),
+  });
 
   return NextResponse.json({
     receipts: rows,

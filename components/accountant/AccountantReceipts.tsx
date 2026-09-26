@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AccountantReceiptEditor } from "@/components/accountant/AccountantReceiptEditor";
 
@@ -35,25 +35,56 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
   const [dir, setDir] = useState<"asc" | "desc">("desc");
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  // ponytail: in-memory page cache; cleared on save so stale pages aren't served after edits
+  const cache = useRef<Map<string, { rows: ReceiptRow[]; total: number }>>(new Map());
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedQ(q), 300);
     return () => clearTimeout(t);
   }, [q]);
 
+  useEffect(() => { cache.current.clear(); }, [refreshKey]);
+
   const load = useCallback(async () => {
+    const p = new URLSearchParams({ page: String(page), pageSize: "25", sort, dir });
+    if (debouncedQ) p.set("q", debouncedQ);
+    if (from) p.set("from", from);
+    if (to) p.set("to", to);
+    const qs = p.toString();
+    const hit = cache.current.get(qs);
+    if (hit) {
+      setRows(hit.rows);
+      setTotal(hit.total);
+      setStatus("ok");
+      return;
+    }
     setStatus("loading");
     try {
-      const p = new URLSearchParams({ page: String(page), pageSize: "25", sort, dir });
-      if (debouncedQ) p.set("q", debouncedQ);
-      if (from) p.set("from", from);
-      if (to) p.set("to", to);
-      const res = await fetch(`/api/accountant/clients/${companyId}/receipts?${p}`);
+      const res = await fetch(`/api/accountant/clients/${companyId}/receipts?${qs}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setRows(data.receipts ?? []);
-      setTotal(data.total ?? 0);
+      const fetchedRows: ReceiptRow[] = data.receipts ?? [];
+      const fetchedTotal: number = data.total ?? 0;
+      cache.current.set(qs, { rows: fetchedRows, total: fetchedTotal });
+      setRows(fetchedRows);
+      setTotal(fetchedTotal);
       setPageSize(data.pageSize ?? 25);
+      // prefetch prev/next pages for instant navigation
+      const totalPages = Math.ceil(fetchedTotal / 25);
+      [page - 1, page + 1].forEach((pn) => {
+        if (pn < 1 || pn > totalPages) return;
+        const pqs = new URLSearchParams({ page: String(pn), pageSize: "25", sort, dir });
+        if (debouncedQ) pqs.set("q", debouncedQ);
+        if (from) pqs.set("from", from);
+        if (to) pqs.set("to", to);
+        const pqsStr = pqs.toString();
+        if (cache.current.has(pqsStr)) return;
+        fetch(`/api/accountant/clients/${companyId}/receipts?${pqsStr}`)
+          .then((r) => r.json())
+          .then((d) => cache.current.set(pqsStr, { rows: d.receipts ?? [], total: d.total ?? 0 }))
+          .catch(() => {});
+      });
       setStatus("ok");
     } catch {
       setStatus("error");
@@ -62,7 +93,11 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
 
   useEffect(() => {
     load();
-  }, [load]);
+  }, [load, refreshKey]);
+
+  function handleSaved() {
+    setRefreshKey((k) => k + 1);
+  }
 
   function toggleSort(key: string) {
     if (sort === key) setDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -238,7 +273,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                             <AccountantReceiptEditor
                               companyId={companyId}
                               receiptId={r.id}
-                              onSaved={load}
+                              onSaved={handleSaved}
                             />
                           </td>
                         </tr>

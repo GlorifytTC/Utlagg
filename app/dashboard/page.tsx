@@ -101,6 +101,31 @@ export default async function DashboardPage() {
         </h1>
       </div>
 
+      {Number(stats?.total ?? 0) === 0 && !premiumEnded && (
+        <div className="rounded-2xl border border-nordic-600/20 bg-nordic-50/40 p-6 dark:border-nordic-600/10 dark:bg-nordic-600/[0.05]">
+          <p className="mb-1 text-[9.5px] font-medium uppercase tracking-[0.18em] text-nordic-600/70 dark:text-nordic-400/60">
+            {t.dashGettingStartedKicker ?? "Get started"}
+          </p>
+          <p className="mb-4 text-sm font-medium text-gray-900 dark:text-white">
+            {t.dashGettingStartedTitle ?? "Welcome! Here are three things to do first."}
+          </p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Link href="/dashboard/receipts" className="group flex flex-col gap-1 rounded-xl border border-gray-900/[0.07] bg-white/70 px-4 py-3 transition-colors hover:border-nordic-600/30 hover:bg-nordic-50/60 dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:bg-white/[0.06]">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{t.dashGsReceipt ?? "Add your first receipt"}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{t.dashGsSub1 ?? "Scan or upload"}</span>
+            </Link>
+            <Link href="/dashboard/company" className="group flex flex-col gap-1 rounded-xl border border-gray-900/[0.07] bg-white/70 px-4 py-3 transition-colors hover:border-nordic-600/30 hover:bg-nordic-50/60 dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:bg-white/[0.06]">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{t.dashGsCompany ?? "Set up a company"}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{t.dashGsSub2 ?? "Invite teammates and more"}</span>
+            </Link>
+            <Link href="/dashboard/marketplace" className="group flex flex-col gap-1 rounded-xl border border-gray-900/[0.07] bg-white/70 px-4 py-3 transition-colors hover:border-nordic-600/30 hover:bg-nordic-50/60 dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:bg-white/[0.06]">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{t.dashGsMarketplace ?? "Find an accountant"}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{t.dashGsSub3 ?? "Browse the marketplace"}</span>
+            </Link>
+          </div>
+        </div>
+      )}
+
       <AccountantEntryLink />
 
       {/* Export quick action — the one thing people come back for every

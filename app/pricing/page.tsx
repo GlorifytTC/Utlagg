@@ -12,6 +12,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { ChatBox } from "@/components/ChatBox";
+import { TrialVisual } from "@/components/landing/PageVisuals";
 
 // Scan quotas + feature matrix. Numbers mirror lib/billing/config.ts (the
 // single source of truth) — keep them in sync if the tier table changes.
@@ -53,7 +54,7 @@ function PricingPageContent() {
       return;
     }
     if (tier === "enterprise") {
-      window.location.href = "mailto:sales@Utlagg.se?subject=Enterprise";
+      window.location.href = "mailto:sales@utlagg.se?subject=Enterprise";
       return;
     }
     if (status !== "authenticated") {
@@ -69,7 +70,7 @@ function PricingPageContent() {
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
-      else alert(data.error ?? "Kunde inte starta betalning");
+      else alert(data.error ?? t.pricingCheckoutError);
     } finally {
       setLoading(null);
     }
@@ -129,7 +130,7 @@ function PricingPageContent() {
                 className={cn(
                   "flex flex-col rounded-2xl border bg-white/60 p-6 backdrop-blur",
                   plan.highlight
-                    ? "border-nordic-600 shadow-[0_20px_60px_-30px_rgba(47,96,121,0.6)]"
+                    ? "border-nordic-600 shadow-[0_20px_60px_-30px_rgb(var(--accent)/0.45)]"
                     : "hairline",
                 )}
               >
@@ -247,19 +248,24 @@ function PricingPageContent() {
 
         {/* Bottom CTA */}
         <section className="border-t hairline bg-grain">
-          <div className="mx-auto max-w-6xl px-6 py-20 text-center">
-            <h2 className="font-display text-3xl md:text-4xl">
-              {t.pricingBottomTitle}
-            </h2>
-            <p className="mx-auto mt-3 max-w-md text-ink/70">
-              {t.pricingBottomSubtitle}
-            </p>
-            <Link
-              href="/register"
-              className="mt-8 inline-block rounded-full bg-ink px-8 py-3.5 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.97] active:opacity-90"
-            >
-              {t.startFree}
-            </Link>
+          <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 md:grid-cols-2">
+            <div>
+              <h2 className="font-display text-3xl md:text-4xl">
+                {t.pricingBottomTitle}
+              </h2>
+              <p className="mt-3 max-w-md text-ink/70">
+                {t.pricingBottomSubtitle}
+              </p>
+              <Link
+                href="/register"
+                className="mt-8 inline-block rounded-full bg-nordic-600 px-8 py-3.5 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
+              >
+                {t.startFree}
+              </Link>
+            </div>
+            <div className="flex md:justify-end">
+              <TrialVisual />
+            </div>
           </div>
         </section>
       </main>

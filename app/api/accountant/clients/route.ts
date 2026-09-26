@@ -56,6 +56,7 @@ export async function GET(req: NextRequest) {
       .select({
         companyId: companies.id,
         companyName: companies.name,
+        logoUrl: companies.logoUrl,
         city: companies.city,
         country: companies.country,
         connectedAt: accountantClients.activatedAt,

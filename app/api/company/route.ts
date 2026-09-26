@@ -12,7 +12,7 @@ export const runtime = "nodejs";
 
 const createSchema = z.object({
   name: z.string().trim().min(1).max(255),
-  orgNumber: z.string().trim().max(12).optional(),
+  orgNumber: z.string().trim().min(1).max(12),
   vatNumber: z.string().trim().max(50).optional(),
 });
 

@@ -19,10 +19,10 @@ export default function PrivacyPage() {
   ];
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
+    <main className="mx-auto max-w-2xl px-6 py-16 text-ink dark:text-gray-100">
       <h1 className="font-display text-3xl">{t.privTitle}</h1>
-      <p className="mt-4 text-ink/70">{t.privIntro}</p>
-      <p className="mt-2 text-sm text-ink/50">{t.privUpdated}</p>
+      <p className="mt-4 text-ink/70 dark:text-gray-300">{t.privIntro}</p>
+      <p className="mt-2 text-sm text-ink/50 dark:text-gray-500">{t.privUpdated}</p>
 
       <div className="mt-10 space-y-8 text-sm leading-relaxed">
 
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
               legal@kvittino.se
             </a>
           </p>
-          <p className="text-ink/60">
+          <p className="text-ink/60 dark:text-gray-400">
             {t.priv1P3}{" "}
             <Link className="underline underline-offset-2" href="/legal/dpa">
               {t.priv1DpaLink}
@@ -49,48 +49,48 @@ export default function PrivacyPage() {
         <section className="space-y-3">
           <h2 className="font-display text-lg">{t.priv2Title}</h2>
 
-          <p className="font-medium text-ink/90">{t.priv2AccountLabel}</p>
-          <p className="text-ink/80">{t.priv2AccountDesc}</p>
+          <p className="font-medium text-ink/90 dark:text-gray-200">{t.priv2AccountLabel}</p>
+          <p className="text-ink/80 dark:text-gray-300">{t.priv2AccountDesc}</p>
 
-          <p className="font-medium text-ink/90">{t.priv2CompanyLabel}</p>
-          <p className="text-ink/80">{t.priv2CompanyDesc}</p>
+          <p className="font-medium text-ink/90 dark:text-gray-200">{t.priv2CompanyLabel}</p>
+          <p className="text-ink/80 dark:text-gray-300">{t.priv2CompanyDesc}</p>
 
-          <p className="font-medium text-ink/90">{t.priv2BookLabel}</p>
-          <p className="text-ink/80">{t.priv2BookDesc}</p>
+          <p className="font-medium text-ink/90 dark:text-gray-200">{t.priv2BookLabel}</p>
+          <p className="text-ink/80 dark:text-gray-300">{t.priv2BookDesc}</p>
 
-          <p className="font-medium text-ink/90">{t.priv2MileageLabel}</p>
-          <p className="text-ink/80">{t.priv2MileageDesc}</p>
+          <p className="font-medium text-ink/90 dark:text-gray-200">{t.priv2MileageLabel}</p>
+          <p className="text-ink/80 dark:text-gray-300">{t.priv2MileageDesc}</p>
 
-          <p className="font-medium text-ink/90">{t.priv2InvoiceLabel}</p>
-          <p className="text-ink/80">{t.priv2InvoiceDesc}</p>
+          <p className="font-medium text-ink/90 dark:text-gray-200">{t.priv2InvoiceLabel}</p>
+          <p className="text-ink/80 dark:text-gray-300">{t.priv2InvoiceDesc}</p>
 
-          <p className="font-medium text-ink/90">{t.priv2PaymentLabel}</p>
-          <p className="text-ink/80">{t.priv2PaymentDesc}</p>
+          <p className="font-medium text-ink/90 dark:text-gray-200">{t.priv2PaymentLabel}</p>
+          <p className="text-ink/80 dark:text-gray-300">{t.priv2PaymentDesc}</p>
 
-          <p className="font-medium text-ink/90">{t.priv2SupportLabel}</p>
-          <p className="text-ink/80">{t.priv2SupportDesc}</p>
+          <p className="font-medium text-ink/90 dark:text-gray-200">{t.priv2SupportLabel}</p>
+          <p className="text-ink/80 dark:text-gray-300">{t.priv2SupportDesc}</p>
 
-          <p className="font-medium text-ink/90">{t.priv2LogsLabel}</p>
-          <p className="text-ink/80">{t.priv2LogsDesc}</p>
+          <p className="font-medium text-ink/90 dark:text-gray-200">{t.priv2LogsLabel}</p>
+          <p className="text-ink/80 dark:text-gray-300">{t.priv2LogsDesc}</p>
         </section>
 
         <section className="space-y-3">
           <h2 className="font-display text-lg">{t.priv3Title}</h2>
 
-          <div className="rounded-xl border border-ink/10 divide-y divide-ink/10 overflow-hidden">
-            <div className="grid grid-cols-[1fr_1fr] gap-4 p-4 text-xs font-medium text-ink/50 uppercase tracking-wide">
+          <div className="rounded-xl border border-ink/10 dark:border-white/10 divide-y divide-ink/10 dark:divide-white/10 overflow-hidden">
+            <div className="grid grid-cols-[1fr_1fr] gap-4 p-4 text-xs font-medium text-ink/50 dark:text-gray-500 uppercase tracking-wide">
               <span>{t.priv3Col1}</span>
               <span>{t.priv3Col2}</span>
             </div>
             {tableRows.map(([purpose, basis]) => (
-              <div key={purpose} className="grid grid-cols-[1fr_1fr] gap-4 p-4 text-ink/80">
+              <div key={purpose} className="grid grid-cols-[1fr_1fr] gap-4 p-4 text-ink/80 dark:text-gray-300">
                 <span>{purpose}</span>
-                <span className="text-ink/60">{basis}</span>
+                <span className="text-ink/60 dark:text-gray-400">{basis}</span>
               </div>
             ))}
           </div>
 
-          <p className="text-ink/80">
+          <p className="text-ink/80 dark:text-gray-300">
             {t.priv3P1Pre}{" "}
             <Link className="underline underline-offset-2" href="/legal/dpa">
               {t.priv3DpaLink}
@@ -98,22 +98,22 @@ export default function PrivacyPage() {
             {t.priv3P1Post}
           </p>
 
-          <p className="text-ink/60">{t.priv3P2}</p>
+          <p className="text-ink/60 dark:text-gray-400">{t.priv3P2}</p>
         </section>
 
         <section className="space-y-3">
           <h2 className="font-display text-lg">{t.priv4Title}</h2>
           <p>{t.priv4Intro}</p>
 
-          <p className="font-medium text-ink/90">{t.priv4OwnLabel}</p>
-          <ul className="ml-4 list-disc space-y-2 text-ink/80">
+          <p className="font-medium text-ink/90 dark:text-gray-200">{t.priv4OwnLabel}</p>
+          <ul className="ml-4 list-disc space-y-2 text-ink/80 dark:text-gray-300">
             <li>
               <strong>{t.priv4Li1Strong}</strong> {t.priv4Li1Rest}
             </li>
           </ul>
 
-          <p className="font-medium text-ink/90">{t.priv4OurLabel}</p>
-          <ul className="ml-4 list-disc space-y-2 text-ink/80">
+          <p className="font-medium text-ink/90 dark:text-gray-200">{t.priv4OurLabel}</p>
+          <ul className="ml-4 list-disc space-y-2 text-ink/80 dark:text-gray-300">
             <li><strong>{t.priv4Li2Strong}</strong> {t.priv4Li2Rest}</li>
             <li><strong>{t.priv4Li3Strong}</strong> {t.priv4Li3Rest}</li>
             <li><strong>{t.priv4Li4Strong}</strong> {t.priv4Li4Rest}</li>
@@ -132,7 +132,7 @@ export default function PrivacyPage() {
             </Link>
             {t.priv5P1Post}
           </p>
-          <ul className="ml-4 list-disc space-y-1 text-ink/80">
+          <ul className="ml-4 list-disc space-y-1 text-ink/80 dark:text-gray-300">
             <li>{t.priv5Li1}</li>
             <li>{t.priv5Li2}</li>
             <li>{t.priv5Li3}</li>
@@ -163,7 +163,7 @@ export default function PrivacyPage() {
             </a>{" "}
             {t.priv7P1Post}
           </p>
-          <ul className="ml-4 list-disc space-y-2 text-ink/80">
+          <ul className="ml-4 list-disc space-y-2 text-ink/80 dark:text-gray-300">
             <li><strong>{t.priv7Li1Strong}</strong> {t.priv7Li1Rest}</li>
             <li><strong>{t.priv7Li2Strong}</strong> {t.priv7Li2Rest}</li>
             <li><strong>{t.priv7Li3Strong}</strong> {t.priv7Li3Rest}</li>
@@ -180,7 +180,7 @@ export default function PrivacyPage() {
             {t.priv8P1Pre}{" "}
             <strong>{t.priv8ImyStrong}</strong>:
           </p>
-          <p className="text-ink/70">
+          <p className="text-ink/70 dark:text-gray-300">
             IMY · Box 8114 · 104 20 Stockholm ·{" "}
             <a
               className="underline underline-offset-2"
@@ -250,7 +250,7 @@ export default function PrivacyPage() {
 
       </div>
 
-      <p className="mt-10 text-xs text-ink/50">{t.privFooter}</p>
+      <p className="mt-10 text-xs text-ink/50 dark:text-gray-500">{t.privFooter}</p>
     </main>
   );
 }

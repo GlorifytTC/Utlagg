@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
 
 // Cooldown between verification-email sends. Also armed right after signup so
@@ -9,8 +10,19 @@ import { Logo } from "@/components/brand/Logo";
 const RESEND_COOLDOWN = 30;
 
 export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterForm />
+    </Suspense>
+  );
+}
+
+function RegisterForm() {
+  const searchParams = useSearchParams();
   const [form, setForm] = useState({ name: "", companyName: "", email: "", password: "" });
-  const [accountType, setAccountType] = useState<"user" | "accountant">("user");
+  const [accountType, setAccountType] = useState<"user" | "accountant">(
+    searchParams.get("type") === "accountant" ? "accountant" : "user",
+  );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);

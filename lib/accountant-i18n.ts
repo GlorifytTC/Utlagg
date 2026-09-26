@@ -8,8 +8,8 @@ import type { Lang } from "@/lib/translations";
  */
 const strings = {
   sv: {
-    navOverview: "Översikt",
-    navMarketplace: "Marknadsplatsen",
+    navOverview: "Klienter",
+    navMarketplace: "Min profil",
     navRequests: "Förfrågningar",
     sidebarSubtitle: "Revisorspanel",
     chatTitle: "Chatt",
@@ -65,13 +65,26 @@ const strings = {
     menuProfilePic: "Profilbild",
     menuFirmLogo: "Byråns logotyp",
 
+    // Personal settings
+    navSettings: "Inställningar",
+    settingsTitle: "Inställningar",
+    settingsSubtitle: "Dina personliga uppgifter. Byråns logotyp ändras på byråns profilsida.",
+    settingsName: "Namn",
+    settingsEmail: "E-post",
+    settingsSave: "Spara",
+    settingsSaving: "Sparar…",
+    settingsSaved: "Sparat",
+
     // Team / firm management
+    navChats: "Chattar",
     navTeam: "Team",
     teamTitle: "Byråns team",
     teamSubtitle: "Hantera medarbetare och vilka kunder de arbetar med.",
     teamMembers: "Medarbetare",
     teamInvite: "Bjud in medarbetare",
     teamInviteEmail: "E-postadress",
+    teamFirstName: "Förnamn",
+    teamLastName: "Efternamn",
     teamInviteRole: "Roll",
     teamRoleOwner: "Ägare",
     teamRoleAdmin: "Administratör",
@@ -90,12 +103,48 @@ const strings = {
     teamNoAssignments: "Ingen medarbetare kopplad än.",
     teamOnlyOwnerRemove: "Endast ägaren kan ta bort en kund.",
 
+    // Firm stats dashboard
+    firmStatsTitle: "Nyckeltal",
+    firmStatsClients: "Aktiva klienter",
+    firmStatsPending: "Väntar på granskning",
+    firmStatsMonthAmount: "Spenderat denna månad",
+    firmStatsMonthVat: "Moms denna månad",
+    firmStatsNeedsAttention: "Behöver åtgärd",
+    firmStatsAllClear: "Alla klienter är i ordning ✓",
+    firmStatsCategories: "Utgifter denna månad",
+    firmStatsThroughput: "Granskade kvitton (12 månader)",
+    firmStatsPendingLabel: "väntande",
+
+    // Per-client stats dashboard
+    clientStatsMonthAmount: "Spenderat denna månad",
+    clientStatsMonthVat: "Moms denna månad",
+    clientStatsApproved: "Kvitton denna månad",
+    clientStatsPending: "Väntar på granskning",
+    clientStatsCategories: "Utgiftsfördelning",
+    clientStatsTrend: "Månadsöversikt (12 mån)",
+    clientStatsRecent: "Senaste kvitton",
+    clientStatsViewAll: "Visa alla kvitton",
+
+    // Client distribution pie charts
+    clientDistTitle: "Klientfördelning",
+    clientDistCount: "Antal kvitton",
+    clientDistAmount: "Belopp (SEK)",
+    clientDistEmpty: "Ingen aktivitet för vald period",
+    clientDistOthers: "Övriga",
+    distReceiptUnit: "kvitton",
+    distRangeDay: "Senaste 24h",
+    distRangeWeek: "Senaste 7 dagar",
+    distRangeMonth: "Denna månad",
+    distRange3m: "3 månader",
+    distRange6m: "6 månader",
+    distRangeYear: "12 månader",
+
     loading: "Laddar…",
     error: "Något gick fel.",
   },
   en: {
-    navOverview: "Overview",
-    navMarketplace: "Marketplace",
+    navOverview: "Clients",
+    navMarketplace: "My Profile",
     navRequests: "Requests",
     sidebarSubtitle: "Accountant",
     chatTitle: "Chat",
@@ -145,13 +194,26 @@ const strings = {
     menuProfilePic: "Profile picture",
     menuFirmLogo: "Firm logo",
 
+    // Personal settings
+    navSettings: "Settings",
+    settingsTitle: "Settings",
+    settingsSubtitle: "Your personal details. The firm logo is changed on the firm's profile page.",
+    settingsName: "Name",
+    settingsEmail: "Email",
+    settingsSave: "Save",
+    settingsSaving: "Saving…",
+    settingsSaved: "Saved",
+
     // Team / firm management
+    navChats: "Chats",
     navTeam: "Team",
     teamTitle: "Firm team",
     teamSubtitle: "Manage co-workers and which customers they work with.",
     teamMembers: "Co-workers",
     teamInvite: "Invite co-worker",
     teamInviteEmail: "Email address",
+    teamFirstName: "First name",
+    teamLastName: "Last name",
     teamInviteRole: "Role",
     teamRoleOwner: "Owner",
     teamRoleAdmin: "Administrator",
@@ -169,6 +231,42 @@ const strings = {
     teamAssignedTo: "Assigned co-workers",
     teamNoAssignments: "No co-worker assigned yet.",
     teamOnlyOwnerRemove: "Only the owner can remove a customer.",
+
+    // Firm stats dashboard
+    firmStatsTitle: "Key metrics",
+    firmStatsClients: "Active clients",
+    firmStatsPending: "Awaiting review",
+    firmStatsMonthAmount: "Month spend",
+    firmStatsMonthVat: "Month VAT",
+    firmStatsNeedsAttention: "Needs attention",
+    firmStatsAllClear: "All clients are up to date ✓",
+    firmStatsCategories: "Expenses this month",
+    firmStatsThroughput: "Reviewed receipts (12 months)",
+    firmStatsPendingLabel: "pending",
+
+    // Per-client stats dashboard
+    clientStatsMonthAmount: "Month spend",
+    clientStatsMonthVat: "Month VAT",
+    clientStatsApproved: "Receipts this month",
+    clientStatsPending: "Awaiting review",
+    clientStatsCategories: "By category",
+    clientStatsTrend: "Monthly overview (12 mo)",
+    clientStatsRecent: "Recent receipts",
+    clientStatsViewAll: "View all receipts",
+
+    // Client distribution pie charts
+    clientDistTitle: "Client distribution",
+    clientDistCount: "Receipt count",
+    clientDistAmount: "Amount (SEK)",
+    clientDistEmpty: "No activity for the selected period",
+    clientDistOthers: "Others",
+    distReceiptUnit: "receipts",
+    distRangeDay: "Last 24h",
+    distRangeWeek: "Last 7 days",
+    distRangeMonth: "This month",
+    distRange3m: "3 months",
+    distRange6m: "6 months",
+    distRangeYear: "12 months",
 
     loading: "Loading…",
     error: "Something went wrong.",

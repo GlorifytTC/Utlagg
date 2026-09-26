@@ -933,7 +933,7 @@ En redovisningskonsult har bjudit in dig att ge dem åtkomst till ditt företags
 }
 
 export function sendFirmInviteEmail(to: string, token: string) {
-  const url = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/firm/accept?token=${encodeURIComponent(token)}`;
+  const url = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/firm/join?token=${encodeURIComponent(token)}`;
   const body = `# Du har bjudits in till en revisorsbyrå på ${APP_NAME}
 
 Du har blivit inbjuden att gå med i ett byråkonto på ${APP_NAME}. Logga in med den här e-postadressen och acceptera för att gå med i teamet. Länken gäller i 7 dagar.
