@@ -421,6 +421,7 @@ export interface Translations {
   fldVatNumber: string;
   coMembers: string;
   coYourRole: string;
+  coYou: string;
   roleMember: string;
   roleApprover: string;
   roleAdmin: string;
@@ -1773,6 +1774,7 @@ export const strings: Record<Lang, Translations> = {
     fldVatNumber: "Momsregistreringsnummer",
     coMembers: "Medlemmar",
     coYourRole: "Din roll:",
+    coYou: "du",
     roleMember: "Medlem",
     roleApprover: "Attestant",
     roleAdmin: "Admin",
@@ -3250,6 +3252,7 @@ export const strings: Record<Lang, Translations> = {
     fldVatNumber: "VAT number",
     coMembers: "Members",
     coYourRole: "Your role:",
+    coYou: "you",
     roleMember: "Member",
     roleApprover: "Approver",
     roleAdmin: "Admin",

@@ -22,6 +22,11 @@ export async function POST(
   const m = await requireFirmRole("admin");
   if (!m) return NextResponse.json({ error: "Endast ägare/admin." }, { status: 403 });
 
+  // Never remove oneself.
+  if (params.userId === m.userId) {
+    return NextResponse.json({ error: "Du kan inte ta bort dig själv." }, { status: 403 });
+  }
+
   // Target must be a member of the caller's own firm.
   const [target] = await db
     .select({ id: firmMembers.id, role: firmMembers.role })

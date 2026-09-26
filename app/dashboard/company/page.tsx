@@ -18,6 +18,7 @@ export default function CompanyPage() {
   const [company, setCompany] = useState<Company | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
+  const [myUserId, setMyUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ name: "", orgNumber: "", vatNumber: "" });
   const [invite, setInvite] = useState({ firstName: "", lastName: "", email: "", role: "member" });
@@ -29,7 +30,14 @@ export default function CompanyPage() {
     setRole(d.role);
     if (d.company) {
       const m = await fetch("/api/company/members");
-      if (m.ok) setMembers((await m.json()).members);
+      if (m.ok) {
+        const mj = await m.json();
+        setMembers(mj.members ?? []);
+        setMyUserId(mj.myUserId ?? null);
+      } else {
+        setMembers([]);
+        setMyUserId(null);
+      }
     }
     setLoading(false);
   }, []);
@@ -101,33 +109,42 @@ export default function CompanyPage() {
     <div className="max-w-2xl space-y-6">
       <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{company.name}</h1>
 
+      {canManage && (
       <Card>
         <CardHeader><CardTitle>{t.coMembers}</CardTitle><CardDescription>{t.coYourRole} {role}</CardDescription></CardHeader>
         <CardContent>
           <ul className="divide-y divide-gray-100 dark:divide-white/[0.07]">
-            {members.map((m) => (
+            {members.map((m) => {
+              const isSelf = m.userId === myUserId;
+              // Only the owner may change roles; never on the owner row or self.
+              const canChangeRole = role === "owner" && m.role !== "owner" && !isSelf;
+              // Owner/admin may remove others, but never the owner or themselves.
+              const canRemove = canManage && m.role !== "owner" && !isSelf;
+              return (
               <li key={m.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
                 <div>
-                  <p className="font-medium">{m.name ?? m.email}</p>
+                  <p className="font-medium">{m.name ?? m.email}{isSelf && <span className="ml-2 text-xs text-gray-400">({t.coYou})</span>}</p>
                   <p className="text-xs text-gray-500">{m.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  {canManage && m.role !== "owner" ? (
+                  {canChangeRole ? (
                     <select value={m.role} onChange={(e) => changeRole(m.id, e.target.value)}
                       className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-white/[0.10] dark:bg-[#111]">
                       <option value="member">{t.roleMember}</option>
                       <option value="admin">{t.roleAdmin}</option>
                     </select>
                   ) : (<span className="text-sm text-gray-500">{m.role}</span>)}
-                  {canManage && m.role !== "owner" && (
+                  {canRemove && (
                     <button onClick={() => removeMember(m.id)} className="text-sm text-red-600 hover:underline">{t.btnDelete}</button>
                   )}
                 </div>
               </li>
-            ))}
+              );
+            })}
           </ul>
         </CardContent>
       </Card>
+      )}
 
       {canManage && (
         <Card>
