@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import type { ModerationAction } from "@/lib/moderation";
 
 interface Report {
   id: string;
@@ -30,8 +31,11 @@ interface Message {
   createdAt: string;
 }
 
-// ponytail: placeholders only — no API behind them yet.
-const DISCIPLINARY_ACTIONS = ["Varning", "Stäng av 7 dagar", "Stäng av permanent"];
+const DISCIPLINARY_ACTIONS: { action: ModerationAction; label: string }[] = [
+  { action: "warn", label: "Varning" },
+  { action: "ban7", label: "Stäng av 7 dagar" },
+  { action: "banPermanent", label: "Stäng av permanent" },
+];
 
 export default function AdminChatReportsPage() {
   const [tab, setTab] = useState<"pending" | "resolved" | "dismissed">("pending");
@@ -72,14 +76,18 @@ export default function AdminChatReportsPage() {
     return () => { cancelled = true; };
   }, [selectedId]);
 
-  async function moderate(id: string, status: "resolved" | "dismissed") {
+  async function moderate(id: string, status: "resolved" | "dismissed", action?: ModerationAction) {
     const res = await fetch(`/api/admin/chat-reports/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, moderatorNote: note || null }),
+      body: JSON.stringify({ status, moderatorNote: note || null, action }),
     });
     if (res.ok) {
-      toast.success(status === "resolved" ? "Markerad som hanterad" : "Ignorerad");
+      toast.success(
+        action === "warn" ? "Varning skickad"
+          : action ? "Användaren är avstängd"
+          : status === "resolved" ? "Markerad som hanterad" : "Ignorerad",
+      );
       setSelectedId(null);
       load();
     } else {
@@ -157,7 +165,7 @@ export default function AdminChatReportsPage() {
               detail={detail}
               note={note}
               setNote={setNote}
-              onModerate={(status) => moderate(detail.report.id, status)}
+              onModerate={(status, action) => moderate(detail.report.id, status, action)}
             />
           )}
         </div>
@@ -175,7 +183,7 @@ function ReportView({
   detail: { report: ReportDetail; messages: Message[] };
   note: string;
   setNote: (v: string) => void;
-  onModerate: (status: "resolved" | "dismissed") => void;
+  onModerate: (status: "resolved" | "dismissed", action?: ModerationAction) => void;
 }) {
   const nameOf = (id: string) =>
     id === r.reporterId
@@ -244,7 +252,7 @@ function ReportView({
         {r.status === "pending" ? (
           <>
             <textarea
-              placeholder="Moderatorsanteckning (valfri)…"
+              placeholder="Moderatorsanteckning (valfri, visas för användaren vid varning)…"
               rows={2}
               value={note}
               onChange={(e) => setNote(e.target.value)}
@@ -269,13 +277,16 @@ function ReportView({
                 Disciplinär åtgärd mot {r.reportedName ?? r.reportedEmail}
               </p>
               <div className="flex flex-wrap gap-2">
-                {DISCIPLINARY_ACTIONS.map((a) => (
+                {DISCIPLINARY_ACTIONS.map(({ action, label }) => (
                   <button
-                    key={a}
-                    onClick={() => toast.info("Inte implementerat ännu")}
+                    key={action}
+                    onClick={() => {
+                      if (action !== "warn" && !window.confirm(`${label}: ${r.reportedName ?? r.reportedEmail}?`)) return;
+                      onModerate("resolved", action);
+                    }}
                     className="rounded-lg bg-red-600 px-3 py-1.5 text-sm text-white hover:bg-red-700"
                   >
-                    {a}
+                    {label}
                   </button>
                 ))}
               </div>

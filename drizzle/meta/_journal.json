@@ -155,6 +155,13 @@
 			"when": 1795002100000,
 			"tag": "0021_company_invitee_name",
 			"breakpoints": true
+		},
+		{
+			"idx": 22,
+			"version": "7",
+			"when": 1796000100000,
+			"tag": "0022_user_moderation",
+			"breakpoints": true
 		}
 	]
 }

@@ -1287,6 +1287,10 @@ export interface Translations {
   authVerifyInvalid: string;
   authMustVerify: string;
   authWrongCredentials: string;
+  authBanned: string;
+  moderationWarningTitle: string;
+  moderationWarningBody: string;
+  moderationWarningOk: string;
   authPassword: string;
   authResentTo: string;
   authResend: string;
@@ -2762,6 +2766,10 @@ export const strings: Record<Lang, Translations> = {
     authVerifyInvalid: "Länken är ogiltig eller har gått ut. Begär en ny nedan.",
     authMustVerify: "Du måste bekräfta din e-postadress innan du kan logga in.",
     authWrongCredentials: "Fel e-post eller lösenord",
+    authBanned: "Ditt konto är avstängt till {date}.",
+    moderationWarningTitle: "Varning från Kvittino",
+    moderationWarningBody: "Du har fått en varning för ditt beteende i chatten. Upprepade överträdelser kan leda till att ditt konto stängs av.",
+    moderationWarningOk: "Jag förstår",
     authPassword: "Lösenord",
     authResentTo: "Om kontot finns har vi skickat en ny bekräftelselänk till {email}.",
     authResend: "Skicka bekräftelselänken igen",
@@ -4231,6 +4239,10 @@ export const strings: Record<Lang, Translations> = {
     authVerifyInvalid: "The link is invalid or has expired. Request a new one below.",
     authMustVerify: "You need to confirm your email address before you can log in.",
     authWrongCredentials: "Wrong email or password",
+    authBanned: "Your account is suspended until {date}.",
+    moderationWarningTitle: "Warning from Kvittino",
+    moderationWarningBody: "You have received a warning for your behaviour in chat. Repeated violations may lead to your account being suspended.",
+    moderationWarningOk: "I understand",
     authPassword: "Password",
     authResentTo: "If the account exists, we've sent a new confirmation link to {email}.",
     authResend: "Resend the confirmation link",
