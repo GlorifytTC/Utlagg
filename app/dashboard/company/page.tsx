@@ -20,7 +20,7 @@ export default function CompanyPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ name: "", orgNumber: "", vatNumber: "" });
-  const [invite, setInvite] = useState({ email: "", role: "member" });
+  const [invite, setInvite] = useState({ firstName: "", lastName: "", email: "", role: "member" });
 
   const load = useCallback(async () => {
     const r = await fetch("/api/company");
@@ -49,10 +49,11 @@ export default function CompanyPage() {
 
   async function sendInvite() {
     if (!invite.email) { toast.error(t.toastEnterEmail); return; }
+    if (!invite.firstName.trim() || !invite.lastName.trim()) { toast.error(t.toastEnterEmail); return; }
     const r = await fetch("/api/company/invite", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(invite),
     });
-    if (r.ok) { toast.success(t.toastInviteSent); setInvite({ email: "", role: "member" }); }
+    if (r.ok) { toast.success(t.toastInviteSent); setInvite({ firstName: "", lastName: "", email: "", role: "member" }); }
     else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? t.toastInviteFail); }
   }
 
@@ -132,6 +133,10 @@ export default function CompanyPage() {
         <Card>
           <CardHeader><CardTitle>{t.btnInviteColleague}</CardTitle><CardDescription>{t.coInviteDesc}</CardDescription></CardHeader>
           <CardContent className="flex flex-wrap items-end gap-2">
+            <div className="space-y-2"><Label>{t.fldFirstName}</Label>
+              <Input value={invite.firstName} onChange={(e) => setInvite({ ...invite, firstName: e.target.value })} placeholder={t.fldFirstName} /></div>
+            <div className="space-y-2"><Label>{t.fldLastName}</Label>
+              <Input value={invite.lastName} onChange={(e) => setInvite({ ...invite, lastName: e.target.value })} placeholder={t.fldLastName} /></div>
             <div className="space-y-2"><Label>{t.fldEmail}</Label>
               <Input type="email" value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} placeholder="kollega@foretag.se" /></div>
             <div className="space-y-2"><Label>{t.fldRole}</Label>

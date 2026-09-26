@@ -426,6 +426,8 @@ export interface Translations {
   roleAdmin: string;
   coInviteDesc: string;
   fldEmail: string;
+  fldFirstName: string;
+  fldLastName: string;
   fldRole: string;
   invUpsellTitle: string;
   invUpsellDesc: string;
@@ -1465,6 +1467,8 @@ export const strings: Record<Lang, Translations> = {
     roleAdmin: "Admin",
     coInviteDesc: "Skickar en inbjudan via e-post (gäller 7 dagar).",
     fldEmail: "E-post",
+    fldFirstName: "Förnamn",
+    fldLastName: "Efternamn",
     fldRole: "Roll",
     invUpsellTitle: "Fakturering",
     invUpsellDesc: "Skapa och skicka kundfakturor (inkl. omvänd byggmoms) till dina kunder. Ingår från Pro-planen.",
@@ -2629,6 +2633,8 @@ export const strings: Record<Lang, Translations> = {
     roleAdmin: "Admin",
     coInviteDesc: "Sends an invitation by email (valid for 7 days).",
     fldEmail: "Email",
+    fldFirstName: "First name",
+    fldLastName: "Last name",
     fldRole: "Role",
     invUpsellTitle: "Invoicing",
     invUpsellDesc: "Create and send customer invoices (incl. reverse-charge construction VAT). Included from the Pro plan.",

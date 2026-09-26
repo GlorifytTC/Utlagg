@@ -887,7 +887,7 @@ ${params.preview.length > 200 ? params.preview.slice(0, 200) + "…" : params.pr
 // ─── Legacy compatibility wrappers ───────────────────────────
 
 export function sendCompanyInviteEmail(to: string, token: string) {
-  const url = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/accept-invite?token=${encodeURIComponent(token)}`;
+  const url = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/company/join?token=${encodeURIComponent(token)}`;
   const body = `# Inbjudan till ${APP_NAME}
 
 Du har blivit inbjuden att gå med i ett företag på ${APP_NAME}. Logga in eller skapa ett konto och acceptera inbjudan. Länken gäller i 7 dagar.

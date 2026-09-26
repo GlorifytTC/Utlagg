@@ -407,6 +407,8 @@ export const companyInvites = pgTable(
       .notNull()
       .references(() => companies.id, { onDelete: "cascade" }),
     email: varchar("email", { length: 320 }).notNull(),
+    // Invitee name, captured by the inviter so the pre-created account has it.
+    inviteeName: varchar("invitee_name", { length: 200 }),
     role: companyRole("role").notNull().default("member"),
     tokenHash: varchar("token_hash", { length: 64 }).notNull(), // sha256 of raw token
     invitedBy: uuid("invited_by").references(() => users.id, { onDelete: "set null" }),
