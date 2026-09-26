@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface Buyer {
   name: string;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Buyer[]>([]);
   const [open, setOpen] = useState(false);
@@ -103,7 +105,7 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
         }}
         onFocus={handleFocus}
         onKeyDown={handleKeyDown}
-        placeholder="Företagsnamn"
+        placeholder={t.fldCompanyName}
         role="combobox"
         aria-autocomplete="list"
         aria-expanded={open && suggestions.length > 0}

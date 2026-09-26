@@ -4,6 +4,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -15,39 +16,15 @@ type Message = {
 
 // ── Q&A data ──────────────────────────────────────────────────────────────────
 
-const QA = [
-  {
-    q: "How does receipt scanning work?",
-    a: "Upload a photo or PDF. The OCR model reads vendor, date, total, VAT rate, and line items in under three seconds — even on crumpled or faded paper.",
-  },
-  {
-    q: "Which accounting tools are supported?",
-    a: "Fortnox, Visma, and Bokio connect natively. Any other tool works via SIE4 export.",
-  },
-  {
-    q: "Where is my data stored?",
-    a: "Encrypted at rest on Swedish servers with seven-year retention — full compliance with Bokföringslagen.",
-  },
-  {
-    q: "What is included in the free plan?",
-    a: "50 receipts per month, AI OCR, BAS auto-categorisation, multi-currency, and SIE4 export. No credit card required.",
-  },
-  {
-    q: "Can I cancel anytime?",
-    a: "Yes. All plans are month-to-month. Cancel from account settings — access continues to the end of the billing period.",
-  },
-  {
-    q: "Which VAT rates are detected?",
-    a: "6 %, 12 %, and 25 % are detected automatically from the receipt — no manual configuration needed.",
-  },
-  {
-    q: "How does BankID sign-off work?",
-    a: "Employees use BankID to sign expense submissions. The signed record is stored alongside the receipt for audit purposes.",
-  },
-  {
-    q: "Can I manage a team?",
-    a: "Team and Business plans support multiple users with role-based access, per-person spending limits, and a shared approval dashboard.",
-  },
+const QA_KEYS = [
+  ["cbQ1", "cbA1"],
+  ["cbQ2", "cbA2"],
+  ["cbQ3", "cbA3"],
+  ["cbQ4", "cbA4"],
+  ["cbQ5", "cbA5"],
+  ["cbQ6", "cbA6"],
+  ["cbQ7", "cbA7"],
+  ["cbQ8", "cbA8"],
 ] as const;
 
 // ── ID factory (stable module-scope counter) ──────────────────────────────────
@@ -55,14 +32,9 @@ const QA = [
 let _mid = 0;
 const newId = () => ++_mid;
 
+// Greeting is rendered live from translations (id 0) so it follows language changes.
 function makeInitialMessages(): Message[] {
-  return [
-    {
-      id: newId(),
-      role: "bot",
-      text: "Hi — I can answer common questions about Kvittino. Select one below to get started.",
-    },
-  ];
+  return [];
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -176,9 +148,11 @@ function IconReset() {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function ChatBox() {
+  const { t } = useLanguage();
+  const qas = QA_KEYS.map(([q, a], id) => ({ id, q: t[q], a: t[a] }));
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>(makeInitialMessages);
-  const [asked, setAsked] = useState<Set<string>>(new Set());
+  const [asked, setAsked] = useState<Set<number>>(new Set());
   const [typing, setTyping] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -186,10 +160,10 @@ export function ChatBox() {
   // Scroll to bottom on new content
   useEffect(() => {
     if (!open) return;
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 60);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [messages, typing, open]);
 
   // Badge: set when closing mid-conversation
@@ -203,9 +177,9 @@ export function ChatBox() {
   }, [open]);
 
   const handleQuestion = useCallback(
-    (qa: (typeof QA)[number]) => {
+    (qa: (typeof qas)[number]) => {
       if (typing) return;
-      setAsked((prev) => new Set(prev).add(qa.q));
+      setAsked((prev) => new Set(prev).add(qa.id));
       setMessages((prev) => [
         ...prev,
         { id: newId(), role: "user", text: qa.q },
@@ -228,7 +202,7 @@ export function ChatBox() {
     setTyping(false);
   }
 
-  const remaining = QA.filter((qa) => !asked.has(qa.q));
+  const remaining = qas.filter((qa) => !asked.has(qa.id));
   const visibleSuggestions = remaining.slice(0, 3);
   const overflowCount = remaining.length - 3;
 
@@ -277,7 +251,7 @@ export function ChatBox() {
                     transition={{ duration: 0.18 }}
                     className="text-xs text-paper/50"
                   >
-                    {typing ? "Typing\u2026" : "Online \u2014 quick answers"}
+                    {typing ? t.cbTyping : t.cbOnline}
                   </motion.p>
                 </AnimatePresence>
               </div>
@@ -291,7 +265,7 @@ export function ChatBox() {
                     exit={{ opacity: 0, scale: 0.7 }}
                     transition={{ type: "spring", stiffness: 500, damping: 28 }}
                     onClick={handleReset}
-                    aria-label="Restart conversation"
+                    aria-label={t.cbRestart}
                     className="rounded-full p-1.5 text-paper/40 transition hover:bg-paper/10 hover:text-paper/80"
                   >
                     <IconReset />
@@ -301,7 +275,7 @@ export function ChatBox() {
 
               <button
                 onClick={() => setOpen(false)}
-                aria-label="Close chat"
+                aria-label={t.cbClose}
                 className="rounded-full p-1.5 text-paper/40 transition hover:bg-paper/10 hover:text-paper/80"
               >
                 <IconX />
@@ -310,7 +284,7 @@ export function ChatBox() {
 
             {/* Messages */}
             <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-5">
-              {messages.map((m) => (
+              {[{ id: 0, role: "bot" as const, text: t.cbGreeting }, ...messages].map((m) => (
                 <ChatMessage key={m.id} message={m} />
               ))}
               <AnimatePresence>
@@ -331,13 +305,13 @@ export function ChatBox() {
                     transition={{ duration: 0.15 }}
                   >
                     <p className="mb-2.5 text-xs font-medium uppercase tracking-[0.12em] text-ink/35">
-                      {asked.size === 0 ? "Common questions" : "Keep exploring"}
+                      {asked.size === 0 ? t.cbCommon : t.cbKeepExploring}
                     </p>
                     <div className="flex flex-col gap-1.5">
                       <AnimatePresence>
                         {visibleSuggestions.map((qa, i) => (
                           <motion.button
-                            key={qa.q}
+                            key={qa.id}
                             initial={{ opacity: 0, x: 8 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{
@@ -362,7 +336,7 @@ export function ChatBox() {
                     </div>
                     {overflowCount > 0 && (
                       <p className="mt-2 text-right text-xs text-ink/30">
-                        +{overflowCount} more
+                        {t.cbMore.replace("{n}", String(overflowCount))}
                       </p>
                     )}
                   </motion.div>
@@ -374,12 +348,12 @@ export function ChatBox() {
                     transition={{ duration: 0.2 }}
                     className="py-1 text-center"
                   >
-                    <p className="text-xs text-ink/50">All questions answered.</p>
+                    <p className="text-xs text-ink/50">{t.cbAllAnswered}</p>
                     <a
                       href="mailto:sales@Kvittino.se"
                       className="mt-2 inline-block rounded-full border hairline px-4 py-1.5 text-xs font-medium text-nordic-600 transition hover:border-nordic-600/40 hover:bg-paper"
                     >
-                      Contact us →
+                      {t.cbContact}
                     </a>
                   </motion.div>
                 )}
@@ -406,7 +380,7 @@ export function ChatBox() {
 
         <motion.button
           onClick={() => setOpen((v) => !v)}
-          aria-label={open ? "Close chat" : "Open chat"}
+          aria-label={open ? t.cbClose : t.cbOpen}
           whileHover={{ scale: 1.07 }}
           whileTap={{ scale: 0.91 }}
           transition={{ type: "spring", stiffness: 500, damping: 25 }}

@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useLanguage } from "@/context/LanguageContext";
 
 /**
  * Minimal accept page for an accountant invitation. Reads ?token=, posts to
@@ -12,6 +13,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 function AccountantAcceptInner() {
   const params = useSearchParams();
   const router = useRouter();
+  const { t } = useLanguage();
   const token = params.get("token") ?? "";
 
   const [state, setState] = useState<
@@ -48,12 +50,12 @@ function AccountantAcceptInner() {
         return;
       }
       setState("error");
-      setMessage(data?.error ?? "Något gick fel.");
+      setMessage(data?.error ?? t.somethingWentWrong);
     } catch {
       setState("error");
-      setMessage("Något gick fel.");
+      setMessage(t.somethingWentWrong);
     }
-  }, [token, router]);
+  }, [token, router, t]);
 
   useEffect(() => {
     accept();
@@ -73,7 +75,7 @@ function AccountantAcceptInner() {
       } else {
         const d = await res.json().catch(() => ({}));
         setState("error");
-        setMessage(d?.error ?? "Kunde inte skapa företaget.");
+        setMessage(d?.error ?? t.accAcceptCreateCompanyError);
       }
     } finally {
       setBusy(false);
@@ -82,33 +84,31 @@ function AccountantAcceptInner() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">
-      {state === "working" && <p className="text-ink/70">Behandlar inbjudan…</p>}
+      {state === "working" && <p className="text-ink/70">{t.accAcceptWorking}</p>}
 
       {state === "notoken" && (
-        <p className="text-ink/70">Ingen giltig inbjudningslänk hittades.</p>
+        <p className="text-ink/70">{t.accAcceptNoToken}</p>
       )}
 
       {state === "done" && (
         <div className="space-y-3">
-          <h1 className="text-xl font-semibold">Åtkomst beviljad</h1>
+          <h1 className="text-xl font-semibold">{t.accAcceptDoneTitle}</h1>
           <p className="text-ink/70">
-            Redovisningskonsulten har nu åtkomst till ditt företags underlag. Du kan
-            när som helst ta bort åtkomsten från dina företagsinställningar.
+            {t.accAcceptDoneBody}
           </p>
         </div>
       )}
 
       {state === "needsCompany" && (
         <div className="space-y-3">
-          <h1 className="text-xl font-semibold">Skapa ditt företag först</h1>
+          <h1 className="text-xl font-semibold">{t.accAcceptNeedsCompanyTitle}</h1>
           <p className="text-ink/70">
-            För att ge en redovisningskonsult åtkomst behöver du först skapa ditt
-            företag. Ange namnet nedan.
+            {t.accAcceptNeedsCompanyBody}
           </p>
           <input
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
-            placeholder="Företagsnamn"
+            placeholder={t.fldCompanyName}
             className="w-full rounded-lg border border-ink/15 px-3 py-2"
           />
           <button
@@ -116,14 +116,14 @@ function AccountantAcceptInner() {
             disabled={busy || !companyName.trim()}
             className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper disabled:opacity-50"
           >
-            {busy ? "Skapar…" : "Skapa företag och acceptera"}
+            {busy ? t.accAcceptCreating : t.accAcceptCreateAndAccept}
           </button>
         </div>
       )}
 
       {state === "error" && (
         <div className="space-y-3">
-          <h1 className="text-xl font-semibold">Det gick inte</h1>
+          <h1 className="text-xl font-semibold">{t.accAcceptErrorTitle}</h1>
           <p className="text-ink/70">{message}</p>
         </div>
       )}
@@ -132,8 +132,9 @@ function AccountantAcceptInner() {
 }
 
 export default function AccountantAcceptPage() {
+  const { t } = useLanguage();
   return (
-    <Suspense fallback={<div className="mx-auto max-w-md px-4 py-16 text-ink/70">Laddar…</div>}>
+    <Suspense fallback={<div className="mx-auto max-w-md px-4 py-16 text-ink/70">{t.loading}</div>}>
       <AccountantAcceptInner />
     </Suspense>
   );

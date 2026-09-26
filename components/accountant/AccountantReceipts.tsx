@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AccountantReceiptEditor } from "@/components/accountant/AccountantReceiptEditor";
+import { useLanguage } from "@/context/LanguageContext";
+import { accountantStrings } from "@/lib/accountant-i18n";
 
 interface ReceiptRow {
   id: string;
@@ -23,6 +25,9 @@ const statusBadge: Record<string, string> = {
 };
 
 export function AccountantReceipts({ companyId }: { companyId: string }) {
+  const { lang } = useLanguage();
+  const t = accountantStrings(lang);
+  const statusLabel: Record<string, string> = { approved: t.statusApproved, pending: t.statusPending, rejected: t.statusRejected };
   const [rows, setRows] = useState<ReceiptRow[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -40,8 +45,8 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
   const cache = useRef<Map<string, { rows: ReceiptRow[]; total: number }>>(new Map());
 
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedQ(q), 300);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setDebouncedQ(q), 300);
+    return () => clearTimeout(timer);
   }, [q]);
 
   useEffect(() => { cache.current.clear(); }, [refreshKey]);
@@ -119,7 +124,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
       <div className="flex flex-wrap items-end gap-3">
         <div className="min-w-[180px] flex-1">
           <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-            Sök
+            {t.rcSearch}
           </label>
           <input
             value={q}
@@ -127,13 +132,13 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
               setQ(e.target.value);
               setPage(1);
             }}
-            placeholder="Leverantör, BAS, belopp…"
+            placeholder={t.rcSearchPlaceholder}
             className={inputCls}
           />
         </div>
         <div>
           <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-            Från
+            {t.rcFrom}
           </label>
           <input
             type="date"
@@ -147,7 +152,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
         </div>
         <div>
           <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-            Till
+            {t.rcTo}
           </label>
           <input
             type="date"
@@ -171,7 +176,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
             className="flex items-center justify-center p-10 text-sm text-gray-500 dark:text-gray-400"
           >
             <div className="mr-3 h-6 w-6 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
-            Laddar kvitton…
+            {t.rcLoading}
           </motion.div>
         ) : status === "error" ? (
           <motion.p
@@ -180,7 +185,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
             animate={{ opacity: 1 }}
             className="text-sm text-red-600"
           >
-            Kunde inte ladda kvitton.
+            {t.rcLoadError}
           </motion.p>
         ) : rows.length === 0 ? (
           <motion.div
@@ -189,7 +194,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
             animate={{ opacity: 1 }}
             className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400"
           >
-            Inga kvitton matchar.
+            {t.rcEmpty}
           </motion.div>
         ) : (
           <motion.div
@@ -203,11 +208,11 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                 <thead>
                   <tr className="text-left">
                     {[
-                      { label: "Datum", k: "date" },
-                      { label: "Leverantör", k: "vendor" },
-                      { label: "BAS", k: "bas" },
-                      { label: "Belopp", k: "amount" },
-                      { label: "Moms", k: "vat" },
+                      { label: t.rcColDate, k: "date" },
+                      { label: t.rcColVendor, k: "vendor" },
+                      { label: t.rcColBas, k: "bas" },
+                      { label: t.rcColAmount, k: "amount" },
+                      { label: t.rcColVat, k: "vat" },
                     ].map(({ label, k }) => (
                       <th
                         key={k}
@@ -225,7 +230,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                       </th>
                     ))}
                     <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-                      Status
+                      {t.rcColStatus}
                     </th>
                     <th className="px-5 py-3" />
                   </tr>
@@ -257,11 +262,11 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                           <span
                             className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusBadge[r.status] ?? "bg-gray-100/80 text-gray-600 dark:bg-white/[0.06] dark:text-gray-400"}`}
                           >
-                            {r.status}
+                            {statusLabel[r.status] ?? r.status}
                           </span>
                         </td>
                         <td className="px-5 py-3 text-right text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70">
-                          {openId === r.id ? "Stäng" : "Granska"}
+                          {openId === r.id ? t.rcClose : t.rcReview}
                         </td>
                       </tr>
                       {openId === r.id && (
@@ -287,7 +292,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
             {totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 dark:border-white/[0.07]">
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Sida {page} av {totalPages}
+                  {t.pageOf.replace("{page}", String(page)).replace("{total}", String(totalPages))}
                 </span>
                 <div className="flex gap-2">
                   <button
@@ -295,14 +300,14 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                     onClick={() => setPage((p) => p - 1)}
                     className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
                   >
-                    ← Föregående
+                    {t.pagePrev}
                   </button>
                   <button
                     disabled={page >= totalPages}
                     onClick={() => setPage((p) => p + 1)}
                     className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
                   >
-                    Nästa →
+                    {t.pageNext}
                   </button>
                 </div>
               </div>

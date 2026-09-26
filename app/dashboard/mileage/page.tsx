@@ -249,7 +249,7 @@ export default function MileagePage() {
         <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navMileage}</h1>
         <UpsellCard
           title={t.navMileage}
-          requiredPlan="Företag"
+          requiredPlan={t.planBusiness}
           description={t.milUpsellDesc}
         />
       </div>

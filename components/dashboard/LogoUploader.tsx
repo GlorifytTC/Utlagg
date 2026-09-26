@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/LanguageContext";
 
 /**
  * Reusable logo uploader. Reads a chosen image, downscales it to a small
@@ -13,19 +14,21 @@ import { Button } from "@/components/ui/button";
 export function LogoUploader({
   value,
   onSave,
-  label = "Logotyp",
+  label: labelProp,
 }: {
   value: string | null;
   onSave: (dataUrl: string | null) => Promise<void> | void;
   label?: string;
 }) {
+  const { t } = useLanguage();
+  const label = labelProp ?? t.logoDefaultLabel;
   const [preview, setPreview] = useState<string | null>(value);
   const [busy, setBusy] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleFile(file: File) {
     if (!file.type.startsWith("image/")) {
-      toast.error("Välj en bildfil.");
+      toast.error(t.logoPickImage);
       return;
     }
     setBusy(true);
@@ -33,9 +36,9 @@ export function LogoUploader({
       const dataUrl = await downscale(file, 256);
       setPreview(dataUrl);
       await onSave(dataUrl);
-      toast.success("Logotyp sparad");
+      toast.success(t.logoSaved);
     } catch {
-      toast.error("Kunde inte spara logotypen");
+      toast.error(t.logoSaveError);
     } finally {
       setBusy(false);
     }
@@ -46,7 +49,7 @@ export function LogoUploader({
     try {
       setPreview(null);
       await onSave(null);
-      toast.success("Logotyp borttagen");
+      toast.success(t.logoRemoved);
     } finally {
       setBusy(false);
     }
@@ -59,18 +62,18 @@ export function LogoUploader({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt={label} className="h-full w-full object-contain" />
         ) : (
-          <span className="text-xs text-gray-400 dark:text-gray-500">Ingen</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500">{t.logoNone}</span>
         )}
       </div>
       <div className="flex flex-col gap-2">
         <span className="text-xs text-gray-500 dark:text-gray-400">{label}</span>
         <div className="flex gap-2">
           <Button variant="outline" disabled={busy} onClick={() => inputRef.current?.click()}>
-            {busy ? "Laddar…" : preview ? "Byt" : "Ladda upp"}
+            {busy ? t.loading : preview ? t.logoChange : t.logoUpload}
           </Button>
           {preview && (
             <Button variant="outline" disabled={busy} onClick={remove}>
-              Ta bort
+              {t.logoRemove}
             </Button>
           )}
         </div>

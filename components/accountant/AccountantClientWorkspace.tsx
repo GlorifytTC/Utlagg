@@ -10,6 +10,8 @@ import { AccountantClientStats } from "@/components/accountant/AccountantClientS
 import { AccountantReceipts } from "@/components/accountant/AccountantReceipts";
 import { AccountantExports } from "@/components/accountant/AccountantExports";
 import { AccountantAuditLog } from "@/components/accountant/AccountantAuditLog";
+import { useLanguage } from "@/context/LanguageContext";
+import { accountantStrings } from "@/lib/accountant-i18n";
 
 interface Detail {
   companyId: string;
@@ -22,6 +24,8 @@ interface Detail {
 type Tab = "overview" | "receipts" | "exports" | "activity";
 
 export function AccountantClientWorkspace({ companyId }: { companyId: string }) {
+  const { lang } = useLanguage();
+  const t = accountantStrings(lang);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "notfound" | "error">("loading");
   const [tab, setTab] = useState<Tab>("overview");
@@ -58,24 +62,24 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
     return (
       <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
         <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
-          Klienten är inte tillgänglig
+          {t.cwNotAvailable}
         </p>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Åtkomsten kan ha tagits bort, eller så finns klienten inte.
+          {t.cwNotAvailableHint}
         </p>
       </div>
     );
   }
 
   if (status === "error" || !detail) {
-    return <p className="text-sm text-red-600">Kunde inte ladda klienten.</p>;
+    return <p className="text-sm text-red-600">{t.cwLoadError}</p>;
   }
 
   const tabs: { key: Tab; label: string }[] = [
-    { key: "overview", label: "Översikt" },
-    { key: "receipts", label: "Kvitton" },
-    { key: "exports", label: "Export" },
-    { key: "activity", label: "Aktivitet" },
+    { key: "overview", label: t.overviewTitle },
+    { key: "receipts", label: t.colReceipts },
+    { key: "exports", label: t.cwTabExport },
+    { key: "activity", label: t.cwTabActivity },
   ];
 
   const tabCls = (active: boolean) =>
@@ -100,7 +104,7 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
               {detail.companyName}
             </h1>
             <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-              {detail.receiptCount} kvitton
+              {detail.receiptCount} {t.distReceiptUnit}
             </p>
           </div>
         </div>
@@ -108,9 +112,9 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
 
       <div className="flex items-center gap-2">
         <div className="inline-flex gap-1 rounded-full border border-gray-900/[0.07] bg-white/60 p-1 backdrop-blur-sm dark:border-white/[0.08] dark:bg-white/[0.04]">
-          {tabs.map((t) => (
-            <button key={t.key} onClick={() => setTab(t.key)} className={tabCls(tab === t.key)}>
-              {t.label}
+          {tabs.map((tb) => (
+            <button key={tb.key} onClick={() => setTab(tb.key)} className={tabCls(tab === tb.key)}>
+              {tb.label}
             </button>
           ))}
         </div>
@@ -120,7 +124,7 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
             className="inline-flex items-center gap-1.5 rounded-full border border-gray-900/[0.07] bg-white/60 px-4 py-1.5 text-sm font-medium text-gray-500 backdrop-blur-sm transition-colors hover:text-gray-800 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-gray-400 dark:hover:text-white"
           >
             <MessageSquare className="h-3.5 w-3.5" />
-            Chatt
+            {t.chatTitle}
           </Link>
         )}
       </div>

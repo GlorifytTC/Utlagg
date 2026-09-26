@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
+import { accountantStrings } from "@/lib/accountant-i18n";
 
 interface RequestRow {
   id: string;
@@ -12,22 +14,24 @@ interface RequestRow {
   respondedAt: string | null;
 }
 
-const statusBadge: Record<string, { label: string; cls: string }> = {
+const statusBadge: Record<string, { label: "statusPending" | "reqStatusAccepted" | "reqStatusDeclined"; cls: string }> = {
   pending: {
-    label: "Väntar",
+    label: "statusPending",
     cls: "bg-amber-100/50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
   },
   active: {
-    label: "Accepterad",
+    label: "reqStatusAccepted",
     cls: "bg-green-100/50 text-green-700 dark:bg-green-900/20 dark:text-green-300",
   },
   revoked: {
-    label: "Avböjd",
+    label: "reqStatusDeclined",
     cls: "bg-gray-100/80 text-gray-600 dark:bg-white/[0.06] dark:text-gray-400",
   },
 };
 
 export function AccountantRequests() {
+  const { lang } = useLanguage();
+  const t = accountantStrings(lang);
   const [rows, setRows] = useState<RequestRow[]>([]);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [busy, setBusy] = useState<string | null>(null);
@@ -70,13 +74,13 @@ export function AccountantRequests() {
   }
 
   if (status === "error") {
-    return <p className="text-sm text-red-600">Kunde inte ladda förfrågningar.</p>;
+    return <p className="text-sm text-red-600">{t.reqLoadError}</p>;
   }
 
   if (rows.length === 0) {
     return (
       <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400">
-        Inga förfrågningar just nu.
+        {t.reqEmpty}
       </div>
     );
   }
@@ -101,7 +105,7 @@ export function AccountantRequests() {
               </div>
               <div className="flex items-center gap-3">
                 <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${s.cls}`}>
-                  {s.label}
+                  {t[s.label]}
                 </span>
                 {r.status === "pending" && (
                   <div className="flex gap-2">
@@ -112,7 +116,7 @@ export function AccountantRequests() {
                       onClick={() => respond(r.id, "accept")}
                       className="rounded-full border border-green-600/30 bg-green-50/60 px-3 py-1 text-xs font-medium text-green-700 transition-colors hover:bg-green-100/60 disabled:opacity-50 dark:border-green-400/20 dark:bg-green-900/20 dark:text-green-300"
                     >
-                      Acceptera
+                      {t.reqAccept}
                     </motion.button>
                     <motion.button
                       whileHover={{ scale: 1.02 }}
@@ -121,7 +125,7 @@ export function AccountantRequests() {
                       onClick={() => respond(r.id, "decline")}
                       className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:border-gray-900/30 disabled:opacity-50 dark:border-white/[0.15] dark:text-gray-400"
                     >
-                      Avböj
+                      {t.reqDecline}
                     </motion.button>
                   </div>
                 )}

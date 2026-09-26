@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Eye, Pencil, Download, type LucideIcon } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
+import type { Translations } from "@/lib/translations";
 
 export interface AuditEntry {
   id: string;
@@ -18,14 +20,14 @@ export interface AuditEntry {
 
 // ── helpers ─────────────────────────────────────────────────────────────────
 
-function actionLabel(action: string): string {
+function actionLabel(action: string, t: Translations): string {
   switch (action) {
-    case "accountant.client.view":    return "Visade klientöversikt";
-    case "accountant.receipt.list":   return "Bläddrade kvitton";
-    case "accountant.receipt.view":   return "Öppnade kvitto";
-    case "accountant.receipt.update": return "Redigerade kvitto";
-    case "accountant.export.csv":     return "Exporterade CSV";
-    case "accountant.export.sie":     return "Exporterade SIE";
+    case "accountant.client.view":    return t.auditClientView;
+    case "accountant.receipt.list":   return t.auditReceiptList;
+    case "accountant.receipt.view":   return t.auditReceiptView;
+    case "accountant.receipt.update": return t.auditReceiptUpdate;
+    case "accountant.export.csv":     return t.auditExportCsv;
+    case "accountant.export.sie":     return t.auditExportSie;
     default: return action;
   }
 }
@@ -64,30 +66,30 @@ const KIND_META: Record<ActionKind, {
   },
 };
 
-function relativeTime(iso: string): string {
+function relativeTime(iso: string, t: Translations): string {
   const diff = Date.now() - new Date(iso).getTime();
   const min = Math.floor(diff / 60_000);
-  if (min < 1) return "just nu";
-  if (min < 60) return `${min} min`;
+  if (min < 1) return t.auditJustNow;
+  if (min < 60) return t.auditMin.replace("{n}", String(min));
   const hrs = Math.floor(min / 60);
-  if (hrs < 24) return `${hrs} tim`;
-  return `${Math.floor(hrs / 24)} d`;
+  if (hrs < 24) return t.auditHours.replace("{n}", String(hrs));
+  return t.auditDays.replace("{n}", String(Math.floor(hrs / 24)));
 }
 
 function dayKey(iso: string): string {
   return iso.slice(0, 10);
 }
 
-function dayLabel(iso: string): string {
+function dayLabel(iso: string, t: Translations, locale: string): string {
   const d = new Date(iso);
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
 
-  if (d.toDateString() === today.toDateString()) return "Idag";
-  if (d.toDateString() === yesterday.toDateString()) return "Igår";
+  if (d.toDateString() === today.toDateString()) return t.auditToday;
+  if (d.toDateString() === yesterday.toDateString()) return t.auditYesterday;
 
-  return d.toLocaleDateString("sv-SE", { day: "numeric", month: "short" });
+  return d.toLocaleDateString(locale, { day: "numeric", month: "short" });
 }
 
 function formatChanges(
@@ -116,6 +118,8 @@ interface Props {
 }
 
 export function AuditTimeline({ entries, showActor = false, loading = false }: Props) {
+  const { t, lang } = useLanguage();
+  const locale = lang === "en" ? "en-GB" : "sv-SE";
   if (loading) {
     return (
       <div className="flex items-center justify-center p-10">
@@ -134,9 +138,9 @@ export function AuditTimeline({ entries, showActor = false, loading = false }: P
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
           <Eye className="h-5 w-5 text-gray-300 dark:text-gray-600" />
         </div>
-        <p className="font-display text-sm font-medium text-gray-900 dark:text-white">Ingen aktivitet</p>
+        <p className="font-display text-sm font-medium text-gray-900 dark:text-white">{t.auditEmptyTitle}</p>
         <p className="max-w-xs text-sm text-gray-400 dark:text-gray-500">
-          Ingen revisorsaktivitet registrerades de senaste 30 dagarna.
+          {t.auditEmptyBody}
         </p>
       </motion.div>
     );
@@ -150,7 +154,7 @@ export function AuditTimeline({ entries, showActor = false, loading = false }: P
     if (last?.day === dk) {
       last.items.push(entry);
     } else {
-      groups.push({ day: dk, label: dayLabel(entry.createdAt), items: [entry] });
+      groups.push({ day: dk, label: dayLabel(entry.createdAt, t, locale), items: [entry] });
     }
   }
 
@@ -176,7 +180,7 @@ export function AuditTimeline({ entries, showActor = false, loading = false }: P
                 const kind = actionKind(entry.action);
                 const meta = KIND_META[kind];
                 const { Icon } = meta;
-                const label = actionLabel(entry.action);
+                const label = actionLabel(entry.action, t);
                 const changes = formatChanges(
                   entry.oldValues as Record<string, unknown> | null,
                   entry.newValues as Record<string, unknown> | null,
@@ -211,16 +215,16 @@ export function AuditTimeline({ entries, showActor = false, loading = false }: P
                           </span>
                           {showActor && actor && (
                             <span className="ml-1.5 text-sm text-gray-400 dark:text-gray-500">
-                              av {actor}
+                              {t.auditBy.replace("{actor}", actor)}
                             </span>
                           )}
                         </div>
                         <time
                           dateTime={entry.createdAt}
-                          title={new Date(entry.createdAt).toLocaleString("sv-SE")}
+                          title={new Date(entry.createdAt).toLocaleString(locale)}
                           className="shrink-0 text-[11px] tabular-nums text-gray-400 dark:text-gray-500"
                         >
-                          {relativeTime(entry.createdAt)}
+                          {relativeTime(entry.createdAt, t)}
                         </time>
                       </div>
                       {sub && (

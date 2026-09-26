@@ -3,6 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { searchBasAccounts } from "@/lib/bas";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
 
 export function BasSelect({
   value,
@@ -11,6 +12,7 @@ export function BasSelect({
   value: string | null;
   onChange: (code: string) => void;
 }) {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
@@ -70,7 +72,7 @@ export function BasSelect({
       <input
         ref={inputRef}
         value={open ? query : value ?? ""}
-        placeholder="Sök BAS-konto (t.ex. 5800 eller resekostnader)"
+        placeholder={t.basSearchPlaceholder}
         onFocus={() => setOpen(true)}
         onChange={(e) => {
           setQuery(e.target.value);

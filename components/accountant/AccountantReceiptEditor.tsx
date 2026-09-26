@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/context/LanguageContext";
+import { accountantStrings } from "@/lib/accountant-i18n";
 
 interface ReceiptDetail {
   id: string;
@@ -31,6 +33,8 @@ export function AccountantReceiptEditor({
   receiptId: string;
   onSaved?: () => void;
 }) {
+  const { lang } = useLanguage();
+  const t = accountantStrings(lang);
   const [detail, setDetail] = useState<ReceiptDetail | null>(null);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
@@ -90,13 +94,13 @@ export function AccountantReceiptEditor({
         body: JSON.stringify(body),
       });
       if (!res.ok) {
-        setMsg("Kunde inte spara.");
+        setMsg(t.reSaveError);
         return;
       }
-      setMsg("Sparat.");
+      setMsg(t.reSaved);
       onSaved?.();
     } catch {
-      setMsg("Kunde inte spara.");
+      setMsg(t.reSaveError);
     } finally {
       setSaving(false);
     }
@@ -108,17 +112,17 @@ export function AccountantReceiptEditor({
     await save({ reviewed: next });
   }
 
-  if (status === "loading") return <p className="text-sm text-gray-500 dark:text-gray-400">Laddar kvitto…</p>;
-  if (status === "error" || !detail) return <p className="text-sm text-red-600">Kunde inte ladda kvittot.</p>;
+  if (status === "loading") return <p className="text-sm text-gray-500 dark:text-gray-400">{t.reLoading}</p>;
+  if (status === "error" || !detail) return <p className="text-sm text-red-600">{t.reLoadError}</p>;
 
   return (
     <div className="grid gap-6 md:grid-cols-[1fr_280px]">
       <div className="space-y-3">
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Leverantör"><Input value={vendorName} onChange={(e) => setVendorName(e.target.value)} /></Field>
-          <Field label="Kategori"><Input value={category} onChange={(e) => setCategory(e.target.value)} /></Field>
-          <Field label="Moms (SEK)"><Input value={vatAmount} onChange={(e) => setVatAmount(e.target.value)} inputMode="decimal" /></Field>
-          <Field label="Momssats (%)">
+          <Field label={t.rcColVendor}><Input value={vendorName} onChange={(e) => setVendorName(e.target.value)} /></Field>
+          <Field label={t.reCategory}><Input value={category} onChange={(e) => setCategory(e.target.value)} /></Field>
+          <Field label={t.reVatSek}><Input value={vatAmount} onChange={(e) => setVatAmount(e.target.value)} inputMode="decimal" /></Field>
+          <Field label={t.reVatRate}>
             <select
               value={vatRate}
               onChange={(e) => setVatRate(e.target.value)}
@@ -130,16 +134,16 @@ export function AccountantReceiptEditor({
               <option value="25">25</option>
             </select>
           </Field>
-          <Field label="BAS-konto"><Input value={basCode} onChange={(e) => setBasCode(e.target.value)} /></Field>
-          <Field label="Notering"><Input value={note} onChange={(e) => setNote(e.target.value)} /></Field>
+          <Field label={t.reBasAccount}><Input value={basCode} onChange={(e) => setBasCode(e.target.value)} /></Field>
+          <Field label={t.reNote}><Input value={note} onChange={(e) => setNote(e.target.value)} /></Field>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <Button onClick={() => save()} disabled={saving}>{saving ? "Sparar…" : "Spara"}</Button>
+          <Button onClick={() => save()} disabled={saving}>{saving ? t.settingsSaving : t.settingsSave}</Button>
           <Button variant="outline" onClick={toggleReviewed} disabled={saving}>
-            {reviewed ? "Markera som ogranskad" : "Markera som granskad"}
+            {reviewed ? t.reMarkUnreviewed : t.reMarkReviewed}
           </Button>
-          {reviewed && <span className="text-xs text-green-700 dark:text-green-300">✓ Granskad</span>}
+          {reviewed && <span className="text-xs text-green-700 dark:text-green-300">{t.reReviewed}</span>}
           {msg && <span className="text-xs text-gray-500 dark:text-gray-400">{msg}</span>}
         </div>
       </div>
@@ -156,7 +160,7 @@ export function AccountantReceiptEditor({
           </a>
         ) : (
           <div className="flex aspect-[3/4] items-center justify-center rounded-lg bg-gray-900/[0.03] p-6 text-center text-sm text-gray-400 dark:bg-white/[0.03]">
-            Ingen bild
+            {t.reNoImage}
           </div>
         )}
       </div>

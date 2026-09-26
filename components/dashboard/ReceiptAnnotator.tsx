@@ -178,14 +178,14 @@ export function ReceiptAnnotator({
         </AnimatePresence>
         
         <div className="inline-flex items-center gap-1">
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={zoomOut} aria-label="Zoom out" disabled={zoom === ZOOMS[0]} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-900/[0.12] text-gray-600 disabled:opacity-30 dark:border-white/[0.12] dark:text-gray-300">
+          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={zoomOut} aria-label={t.annZoomOut} disabled={zoom === ZOOMS[0]} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-900/[0.12] text-gray-600 disabled:opacity-30 dark:border-white/[0.12] dark:text-gray-300">
             <ZoomOut className="h-4 w-4" />
           </motion.button>
           <span className="w-12 text-center text-xs tabular-nums text-gray-500 dark:text-gray-400">{Math.round(zoom * 100)}%</span>
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={zoomIn} aria-label="Zoom in" disabled={zoom === ZOOMS[ZOOMS.length - 1]} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-900/[0.12] text-gray-600 disabled:opacity-30 dark:border-white/[0.12] dark:text-gray-300">
+          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={zoomIn} aria-label={t.annZoomIn} disabled={zoom === ZOOMS[ZOOMS.length - 1]} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-900/[0.12] text-gray-600 disabled:opacity-30 dark:border-white/[0.12] dark:text-gray-300">
             <ZoomIn className="h-4 w-4" />
           </motion.button>
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={fit} aria-label="Fit" className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-900/[0.12] text-gray-600 dark:border-white/[0.12] dark:text-gray-300">
+          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={fit} aria-label={t.annFit} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-900/[0.12] text-gray-600 dark:border-white/[0.12] dark:text-gray-300">
             <Maximize2 className="h-4 w-4" />
           </motion.button>
         </div>

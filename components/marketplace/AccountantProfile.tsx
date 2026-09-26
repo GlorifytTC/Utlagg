@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { MapPin, MessageSquare } from "lucide-react";
 import { AccountantChat } from "@/components/AccountantChat";
 import { LogoUploader } from "@/components/dashboard/LogoUploader";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Review {
   id: string;
@@ -55,18 +56,18 @@ interface ProfileData {
 }
 
 function Stars({ rating, max = 5 }: { rating: number; max?: number }) {
+  const { t } = useLanguage();
   return (
-    <span className="text-nordic-600" aria-label={`${rating} av ${max} stjärnor`}>
+    <span className="text-nordic-600" aria-label={t.profStarsLabel.replace("{rating}", String(rating)).replace("{max}", String(max))}>
       {"★".repeat(Math.round(rating))}
       {"☆".repeat(max - Math.round(rating))}
     </span>
   );
 }
 
-const ROLE_LABELS: Record<string, string> = { owner: "Ägare", admin: "Admin", member: "Medarbetare" };
 
 /** Rename and/or set the logo of the caller's firm. Owner/admin only — enforced server-side. Toasts on failure. */
-async function patchFirm(body: { name?: string; logoUrl?: string | null }): Promise<boolean> {
+async function patchFirm(body: { name?: string; logoUrl?: string | null }, errorMsg: string): Promise<boolean> {
   const res = await fetch("/api/accountant/firm", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -74,11 +75,13 @@ async function patchFirm(body: { name?: string; logoUrl?: string | null }): Prom
   });
   if (res.ok) return true;
   const d = await res.json().catch(() => ({}));
-  toast.error(d.error ?? "Kunde inte spara byrån");
+  toast.error(d.error ?? errorMsg);
   return false;
 }
 
 function FirmSidebar({ firm }: { firm: Firm }) {
+  const { t } = useLanguage();
+  const roleLabels: Record<string, string> = { owner: t.teamRoleOwner, admin: t.teamRoleAdmin, member: t.profRoleMember };
   return (
     <div className="self-start lg:sticky lg:top-6 space-y-4">
       <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
@@ -97,14 +100,14 @@ function FirmSidebar({ firm }: { firm: Firm }) {
             </div>
           )}
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-400">Byrå</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-400">{t.profFirm}</p>
             <p className="font-semibold text-gray-900 dark:text-white">{firm.name}</p>
           </div>
         </div>
 
         {/* Members list */}
         <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">
-          Medarbetare ({firm.members.length})
+          {t.profMembers.replace("{n}", String(firm.members.length))}
         </p>
         <ul className="space-y-2">
           {firm.members.map((m) => (
@@ -125,7 +128,7 @@ function FirmSidebar({ firm }: { firm: Firm }) {
                 <p className="truncate text-sm text-gray-900 dark:text-white">{m.name ?? m.email}</p>
               </div>
               <span className="shrink-0 rounded-full bg-gray-100/80 px-2 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-white/[0.08] dark:text-gray-400">
-                {ROLE_LABELS[m.role] ?? m.role}
+                {roleLabels[m.role] ?? m.role}
               </span>
             </li>
           ))}
@@ -146,6 +149,7 @@ interface Props {
 }
 
 export function AccountantProfile({ accountantId, viewerAccountantId, backHref, currentUserId }: Props) {
+  const { t, lang } = useLanguage();
   const [data, setData] = useState<ProfileData | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [loadState, setLoadState] = useState<"loading" | "ok" | "error">("loading");
@@ -199,16 +203,16 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       });
       const d = await res.json().catch(() => ({}));
       if (res.ok) {
-        toast.success(d.alreadyPending ? "Förfrågan väntar redan" : "Förfrågan skickad");
+        toast.success(d.alreadyPending ? t.mktRequestAlreadyPending : t.mktRequestSent);
         setData((prev) => prev ? { ...prev, myStatus: "pending" } : prev);
       } else if (res.status === 409 && d.alreadyConnected) {
-        toast.info("Redan kopplad");
+        toast.info(t.mktAlreadyConnected);
         setData((prev) => prev ? { ...prev, myStatus: "active" } : prev);
       } else {
-        toast.error(d.error ?? "Kunde inte skicka förfrågan");
+        toast.error(d.error ?? t.mktRequestError);
       }
     } catch {
-      toast.error("Kunde inte skicka förfrågan");
+      toast.error(t.mktRequestError);
     } finally {
       setBusy(false);
     }
@@ -224,13 +228,13 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       });
       const d = await res.json().catch(() => ({}));
       if (res.ok) {
-        toast.success("Recension sparad");
+        toast.success(t.profReviewSaved);
         load();
       } else {
-        toast.error(d.error ?? "Kunde inte spara recension");
+        toast.error(d.error ?? t.profReviewSaveError);
       }
     } catch {
-      toast.error("Kunde inte spara recension");
+      toast.error(t.profReviewSaveError);
     } finally {
       setReviewSubmitting(false);
     }
@@ -254,16 +258,16 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        toast.error(d.error ?? "Kunde inte spara");
+        toast.error(d.error ?? t.toastSaveFail);
         return;
       }
       const firmName = editFirmName.trim();
-      if (data?.firm && firmName && firmName !== data.firm.name && !(await patchFirm({ name: firmName }))) return;
-      toast.success("Profil sparad");
+      if (data?.firm && firmName && firmName !== data.firm.name && !(await patchFirm({ name: firmName }, t.profFirmSaveError))) return;
+      toast.success(t.profSaved);
       setEditing(false);
       load();
     } catch {
-      toast.error("Kunde inte spara");
+      toast.error(t.toastSaveFail);
     } finally {
       setEditSaving(false);
     }
@@ -280,7 +284,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
     );
   }
   if (loadState === "error" || !data) {
-    return <p className="text-sm text-red-600">Kunde inte ladda profil.</p>;
+    return <p className="text-sm text-red-600">{t.profLoadError}</p>;
   }
 
   const { accountant, reviews } = data;
@@ -299,7 +303,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         href={backHref}
         className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 dark:hover:text-white"
       >
-        ← Tillbaka
+        {t.profBack}
       </Link>
 
       <div className={data.firm ? "lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start lg:gap-6 xl:grid-cols-[minmax(0,1fr)_320px]" : "space-y-8"}>
@@ -334,7 +338,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               </h1>
               {accountant.isBoosted && (
                 <span className="rounded-full bg-nordic-600/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-widest text-nordic-600 dark:bg-nordic-600/20">
-                  Boostad
+                  {t.mktBoosted}
                 </span>
               )}
             </div>
@@ -346,15 +350,15 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                   onClick={() => setEditing((v) => !v)}
                   className="rounded-full border border-gray-900/[0.12] px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 active:scale-[0.98] dark:border-white/[0.12] dark:text-gray-300 dark:hover:bg-white/[0.06]"
                 >
-                  {editing ? "Avbryt" : "Redigera profil"}
+                  {editing ? t.btnCancel : t.profEdit}
                 </button>
               ) : data.myStatus === "active" ? (
                 <span className="rounded-full bg-green-100/50 px-3 py-1.5 text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
-                  Kopplad
+                  {t.mktConnected}
                 </span>
               ) : data.myStatus === "pending" ? (
                 <span className="rounded-full bg-nordic-600/10 px-3 py-1.5 text-sm font-medium text-nordic-600 dark:bg-nordic-600/20">
-                  Förfrågan skickad
+                  {t.mktRequestSent}
                 </span>
               ) : data.viewerCanRequest ? (
                 <motion.button
@@ -364,7 +368,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                   onClick={sendRequest}
                   className="rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-60"
                 >
-                  {busy ? "Skickar…" : "Skicka förfrågan"}
+                  {busy ? t.mktSending : t.mktSendRequest}
                 </motion.button>
               ) : null}
             </div>
@@ -387,7 +391,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               </span>
             )}
             {accountant.activeClientCount > 0 && (
-              <span>{accountant.activeClientCount}+ klienter</span>
+              <span>{t.profClientsCount.replace("{n}", String(accountant.activeClientCount))}</span>
             )}
           </div>
 
@@ -437,7 +441,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
           style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
         >
           <MessageSquare size={16} />
-          {chatOpen ? "Stäng chatt" : "Meddelande"}
+          {chatOpen ? t.profCloseChat : t.profMessage}
         </motion.button>
       )}
 
@@ -448,16 +452,16 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
           animate={{ opacity: 1, y: 0 }}
           className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
         >
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Redigera profil</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.profEdit}</h2>
           <p className="mb-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Ditt namn och din profilbild ändrar du i{" "}
-            <Link href="/accountant/settings" className="text-nordic-600 hover:underline">Inställningar</Link>.
+            {t.profEditNameHintPre}{" "}
+            <Link href="/accountant/settings" className="text-nordic-600 hover:underline">{t.navSettings}</Link>.
           </p>
           <div className="space-y-3">
             {data.firm && (canManageFirm ? (
               <div className="space-y-3 border-b border-gray-900/[0.07] pb-4 dark:border-white/[0.08]">
                 <div>
-                  <label htmlFor="firm-name" className={labelClass}>Byråns namn</label>
+                  <label htmlFor="firm-name" className={labelClass}>{t.profFirmName}</label>
                   <input
                     id="firm-name"
                     value={editFirmName}
@@ -467,12 +471,12 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                   />
                 </div>
                 <div>
-                  <p className={labelClass}>Byråns logotyp</p>
+                  <p className={labelClass}>{t.profFirmLogo}</p>
                   <LogoUploader
                     value={data.firm.logoUrl}
                     label={data.firm.name}
                     onSave={async (logoUrl) => {
-                      if (!(await patchFirm({ logoUrl }))) throw new Error();
+                      if (!(await patchFirm({ logoUrl }, t.profFirmSaveError))) throw new Error();
                       setData((prev) => (prev?.firm ? { ...prev, firm: { ...prev.firm, logoUrl } } : prev));
                     }}
                   />
@@ -480,12 +484,12 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               </div>
             ) : (
               <p className="border-b border-gray-900/[0.07] pb-4 text-sm text-gray-500 dark:border-white/[0.08] dark:text-gray-400">
-                Byråns namn och logotyp kan bara ändras av ägare och admin.
+                {t.profFirmOwnerOnly}
               </p>
             ))}
             <div>
               <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                Ort
+                {t.mktCityPlaceholder}
               </label>
               <input
                 value={editCity}
@@ -496,24 +500,24 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                Bio
+                {t.profBio}
               </label>
               <textarea
                 value={editBio}
                 onChange={(e) => setEditBio(e.target.value)}
                 rows={4}
-                placeholder="Berätta om dig och din byrå…"
+                placeholder={t.profBioPlaceholder}
                 className={`${inputClass} resize-none`}
               />
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                Specialiseringar (komma-separerade)
+                {t.profSpecializations}
               </label>
               <input
                 value={editSpecializations}
                 onChange={(e) => setEditSpecializations(e.target.value)}
-                placeholder="restaurang, bygg, IT"
+                placeholder={t.profSpecializationsPlaceholder}
                 className={inputClass}
               />
             </div>
@@ -522,7 +526,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               disabled={editSaving}
               className="rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-60"
             >
-              {editSaving ? "Sparar…" : "Spara"}
+              {editSaving ? t.stSaving : t.btnSave}
             </button>
           </div>
         </motion.div>
@@ -531,7 +535,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       {/* Bio */}
       {accountant.bio && (
         <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
-          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">Om</h2>
+          <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">{t.profAbout}</h2>
           <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{accountant.bio}</p>
         </div>
       )}
@@ -539,7 +543,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       {/* Reviews */}
       <div className="space-y-4">
         <h2 className="flex items-baseline gap-2 text-base font-semibold text-gray-900 dark:text-white">
-          Recensioner
+          {t.profReviews}
           {accountant.reviewCount > 0 && (
             <span className="text-sm font-normal text-gray-400">({accountant.reviewCount})</span>
           )}
@@ -549,7 +553,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         {data.viewerCanReview && (
           <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
             <p className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-              {data.viewerExistingReview ? "Din recension" : "Lämna en recension"}
+              {data.viewerExistingReview ? t.profYourReview : t.profLeaveReview}
             </p>
             <div className="space-y-3">
               <div className="flex gap-2">
@@ -567,7 +571,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                 value={reviewComment}
                 onChange={(e) => setReviewComment(e.target.value)}
                 rows={3}
-                placeholder="Valfri kommentar…"
+                placeholder={t.profCommentPlaceholder}
                 className={`${inputClass} resize-none`}
               />
               <button
@@ -575,7 +579,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                 disabled={reviewSubmitting}
                 className="rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-60"
               >
-                {reviewSubmitting ? "Sparar…" : data.viewerExistingReview ? "Uppdatera" : "Skicka"}
+                {reviewSubmitting ? t.stSaving : data.viewerExistingReview ? t.profUpdate : t.chatSend}
               </button>
             </div>
           </div>
@@ -593,7 +597,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                     key={star}
                     onClick={() => setRatingFilter(active ? null : star)}
                     aria-pressed={active}
-                    aria-label={`Filtrera på ${star} stjärnor (${count} recensioner)`}
+                    aria-label={t.profFilterStars.replace("{star}", String(star)).replace("{count}", String(count))}
                     className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-white/5 ${active ? "bg-nordic-600/10 ring-1 ring-inset ring-nordic-600/30 dark:bg-nordic-600/[0.16] dark:ring-nordic-600/40" : ""}`}
                   >
                     <span className="w-[4.5rem] shrink-0 select-none text-right text-xs">
@@ -616,7 +620,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                 onClick={() => setRatingFilter(null)}
                 className="mt-3 text-xs text-nordic-600 hover:text-nordic-700 dark:text-nordic-400 dark:hover:text-nordic-300"
               >
-                Rensa filter
+                {t.mktClearFilters}
               </button>
             )}
           </div>
@@ -624,11 +628,11 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
 
         {reviews.length === 0 ? (
           <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400">
-            Inga recensioner ännu.
+            {t.profNoReviews}
           </div>
         ) : reviews.filter((r) => ratingFilter === null || r.rating === ratingFilter).length === 0 ? (
           <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400">
-            Inga {ratingFilter}-stjärniga recensioner.
+            {t.profNoStarReviews.replace("{star}", String(ratingFilter))}
           </div>
         ) : (
           <div className="space-y-3">
@@ -647,7 +651,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                     <Stars rating={r.rating} />
                   </div>
                   <p className="shrink-0 text-xs text-gray-400">
-                    {new Date(r.createdAt).toLocaleDateString("sv-SE")}
+                    {new Date(r.createdAt).toLocaleDateString(lang === "en" ? "en-GB" : "sv-SE")}
                   </p>
                 </div>
                 {r.comment && (

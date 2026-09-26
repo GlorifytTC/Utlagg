@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useLanguage } from "@/context/LanguageContext";
+import { accountantStrings } from "@/lib/accountant-i18n";
 
 interface BoostState {
   active: boolean;
@@ -12,6 +14,8 @@ interface BoostState {
 }
 
 export function AccountantBoostCard() {
+  const { lang } = useLanguage();
+  const t = accountantStrings(lang);
   const params = useSearchParams();
   const [state, setState] = useState<BoostState | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,7 +36,7 @@ export function AccountantBoostCard() {
 
   useEffect(() => {
     if (params.get("boost") === "processing") {
-      toast.info("Betalningen behandlas…");
+      toast.info(t.boostProcessing);
       let tries = 0;
       const iv = setInterval(async () => {
         tries++;
@@ -45,8 +49,8 @@ export function AccountantBoostCard() {
       }, 2000);
       return () => clearInterval(iv);
     }
-    if (params.get("boost") === "cancelled") toast.info("Köpet avbröts.");
-  }, [params]);
+    if (params.get("boost") === "cancelled") toast.info(t.boostCancelled);
+  }, [params, t]);
 
   async function buy() {
     setBusy(true);
@@ -58,13 +62,13 @@ export function AccountantBoostCard() {
         return;
       }
       if (res.status === 409 && d.alreadyActive) {
-        toast.info("Du har redan en aktiv boost.");
+        toast.info(t.boostAlreadyActive);
         load();
       } else {
-        toast.error(d.error ?? "Kunde inte starta köp");
+        toast.error(d.error ?? t.boostBuyError);
       }
     } catch {
-      toast.error("Kunde inte starta köp");
+      toast.error(t.boostBuyError);
     } finally {
       setBusy(false);
     }
@@ -74,7 +78,7 @@ export function AccountantBoostCard() {
 
   if (state?.active) {
     const until = state.expiresAt
-      ? new Date(state.expiresAt).toLocaleDateString("sv-SE", {
+      ? new Date(state.expiresAt).toLocaleDateString(lang === "en" ? "en-GB" : "sv-SE", {
           year: "numeric",
           month: "long",
           day: "numeric",
@@ -89,20 +93,20 @@ export function AccountantBoostCard() {
       >
         <div className="flex items-center gap-2">
           <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
-            Boostad
+            {t.boostActive}
           </p>
           <span className="rounded-full bg-nordic-600/10 px-2.5 py-1 text-xs font-medium text-nordic-600 dark:bg-nordic-600/20">
-            Aktiv
+            {t.statusActive}
           </span>
         </div>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Din profil får ökad synlighet bland relevanta företag.
+          {t.boostActiveDesc}
         </p>
         <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-          Aktiv till:{" "}
+          {t.boostActiveUntil}{" "}
           <span className="font-medium text-gray-900 dark:text-white">{until ?? "—"}</span>
           {state.daysLeft != null && (
-            <span className="text-gray-400"> · {state.daysLeft} dagar kvar</span>
+            <span className="text-gray-400"> · {state.daysLeft} {t.boostDaysLeft}</span>
           )}
         </p>
       </motion.div>
@@ -116,17 +120,17 @@ export function AccountantBoostCard() {
       className="rounded-2xl border border-l-2 border-gray-900/[0.07] border-l-nordic-600 bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
     >
       <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
-        Boosta din synlighet
+        {t.boostTitle}
       </p>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        Få fler möjligheter att bli hittad av företag som söker revisor.
+        {t.boostDesc}
       </p>
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-display text-lg font-semibold text-gray-900 dark:text-white">
             49 kr
           </span>{" "}
-          · 7 dagar · engångsbetalning
+          {t.boostPriceTerms}
         </p>
         <motion.button
           whileHover={{ scale: 1.02 }}
@@ -135,7 +139,7 @@ export function AccountantBoostCard() {
           disabled={busy}
           className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-nordic-900 disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
         >
-          {busy ? "Öppnar…" : "Boosta min profil"}
+          {busy ? t.boostOpening : t.boostCta}
         </motion.button>
       </div>
     </motion.div>

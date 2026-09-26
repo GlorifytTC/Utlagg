@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ClientAvatar } from "@/components/accountant/ClientAvatar";
+import { useLanguage } from "@/context/LanguageContext";
+import { accountantStrings } from "@/lib/accountant-i18n";
 
 interface ClientRow {
   companyId: string;
@@ -16,6 +18,8 @@ interface ClientRow {
 }
 
 export function AccountantClientsList() {
+  const { lang } = useLanguage();
+  const t = accountantStrings(lang);
   const [rows, setRows] = useState<ClientRow[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -52,12 +56,12 @@ export function AccountantClientsList() {
   if (status === "error") {
     return (
       <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
-        <p className="text-sm text-red-600">Kunde inte ladda klienter.</p>
+        <p className="text-sm text-red-600">{t.clientsLoadError}</p>
         <button
           onClick={() => load(page)}
           className="mt-3 rounded-full border border-gray-900/[0.15] px-4 py-1.5 text-xs transition-colors hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40"
         >
-          Försök igen
+          {t.retry}
         </button>
       </div>
     );
@@ -67,10 +71,10 @@ export function AccountantClientsList() {
     return (
       <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
         <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
-          Inga klienter ännu
+          {t.clientsEmpty}
         </p>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          När ett företag kopplar dig som revisor dyker det upp här.
+          {t.clientsListEmptyHint}
         </p>
       </div>
     );
@@ -90,16 +94,16 @@ export function AccountantClientsList() {
             <thead>
               <tr className="text-left">
                 <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-                  Företag
+                  {t.colCompany}
                 </th>
                 <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-                  Ort
+                  {t.colCity}
                 </th>
                 <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-                  Kvitton
+                  {t.colReceipts}
                 </th>
                 <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-                  Status
+                  {t.rcColStatus}
                 </th>
                 <th className="px-5 py-3" />
               </tr>
@@ -124,7 +128,7 @@ export function AccountantClientsList() {
                   </td>
                   <td className="px-5 py-3">
                     <span className="rounded-full bg-green-100/50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
-                      Aktiv
+                      {t.statusActive}
                     </span>
                   </td>
                   <td className="px-5 py-3 text-right">
@@ -132,7 +136,7 @@ export function AccountantClientsList() {
                       href={`/accountant/clients/${c.companyId}`}
                       className="text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70"
                     >
-                      Öppna →
+                      {t.openClient} →
                     </Link>
                   </td>
                 </tr>
@@ -144,7 +148,7 @@ export function AccountantClientsList() {
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 dark:border-white/[0.07]">
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Sida {page} av {totalPages}
+              {t.pageOf.replace("{page}", String(page)).replace("{total}", String(totalPages))}
             </span>
             <div className="flex gap-2">
               <button
@@ -152,14 +156,14 @@ export function AccountantClientsList() {
                 onClick={() => setPage((p) => p - 1)}
                 className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
               >
-                ← Föregående
+                {t.pagePrev}
               </button>
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => p + 1)}
                 className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
               >
-                Nästa →
+                {t.pageNext}
               </button>
             </div>
           </div>

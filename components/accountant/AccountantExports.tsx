@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
+import { accountantStrings } from "@/lib/accountant-i18n";
 
 interface ExportRow {
   id: string;
@@ -13,6 +15,8 @@ interface ExportRow {
 }
 
 export function AccountantExports({ companyId }: { companyId: string }) {
+  const { lang } = useLanguage();
+  const t = accountantStrings(lang);
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [busy, setBusy] = useState<"csv" | "sie" | null>(null);
@@ -48,7 +52,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        setErr(d?.error ?? "Exporten misslyckades.");
+        setErr(d?.error ?? t.exFailed);
         return;
       }
       const blob = await res.blob();
@@ -62,7 +66,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
       URL.revokeObjectURL(url);
       loadHistory();
     } catch {
-      setErr("Exporten misslyckades.");
+      setErr(t.exFailed);
     } finally {
       setBusy(null);
     }
@@ -82,13 +86,13 @@ export function AccountantExports({ companyId }: { companyId: string }) {
         <div className="flex flex-wrap items-end gap-3">
           <div>
             <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-              Från
+              {t.rcFrom}
             </label>
             <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputCls} />
           </div>
           <div>
             <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-              Till
+              {t.rcTo}
             </label>
             <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputCls} />
           </div>
@@ -100,7 +104,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
               disabled={busy !== null}
               className="rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-60"
             >
-              {busy === "csv" ? "Exporterar…" : "Exportera CSV"}
+              {busy === "csv" ? t.exExporting : t.exCsv}
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -109,7 +113,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
               disabled={busy !== null}
               className="rounded-full border border-gray-900/[0.15] px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-gray-900/30 disabled:opacity-60 dark:border-white/[0.15] dark:text-gray-300"
             >
-              {busy === "sie" ? "Exporterar…" : "Exportera SIE"}
+              {busy === "sie" ? t.exExporting : t.exSie}
             </motion.button>
           </div>
         </div>
@@ -119,17 +123,17 @@ export function AccountantExports({ companyId }: { companyId: string }) {
       {/* History */}
       <div>
         <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-          Tidigare exporter
+          {t.exHistory}
         </p>
         {histStatus === "loading" ? (
           <div className="flex items-center justify-center p-8">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
           </div>
         ) : histStatus === "error" ? (
-          <p className="text-sm text-red-600">Kunde inte ladda historik.</p>
+          <p className="text-sm text-red-600">{t.exHistoryError}</p>
         ) : history.length === 0 ? (
           <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400">
-            Inga exporter ännu.
+            {t.exEmpty}
           </div>
         ) : (
           <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
@@ -137,7 +141,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
               <table className="w-full">
                 <thead>
                   <tr className="text-left">
-                    {["Datum", "Period", "Format", "Kvitton"].map((h) => (
+                    {[t.rcColDate, t.exColPeriod, t.exColFormat, t.colReceipts].map((h) => (
                       <th
                         key={h}
                         className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400"
@@ -157,7 +161,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
                         {h.createdAt?.slice(0, 10)}
                       </td>
                       <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
-                        {h.fromDate || h.toDate ? `${h.fromDate ?? "…"} – ${h.toDate ?? "…"}` : "Alla"}
+                        {h.fromDate || h.toDate ? `${h.fromDate ?? "…"} – ${h.toDate ?? "…"}` : t.exAll}
                       </td>
                       <td className="px-5 py-3 text-sm uppercase text-gray-500 dark:text-gray-400">
                         {h.format}

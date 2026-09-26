@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Search, MapPin, X, Users, Star, CalendarDays } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface AccountantRow {
   id: string;
@@ -86,16 +87,17 @@ function RatingBadge({ rating, count }: { rating: number; count: number }) {
 }
 
 function StatusBadge({ status }: { status: "active" | "pending" }) {
+  const { t } = useLanguage();
   if (status === "active") {
     return (
       <span className="rounded-full bg-green-100/60 px-3 py-1 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
-        Kopplad
+        {t.mktConnected}
       </span>
     );
   }
   return (
     <span className="rounded-full bg-nordic-600/10 px-3 py-1 text-xs font-medium text-nordic-600 dark:bg-nordic-600/20">
-      Förfrågan skickad
+      {t.mktRequestSent}
     </span>
   );
 }
@@ -105,6 +107,7 @@ export function AccountantMarketplace({
   compact = false,
   profileBasePath = "/dashboard/marketplace",
 }: Props) {
+  const { t } = useLanguage();
   const [q, setQ] = useState("");
   const [city, setCity] = useState("");
   const [rows, setRows] = useState<AccountantRow[]>([]);
@@ -147,20 +150,20 @@ export function AccountantMarketplace({
       });
       const d = await res.json().catch(() => ({}));
       if (res.ok) {
-        toast.success(d.alreadyPending ? "Förfrågan väntar redan" : "Förfrågan skickad");
+        toast.success(d.alreadyPending ? t.mktRequestAlreadyPending : t.mktRequestSent);
         setRows((prev) => prev.map((r) => r.id === accountantId ? { ...r, myStatus: "pending" } : r));
       } else if (res.status === 409 && d.alreadyConnected) {
-        toast.info("Redan kopplad");
+        toast.info(t.mktAlreadyConnected);
         setRows((prev) => prev.map((r) => r.id === accountantId ? { ...r, myStatus: "active" } : r));
       } else if (res.status === 409 && d.needsCompany) {
-        toast.error("Skapa ett företag först");
+        toast.error(t.mktNeedsCompany);
       } else if (res.status === 403) {
-        toast.error("Endast ägare/admin kan begära revisor");
+        toast.error(t.mktOwnerOnly);
       } else {
-        toast.error(d.error ?? "Kunde inte skicka förfrågan");
+        toast.error(d.error ?? t.mktRequestError);
       }
     } catch {
-      toast.error("Kunde inte skicka förfrågan");
+      toast.error(t.mktRequestError);
     } finally {
       setBusy(null);
     }
@@ -181,14 +184,14 @@ export function AccountantMarketplace({
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Sök namn, e-post eller tagg…"
-              aria-label="Sök revisor"
+              placeholder={t.mktSearchPlaceholder}
+              aria-label={t.mktSearchLabel}
               className="w-full rounded-xl border border-gray-900/[0.12] bg-white py-2.5 pl-10 pr-9 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
             />
             {q && (
               <button
                 onClick={() => setQ("")}
-                aria-label="Rensa sökning"
+                aria-label={t.mktClearSearch}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 <X className="h-3.5 w-3.5" />
@@ -203,14 +206,14 @@ export function AccountantMarketplace({
             <input
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              placeholder="Ort"
-              aria-label="Filtrera på ort"
+              placeholder={t.mktCityPlaceholder}
+              aria-label={t.mktCityLabel}
               className="w-full rounded-xl border border-gray-900/[0.10] bg-white py-2.5 pl-8 pr-8 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.10] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
             />
             {city && (
               <button
                 onClick={() => setCity("")}
-                aria-label="Rensa ort"
+                aria-label={t.mktClearCity}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 <X className="h-3 w-3" />
@@ -222,7 +225,7 @@ export function AccountantMarketplace({
               onClick={() => { setQ(""); setCity(""); }}
               className="shrink-0 rounded-xl border border-gray-900/[0.10] px-3 py-2.5 text-sm text-gray-500 transition hover:bg-gray-50 dark:border-white/[0.10] dark:hover:bg-white/[0.06]"
             >
-              Rensa
+              {t.mktClear}
             </button>
           )}
         </div>
@@ -231,7 +234,7 @@ export function AccountantMarketplace({
       {/* Result count */}
       {!compact && loadState === "ok" && rows.length > 0 && (
         <p className="text-xs text-gray-400">
-          {rows.length} revisor{rows.length === 1 ? "" : "er"} · rankat efter relevans
+          {(rows.length === 1 ? t.mktResultsOne : t.mktResultsMany).replace("{n}", String(rows.length))}
         </p>
       )}
 
@@ -246,16 +249,16 @@ export function AccountantMarketplace({
           ))}
         </div>
       ) : loadState === "error" ? (
-        <p className="text-sm text-red-600">Kunde inte ladda marknadsplatsen.</p>
+        <p className="text-sm text-red-600">{t.mktLoadError}</p>
       ) : rows.length === 0 ? (
         <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 px-8 py-14 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Inga revisorer hittades.</p>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t.mktEmpty}</p>
           {hasFilters && (
             <button
               onClick={() => { setQ(""); setCity(""); }}
               className="mt-2 text-sm text-nordic-600 hover:underline"
             >
-              Rensa filter
+              {t.mktClearFilters}
             </button>
           )}
         </div>
@@ -278,7 +281,7 @@ export function AccountantMarketplace({
                   <Link
                     href={`${profileBasePath}/${a.id}`}
                     className="absolute inset-0 rounded-2xl"
-                    aria-label={`Visa profil för ${a.name ?? a.email}`}
+                    aria-label={t.mktViewProfile.replace("{name}", a.name ?? a.email)}
                   />
 
                   <div className="flex flex-1 flex-col gap-4 p-5">
@@ -300,12 +303,12 @@ export function AccountantMarketplace({
                           </span>
                           {a.isBoosted && (
                             <span className="rounded-full bg-nordic-600/10 px-1.5 py-px text-[10px] font-bold uppercase tracking-widest text-nordic-600 dark:bg-nordic-600/20">
-                              Boostad
+                              {t.mktBoosted}
                             </span>
                           )}
                           {isSelf && (
                             <span className="rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-medium text-gray-500 dark:bg-white/[0.08] dark:text-gray-400">
-                              Du
+                              {t.mktYou}
                             </span>
                           )}
                         </div>
@@ -328,7 +331,7 @@ export function AccountantMarketplace({
                       ) : (
                         <div className="flex flex-col items-center gap-0.5">
                           <Star className="h-5 w-5 text-gray-200 dark:text-gray-700" strokeWidth={1.5} />
-                          <span className="text-[10px] text-gray-300 dark:text-gray-600">Ny</span>
+                          <span className="text-[10px] text-gray-300 dark:text-gray-600">{t.mktNew}</span>
                         </div>
                       )}
                     </div>
@@ -364,17 +367,17 @@ export function AccountantMarketplace({
                       {a.activeClientCount > 0 && (
                         <span className="flex items-center gap-1 text-[11px] text-gray-400">
                           <Users className="h-3 w-3 shrink-0" strokeWidth={2} />
-                          {a.activeClientCount} klient{a.activeClientCount === 1 ? "" : "er"}
+                          {(a.activeClientCount === 1 ? t.mktClientsOne : t.mktClientsMany).replace("{n}", String(a.activeClientCount))}
                         </span>
                       )}
                       {a.joinedYear && (
                         <span className="flex items-center gap-1 text-[11px] text-gray-400">
                           <CalendarDays className="h-3 w-3 shrink-0" strokeWidth={2} />
-                          Sedan {a.joinedYear}
+                          {t.mktSince.replace("{year}", String(a.joinedYear))}
                         </span>
                       )}
                       {!a.activeClientCount && !a.joinedYear && (
-                        <span className="text-[11px] text-gray-300 dark:text-gray-600">Ny revisor</span>
+                        <span className="text-[11px] text-gray-300 dark:text-gray-600">{t.mktNewAccountant}</span>
                       )}
                     </div>
 
@@ -390,7 +393,7 @@ export function AccountantMarketplace({
                           onClick={(e) => { e.preventDefault(); sendRequest(a.id); }}
                           className="relative z-10 w-full rounded-xl bg-nordic-600 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 active:scale-[0.98] disabled:opacity-60"
                         >
-                          {busy === a.id ? "Skickar…" : "Skicka förfrågan"}
+                          {busy === a.id ? t.mktSending : t.mktSendRequest}
                         </button>
                       ) : null}
                     </div>

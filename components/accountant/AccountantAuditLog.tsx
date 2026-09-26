@@ -4,8 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ShieldCheck } from "lucide-react";
 import { AuditTimeline, type AuditEntry } from "@/components/audit/AuditTimeline";
+import { useLanguage } from "@/context/LanguageContext";
+import { accountantStrings } from "@/lib/accountant-i18n";
 
 export function AccountantAuditLog({ companyId }: { companyId: string }) {
+  const { lang } = useLanguage();
+  const t = accountantStrings(lang);
   const [entries, setEntries] = useState<AuditEntry[]>([]);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
 
@@ -25,7 +29,7 @@ export function AccountantAuditLog({ companyId }: { companyId: string }) {
   useEffect(() => { load(); }, [load]);
 
   if (status === "error") {
-    return <p className="text-sm text-red-600">Kunde inte ladda aktivitetslogg.</p>;
+    return <p className="text-sm text-red-600">{t.auditLoadError}</p>;
   }
 
   return (
@@ -38,11 +42,11 @@ export function AccountantAuditLog({ companyId }: { companyId: string }) {
         <div className="flex items-center gap-2.5">
           <ShieldCheck className="h-4 w-4 text-gray-400" strokeWidth={1.75} />
           <p className="font-display text-sm font-semibold text-gray-900 dark:text-white">
-            Aktivitetslogg
+            {t.auditTitle}
           </p>
         </div>
         <span className="rounded-full border border-gray-900/[0.07] px-2.5 py-0.5 text-[10px] font-medium text-gray-400 dark:border-white/[0.07]">
-          30 dagar
+          {t.audit30Days}
         </span>
       </div>
       <div className="px-4 py-4">

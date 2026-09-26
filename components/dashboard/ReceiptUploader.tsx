@@ -291,7 +291,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
         return;
       } catch (err) {
         console.error(err);
-        setError("Kunde inte läsa filen.");
+        setError(t.ruReadError);
         setStage("review");
       }
     },
@@ -379,7 +379,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Kunde inte spara.");
+        setError(data.error ?? t.ruSaveError);
         setIsSaving(false);
         return;
       }
@@ -425,7 +425,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       setStage("idle");
       onSaved();
     } catch {
-      setError("Något gick fel vid sparande.");
+      setError(t.ruSaveUnexpected);
     } finally {
       setIsSaving(false);
     }
@@ -530,7 +530,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               className="h-10 w-10 rounded-full border-2 border-nordic-600 border-t-transparent"
             />
-            <p className="text-sm text-gray-600 dark:text-gray-300">AI analyserar kvitto…</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">{t.ruAnalyzing}</p>
           </motion.div>
         )}
 
@@ -549,7 +549,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 transition={{ delay: 0.2 }}
                 className="text-xs text-gray-500 dark:text-gray-400"
               >
-                AI-träffsäkerhet: {Math.round(draft.aiConfidence * 100)}%
+                {t.ruConfidence.replace("{n}", String(Math.round(draft.aiConfidence * 100)))}
               </motion.p>
             )}
             {draft.image && (
@@ -573,7 +573,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             )}
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Leverantör</label>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.colVendor}</label>
                 <input
                   value={draft.vendorName}
                   onChange={(e) => setDraft({ ...draft, vendorName: e.target.value })}
@@ -581,16 +581,16 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Kvittonummer</label>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.receiptNumberLabel}</label>
                 <input
                   value={draft.receiptNumber}
                   onChange={(e) => setDraft({ ...draft, receiptNumber: e.target.value })}
                   className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
-                  placeholder="Valfritt"
+                  placeholder={t.phOptional}
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Datum</label>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.colDate}</label>
                 <input
                   type="date"
                   value={draft.date}
@@ -599,7 +599,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Belopp (SEK)</label>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.trAmount}</label>
                 <input
                   inputMode="decimal"
                   value={draft.totalAmount}
@@ -615,7 +615,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Momssats</label>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.annFieldVatRate}</label>
                 <select
                   value={draft.vatRate}
                   onChange={(e) => {
@@ -634,7 +634,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 </select>
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Moms (SEK)</label>
+                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.ruVatSek}</label>
                 <input
                   inputMode="decimal"
                   value={draft.vatAmount}
@@ -646,7 +646,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             
             <div>
               <label className="mb-1.5 flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                BAS-konto
+                {t.ruBasAccount}
                 {draft.basCodeAutoDetected && (
                   <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
                     {t.rcCategoryAutoDetected}
@@ -688,10 +688,10 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                     >
                       <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent dark:border-gray-900 dark:border-t-transparent" />
                     </motion.span>
-                    Sparar...
+                    {t.stSaving}
                   </span>
                 ) : (
-                  "Spara kvitto"
+                  t.ruSaveReceipt
                 )}
               </motion.button>
               <motion.button
@@ -704,7 +704,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 }}
                 className="rounded-full border border-gray-900/[0.15] px-6 py-2.5 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40"
               >
-                Avbryt
+                {t.btnCancel}
               </motion.button>
             </div>
           </motion.div>

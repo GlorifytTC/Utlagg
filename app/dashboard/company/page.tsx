@@ -49,7 +49,7 @@ export default function CompanyPage() {
 
   async function sendInvite() {
     if (!invite.email) { toast.error(t.toastEnterEmail); return; }
-    if (!invite.firstName.trim() || !invite.lastName.trim()) { toast.error(t.toastEnterEmail); return; }
+    if (!invite.firstName.trim() || !invite.lastName.trim()) { toast.error(t.toastEnterName); return; }
     const r = await fetch("/api/company/invite", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(invite),
     });

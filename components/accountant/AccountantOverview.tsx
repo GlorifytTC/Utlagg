@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
+import { accountantStrings } from "@/lib/accountant-i18n";
 
 export function AccountantOverview() {
+  const { lang } = useLanguage();
+  const t = accountantStrings(lang);
   const [clients, setClients] = useState<number | null>(null);
   const [pending, setPending] = useState<number | null>(null);
 
@@ -30,8 +34,8 @@ export function AccountantOverview() {
   }, []);
 
   const stats = [
-    { label: "Aktiva klienter", value: clients },
-    { label: "Väntande förfrågningar", value: pending },
+    { label: t.firmStatsClients, value: clients },
+    { label: t.pendingRequests, value: pending },
   ];
 
   return (

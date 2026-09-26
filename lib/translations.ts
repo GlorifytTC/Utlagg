@@ -1125,6 +1125,297 @@ export interface Translations {
   prLanguageDesc: string;
   // Generic
   error: string;
+  openMenu: string;
+  somethingWentWrong: string;
+  accAcceptCreateCompanyError: string;
+  accAcceptWorking: string;
+  accAcceptNoToken: string;
+  accAcceptDoneTitle: string;
+  accAcceptDoneBody: string;
+  accAcceptNeedsCompanyTitle: string;
+  accAcceptNeedsCompanyBody: string;
+  accAcceptCreating: string;
+  accAcceptCreateAndAccept: string;
+  accAcceptErrorTitle: string;
+  mktConnected: string;
+  mktRequestSent: string;
+  mktRequestAlreadyPending: string;
+  mktAlreadyConnected: string;
+  mktNeedsCompany: string;
+  mktOwnerOnly: string;
+  mktRequestError: string;
+  mktSearchPlaceholder: string;
+  mktSearchLabel: string;
+  mktClearSearch: string;
+  mktCityPlaceholder: string;
+  mktCityLabel: string;
+  mktClearCity: string;
+  mktClear: string;
+  mktResultsOne: string;
+  mktResultsMany: string;
+  mktLoadError: string;
+  mktEmpty: string;
+  mktClearFilters: string;
+  mktViewProfile: string;
+  mktBoosted: string;
+  mktYou: string;
+  mktNew: string;
+  mktClientsOne: string;
+  mktClientsMany: string;
+  mktSince: string;
+  mktNewAccountant: string;
+  mktSending: string;
+  mktSendRequest: string;
+  profStarsLabel: string;
+  profRoleMember: string;
+  profFirmSaveError: string;
+  profFirm: string;
+  profMembers: string;
+  profReviewSaved: string;
+  profReviewSaveError: string;
+  profSaved: string;
+  profLoadError: string;
+  profBack: string;
+  profEdit: string;
+  profClientsCount: string;
+  profCloseChat: string;
+  profMessage: string;
+  profEditNameHintPre: string;
+  profFirmName: string;
+  profFirmLogo: string;
+  profFirmOwnerOnly: string;
+  profBio: string;
+  profBioPlaceholder: string;
+  profSpecializations: string;
+  profSpecializationsPlaceholder: string;
+  profAbout: string;
+  profReviews: string;
+  profYourReview: string;
+  profLeaveReview: string;
+  profCommentPlaceholder: string;
+  profUpdate: string;
+  profFilterStars: string;
+  profNoReviews: string;
+  profNoStarReviews: string;
+  discSaved: string;
+  discAccountantConnected: string;
+  discRequestDeclined: string;
+  discTitle: string;
+  discDesc: string;
+  discCompanyLogo: string;
+  discVisible: string;
+  discIndustry: string;
+  discIndustryPlaceholder: string;
+  discDescription: string;
+  discDescriptionPlaceholder: string;
+  discIncoming: string;
+  accept: string;
+  decline: string;
+  caaRevoked: string;
+  caaRevokeError: string;
+  caaTitle: string;
+  caaDesc: string;
+  caaActivityLog: string;
+  caaLoadError: string;
+  caaEmpty: string;
+  caaChat: string;
+  caaConfirmRevoke: string;
+  caaRemoving: string;
+  caaYesRemove: string;
+  caaRevoke: string;
+  daaNone: string;
+  daaOne: string;
+  daaMany: string;
+  daaManage: string;
+  cauLoadError: string;
+  cauTitle: string;
+  cauSubtitle: string;
+  cau30Days: string;
+  cauLegendView: string;
+  cauLegendEdit: string;
+  cauLegendExport: string;
+  auditClientView: string;
+  auditReceiptList: string;
+  auditReceiptView: string;
+  auditReceiptUpdate: string;
+  auditExportCsv: string;
+  auditExportSie: string;
+  auditJustNow: string;
+  auditMin: string;
+  auditHours: string;
+  auditDays: string;
+  auditToday: string;
+  auditYesterday: string;
+  auditEmptyTitle: string;
+  auditEmptyBody: string;
+  auditBy: string;
+  companySettings: string;
+  cauPageDesc: string;
+  mktPageDesc: string;
+  csvTitle: string;
+  csvDesc: string;
+  csvThisMonth: string;
+  csvThisYear: string;
+  csvLast12: string;
+  csvFrom: string;
+  csvTo: string;
+  csvDownload: string;
+  logoDefaultLabel: string;
+  logoPickImage: string;
+  logoSaved: string;
+  logoSaveError: string;
+  logoRemoved: string;
+  logoNone: string;
+  logoChange: string;
+  logoUpload: string;
+  logoRemove: string;
+  usageNearLimit: string;
+  basSearchPlaceholder: string;
+  upsellIncludedIn: string;
+  upsellUpgradeTo: string;
+  printSavePdf: string;
+  ruReadError: string;
+  ruSaveError: string;
+  ruSaveUnexpected: string;
+  ruAnalyzing: string;
+  ruConfidence: string;
+  ruVatSek: string;
+  ruBasAccount: string;
+  ruSaveReceipt: string;
+  dashUsage: string;
+  authVerifySuccess: string;
+  authVerifyInvalid: string;
+  authMustVerify: string;
+  authWrongCredentials: string;
+  authPassword: string;
+  authResentTo: string;
+  authResend: string;
+  authLoggingIn: string;
+  authNoAccount: string;
+  authCreateAccount: string;
+  authForgotPassword: string;
+  regCheckInbox: string;
+  regEmailFailed: string;
+  regEmailFailedHelpPre: string;
+  regEmailFailedHelpPost: string;
+  regSentTo: string;
+  regResendIn: string;
+  regResend: string;
+  regResent: string;
+  regResendError: string;
+  regNoMailPre: string;
+  regNoMailLogin: string;
+  regNoMailPost: string;
+  regAccountantSubtitle: string;
+  regUserSubtitle: string;
+  regTypeUser: string;
+  regTypeUserDesc: string;
+  regTypeAccountant: string;
+  regTypeAccountantDesc: string;
+  regName: string;
+  regFirmOptional: string;
+  regCompanyOptional: string;
+  regPasswordHint: string;
+  regCreating: string;
+  regOr: string;
+  regHaveAccount: string;
+  fpTitle: string;
+  fpSent: string;
+  fpIntro: string;
+  fpSend: string;
+  fpBackToLogin: string;
+  rpMismatch: string;
+  rpError: string;
+  rpInvalidLink: string;
+  rpNewPassword: string;
+  rpConfirmPassword: string;
+  rpSave: string;
+  rpTitle: string;
+  aiAcceptError: string;
+  aiInvalidLink: string;
+  aiIntro: string;
+  aiJoining: string;
+  aiAccept: string;
+  aiLoginFirst: string;
+  aiTitle: string;
+  bidStartError: string;
+  bidNetworkError: string;
+  bidFailed: string;
+  bidRetry: string;
+  bidStart: string;
+  bidQrAlt: string;
+  bidOpenOnDevice: string;
+  bidScanQr: string;
+  cbQ1: string;
+  cbA1: string;
+  cbQ2: string;
+  cbA2: string;
+  cbQ3: string;
+  cbA3: string;
+  cbQ4: string;
+  cbA4: string;
+  cbQ5: string;
+  cbA5: string;
+  cbQ6: string;
+  cbA6: string;
+  cbQ7: string;
+  cbA7: string;
+  cbQ8: string;
+  cbA8: string;
+  cbGreeting: string;
+  cbTyping: string;
+  cbOnline: string;
+  cbRestart: string;
+  cbClose: string;
+  cbOpen: string;
+  cbCommon: string;
+  cbKeepExploring: string;
+  cbMore: string;
+  cbAllAnswered: string;
+  cbContact: string;
+  secTitle: string;
+  secIntro: string;
+  secEncTitle: string;
+  secEncBody: string;
+  secAuthTitle: string;
+  secAuthBody: string;
+  secStorageTitle: string;
+  secStorageBody: string;
+  secReportTitle: string;
+  secReportBody: string;
+  secDisclaimer: string;
+  spTitle: string;
+  spIntroPre: string;
+  spIntroLink: string;
+  spUpdated: string;
+  spColVendor: string;
+  spColPurpose: string;
+  spColRegion: string;
+  spColSafeguard: string;
+  spPurposeHosting: string;
+  spPurposeStorage: string;
+  spPurposePayments: string;
+  spPurposeEmail: string;
+  spPurposeRedis: string;
+  spPurposeOcr: string;
+  spEuRegion: string;
+  spNoticePre: string;
+  annZoomOut: string;
+  annZoomIn: string;
+  annFit: string;
+  joinPwTooShort: string;
+  joinInvalidTitle: string;
+  joinInvalidBody: string;
+  joinWelcome: string;
+  joinReady: string;
+  joinGoToWorkspace: string;
+  joinTitle: string;
+  joinGreeting: string;
+  joinIntroCompany: string;
+  joinIntroFirm: string;
+  joinPwPlaceholder: string;
+  joinSubmit: string;
+  toastEnterName: string;
 }
 
 export const strings: Record<Lang, Translations> = {
@@ -2293,6 +2584,297 @@ export const strings: Record<Lang, Translations> = {
     prLanguageTitle: "Språk",
     prLanguageDesc: "Välj ditt föredragna språk.",
     error: "Något gick fel",
+    openMenu: "Öppna meny",
+    somethingWentWrong: "Något gick fel.",
+    accAcceptCreateCompanyError: "Kunde inte skapa företaget.",
+    accAcceptWorking: "Behandlar inbjudan…",
+    accAcceptNoToken: "Ingen giltig inbjudningslänk hittades.",
+    accAcceptDoneTitle: "Åtkomst beviljad",
+    accAcceptDoneBody: "Redovisningskonsulten har nu åtkomst till ditt företags underlag. Du kan när som helst ta bort åtkomsten från dina företagsinställningar.",
+    accAcceptNeedsCompanyTitle: "Skapa ditt företag först",
+    accAcceptNeedsCompanyBody: "För att ge en redovisningskonsult åtkomst behöver du först skapa ditt företag. Ange namnet nedan.",
+    accAcceptCreating: "Skapar…",
+    accAcceptCreateAndAccept: "Skapa företag och acceptera",
+    accAcceptErrorTitle: "Det gick inte",
+    mktConnected: "Kopplad",
+    mktRequestSent: "Förfrågan skickad",
+    mktRequestAlreadyPending: "Förfrågan väntar redan",
+    mktAlreadyConnected: "Redan kopplad",
+    mktNeedsCompany: "Skapa ett företag först",
+    mktOwnerOnly: "Endast ägare/admin kan begära revisor",
+    mktRequestError: "Kunde inte skicka förfrågan",
+    mktSearchPlaceholder: "Sök namn, e-post eller tagg…",
+    mktSearchLabel: "Sök revisor",
+    mktClearSearch: "Rensa sökning",
+    mktCityPlaceholder: "Ort",
+    mktCityLabel: "Filtrera på ort",
+    mktClearCity: "Rensa ort",
+    mktClear: "Rensa",
+    mktResultsOne: "{n} revisor · rankat efter relevans",
+    mktResultsMany: "{n} revisorer · rankat efter relevans",
+    mktLoadError: "Kunde inte ladda marknadsplatsen.",
+    mktEmpty: "Inga revisorer hittades.",
+    mktClearFilters: "Rensa filter",
+    mktViewProfile: "Visa profil för {name}",
+    mktBoosted: "Boostad",
+    mktYou: "Du",
+    mktNew: "Ny",
+    mktClientsOne: "{n} klient",
+    mktClientsMany: "{n} klienter",
+    mktSince: "Sedan {year}",
+    mktNewAccountant: "Ny revisor",
+    mktSending: "Skickar…",
+    mktSendRequest: "Skicka förfrågan",
+    profStarsLabel: "{rating} av {max} stjärnor",
+    profRoleMember: "Medarbetare",
+    profFirmSaveError: "Kunde inte spara byrån",
+    profFirm: "Byrå",
+    profMembers: "Medarbetare ({n})",
+    profReviewSaved: "Recension sparad",
+    profReviewSaveError: "Kunde inte spara recension",
+    profSaved: "Profil sparad",
+    profLoadError: "Kunde inte ladda profil.",
+    profBack: "← Tillbaka",
+    profEdit: "Redigera profil",
+    profClientsCount: "{n}+ klienter",
+    profCloseChat: "Stäng chatt",
+    profMessage: "Meddelande",
+    profEditNameHintPre: "Ditt namn och din profilbild ändrar du i",
+    profFirmName: "Byråns namn",
+    profFirmLogo: "Byråns logotyp",
+    profFirmOwnerOnly: "Byråns namn och logotyp kan bara ändras av ägare och admin.",
+    profBio: "Bio",
+    profBioPlaceholder: "Berätta om dig och din byrå…",
+    profSpecializations: "Specialiseringar (komma-separerade)",
+    profSpecializationsPlaceholder: "restaurang, bygg, IT",
+    profAbout: "Om",
+    profReviews: "Recensioner",
+    profYourReview: "Din recension",
+    profLeaveReview: "Lämna en recension",
+    profCommentPlaceholder: "Valfri kommentar…",
+    profUpdate: "Uppdatera",
+    profFilterStars: "Filtrera på {star} stjärnor ({count} recensioner)",
+    profNoReviews: "Inga recensioner ännu.",
+    profNoStarReviews: "Inga {star}-stjärniga recensioner.",
+    discSaved: "Sparat",
+    discAccountantConnected: "Revisor kopplad",
+    discRequestDeclined: "Förfrågan avböjd",
+    discTitle: "Söker du en revisor?",
+    discDesc: "Gör ditt företag synligt för redovisningskonsulter. De kan då skicka en förfrågan — du bestämmer vem som får åtkomst.",
+    discCompanyLogo: "Företagets logotyp",
+    discVisible: "Synlig för revisorer",
+    discIndustry: "Bransch",
+    discIndustryPlaceholder: "t.ex. Restaurang, IT, Bygg",
+    discDescription: "Kort beskrivning",
+    discDescriptionPlaceholder: "Vad ni gör och vad ni söker hjälp med",
+    discIncoming: "Förfrågningar från revisorer",
+    accept: "Acceptera",
+    decline: "Avböj",
+    caaRevoked: "Åtkomst borttagen",
+    caaRevokeError: "Kunde inte ta bort åtkomst",
+    caaTitle: "Revisorsåtkomst",
+    caaDesc: "Revisorer som har åtkomst till företagets kvitton.",
+    caaActivityLog: "Aktivitetslogg",
+    caaLoadError: "Kunde inte ladda revisorer.",
+    caaEmpty: "Ingen revisor har åtkomst just nu.",
+    caaChat: "Chatt",
+    caaConfirmRevoke: "Ta bort åtkomst?",
+    caaRemoving: "Tar bort…",
+    caaYesRemove: "Ja, ta bort",
+    caaRevoke: "Ta bort åtkomst",
+    daaNone: "Ingen revisor har åtkomst",
+    daaOne: "{name} har åtkomst",
+    daaMany: "{n} revisorer har åtkomst",
+    daaManage: "Hantera →",
+    cauLoadError: "Kunde inte ladda aktivitetslogg.",
+    cauTitle: "Revisorsaktivitet",
+    cauSubtitle: "Vad dina revisorer har gjort",
+    cau30Days: "30 dagar",
+    cauLegendView: "Visning",
+    cauLegendEdit: "Redigering",
+    cauLegendExport: "Export",
+    auditClientView: "Visade klientöversikt",
+    auditReceiptList: "Bläddrade kvitton",
+    auditReceiptView: "Öppnade kvitto",
+    auditReceiptUpdate: "Redigerade kvitto",
+    auditExportCsv: "Exporterade CSV",
+    auditExportSie: "Exporterade SIE",
+    auditJustNow: "just nu",
+    auditMin: "{n} min",
+    auditHours: "{n} tim",
+    auditDays: "{n} d",
+    auditToday: "Idag",
+    auditYesterday: "Igår",
+    auditEmptyTitle: "Ingen aktivitet",
+    auditEmptyBody: "Ingen revisorsaktivitet registrerades de senaste 30 dagarna.",
+    auditBy: "av {actor}",
+    companySettings: "Företagsinställningar",
+    cauPageDesc: "Alla åtgärder dina revisorer har utfört de senaste 30 dagarna.",
+    mktPageDesc: "Bläddra bland redovisningskonsulter och skicka en förfrågan — åtkomst ges när revisorn accepterar.",
+    csvTitle: "Exportera kvitton (CSV)",
+    csvDesc: "Välj en period — t.ex. en månad eller ett helt år.",
+    csvThisMonth: "Denna månad",
+    csvThisYear: "I år",
+    csvLast12: "Senaste 12 mån",
+    csvFrom: "Från",
+    csvTo: "Till",
+    csvDownload: "Ladda ner CSV",
+    logoDefaultLabel: "Logotyp",
+    logoPickImage: "Välj en bildfil.",
+    logoSaved: "Logotyp sparad",
+    logoSaveError: "Kunde inte spara logotypen",
+    logoRemoved: "Logotyp borttagen",
+    logoNone: "Ingen",
+    logoChange: "Byt",
+    logoUpload: "Ladda upp",
+    logoRemove: "Ta bort",
+    usageNearLimit: "Snart slut — uppgradera för obegränsade skanningar.",
+    basSearchPlaceholder: "Sök BAS-konto (t.ex. 5800 eller resekostnader)",
+    upsellIncludedIn: "Den här funktionen ingår i {plan}-planen.",
+    upsellUpgradeTo: "Uppgradera till {plan}",
+    printSavePdf: "Skriv ut / spara PDF",
+    ruReadError: "Kunde inte läsa filen.",
+    ruSaveError: "Kunde inte spara.",
+    ruSaveUnexpected: "Något gick fel vid sparande.",
+    ruAnalyzing: "AI analyserar kvitto…",
+    ruConfidence: "AI-träffsäkerhet: {n}%",
+    ruVatSek: "Moms (SEK)",
+    ruBasAccount: "BAS-konto",
+    ruSaveReceipt: "Spara kvitto",
+    dashUsage: "Användning",
+    authVerifySuccess: "E-postadressen är bekräftad. Du kan nu logga in.",
+    authVerifyInvalid: "Länken är ogiltig eller har gått ut. Begär en ny nedan.",
+    authMustVerify: "Du måste bekräfta din e-postadress innan du kan logga in.",
+    authWrongCredentials: "Fel e-post eller lösenord",
+    authPassword: "Lösenord",
+    authResentTo: "Om kontot finns har vi skickat en ny bekräftelselänk till {email}.",
+    authResend: "Skicka bekräftelselänken igen",
+    authLoggingIn: "Loggar in…",
+    authNoAccount: "Inget konto?",
+    authCreateAccount: "Skapa konto",
+    authForgotPassword: "Glömt lösenord?",
+    regCheckInbox: "Kolla din inkorg",
+    regEmailFailed: "Ditt konto skapades, men vi kunde tyvärr inte skicka bekräftelsemejlet till {email} just nu. Det är ett tillfälligt problem med e-postutskick på vår sida — inte med din adress.",
+    regEmailFailedHelpPre: "Du kan skicka mejlet igen här nedan, eller kontakta",
+    regEmailFailedHelpPost: "om det inte fungerar.",
+    regSentTo: "Vi har skickat en bekräftelselänk till {email}. Klicka på länken i mejlet för att aktivera kontot och komma till din instrumentpanel.",
+    regResendIn: "Skicka igen om {n}s",
+    regResend: "Skicka mejlet igen",
+    regResent: "Skickat! Kolla inkorgen (och skräpposten) för {email}.",
+    regResendError: "Kunde inte skicka just nu. Vänta en stund och försök igen.",
+    regNoMailPre: "Inget mejl efter några minuter? Kolla skräpposten, eller",
+    regNoMailLogin: "logga in",
+    regNoMailPost: "när du har klickat på länken.",
+    regAccountantSubtitle: "Revisorskonto — hantera dina klienters kvitton.",
+    regUserSubtitle: "30 dagar gratis provperiod · inget kort krävs.",
+    regTypeUser: "Företag / privat",
+    regTypeUserDesc: "Skanna dina egna kvitton",
+    regTypeAccountant: "Redovisningskonsult",
+    regTypeAccountantDesc: "Hantera klienters kvitton",
+    regName: "Namn",
+    regFirmOptional: "Byrå (valfritt)",
+    regCompanyOptional: "Företag (valfritt)",
+    regPasswordHint: "Lösenord (min 8 tecken)",
+    regCreating: "Skapar konto…",
+    regOr: "eller",
+    regHaveAccount: "Har du redan konto?",
+    fpTitle: "Glömt lösenord",
+    fpSent: "Om e-postadressen finns hos oss har vi skickat en återställningslänk. Kontrollera din inkorg.",
+    fpIntro: "Ange din e-postadress så skickar vi en länk för att återställa lösenordet.",
+    fpSend: "Skicka återställningslänk",
+    fpBackToLogin: "Tillbaka till inloggning",
+    rpMismatch: "Lösenorden matchar inte",
+    rpError: "Kunde inte återställa lösenordet",
+    rpInvalidLink: "Ogiltig eller saknad länk.",
+    rpNewPassword: "Nytt lösenord",
+    rpConfirmPassword: "Bekräfta lösenord",
+    rpSave: "Spara nytt lösenord",
+    rpTitle: "Återställ lösenord",
+    aiAcceptError: "Kunde inte acceptera",
+    aiInvalidLink: "Ogiltig eller saknad inbjudningslänk.",
+    aiIntro: "Du har bjudits in till ett företag på Kvittino. Du måste vara inloggad för att acceptera.",
+    aiJoining: "Ansluter…",
+    aiAccept: "Acceptera inbjudan",
+    aiLoginFirst: "först.",
+    aiTitle: "Företagsinbjudan",
+    bidStartError: "Kunde inte starta BankID.",
+    bidNetworkError: "Nätverksfel mot BankID.",
+    bidFailed: "BankID avbröts eller misslyckades.",
+    bidRetry: "Försök igen med BankID",
+    bidStart: "Logga in / skapa konto med BankID",
+    bidQrAlt: "BankID QR-kod",
+    bidOpenOnDevice: "Öppna BankID på den här enheten",
+    bidScanQr: "Skanna QR-koden med BankID-appen.",
+    cbQ1: "Hur fungerar kvittoskanningen?",
+    cbA1: "Ladda upp ett foto eller en PDF. OCR-modellen läser leverantör, datum, totalbelopp, momssats och rader på under tre sekunder — även på skrynkliga eller blekta kvitton.",
+    cbQ2: "Vilka bokföringsprogram stöds?",
+    cbA2: "Fortnox, Visma och Bokio kopplas direkt. Alla andra program fungerar via SIE4-export.",
+    cbQ3: "Var lagras mina data?",
+    cbA3: "Krypterat i vila på svenska servrar med sju års lagring — fullt i linje med Bokföringslagen.",
+    cbQ4: "Hur fungerar provperioden?",
+    cbA4: "Du får 30 dagar gratis med full Pro-åtkomst och 500 skanningar. Inget kort krävs. Efter provperioden väljer du paket eller avslutar — din data finns kvar.",
+    cbQ5: "Kan jag säga upp när som helst?",
+    cbA5: "Ja. Alla planer löper månadsvis. Säg upp i kontoinställningarna — åtkomsten gäller till slutet av betalperioden.",
+    cbQ6: "Vilka momssatser känns igen?",
+    cbA6: "6 %, 12 % och 25 % känns igen automatiskt från kvittot — ingen manuell inställning behövs.",
+    cbQ7: "Hur fungerar attest med BankID?",
+    cbA7: "Anställda använder BankID för att signera sina utlägg. Den signerade posten sparas tillsammans med kvittot för revision.",
+    cbQ8: "Kan jag hantera ett team?",
+    cbA8: "Team- och Företagsplanerna stödjer flera användare med rollbaserad åtkomst, beloppsgränser per person och en gemensam attestpanel.",
+    cbGreeting: "Hej — jag svarar på vanliga frågor om Kvittino. Välj en nedan för att komma igång.",
+    cbTyping: "Skriver…",
+    cbOnline: "Online — snabba svar",
+    cbRestart: "Starta om konversationen",
+    cbClose: "Stäng chatt",
+    cbOpen: "Öppna chatt",
+    cbCommon: "Vanliga frågor",
+    cbKeepExploring: "Fler frågor",
+    cbMore: "+{n} till",
+    cbAllAnswered: "Alla frågor besvarade.",
+    cbContact: "Kontakta oss →",
+    secTitle: "Säkerhet",
+    secIntro: "Så skyddar vi dina data i Kvittino.",
+    secEncTitle: "Kryptering",
+    secEncBody: "All trafik sker över TLS (HTTPS). Lösenord lagras hashade med bcrypt. Känsliga värden kan krypteras i vila med AES-256-GCM.",
+    secAuthTitle: "Åtkomst & autentisering",
+    secAuthBody: "Inloggning via e-post/lösenord eller BankID. Säkerhetsrubriker (CSP, HSTS, X-Frame-Options m.fl.) sätts på alla svar. Känsliga åtgärder loggas i en revisionslogg som bevaras i sju år.",
+    secStorageTitle: "Kvittolagring & integritet",
+    secStorageBody: "Kvittobilder lagras i privat objektlagring och nås via tidsbegränsade signerade länkar. Varje bild får en SHA-256-summa vid uppladdning för att kunna upptäcka förändring (i linje med Bokföringslagens krav på oföränderlig digital kopia).",
+    secReportTitle: "Rapportera sårbarhet",
+    secReportBody: "Hittar du ett säkerhetsproblem? Hör av dig till security@utlagg.se.",
+    secDisclaimer: "Detta beskriver nuvarande tekniska rutiner och är inte en certifiering. Formella ramverk (t.ex. ISO 27001) kräver separat granskning.",
+    spTitle: "Underbiträden",
+    spIntroPre: "Tredjepartstjänster som kan behandla personuppgifter för Kvittinos räkning. Denna lista utgör Bilaga B till vårt",
+    spIntroLink: "personuppgiftsbiträdesavtal",
+    spUpdated: "Senast uppdaterad: 18 juli 2026",
+    spColVendor: "Leverantör",
+    spColPurpose: "Syfte",
+    spColRegion: "Region",
+    spColSafeguard: "Skyddsåtgärd vid tredjelandsöverföring",
+    spPurposeHosting: "Drift & PostgreSQL-databas",
+    spPurposeStorage: "Lagring av kvittobilder",
+    spPurposePayments: "Betalningar & prenumerationer",
+    spPurposeEmail: "Transaktionsmejl",
+    spPurposeRedis: "Redis & kö (rate limiting/OCR)",
+    spPurposeOcr: "OCR av kvitton",
+    spEuRegion: "— (EU-region)",
+    spNoticePre: "Vi underrättar företagskunder minst trettio (30) dagar innan vi lägger till eller byter ut ett underbiträde, i enlighet med DPA:ts punkt 5. Vill du få sådana underrättelser, kontakta",
+    annZoomOut: "Zooma ut",
+    annZoomIn: "Zooma in",
+    annFit: "Anpassa",
+    joinPwTooShort: "Lösenordet måste vara minst 8 tecken.",
+    joinInvalidTitle: "Ogiltig länk",
+    joinInvalidBody: "Inbjudningslänken är ogiltig eller har gått ut. Be den som bjöd in dig att skicka en ny.",
+    joinWelcome: "Välkommen!",
+    joinReady: "Ditt konto är klart.",
+    joinGoToWorkspace: "Gå till din arbetsyta",
+    joinTitle: "Skapa ditt lösenord",
+    joinGreeting: "Hej {name}! ",
+    joinIntroCompany: "Du har bjudits in till ett företag på Kvittino. Välj ett lösenord för att komma igång.",
+    joinIntroFirm: "Du har bjudits in till en byrå på Kvittino. Välj ett lösenord för att komma igång.",
+    joinPwPlaceholder: "Minst 8 tecken",
+    joinSubmit: "Skapa konto och gå med",
+    toastEnterName: "Ange för- och efternamn",
   },
   en: {
     rcScanningLocally: "Reading receipt locally…",
@@ -3455,5 +4037,296 @@ export const strings: Record<Lang, Translations> = {
     prLanguageTitle: "Language",
     prLanguageDesc: "Choose your preferred language.",
     error: "Something went wrong",
+    openMenu: "Open menu",
+    somethingWentWrong: "Something went wrong.",
+    accAcceptCreateCompanyError: "Could not create the company.",
+    accAcceptWorking: "Processing invitation…",
+    accAcceptNoToken: "No valid invitation link was found.",
+    accAcceptDoneTitle: "Access granted",
+    accAcceptDoneBody: "The accountant now has access to your company's records. You can remove access at any time from your company settings.",
+    accAcceptNeedsCompanyTitle: "Create your company first",
+    accAcceptNeedsCompanyBody: "To give an accountant access you first need to create your company. Enter its name below.",
+    accAcceptCreating: "Creating…",
+    accAcceptCreateAndAccept: "Create company and accept",
+    accAcceptErrorTitle: "That didn't work",
+    mktConnected: "Connected",
+    mktRequestSent: "Request sent",
+    mktRequestAlreadyPending: "Request already pending",
+    mktAlreadyConnected: "Already connected",
+    mktNeedsCompany: "Create a company first",
+    mktOwnerOnly: "Only owners/admins can request an accountant",
+    mktRequestError: "Could not send request",
+    mktSearchPlaceholder: "Search name, email or tag…",
+    mktSearchLabel: "Search accountants",
+    mktClearSearch: "Clear search",
+    mktCityPlaceholder: "City",
+    mktCityLabel: "Filter by city",
+    mktClearCity: "Clear city",
+    mktClear: "Clear",
+    mktResultsOne: "{n} accountant · ranked by relevance",
+    mktResultsMany: "{n} accountants · ranked by relevance",
+    mktLoadError: "Could not load the marketplace.",
+    mktEmpty: "No accountants found.",
+    mktClearFilters: "Clear filters",
+    mktViewProfile: "View profile for {name}",
+    mktBoosted: "Boosted",
+    mktYou: "You",
+    mktNew: "New",
+    mktClientsOne: "{n} client",
+    mktClientsMany: "{n} clients",
+    mktSince: "Since {year}",
+    mktNewAccountant: "New accountant",
+    mktSending: "Sending…",
+    mktSendRequest: "Send request",
+    profStarsLabel: "{rating} of {max} stars",
+    profRoleMember: "Team member",
+    profFirmSaveError: "Could not save the firm",
+    profFirm: "Firm",
+    profMembers: "Team members ({n})",
+    profReviewSaved: "Review saved",
+    profReviewSaveError: "Could not save review",
+    profSaved: "Profile saved",
+    profLoadError: "Could not load profile.",
+    profBack: "← Back",
+    profEdit: "Edit profile",
+    profClientsCount: "{n}+ clients",
+    profCloseChat: "Close chat",
+    profMessage: "Message",
+    profEditNameHintPre: "You change your name and profile picture in",
+    profFirmName: "Firm name",
+    profFirmLogo: "Firm logo",
+    profFirmOwnerOnly: "Only owners and admins can change the firm's name and logo.",
+    profBio: "Bio",
+    profBioPlaceholder: "Tell us about you and your firm…",
+    profSpecializations: "Specializations (comma-separated)",
+    profSpecializationsPlaceholder: "restaurants, construction, IT",
+    profAbout: "About",
+    profReviews: "Reviews",
+    profYourReview: "Your review",
+    profLeaveReview: "Leave a review",
+    profCommentPlaceholder: "Optional comment…",
+    profUpdate: "Update",
+    profFilterStars: "Filter by {star} stars ({count} reviews)",
+    profNoReviews: "No reviews yet.",
+    profNoStarReviews: "No {star}-star reviews.",
+    discSaved: "Saved",
+    discAccountantConnected: "Accountant connected",
+    discRequestDeclined: "Request declined",
+    discTitle: "Looking for an accountant?",
+    discDesc: "Make your company visible to accountants. They can then send you a request — you decide who gets access.",
+    discCompanyLogo: "Company logo",
+    discVisible: "Visible to accountants",
+    discIndustry: "Industry",
+    discIndustryPlaceholder: "e.g. Restaurant, IT, Construction",
+    discDescription: "Short description",
+    discDescriptionPlaceholder: "What you do and what you need help with",
+    discIncoming: "Requests from accountants",
+    accept: "Accept",
+    decline: "Decline",
+    caaRevoked: "Access removed",
+    caaRevokeError: "Could not remove access",
+    caaTitle: "Accountant access",
+    caaDesc: "Accountants with access to the company's receipts.",
+    caaActivityLog: "Activity log",
+    caaLoadError: "Could not load accountants.",
+    caaEmpty: "No accountant has access right now.",
+    caaChat: "Chat",
+    caaConfirmRevoke: "Remove access?",
+    caaRemoving: "Removing…",
+    caaYesRemove: "Yes, remove",
+    caaRevoke: "Remove access",
+    daaNone: "No accountant has access",
+    daaOne: "{name} has access",
+    daaMany: "{n} accountants have access",
+    daaManage: "Manage →",
+    cauLoadError: "Could not load activity log.",
+    cauTitle: "Accountant activity",
+    cauSubtitle: "What your accountants have done",
+    cau30Days: "30 days",
+    cauLegendView: "View",
+    cauLegendEdit: "Edit",
+    cauLegendExport: "Export",
+    auditClientView: "Viewed client overview",
+    auditReceiptList: "Browsed receipts",
+    auditReceiptView: "Opened receipt",
+    auditReceiptUpdate: "Edited receipt",
+    auditExportCsv: "Exported CSV",
+    auditExportSie: "Exported SIE",
+    auditJustNow: "just now",
+    auditMin: "{n} min",
+    auditHours: "{n} h",
+    auditDays: "{n} d",
+    auditToday: "Today",
+    auditYesterday: "Yesterday",
+    auditEmptyTitle: "No activity",
+    auditEmptyBody: "No accountant activity was recorded in the last 30 days.",
+    auditBy: "by {actor}",
+    companySettings: "Company settings",
+    cauPageDesc: "All actions your accountants have taken in the last 30 days.",
+    mktPageDesc: "Browse accountants and send a request — access is granted when the accountant accepts.",
+    csvTitle: "Export receipts (CSV)",
+    csvDesc: "Choose a period — e.g. a month or a whole year.",
+    csvThisMonth: "This month",
+    csvThisYear: "This year",
+    csvLast12: "Last 12 months",
+    csvFrom: "From",
+    csvTo: "To",
+    csvDownload: "Download CSV",
+    logoDefaultLabel: "Logo",
+    logoPickImage: "Choose an image file.",
+    logoSaved: "Logo saved",
+    logoSaveError: "Could not save the logo",
+    logoRemoved: "Logo removed",
+    logoNone: "None",
+    logoChange: "Change",
+    logoUpload: "Upload",
+    logoRemove: "Remove",
+    usageNearLimit: "Almost out — upgrade for unlimited scans.",
+    basSearchPlaceholder: "Search BAS account (e.g. 5800 or travel expenses)",
+    upsellIncludedIn: "This feature is included in the {plan} plan.",
+    upsellUpgradeTo: "Upgrade to {plan}",
+    printSavePdf: "Print / save PDF",
+    ruReadError: "Could not read the file.",
+    ruSaveError: "Could not save.",
+    ruSaveUnexpected: "Something went wrong while saving.",
+    ruAnalyzing: "AI is analysing the receipt…",
+    ruConfidence: "AI confidence: {n}%",
+    ruVatSek: "VAT (SEK)",
+    ruBasAccount: "BAS account",
+    ruSaveReceipt: "Save receipt",
+    dashUsage: "Usage",
+    authVerifySuccess: "Your email address is confirmed. You can now log in.",
+    authVerifyInvalid: "The link is invalid or has expired. Request a new one below.",
+    authMustVerify: "You need to confirm your email address before you can log in.",
+    authWrongCredentials: "Wrong email or password",
+    authPassword: "Password",
+    authResentTo: "If the account exists, we've sent a new confirmation link to {email}.",
+    authResend: "Resend the confirmation link",
+    authLoggingIn: "Logging in…",
+    authNoAccount: "No account?",
+    authCreateAccount: "Create account",
+    authForgotPassword: "Forgot password?",
+    regCheckInbox: "Check your inbox",
+    regEmailFailed: "Your account was created, but unfortunately we couldn't send the confirmation email to {email} right now. This is a temporary problem with email delivery on our side — not with your address.",
+    regEmailFailedHelpPre: "You can resend the email below, or contact",
+    regEmailFailedHelpPost: "if it doesn't work.",
+    regSentTo: "We've sent a confirmation link to {email}. Click the link in the email to activate your account and reach your dashboard.",
+    regResendIn: "Resend in {n}s",
+    regResend: "Resend the email",
+    regResent: "Sent! Check the inbox (and spam folder) for {email}.",
+    regResendError: "Couldn't send right now. Wait a moment and try again.",
+    regNoMailPre: "No email after a few minutes? Check your spam folder, or",
+    regNoMailLogin: "log in",
+    regNoMailPost: "once you've clicked the link.",
+    regAccountantSubtitle: "Accountant account — manage your clients' receipts.",
+    regUserSubtitle: "30-day free trial · no card required.",
+    regTypeUser: "Business / personal",
+    regTypeUserDesc: "Scan your own receipts",
+    regTypeAccountant: "Accountant",
+    regTypeAccountantDesc: "Manage clients' receipts",
+    regName: "Name",
+    regFirmOptional: "Firm (optional)",
+    regCompanyOptional: "Company (optional)",
+    regPasswordHint: "Password (min 8 characters)",
+    regCreating: "Creating account…",
+    regOr: "or",
+    regHaveAccount: "Already have an account?",
+    fpTitle: "Forgot password",
+    fpSent: "If the email address exists with us, we've sent a reset link. Check your inbox.",
+    fpIntro: "Enter your email address and we'll send you a link to reset your password.",
+    fpSend: "Send reset link",
+    fpBackToLogin: "Back to login",
+    rpMismatch: "The passwords don't match",
+    rpError: "Could not reset the password",
+    rpInvalidLink: "Invalid or missing link.",
+    rpNewPassword: "New password",
+    rpConfirmPassword: "Confirm password",
+    rpSave: "Save new password",
+    rpTitle: "Reset password",
+    aiAcceptError: "Could not accept",
+    aiInvalidLink: "Invalid or missing invitation link.",
+    aiIntro: "You've been invited to a company on Kvittino. You need to be logged in to accept.",
+    aiJoining: "Joining…",
+    aiAccept: "Accept invitation",
+    aiLoginFirst: "first.",
+    aiTitle: "Company invitation",
+    bidStartError: "Could not start BankID.",
+    bidNetworkError: "Network error contacting BankID.",
+    bidFailed: "BankID was cancelled or failed.",
+    bidRetry: "Try again with BankID",
+    bidStart: "Log in / create account with BankID",
+    bidQrAlt: "BankID QR code",
+    bidOpenOnDevice: "Open BankID on this device",
+    bidScanQr: "Scan the QR code with the BankID app.",
+    cbQ1: "How does receipt scanning work?",
+    cbA1: "Upload a photo or PDF. The OCR model reads vendor, date, total, VAT rate, and line items in under three seconds — even on crumpled or faded paper.",
+    cbQ2: "Which accounting tools are supported?",
+    cbA2: "Fortnox, Visma, and Bokio connect natively. Any other tool works via SIE4 export.",
+    cbQ3: "Where is my data stored?",
+    cbA3: "Encrypted at rest on Swedish servers with seven-year retention — full compliance with Bokföringslagen.",
+    cbQ4: "How does the free trial work?",
+    cbA4: "You get 30 days free with full Pro access and 500 scans. No credit card required. When the trial ends, pick a plan or cancel — your data stays.",
+    cbQ5: "Can I cancel anytime?",
+    cbA5: "Yes. All plans are month-to-month. Cancel from account settings — access continues to the end of the billing period.",
+    cbQ6: "Which VAT rates are detected?",
+    cbA6: "6 %, 12 %, and 25 % are detected automatically from the receipt — no manual configuration needed.",
+    cbQ7: "How does BankID sign-off work?",
+    cbA7: "Employees use BankID to sign expense submissions. The signed record is stored alongside the receipt for audit purposes.",
+    cbQ8: "Can I manage a team?",
+    cbA8: "Team and Business plans support multiple users with role-based access, per-person spending limits, and a shared approval dashboard.",
+    cbGreeting: "Hi — I can answer common questions about Kvittino. Select one below to get started.",
+    cbTyping: "Typing…",
+    cbOnline: "Online — quick answers",
+    cbRestart: "Restart conversation",
+    cbClose: "Close chat",
+    cbOpen: "Open chat",
+    cbCommon: "Common questions",
+    cbKeepExploring: "Keep exploring",
+    cbMore: "+{n} more",
+    cbAllAnswered: "All questions answered.",
+    cbContact: "Contact us →",
+    secTitle: "Security",
+    secIntro: "How we protect your data in Kvittino.",
+    secEncTitle: "Encryption",
+    secEncBody: "All traffic runs over TLS (HTTPS). Passwords are stored hashed with bcrypt. Sensitive values can be encrypted at rest with AES-256-GCM.",
+    secAuthTitle: "Access & authentication",
+    secAuthBody: "Sign-in via email/password or BankID. Security headers (CSP, HSTS, X-Frame-Options and more) are set on all responses. Sensitive actions are recorded in an audit log that is kept for seven years.",
+    secStorageTitle: "Receipt storage & integrity",
+    secStorageBody: "Receipt images are stored in private object storage and accessed via time-limited signed links. Each image gets a SHA-256 checksum on upload so changes can be detected (in line with the Swedish Bookkeeping Act's requirement for an unalterable digital copy).",
+    secReportTitle: "Report a vulnerability",
+    secReportBody: "Found a security issue? Contact security@utlagg.se.",
+    secDisclaimer: "This describes current technical practices and is not a certification. Formal frameworks (e.g. ISO 27001) require a separate audit.",
+    spTitle: "Subprocessors",
+    spIntroPre: "Third-party services that may process personal data on Kvittino's behalf. This list constitutes Annex B to our",
+    spIntroLink: "data processing agreement",
+    spUpdated: "Last updated: 18 July 2026",
+    spColVendor: "Vendor",
+    spColPurpose: "Purpose",
+    spColRegion: "Region",
+    spColSafeguard: "Safeguard for third-country transfer",
+    spPurposeHosting: "Hosting & PostgreSQL database",
+    spPurposeStorage: "Receipt image storage",
+    spPurposePayments: "Payments & subscriptions",
+    spPurposeEmail: "Transactional email",
+    spPurposeRedis: "Redis & queue (rate limiting/OCR)",
+    spPurposeOcr: "Receipt OCR",
+    spEuRegion: "— (EU region)",
+    spNoticePre: "We notify business customers at least thirty (30) days before adding or replacing a subprocessor, in accordance with section 5 of the DPA. To receive such notices, contact",
+    annZoomOut: "Zoom out",
+    annZoomIn: "Zoom in",
+    annFit: "Fit",
+    joinPwTooShort: "The password must be at least 8 characters.",
+    joinInvalidTitle: "Invalid link",
+    joinInvalidBody: "The invitation link is invalid or has expired. Ask the person who invited you to send a new one.",
+    joinWelcome: "Welcome!",
+    joinReady: "Your account is ready.",
+    joinGoToWorkspace: "Go to your workspace",
+    joinTitle: "Create your password",
+    joinGreeting: "Hi {name}! ",
+    joinIntroCompany: "You've been invited to a company on Kvittino. Choose a password to get started.",
+    joinIntroFirm: "You've been invited to a firm on Kvittino. Choose a password to get started.",
+    joinPwPlaceholder: "At least 8 characters",
+    joinSubmit: "Create account and join",
+    toastEnterName: "Enter first and last name",
   },
 };

@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { AccountantChat } from "@/components/AccountantChat";
 import { ClientAvatar } from "@/components/accountant/ClientAvatar";
+import { useLanguage } from "@/context/LanguageContext";
+import { accountantStrings } from "@/lib/accountant-i18n";
 
 interface ClientDetail {
   clientId: string | null;
@@ -17,6 +19,8 @@ export function AccountantChatPage({
   companyId: string;
   currentUserId: string;
 }) {
+  const { lang } = useLanguage();
+  const t = accountantStrings(lang);
   const [detail, setDetail] = useState<ClientDetail | null | undefined>(undefined);
 
   const load = useCallback(async () => {
@@ -43,7 +47,7 @@ export function AccountantChatPage({
   if (!detail?.clientId) {
     return (
       <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Chatt är inte tillgänglig för den här klienten.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t.chatUnavailable}</p>
       </div>
     );
   }

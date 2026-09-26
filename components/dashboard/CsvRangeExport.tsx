@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 
 export function CsvRangeExport() {
+  const { t } = useLanguage();
   const now = new Date();
   const [from, setFrom] = useState(iso(new Date(now.getFullYear(), now.getMonth(), 1)));
   const [to, setTo] = useState(iso(now));
@@ -43,36 +45,36 @@ export function CsvRangeExport() {
   return (
     <Card className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]">
       <CardHeader className="pb-4">
-        <CardTitle className="font-display text-lg text-gray-900 dark:text-white">Exportera kvitton (CSV)</CardTitle>
+        <CardTitle className="font-display text-lg text-gray-900 dark:text-white">{t.csvTitle}</CardTitle>
         <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
-          Välj en period — t.ex. en månad eller ett helt år.
+          {t.csvDesc}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-2">
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button variant="outline" onClick={presetThisMonth} className="rounded-full border border-gray-900/[0.15] px-4 py-2 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40">
-              Denna månad
+              {t.csvThisMonth}
             </Button>
           </motion.div>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button variant="outline" onClick={presetThisYear} className="rounded-full border border-gray-900/[0.15] px-4 py-2 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40">
-              I år
+              {t.csvThisYear}
             </Button>
           </motion.div>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button variant="outline" onClick={presetLast12} className="rounded-full border border-gray-900/[0.15] px-4 py-2 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40">
-              Senaste 12 mån
+              {t.csvLast12}
             </Button>
           </motion.div>
         </div>
         <div className="flex flex-wrap items-end gap-3">
           <div className="space-y-1">
-            <Label className="text-xs text-gray-500 dark:text-gray-400">Från</Label>
+            <Label className="text-xs text-gray-500 dark:text-gray-400">{t.csvFrom}</Label>
             <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111]" />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs text-gray-500 dark:text-gray-400">Till</Label>
+            <Label className="text-xs text-gray-500 dark:text-gray-400">{t.csvTo}</Label>
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111]" />
           </div>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -87,10 +89,10 @@ export function CsvRangeExport() {
               {isDownloading ? (
                 <span className="inline-flex items-center gap-2">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent dark:border-gray-900 dark:border-t-transparent" />
-                  Laddar...
+                  {t.loading}
                 </span>
               ) : (
-                "Ladda ner CSV"
+                t.csvDownload
               )}
             </Button>
           </motion.div>

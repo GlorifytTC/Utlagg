@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { useLanguage } from "@/context/LanguageContext";
 
 /**
  * Firm join page. The invitee lands here from the invite email. It validates
@@ -11,6 +12,7 @@ import { signIn } from "next-auth/react";
  * and signs them in. No prior account/registration needed.
  */
 function FirmJoinInner() {
+  const { t } = useLanguage();
   const params = useSearchParams();
   const router = useRouter();
   const token = params.get("token") ?? "";
@@ -49,11 +51,11 @@ function FirmJoinInner() {
   async function submit() {
     setError("");
     if (password.length < 8) {
-      setError("Lösenordet måste vara minst 8 tecken.");
+      setError(t.joinPwTooShort);
       return;
     }
     if (password !== confirm) {
-      setError("Lösenorden matchar inte.");
+      setError(t.rpMismatch);
       return;
     }
     setState("working");
@@ -65,7 +67,7 @@ function FirmJoinInner() {
       });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(d.error ?? "Något gick fel.");
+        setError(d.error ?? t.somethingWentWrong);
         setState("form");
         return;
       }
@@ -80,7 +82,7 @@ function FirmJoinInner() {
         router.push("/accountant");
       }
     } catch {
-      setError("Något gick fel.");
+      setError(t.somethingWentWrong);
       setState("form");
     }
   }
@@ -92,25 +94,24 @@ function FirmJoinInner() {
           Kvittino
         </Link>
 
-        {state === "checking" && <p className="mt-6 text-sm text-ink/60">Laddar…</p>}
+        {state === "checking" && <p className="mt-6 text-sm text-ink/60">{t.loading}</p>}
 
         {state === "invalid" && (
           <div className="mt-6 space-y-3">
-            <h1 className="font-display text-2xl">Ogiltig länk</h1>
+            <h1 className="font-display text-2xl">{t.joinInvalidTitle}</h1>
             <p className="text-sm text-ink/70">
-              Inbjudningslänken är ogiltig eller har gått ut. Be den som bjöd in dig att
-              skicka en ny.
+              {t.joinInvalidBody}
             </p>
           </div>
         )}
 
         {state === "done" && (
           <div className="mt-6 space-y-3">
-            <h1 className="font-display text-2xl">Välkommen!</h1>
+            <h1 className="font-display text-2xl">{t.joinWelcome}</h1>
             <p className="text-sm text-ink/70">
-              Ditt konto är klart.{" "}
+              {t.joinReady}{" "}
               <Link href="/accountant" className="underline">
-                Gå till din arbetsyta
+                {t.joinGoToWorkspace}
               </Link>
               .
             </p>
@@ -119,13 +120,12 @@ function FirmJoinInner() {
 
         {(state === "form" || state === "working") && (
           <div className="mt-6 space-y-4">
-            <h1 className="font-display text-2xl">Skapa ditt lösenord</h1>
+            <h1 className="font-display text-2xl">{t.joinTitle}</h1>
             <p className="text-sm text-ink/70">
-              {name ? `Hej ${name}! ` : ""}Du har bjudits in till en byrå på Kvittino. Välj ett
-              lösenord för att komma igång.
+              {name ? t.joinGreeting.replace("{name}", name) : ""}{t.joinIntroFirm}
             </p>
             <div>
-              <label className="mb-1 block text-xs text-ink/50">E-post</label>
+              <label className="mb-1 block text-xs text-ink/50">{t.fldEmail}</label>
               <input
                 value={email}
                 disabled
@@ -133,17 +133,17 @@ function FirmJoinInner() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-ink/50">Lösenord</label>
+              <label className="mb-1 block text-xs text-ink/50">{t.authPassword}</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minst 8 tecken"
+                placeholder={t.joinPwPlaceholder}
                 className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-ink/50">Bekräfta lösenord</label>
+              <label className="mb-1 block text-xs text-ink/50">{t.rpConfirmPassword}</label>
               <input
                 type="password"
                 value={confirm}
@@ -157,7 +157,7 @@ function FirmJoinInner() {
               disabled={state === "working"}
               className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper hover:bg-nordic-900 disabled:opacity-60"
             >
-              {state === "working" ? "Skapar…" : "Skapa konto och gå med"}
+              {state === "working" ? t.accAcceptCreating : t.joinSubmit}
             </button>
           </div>
         )}
@@ -167,8 +167,9 @@ function FirmJoinInner() {
 }
 
 export default function FirmJoinPage() {
+  const { t } = useLanguage();
   return (
-    <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-paper px-6"><p className="text-sm text-ink/60">Laddar…</p></main>}>
+    <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-paper px-6"><p className="text-sm text-ink/60">{t.loading}</p></main>}>
       <FirmJoinInner />
     </Suspense>
   );

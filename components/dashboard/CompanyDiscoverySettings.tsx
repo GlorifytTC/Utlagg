@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LogoUploader } from "@/components/dashboard/LogoUploader";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Profile {
   accountantDiscoverable: boolean;
@@ -28,6 +29,7 @@ interface Incoming {
  * its [id]/accept|decline routes. Native card/input/toast styling.
  */
 export function CompanyDiscoverySettings() {
+  const { t } = useLanguage();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [saving, setSaving] = useState(false);
@@ -64,9 +66,9 @@ export function CompanyDiscoverySettings() {
       });
       if (res.ok) {
         setProfile((prev) => (prev ? { ...prev, ...next } : prev));
-        toast.success("Sparat");
+        toast.success(t.discSaved);
       } else {
-        toast.error("Kunde inte spara");
+        toast.error(t.toastSaveFail);
       }
     } finally {
       setSaving(false);
@@ -78,10 +80,10 @@ export function CompanyDiscoverySettings() {
     try {
       const res = await fetch(`/api/company/accountant-requests/${id}/${action}`, { method: "POST" });
       if (res.ok) {
-        toast.success(action === "accept" ? "Revisor kopplad" : "Förfrågan avböjd");
+        toast.success(action === "accept" ? t.discAccountantConnected : t.discRequestDeclined);
         setIncoming((prev) => prev.filter((x) => x.id !== id));
       } else {
-        toast.error("Något gick fel");
+        toast.error(t.error);
       }
     } finally {
       setBusy(null);
@@ -94,16 +96,15 @@ export function CompanyDiscoverySettings() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Söker du en revisor?</CardTitle>
+        <CardTitle>{t.discTitle}</CardTitle>
         <CardDescription>
-          Gör ditt företag synligt för redovisningskonsulter. De kan då skicka en
-          förfrågan — du bestämmer vem som får åtkomst.
+          {t.discDesc}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
         <LogoUploader
           value={profile.logoUrl}
-          label="Företagets logotyp"
+          label={t.discCompanyLogo}
           onSave={async (dataUrl) => {
             await save({ logoUrl: dataUrl } as Partial<Profile>);
           }}
@@ -117,25 +118,25 @@ export function CompanyDiscoverySettings() {
             disabled={saving}
             className="h-4 w-4"
           />
-          <span className="text-sm">Synlig för revisorer</span>
+          <span className="text-sm">{t.discVisible}</span>
         </label>
 
         {profile.accountantDiscoverable && (
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Bransch</label>
+              <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">{t.discIndustry}</label>
               <Input
                 defaultValue={profile.industry ?? ""}
                 onBlur={(e) => save({ industry: e.target.value || null })}
-                placeholder="t.ex. Restaurang, IT, Bygg"
+                placeholder={t.discIndustryPlaceholder}
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Kort beskrivning</label>
+              <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">{t.discDescription}</label>
               <Input
                 defaultValue={profile.discoveryDescription ?? ""}
                 onBlur={(e) => save({ discoveryDescription: e.target.value || null })}
-                placeholder="Vad ni gör och vad ni söker hjälp med"
+                placeholder={t.discDescriptionPlaceholder}
               />
             </div>
           </div>
@@ -143,7 +144,7 @@ export function CompanyDiscoverySettings() {
 
         {incoming.length > 0 && (
           <div className="border-t border-gray-100 pt-4 dark:border-white/[0.07]">
-            <p className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Förfrågningar från revisorer</p>
+            <p className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">{t.discIncoming}</p>
             <ul className="divide-y divide-gray-100 dark:divide-white/[0.07]">
               {incoming.map((r) => (
                 <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
@@ -153,10 +154,10 @@ export function CompanyDiscoverySettings() {
                   </div>
                   <div className="flex gap-2">
                     <Button disabled={busy === r.id} onClick={() => respond(r.id, "accept")}>
-                      Acceptera
+                      {t.accept}
                     </Button>
                     <Button variant="outline" disabled={busy === r.id} onClick={() => respond(r.id, "decline")}>
-                      Avböj
+                      {t.decline}
                     </Button>
                   </div>
                 </li>

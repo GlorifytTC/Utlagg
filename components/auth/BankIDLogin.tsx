@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import QRCode from "qrcode";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Status = "idle" | "pending" | "failed";
 
@@ -13,6 +14,7 @@ type Status = "idle" | "pending" | "failed";
  * account is created; returning one -> logged in.
  */
 export function BankIDLogin({ callbackUrl = "/dashboard" }: { callbackUrl?: string }) {
+  const { t } = useLanguage();
   const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
   const [qr, setQr] = useState<string | null>(null);
@@ -50,13 +52,13 @@ export function BankIDLogin({ callbackUrl = "/dashboard" }: { callbackUrl?: stri
       const res = await fetch("/api/bankid/auth", { method: "POST" });
       if (!res.ok) {
         const b = await res.json().catch(() => ({}));
-        setError(b.error ?? "Kunde inte starta BankID.");
+        setError(b.error ?? t.bidStartError);
         setStatus("failed");
         return;
       }
       seeds = await res.json();
     } catch {
-      setError("Nätverksfel mot BankID.");
+      setError(t.bidNetworkError);
       setStatus("failed");
       return;
     }
@@ -86,7 +88,7 @@ export function BankIDLogin({ callbackUrl = "/dashboard" }: { callbackUrl?: stri
       router.refresh();
     } else {
       setStatus("failed");
-      setError("BankID avbröts eller misslyckades.");
+      setError(t.bidFailed);
     }
   }
 
@@ -97,22 +99,22 @@ export function BankIDLogin({ callbackUrl = "/dashboard" }: { callbackUrl?: stri
           onClick={start}
           className="w-full rounded-full border hairline px-5 py-3 text-sm font-medium hover:bg-ink/5"
         >
-          {status === "failed" ? "Försök igen med BankID" : "Logga in / skapa konto med BankID"}
+          {status === "failed" ? t.bidRetry : t.bidStart}
         </button>
       )}
       {status === "pending" && qr && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={qr} alt="BankID QR-kod" width={220} height={220} />
+          <img src={qr} alt={t.bidQrAlt} width={220} height={220} />
           {autoStart && (
             <a
               className="text-sm underline"
               href={`bankid:///?autostarttoken=${autoStart}&redirect=null`}
             >
-              Öppna BankID på den här enheten
+              {t.bidOpenOnDevice}
             </a>
           )}
-          <p className="text-xs text-ink/60">Skanna QR-koden med BankID-appen.</p>
+          <p className="text-xs text-ink/60">{t.bidScanQr}</p>
         </>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}

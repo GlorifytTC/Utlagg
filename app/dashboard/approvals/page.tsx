@@ -55,7 +55,7 @@ export default function ApprovalsPage() {
     return (
       <div className="space-y-6">
         <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navApprovals}</h1>
-        <UpsellCard title={t.navApprovals} requiredPlan="Företag" description={t.apUpsellDesc} />
+        <UpsellCard title={t.navApprovals} requiredPlan={t.planBusiness} description={t.apUpsellDesc} />
       </div>
     );
   }

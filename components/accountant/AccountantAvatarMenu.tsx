@@ -58,12 +58,12 @@ export function AccountantAvatarMenu() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        aria-label="Profil"
+        aria-label={t.menuProfileLabel}
         className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-gray-200 bg-white transition-colors hover:border-gray-900/40 dark:border-white/[0.15] dark:bg-white/[0.06] dark:hover:border-white/40"
       >
         {logo ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={logo} alt="Profil" className="h-full w-full object-cover" />
+          <img src={logo} alt={t.menuProfileLabel} className="h-full w-full object-cover" />
         ) : (
           <span className="text-sm font-medium text-gray-600 dark:text-gray-300">R</span>
         )}

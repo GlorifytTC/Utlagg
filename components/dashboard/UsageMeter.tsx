@@ -61,7 +61,7 @@ export function UsageMeter({
                 exit={{ opacity: 0, y: -5 }}
                 className="mt-2 text-xs text-amber-600 dark:text-amber-400"
               >
-                Snart slut — uppgradera för obegränsade skanningar.
+                {t.usageNearLimit}
               </motion.p>
             )}
           </AnimatePresence>

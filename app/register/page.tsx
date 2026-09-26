@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
+import { useLanguage } from "@/context/LanguageContext";
 
 // Cooldown between verification-email sends. Also armed right after signup so
 // the button can't be hit instantly — gives the original mail time to arrive.
@@ -19,6 +20,12 @@ export default function RegisterPage() {
 
 function RegisterForm() {
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
+  // Renders a sentence with {email} highlighted in <strong>.
+  const withEmail = (s: string, email: string) => {
+    const [pre, post] = s.split("{email}");
+    return <>{pre}<strong>{email}</strong>{post}</>;
+  };
   const [form, setForm] = useState({ name: "", companyName: "", email: "", password: "" });
   const [accountType, setAccountType] = useState<"user" | "accountant">(
     searchParams.get("type") === "accountant" ? "accountant" : "user",
@@ -75,7 +82,7 @@ function RegisterForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Något gick fel");
+        setError(data.error ?? t.error);
         return;
       }
       // No auto sign-in: the account isn't active until the email link is
@@ -97,26 +104,23 @@ function RegisterForm() {
           <Link href="/">
             <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
           </Link>
-          <h1 className="mt-8 font-display text-3xl">Kolla din inkorg</h1>
+          <h1 className="mt-8 font-display text-3xl">{t.regCheckInbox}</h1>
           {emailFailed ? (
             <>
               <p className="mt-4 text-sm text-red-600">
-                Ditt konto skapades, men vi kunde tyvärr inte skicka bekräftelsemejlet
-                till <strong>{sentTo}</strong> just nu. Det är ett tillfälligt problem
-                med e-postutskick på vår sida — inte med din adress.
+                {withEmail(t.regEmailFailed, sentTo)}
               </p>
               <p className="mt-4 text-sm text-ink/70">
-                Du kan skicka mejlet igen här nedan, eller kontakta{" "}
+                {t.regEmailFailedHelpPre}{" "}
                 <a href="mailto:support@utlagg.se" className="text-nordic-600 underline">
                   support@utlagg.se
                 </a>{" "}
-                om det inte fungerar.
+                {t.regEmailFailedHelpPost}
               </p>
             </>
           ) : (
             <p className="mt-4 text-sm text-ink/70">
-              Vi har skickat en bekräftelselänk till <strong>{sentTo}</strong>. Klicka på
-              länken i mejlet för att aktivera kontot och komma till din instrumentpanel.
+              {withEmail(t.regSentTo, sentTo)}
             </p>
           )}
 
@@ -129,28 +133,28 @@ function RegisterForm() {
               className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {resendState === "sending"
-                ? "Skickar…"
+                ? t.stSubmitting
                 : cooldown > 0
-                  ? `Skicka igen om ${cooldown}s`
-                  : "Skicka mejlet igen"}
+                  ? t.regResendIn.replace("{n}", String(cooldown))
+                  : t.regResend}
             </button>
             {resendState === "sent" && cooldown > 0 && (
               <p className="mt-2 text-sm text-green-700">
-                Skickat! Kolla inkorgen (och skräpposten) för <strong>{sentTo}</strong>.
+                {withEmail(t.regResent, sentTo)}
               </p>
             )}
             {resendState === "error" && (
               <p className="mt-2 text-sm text-red-600">
-                Kunde inte skicka just nu. Vänta en stund och försök igen.
+                {t.regResendError}
               </p>
             )}
           </div>
           <p className="mt-6 text-sm text-ink/60">
-            Inget mejl efter några minuter? Kolla skräpposten, eller{" "}
+            {t.regNoMailPre}{" "}
             <Link href="/login" className="text-nordic-600 underline">
-              logga in
+              {t.regNoMailLogin}
             </Link>{" "}
-            när du har klickat på länken.
+            {t.regNoMailPost}
           </p>
         </div>
       </main>
@@ -163,11 +167,11 @@ function RegisterForm() {
         <Link href="/">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
-        <h1 className="mt-8 font-display text-3xl">Skapa konto</h1>
+        <h1 className="mt-8 font-display text-3xl">{t.authCreateAccount}</h1>
         <p className="mt-2 text-sm text-ink/60">
           {accountType === "accountant"
-            ? "Revisorskonto — hantera dina klienters kvitton."
-            : "25 skanningar/mån gratis."}
+            ? t.regAccountantSubtitle
+            : t.regUserSubtitle}
         </p>
 
         {/* Account type. The server derives isAccountant from this choice. */}
@@ -182,8 +186,8 @@ function RegisterForm() {
                 : "hairline hover:border-ink/40")
             }
           >
-            <span className="block font-medium text-ink">Företag / privat</span>
-            <span className="mt-0.5 block text-xs text-ink/50">Skanna dina egna kvitton</span>
+            <span className="block font-medium text-ink">{t.regTypeUser}</span>
+            <span className="mt-0.5 block text-xs text-ink/50">{t.regTypeUserDesc}</span>
           </button>
           <button
             type="button"
@@ -195,33 +199,33 @@ function RegisterForm() {
                 : "hairline hover:border-ink/40")
             }
           >
-            <span className="block font-medium text-ink">Redovisningskonsult</span>
-            <span className="mt-0.5 block text-xs text-ink/50">Hantera klienters kvitton</span>
+            <span className="block font-medium text-ink">{t.regTypeAccountant}</span>
+            <span className="mt-0.5 block text-xs text-ink/50">{t.regTypeAccountantDesc}</span>
           </button>
         </div>
 
         <div className="mt-6 space-y-4">
-          <input placeholder="Namn" value={form.name} onChange={update("name")}
+          <input placeholder={t.regName} value={form.name} onChange={update("name")}
             className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
-          <input placeholder={accountType === "accountant" ? "Byrå (valfritt)" : "Företag (valfritt)"} value={form.companyName} onChange={update("companyName")}
+          <input placeholder={accountType === "accountant" ? t.regFirmOptional : t.regCompanyOptional} value={form.companyName} onChange={update("companyName")}
             className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
-          <input type="email" placeholder="E-post" value={form.email} onChange={update("email")}
+          <input type="email" placeholder={t.fldEmail} value={form.email} onChange={update("email")}
             className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
-          <input type="password" placeholder="Lösenord (min 8 tecken)" value={form.password} onChange={update("password")}
+          <input type="password" placeholder={t.regPasswordHint} value={form.password} onChange={update("password")}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button onClick={handleSubmit} disabled={loading}
             className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.98] active:opacity-90 disabled:opacity-60">
-            {loading ? "Skapar konto…" : "Skapa konto"}
+            {loading ? t.regCreating : t.authCreateAccount}
           </button>
           <div className="flex items-center gap-3 text-xs text-ink/40">
-            <span className="h-px flex-1 bg-ink/10" /> eller <span className="h-px flex-1 bg-ink/10" />
+            <span className="h-px flex-1 bg-ink/10" /> {t.regOr} <span className="h-px flex-1 bg-ink/10" />
           </div>
         </div>
         <p className="mt-6 text-sm text-ink/60">
-          Har du redan konto?{" "}
-          <Link href="/login" className="text-nordic-600 underline">Logga in</Link>
+          {t.regHaveAccount}{" "}
+          <Link href="/login" className="text-nordic-600 underline">{t.login}</Link>
         </p>
       </div>
     </main>

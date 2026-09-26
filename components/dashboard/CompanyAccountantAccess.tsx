@@ -8,6 +8,7 @@ import { MessageSquare, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AccountantChat } from "@/components/AccountantChat";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface AccountantRow {
   relationshipId: string;
@@ -26,6 +27,7 @@ interface AccountantRow {
  */
 export function CompanyAccountantAccess() {
   const { data: session } = useSession();
+  const { t } = useLanguage();
   const [rows, setRows] = useState<AccountantRow[]>([]);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [confirmId, setConfirmId] = useState<string | null>(null);
@@ -54,15 +56,15 @@ export function CompanyAccountantAccess() {
     try {
       const res = await fetch(`/api/company/accountants/${accountantId}/revoke`, { method: "POST" });
       if (res.ok) {
-        toast.success("Åtkomst borttagen");
+        toast.success(t.caaRevoked);
         setRows((prev) => prev.filter((r) => r.accountantId !== accountantId));
         setConfirmId(null);
         load();
       } else {
-        toast.error("Kunde inte ta bort åtkomst");
+        toast.error(t.caaRevokeError);
       }
     } catch {
-      toast.error("Kunde inte ta bort åtkomst");
+      toast.error(t.caaRevokeError);
     } finally {
       setBusy(null);
     }
@@ -73,25 +75,25 @@ export function CompanyAccountantAccess() {
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <div>
-            <CardTitle>Revisorsåtkomst</CardTitle>
-            <CardDescription>Revisorer som har åtkomst till företagets kvitton.</CardDescription>
+            <CardTitle>{t.caaTitle}</CardTitle>
+            <CardDescription>{t.caaDesc}</CardDescription>
           </div>
           <Link
             href="/dashboard/accountant-activity"
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-gray-900/[0.10] px-3 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:border-gray-900/20 hover:text-gray-800 dark:border-white/[0.10] dark:text-gray-400 dark:hover:text-white"
           >
             <ShieldCheck className="h-3.5 w-3.5" />
-            Aktivitetslogg
+            {t.caaActivityLog}
           </Link>
         </div>
       </CardHeader>
       <CardContent>
         {status === "loading" ? (
-          <p className="text-sm text-gray-500">Laddar…</p>
+          <p className="text-sm text-gray-500">{t.loading}</p>
         ) : status === "error" ? (
-          <p className="text-sm text-red-600">Kunde inte ladda revisorer.</p>
+          <p className="text-sm text-red-600">{t.caaLoadError}</p>
         ) : rows.length === 0 ? (
-          <p className="text-sm text-gray-500">Ingen revisor har åtkomst just nu.</p>
+          <p className="text-sm text-gray-500">{t.caaEmpty}</p>
         ) : (
           <ul className="divide-y divide-gray-100 dark:divide-white/[0.07]">
             {rows.map((a) => (
@@ -107,20 +109,20 @@ export function CompanyAccountantAccess() {
                       className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
                     >
                       <MessageSquare size={14} />
-                      Chatt
+                      {t.caaChat}
                     </button>
                     {confirmId === a.accountantId ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-500">Ta bort åtkomst?</span>
+                        <span className="text-sm text-gray-500">{t.caaConfirmRevoke}</span>
                         <Button
                           variant="destructive"
                           disabled={busy === a.accountantId}
                           onClick={() => revoke(a.accountantId)}
                         >
-                          {busy === a.accountantId ? "Tar bort…" : "Ja, ta bort"}
+                          {busy === a.accountantId ? t.caaRemoving : t.caaYesRemove}
                         </Button>
                         <Button variant="outline" onClick={() => setConfirmId(null)}>
-                          Avbryt
+                          {t.btnCancel}
                         </Button>
                       </div>
                     ) : (
@@ -128,7 +130,7 @@ export function CompanyAccountantAccess() {
                         onClick={() => setConfirmId(a.accountantId)}
                         className="text-sm text-red-600 hover:underline"
                       >
-                        Ta bort åtkomst
+                        {t.caaRevoke}
                       </button>
                     )}
                   </div>

@@ -59,7 +59,7 @@ export default function SubmitApprovalPage() {
         <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
         <UpsellCard
           title={t.apUpsellTitle}
-          requiredPlan="Företag"
+          requiredPlan={t.planBusiness}
           description={t.apUpsellDesc}
         />
       </div>

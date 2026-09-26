@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function LoginPage() {
   return (
@@ -17,6 +18,7 @@ export default function LoginPage() {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,9 +29,9 @@ function LoginForm() {
 
   useEffect(() => {
     const verify = searchParams.get("verify");
-    if (verify === "success") setNotice("E-postadressen är bekräftad. Du kan nu logga in.");
-    else if (verify === "invalid") setError("Länken är ogiltig eller har gått ut. Begär en ny nedan.");
-  }, [searchParams]);
+    if (verify === "success") setNotice(t.authVerifySuccess);
+    else if (verify === "invalid") setError(t.authVerifyInvalid);
+  }, [searchParams, t]);
 
   async function handleSubmit() {
     setError(null);
@@ -52,12 +54,12 @@ function LoginForm() {
         }).then((r) => r.json());
         if (check.reason === "unverified") {
           setUnverified(true);
-          setError("Du måste bekräfta din e-postadress innan du kan logga in.");
+          setError(t.authMustVerify);
         } else {
-          setError("Fel e-post eller lösenord");
+          setError(t.authWrongCredentials);
         }
       } catch {
-        setError("Fel e-post eller lösenord");
+        setError(t.authWrongCredentials);
       }
       setLoading(false);
     } else {
@@ -86,18 +88,18 @@ function LoginForm() {
         <Link href="/">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
-        <h1 className="mt-8 font-display text-3xl">Logga in</h1>
+        <h1 className="mt-8 font-display text-3xl">{t.login}</h1>
         <div className="mt-6 space-y-4">
           <input
             type="email"
-            placeholder="E-post"
+            placeholder={t.fldEmail}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
           />
           <input
             type="password"
-            placeholder="Lösenord"
+            placeholder={t.authPassword}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
@@ -108,7 +110,7 @@ function LoginForm() {
           {unverified && (
             <div className="rounded-lg bg-nordic-50 px-4 py-3 text-sm text-nordic-900">
               {resendState === "sent" ? (
-                <p>Om kontot finns har vi skickat en ny bekräftelselänk till {email}.</p>
+                <p>{t.authResentTo.replace("{email}", email)}</p>
               ) : (
                 <button
                   type="button"
@@ -116,7 +118,7 @@ function LoginForm() {
                   disabled={resendState === "sending"}
                   className="underline disabled:opacity-60"
                 >
-                  {resendState === "sending" ? "Skickar…" : "Skicka bekräftelselänken igen"}
+                  {resendState === "sending" ? t.stSubmitting : t.authResend}
                 </button>
               )}
             </div>
@@ -126,18 +128,18 @@ function LoginForm() {
             disabled={loading}
             className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
           >
-            {loading ? "Loggar in…" : "Logga in"}
+            {loading ? t.authLoggingIn : t.login}
           </button>
         </div>
         <p className="mt-6 text-sm text-ink/60">
-          Inget konto?{" "}
+          {t.authNoAccount}{" "}
           <Link href="/register" className="text-nordic-600 underline">
-            Skapa konto
+            {t.authCreateAccount}
           </Link>
         </p>
         <p className="mt-2 text-sm text-ink/60">
           <Link href="/forgot-password" className="text-nordic-600 underline">
-            Glömt lösenord?
+            {t.authForgotPassword}
           </Link>
         </p>
       </div>

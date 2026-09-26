@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Users } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface AccountantRow {
   relationshipId: string;
@@ -18,6 +19,7 @@ interface AccountantRow {
  * user's dashboard. Links to the full manage/revoke panel in company settings.
  */
 export function DashboardAccountantAccess() {
+  const { t } = useLanguage();
   const [rows, setRows] = useState<AccountantRow[] | null>(null);
 
   useEffect(() => {
@@ -46,18 +48,18 @@ export function DashboardAccountantAccess() {
           <Users className="h-5 w-5" />
         </span>
         <div>
-          <p className="text-sm font-medium text-gray-900 dark:text-white">Revisorsåtkomst</p>
+          <p className="text-sm font-medium text-gray-900 dark:text-white">{t.caaTitle}</p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {rows.length === 0
-              ? "Ingen revisor har åtkomst"
+              ? t.daaNone
               : rows.length === 1
-                ? `${rows[0].name ?? rows[0].email} har åtkomst`
-                : `${rows.length} revisorer har åtkomst`}
+                ? t.daaOne.replace("{name}", rows[0].name ?? rows[0].email)
+                : t.daaMany.replace("{n}", String(rows.length))}
           </p>
         </div>
       </div>
       <span className="text-sm font-medium text-nordic-700 transition-transform group-hover:translate-x-0.5 dark:text-nordic-300">
-        Hantera →
+        {t.daaManage}
       </span>
     </Link>
   );

@@ -62,7 +62,7 @@ export function AccountantDashboard() {
           <div>
             <p className="text-sm font-semibold text-gray-900 dark:text-white">{t.marketplaceTitle}</p>
             <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-              Företag söker revisor direkt i marknadsplatsen.
+              {t.marketplaceDesc}
             </p>
           </div>
           <Link href="/accountant/marketplace" className="shrink-0 text-sm text-nordic-600 hover:underline">
