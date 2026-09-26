@@ -12,7 +12,6 @@ import {
 import { useLanguage } from "@/context/LanguageContext";
 
 // One loop of the product story: 0 scanning → 1 fields read → 2 approved → 3 ready for payout.
-// Starts at 1 so the first paint already shows a filled-in expense.
 const STEP_MS = [1600, 1700, 1500, 2800];
 const pop = { type: "spring", bounce: 0.45, duration: 0.5 } as const;
 const settle = { type: "spring", bounce: 0, duration: 0.45 } as const;
@@ -21,7 +20,7 @@ const settle = { type: "spring", bounce: 0, duration: 0.45 } as const;
 export function HeroVisual() {
   const { t } = useLanguage();
   const reduced = useReducedMotion();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
     if (reduced) {

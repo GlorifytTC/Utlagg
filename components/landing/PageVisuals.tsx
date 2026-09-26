@@ -154,7 +154,8 @@ const QUEUE_AMOUNTS = ["428,00", "1 250,00", "89,00", "3 120,00", "215,50"];
 
 /** For-firms hero: the accountant's "Att göra" queue working itself down. The client
  *  with the most unreviewed receipts sorts to the top, one receipt is stamped at a time,
- *  and it stops at "all clear" (plays once, ~11 s, only while in view: no endless loop).
+ *  and it stops at "all clear" with a done toast (plays once, ~11 s, only while in view:
+ *  no endless loop).
  *  Mirrors the real queue in app/api/accountant/attention. Reduced motion = static start. */
 export function WorkQueueVisual() {
   const { t } = useLanguage();
@@ -224,6 +225,23 @@ export function WorkQueueVisual() {
           ))}
         </ul>
       </div>
+
+      {/* Done toast — same pill as HeroVisual's approval toast; waits for the last stamp to land */}
+      <AnimatePresence>
+        {done && (
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ ...pop, delay: 0.6 }}
+            className="absolute -top-5 right-4 flex items-center gap-3 rounded-full bg-ink py-2.5 pl-2.5 pr-5 text-sm font-medium text-white shadow-xl"
+          >
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-nordic-600 text-white">
+              <Check className="h-4 w-4" />
+            </span>
+            {t.fbVisDone}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* The receipt that was just stamped */}
       <AnimatePresence mode="popLayout">

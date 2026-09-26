@@ -333,6 +333,7 @@ export interface Translations {
   fbVisTitle: string;
   fbVisReviewed: string;
   fbVisAllClear: string;
+  fbVisDone: string;
   fbVisToReview: string;
   pricingPageSubtitle: string;
   pricingComparisonTitle: string;
@@ -2214,6 +2215,7 @@ export const strings: Record<Lang, Translations> = {
     fbVisTitle: "Att göra · alla klienter",
     fbVisReviewed: "Granskad",
     fbVisAllClear: "Allt granskat",
+    fbVisDone: "Klart · alla kvitton granskade",
     fbVisToReview: "att granska",
     pricingPageSubtitle: "Testa allt i Pro gratis i 30 dagar. Välj paket när du är redo — ingen bindningstid.",
     pricingComparisonTitle: "Fullständig funktionsjämförelse",
@@ -3688,6 +3690,7 @@ export const strings: Record<Lang, Translations> = {
     fbVisTitle: "To do · all clients",
     fbVisReviewed: "Reviewed",
     fbVisAllClear: "All reviewed",
+    fbVisDone: "Done · every receipt reviewed",
     fbVisToReview: "to review",
     pricingPageSubtitle: "Try everything in Pro free for 30 days. Pick a plan when you're ready — no lock-in.",
     pricingComparisonTitle: "Full feature comparison",
