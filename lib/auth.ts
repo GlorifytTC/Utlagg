@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { collectBankId } from "@/lib/bankid";
 import { checkLimit } from "@/lib/rate-limit";
+import { isBanned } from "@/lib/moderation";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -44,6 +45,7 @@ export const authOptions: NextAuthOptions = {
             name: users.name,
             hashedPassword: users.hashedPassword,
             emailVerified: users.emailVerified,
+            bannedUntil: users.bannedUntil,
           })
           .from(users)
           .where(eq(users.email, email))
@@ -65,6 +67,9 @@ export const authOptions: NextAuthOptions = {
         if (!user.emailVerified) {
           return null;
         }
+
+        // Banned by a moderator; the login page explains via check-verified.
+        if (isBanned(user.bannedUntil)) return null;
 
         return {
           id: user.id,
@@ -115,12 +120,14 @@ export const authOptions: NextAuthOptions = {
             id: users.id,
             email: users.email,
             name: users.name,
+            bannedUntil: users.bannedUntil,
           })
           .from(users)
           .where(eq(users.bankIdSubject, subject))
           .limit(1);
 
         if (existing) {
+          if (isBanned(existing.bannedUntil)) return null;
           return {
             id: existing.id,
             email: existing.email,
@@ -152,6 +159,17 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) token.id = user.id;
+      // Cut off live sessions of banned users: without token.id every route
+      // and layout treats the request as logged out.
+      // ponytail: one PK lookup per session read; throttle if it shows up in profiles.
+      if (token.id) {
+        const [u] = await db
+          .select({ bannedUntil: users.bannedUntil })
+          .from(users)
+          .where(eq(users.id, token.id as string))
+          .limit(1);
+        if (isBanned(u?.bannedUntil)) delete token.id;
+      }
       return token;
     },
     async session({ session, token }) {

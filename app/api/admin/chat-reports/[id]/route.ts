@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { alias } from "drizzle-orm/pg-core";
 import { and, asc, desc, eq, inArray, or } from "drizzle-orm";
 import { requireAdmin } from "@/lib/admin";
+import { banEndFor } from "@/lib/moderation";
 import { db } from "@/db";
 import { accountantClients, chatMessages, chatReports, companyMembers, users } from "@/db/schema";
 
@@ -52,6 +53,7 @@ export async function GET(
       reportedUserId: chatReports.reportedUserId,
       reportedEmail: reported.email,
       reportedName: reported.name,
+      reportedBannedUntil: reported.bannedUntil,
       clientId: chatMessages.clientId,
     })
     .from(chatReports)
@@ -88,9 +90,46 @@ export async function PATCH(
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Saknar behörighet" }, { status: 403 });
 
-  const { status, moderatorNote } = await req.json();
+  const { status, moderatorNote, action } = await req.json();
+
+  // Lifts the reported user's ban; leaves the handled report itself untouched.
+  if (action === "unban") {
+    const [report] = await db
+      .select({ reportedUserId: chatReports.reportedUserId })
+      .from(chatReports)
+      .where(eq(chatReports.id, params.id))
+      .limit(1);
+    if (!report) return NextResponse.json({ error: "Rapporten hittades inte" }, { status: 404 });
+    await db.update(users).set({ bannedUntil: null }).where(eq(users.id, report.reportedUserId));
+    return NextResponse.json({ ok: true });
+  }
+
   if (status !== "resolved" && status !== "dismissed") {
     return NextResponse.json({ error: "Ogiltigt status" }, { status: 400 });
+  }
+  if (action !== undefined && action !== "warn" && action !== "ban7" && action !== "banPermanent") {
+    return NextResponse.json({ error: "Ogiltig åtgärd" }, { status: 400 });
+  }
+
+  if (action) {
+    if (status !== "resolved") {
+      return NextResponse.json({ error: "Åtgärd kräver status resolved" }, { status: 400 });
+    }
+    const [report] = await db
+      .select({ reportedUserId: chatReports.reportedUserId })
+      .from(chatReports)
+      .where(eq(chatReports.id, params.id))
+      .limit(1);
+    if (!report) return NextResponse.json({ error: "Rapporten hittades inte" }, { status: 404 });
+
+    await db
+      .update(users)
+      .set(
+        action === "warn"
+          ? { pendingWarning: moderatorNote ?? "" }
+          : { bannedUntil: banEndFor(action as "ban7" | "banPermanent") },
+      )
+      .where(eq(users.id, report.reportedUserId));
   }
 
   await db

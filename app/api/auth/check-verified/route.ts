@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { checkLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/audit";
+import { isBanned } from "@/lib/moderation";
 
 export const runtime = "nodejs";
 
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
     .select({
       hashedPassword: users.hashedPassword,
       emailVerified: users.emailVerified,
+      bannedUntil: users.bannedUntil,
     })
     .from(users)
     .where(eq(users.email, email))
@@ -40,6 +42,9 @@ export async function POST(req: NextRequest) {
   if (!user || !user.hashedPassword) return NextResponse.json({ reason: "invalid" });
   const valid = await bcrypt.compare(parsed.data.password, user.hashedPassword);
   if (!valid) return NextResponse.json({ reason: "invalid" });
+  if (isBanned(user.bannedUntil)) {
+    return NextResponse.json({ reason: "banned", bannedUntil: user.bannedUntil });
+  }
 
   return NextResponse.json({ reason: user.emailVerified ? "verified" : "unverified" });
 }

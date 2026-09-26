@@ -18,7 +18,7 @@ export default function LoginPage() {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +55,8 @@ function LoginForm() {
         if (check.reason === "unverified") {
           setUnverified(true);
           setError(t.authMustVerify);
+        } else if (check.reason === "banned") {
+          setError(t.authBanned.replace("{date}", new Date(check.bannedUntil).toLocaleDateString(lang === "sv" ? "sv-SE" : "en-GB")));
         } else {
           setError(t.authWrongCredentials);
         }

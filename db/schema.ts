@@ -171,6 +171,12 @@ export const users = pgTable("users", {
   accountantCity: varchar("accountant_city", { length: 100 }),
   accountantBio: text("accountant_bio"),
   accountantSpecializations: jsonb("accountant_specializations").$type<string[]>(),
+  // Chat moderation. While bannedUntil is in the future the user can't sign in
+  // and existing sessions lose their user id (see lib/auth.ts jwt callback).
+  bannedUntil: timestamp("banned_until", { withTimezone: true }),
+  // Non-null = a warning the user hasn't seen yet. Holds the moderator note
+  // ("" when none). Cleared by POST /api/me/warning once shown.
+  pendingWarning: text("pending_warning"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

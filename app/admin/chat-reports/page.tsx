@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { isBanned, type ModerationAction } from "@/lib/moderation";
 
 interface Report {
   id: string;
@@ -21,6 +22,7 @@ interface Report {
 interface ReportDetail extends Report {
   reporterId: string;
   reportedUserId: string;
+  reportedBannedUntil: string | null;
 }
 
 interface Message {
@@ -30,8 +32,11 @@ interface Message {
   createdAt: string;
 }
 
-// ponytail: placeholders only — no API behind them yet.
-const DISCIPLINARY_ACTIONS = ["Varning", "Stäng av 7 dagar", "Stäng av permanent"];
+const DISCIPLINARY_ACTIONS: { action: ModerationAction; label: string }[] = [
+  { action: "warn", label: "Varning" },
+  { action: "ban7", label: "Stäng av 7 dagar" },
+  { action: "banPermanent", label: "Stäng av permanent" },
+];
 
 export default function AdminChatReportsPage() {
   const [tab, setTab] = useState<"pending" | "resolved" | "dismissed">("pending");
@@ -72,16 +77,34 @@ export default function AdminChatReportsPage() {
     return () => { cancelled = true; };
   }, [selectedId]);
 
-  async function moderate(id: string, status: "resolved" | "dismissed") {
+  async function moderate(id: string, status: "resolved" | "dismissed", action?: ModerationAction) {
     const res = await fetch(`/api/admin/chat-reports/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, moderatorNote: note || null }),
+      body: JSON.stringify({ status, moderatorNote: note || null, action }),
     });
     if (res.ok) {
-      toast.success(status === "resolved" ? "Markerad som hanterad" : "Ignorerad");
+      toast.success(
+        action === "warn" ? "Varning skickad"
+          : action ? "Användaren är avstängd"
+          : status === "resolved" ? "Markerad som hanterad" : "Ignorerad",
+      );
       setSelectedId(null);
       load();
+    } else {
+      toast.error("Åtgärd misslyckades");
+    }
+  }
+
+  async function unban(id: string) {
+    const res = await fetch(`/api/admin/chat-reports/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "unban" }),
+    });
+    if (res.ok) {
+      toast.success("Avstängningen är hävd");
+      setDetail((d) => d && { ...d, report: { ...d.report, reportedBannedUntil: null } });
     } else {
       toast.error("Åtgärd misslyckades");
     }
@@ -157,7 +180,8 @@ export default function AdminChatReportsPage() {
               detail={detail}
               note={note}
               setNote={setNote}
-              onModerate={(status) => moderate(detail.report.id, status)}
+              onModerate={(status, action) => moderate(detail.report.id, status, action)}
+              onUnban={() => unban(detail.report.id)}
             />
           )}
         </div>
@@ -171,11 +195,13 @@ function ReportView({
   note,
   setNote,
   onModerate,
+  onUnban,
 }: {
   detail: { report: ReportDetail; messages: Message[] };
   note: string;
   setNote: (v: string) => void;
-  onModerate: (status: "resolved" | "dismissed") => void;
+  onModerate: (status: "resolved" | "dismissed", action?: ModerationAction) => void;
+  onUnban: () => void;
 }) {
   const nameOf = (id: string) =>
     id === r.reporterId
@@ -244,7 +270,7 @@ function ReportView({
         {r.status === "pending" ? (
           <>
             <textarea
-              placeholder="Moderatorsanteckning (valfri)…"
+              placeholder="Moderatorsanteckning (valfri, visas för användaren vid varning)…"
               rows={2}
               value={note}
               onChange={(e) => setNote(e.target.value)}
@@ -269,24 +295,45 @@ function ReportView({
                 Disciplinär åtgärd mot {r.reportedName ?? r.reportedEmail}
               </p>
               <div className="flex flex-wrap gap-2">
-                {DISCIPLINARY_ACTIONS.map((a) => (
+                {DISCIPLINARY_ACTIONS.map(({ action, label }) => (
                   <button
-                    key={a}
-                    onClick={() => toast.info("Inte implementerat ännu")}
+                    key={action}
+                    onClick={() => {
+                      if (action !== "warn" && !window.confirm(`${label}: ${r.reportedName ?? r.reportedEmail}?`)) return;
+                      onModerate("resolved", action);
+                    }}
                     className="rounded-lg bg-red-600 px-3 py-1.5 text-sm text-white hover:bg-red-700"
                   >
-                    {a}
+                    {label}
                   </button>
                 ))}
               </div>
             </div>
           </>
         ) : (
-          <p className="text-xs text-gray-500">
-            {r.status === "resolved" ? "Hanterad" : "Avvisad"}
-            {r.moderatedAt && ` ${new Date(r.moderatedAt).toLocaleString("sv-SE")}`}
-            {r.moderatorNote && ` · Anteckning: ${r.moderatorNote}`}
-          </p>
+          <>
+            <p className="text-xs text-gray-500">
+              {r.status === "resolved" ? "Hanterad" : "Avvisad"}
+              {r.moderatedAt && ` ${new Date(r.moderatedAt).toLocaleString("sv-SE")}`}
+              {r.moderatorNote && ` · Anteckning: ${r.moderatorNote}`}
+            </p>
+            {isBanned(r.reportedBannedUntil ? new Date(r.reportedBannedUntil) : null) && (
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-red-200 p-3 dark:border-red-900/50">
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {r.reportedName ?? r.reportedEmail} är avstängd till{" "}
+                  {new Date(r.reportedBannedUntil!).toLocaleDateString("sv-SE")}
+                </p>
+                <button
+                  onClick={() => {
+                    if (window.confirm(`Häv avstängningen för ${r.reportedName ?? r.reportedEmail}?`)) onUnban();
+                  }}
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-white/[0.08] dark:text-gray-300 dark:hover:bg-white/[0.04]"
+                >
+                  Häv avstängning
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

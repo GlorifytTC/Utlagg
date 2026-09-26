@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { NotificationPoller } from "@/components/NotificationPoller";
 import { NotificationProvider } from "@/context/NotificationContext";
+import { ModerationWarning } from "@/components/ModerationWarning";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -15,6 +16,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           <NotificationProvider>
             {children}
             <NotificationPoller />
+            <ModerationWarning />
             <Toaster richColors position="top-right" />
           </NotificationProvider>
         </LanguageProvider>
