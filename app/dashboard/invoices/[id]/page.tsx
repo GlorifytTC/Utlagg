@@ -8,6 +8,8 @@ import { customerInvoices } from "@/db/schema";
 import { getUserCompany } from "@/lib/company";
 import { REVERSE_CHARGE_TEXT, type InvoiceLine } from "@/lib/invoice";
 import { PrintButton } from "@/components/PrintButton";
+import { InvoicePaidToggle } from "@/components/dashboard/InvoicePaidToggle";
+import { canManageCompany } from "@/lib/company";
 import { getT } from "@/lib/i18n-server";
 
 export const metadata = { title: "Faktura" };
@@ -30,15 +32,20 @@ export default async function InvoiceView({ params }: { params: { id: string } }
 
   const t = getT();
   const lines = (inv.lineItems as InvoiceLine[]) ?? [];
+  const isPaid = inv.status === "paid";
+  const canManage = canManageCompany(membership.role);
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div className="flex items-center justify-between print:hidden">
+      <div className="flex items-center justify-between gap-3 print:hidden">
         <Link href="/dashboard/invoices" className="text-sm text-nordic-600 underline">← {t.navInvoices}</Link>
-        <PrintButton />
+        <div className="flex items-center gap-2">
+          {canManage && <InvoicePaidToggle id={inv.id} paid={isPaid} />}
+          <PrintButton />
+        </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-8 text-sm text-gray-900 dark:border-white/[0.08] dark:bg-white">
+      <div className="invoice-sheet rounded-2xl border border-gray-200 bg-white p-8 text-sm text-gray-900 dark:border-white/[0.08] dark:bg-white">
         <div className="flex justify-between">
           <div>
             <p className="text-lg font-bold">{inv.sellerName}</p>
@@ -83,12 +90,22 @@ export default async function InvoiceView({ params }: { params: { id: string } }
           <p>{t.invSubtotal}: {kr(inv.subtotal)} kr</p>
           <p>{t.invColVat}: {inv.reverseCharge ? "0,00 kr" : `${kr(inv.vatTotal)} kr`}</p>
           <p className="text-base font-bold">{t.invToPay}: {kr(inv.total)} kr {inv.currency}</p>
+          {isPaid && (
+            <p className="mt-1 text-sm font-semibold text-emerald-700">
+              {t.invPaidStamp}{inv.paidAt ? ` ${new Date(inv.paidAt).toLocaleDateString("sv-SE")}` : ""}
+            </p>
+          )}
         </div>
 
         {inv.reverseCharge && (
           <p className="mt-4 rounded bg-gray-100 p-3 text-sm font-medium">{REVERSE_CHARGE_TEXT}</p>
         )}
         {inv.note && <p className="mt-4 text-gray-600">{inv.note}</p>}
+      </div>
+
+      <div className="rounded-xl border border-gray-200 bg-gray-50/60 p-4 text-xs text-gray-500 print:hidden dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-400">
+        <p className="mb-1 font-medium text-gray-700 dark:text-gray-300">{t.invIncomeNoteTitle}</p>
+        <p>{t.invIncomeNoteBody}</p>
       </div>
 
       <p className="text-xs text-gray-400 print:hidden">

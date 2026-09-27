@@ -168,8 +168,29 @@ html.dark:has(.app-shell) {
 }
 
 @media print {
+  /* margin:0 removes the browser-generated header (date · title) and footer
+     (URL · page number) that otherwise print at the top and bottom of the
+     page. Safe printing margins are re-added on the invoice sheet below. */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
   body {
     background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* The invoice sheet carries its own margin so content never touches the
+     paper edge now that @page margin is 0. */
+  .invoice-sheet {
+    margin: 0 !important;
+    padding: 18mm 16mm !important;
+    max-width: none !important;
+    width: 100% !important;
+    border: none !important;
   }
 
   /* Remove rounded corners and shadow from the invoice card */

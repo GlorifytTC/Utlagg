@@ -467,6 +467,19 @@ export interface Translations {
   invSubtotal: string;
   invVatReverse: string;
   invToPay: string;
+  invBadgePaid: string;
+  invBadgeUnpaid: string;
+  invMarkPaid: string;
+  invMarkUnpaid: string;
+  invPaidStamp: string;
+  invIncomeNoteTitle: string;
+  invIncomeNoteBody: string;
+  invSumIncomeLabel: string;
+  invSumIncomeHint: string;
+  invSumVatLabel: string;
+  invSumVatHint: string;
+  invSumOutstandingLabel: string;
+  invSumOutstandingHint: string;
   toastFillAddresses: string;
   toastTripSaved: string;
   milUpsellDesc: string;
@@ -1820,6 +1833,21 @@ export const strings: Record<Lang, Translations> = {
     invSubtotal: "Summa exkl. moms",
     invVatReverse: "0,00 kr (omvänd)",
     invToPay: "Att betala",
+    invColStatus: "Status",
+    invBadgePaid: "Betald",
+    invBadgeUnpaid: "Obetald",
+    invMarkPaid: "Markera som betald",
+    invMarkUnpaid: "Markera som obetald",
+    invPaidStamp: "Betald",
+    invIncomeNoteTitle: "Så bokförs den här fakturan",
+    invIncomeNoteBody:
+      "Intäkten bokförs först när fakturan betalas (kontantmetoden). Endast beloppet exkl. moms är intäkt - momsen är utgående moms som redovisas och betalas till Skatteverket. En obetald faktura är en kundfordran, inte intäkt än.",
+    invSumIncomeLabel: "Intäkt (betalt, exkl. moms)",
+    invSumIncomeHint: "Betalda fakturor {year}",
+    invSumVatLabel: "Moms att redovisa",
+    invSumVatHint: "Utgående moms på betalda fakturor",
+    invSumOutstandingLabel: "Utestående",
+    invSumOutstandingHint: "{count} obetalda fakturor",
     btnSaveInvoice: "Spara faktura",
     btnDeleteAccountPermanent: "Radera konto permanent",
     stSaving: "Sparar…",
@@ -1855,7 +1883,6 @@ export const strings: Record<Lang, Translations> = {
     invHistoryTitle: "Fakturor",
     invHistoryDesc: "Kvitton och fakturor för din prenumeration",
     invColNumber: "Faktura",
-    invColStatus: "Status",
     invStatusPaid: "Betald",
     invStatusOpen: "Obetald",
     invStatusFailed: "Misslyckad",
@@ -3299,6 +3326,21 @@ export const strings: Record<Lang, Translations> = {
     invSubtotal: "Subtotal excl. VAT",
     invVatReverse: "0,00 kr (reverse)",
     invToPay: "To pay",
+    invColStatus: "Status",
+    invBadgePaid: "Paid",
+    invBadgeUnpaid: "Unpaid",
+    invMarkPaid: "Mark as paid",
+    invMarkUnpaid: "Mark as unpaid",
+    invPaidStamp: "Paid",
+    invIncomeNoteTitle: "How this invoice is booked",
+    invIncomeNoteBody:
+      "Income is recognised only when the invoice is paid (cash method). Only the amount excl. VAT is income - the VAT is output VAT that is reported and paid to the Swedish Tax Agency. An unpaid invoice is an account receivable, not income yet.",
+    invSumIncomeLabel: "Income (paid, excl. VAT)",
+    invSumIncomeHint: "Paid invoices {year}",
+    invSumVatLabel: "VAT to report",
+    invSumVatHint: "Output VAT on paid invoices",
+    invSumOutstandingLabel: "Outstanding",
+    invSumOutstandingHint: "{count} unpaid invoices",
     btnSaveInvoice: "Save invoice",
     btnDeleteAccountPermanent: "Delete account permanently",
     stSaving: "Saving…",
@@ -3334,7 +3376,6 @@ export const strings: Record<Lang, Translations> = {
     invHistoryTitle: "Invoices",
     invHistoryDesc: "Receipts and invoices for your subscription",
     invColNumber: "Invoice",
-    invColStatus: "Status",
     invStatusPaid: "Paid",
     invStatusOpen: "Unpaid",
     invStatusFailed: "Failed",
