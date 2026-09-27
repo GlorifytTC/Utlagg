@@ -1843,7 +1843,7 @@ export const strings: Record<Lang, Translations> = {
     invIncomeNoteBody:
       "Intäkten bokförs först när fakturan betalas (kontantmetoden). Endast beloppet exkl. moms är intäkt - momsen är utgående moms som redovisas och betalas till Skatteverket. En obetald faktura är en kundfordran, inte intäkt än.",
     invSumIncomeLabel: "Intäkt (betalt, exkl. moms)",
-    invSumIncomeHint: "Betalda fakturor {year}",
+    invSumIncomeHint: "Betalda fakturor",
     invSumVatLabel: "Moms att redovisa",
     invSumVatHint: "Utgående moms på betalda fakturor",
     invSumOutstandingLabel: "Utestående",
@@ -3336,7 +3336,7 @@ export const strings: Record<Lang, Translations> = {
     invIncomeNoteBody:
       "Income is recognised only when the invoice is paid (cash method). Only the amount excl. VAT is income - the VAT is output VAT that is reported and paid to the Swedish Tax Agency. An unpaid invoice is an account receivable, not income yet.",
     invSumIncomeLabel: "Income (paid, excl. VAT)",
-    invSumIncomeHint: "Paid invoices {year}",
+    invSumIncomeHint: "Paid invoices",
     invSumVatLabel: "VAT to report",
     invSumVatHint: "Output VAT on paid invoices",
     invSumOutstandingLabel: "Outstanding",

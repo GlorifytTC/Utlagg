@@ -91,9 +91,7 @@ export default async function InvoiceView({ params }: { params: { id: string } }
           <p>{t.invColVat}: {inv.reverseCharge ? "0,00 kr" : `${kr(inv.vatTotal)} kr`}</p>
           <p className="text-base font-bold">{t.invToPay}: {kr(inv.total)} kr {inv.currency}</p>
           {isPaid && (
-            <p className="mt-1 text-sm font-semibold text-emerald-700">
-              {t.invPaidStamp}{inv.paidAt ? ` ${new Date(inv.paidAt).toLocaleDateString("sv-SE")}` : ""}
-            </p>
+            <p className="mt-1 text-sm font-semibold text-emerald-700">{t.invPaidStamp}</p>
           )}
         </div>
 

@@ -63,17 +63,9 @@ export default async function InvoicesPage() {
     .orderBy(desc(customerInvoices.issueDate));
 
   const canManage = canManageCompany(membership.role);
-  const currentYear = new Date().getFullYear();
-  // Income recognition is per calendar year and cash-method: only invoices
-  // paid this year count as income, and only their net (excl. VAT).
-  const paidThisYear = rows.filter(
-    (r: Record<string, unknown>) =>
-      r.status === "paid" && r.paidAt != null && new Date(r.paidAt as string).getFullYear() === currentYear,
-  );
-  const summary = summarizeInvoiceIncome([
-    ...(paidThisYear as unknown as InvoiceLike[]),
-    ...(rows.filter((r: Record<string, unknown>) => r.status !== "paid") as unknown as InvoiceLike[]),
-  ]);
+  // Cash-method income recognition: only paid invoices count as income, and
+  // only their net (excl. VAT). Unpaid invoices are outstanding receivables.
+  const summary = summarizeInvoiceIncome(rows as unknown as InvoiceLike[]);
   const money = (n: number) => n.toLocaleString("sv-SE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
@@ -88,7 +80,7 @@ export default async function InvoicesPage() {
           <div className="rounded-2xl border border-gray-900/[0.07] bg-white/70 p-4 dark:border-white/[0.08] dark:bg-white/[0.03]">
             <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{t.invSumIncomeLabel}</p>
             <p className="mt-1 text-xl font-semibold text-emerald-700 dark:text-emerald-400">{money(summary.incomeNet)} kr</p>
-            <p className="mt-0.5 text-xs text-gray-400">{t.invSumIncomeHint.replace("{year}", String(currentYear))}</p>
+            <p className="mt-0.5 text-xs text-gray-400">{t.invSumIncomeHint}</p>
           </div>
           <div className="rounded-2xl border border-gray-900/[0.07] bg-white/70 p-4 dark:border-white/[0.08] dark:bg-white/[0.03]">
             <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{t.invSumVatLabel}</p>

@@ -57,10 +57,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   const [updated] = await db
     .update(customerInvoices)
-    .set({
-      status: paid ? "paid" : "sent",
-      paidAt: paid ? new Date() : null,
-    })
+    .set({ status: paid ? "paid" : "sent" })
     .where(and(eq(customerInvoices.id, params.id), eq(customerInvoices.companyId, membership.companyId)))
     .returning();
 

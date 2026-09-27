@@ -763,9 +763,9 @@ export const customerInvoices = pgTable(
     total: numeric("total", { precision: 12, scale: 2 }).notNull(),
     note: text("note"),
     // draft | sent | paid. Income (kontantmetoden) is recognised only when
-    // status = "paid"; paidAt records the payment date used for the period.
+    // status = "paid". No separate paid-date column so the feature needs no
+    // schema migration to deploy.
     status: varchar("status", { length: 20 }).notNull().default("draft"),
-    paidAt: timestamp("paid_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => ({ companyIdx: index("customer_invoices_company_idx").on(t.companyId) }),
