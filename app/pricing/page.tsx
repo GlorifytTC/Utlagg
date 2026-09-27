@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { Check, Minus, Plus } from "lucide-react";
 import { SELECTABLE_PLANS } from "@/lib/plans";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
@@ -13,6 +13,8 @@ import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { ChatBox } from "@/components/ChatBox";
 import { TrialVisual } from "@/components/landing/PageVisuals";
+import { CtaLink } from "@/components/landing/Cta";
+import { enter, reveal } from "@/components/landing/motion";
 
 // Scan quotas + feature matrix. Numbers mirror lib/billing/config.ts (the
 // single source of truth) - keep them in sync if the tier table changes.
@@ -42,11 +44,16 @@ const FAQ_KEYS = [
 
 const TIER_ORDER = ["starter", "pro", "business", "max", "enterprise"] as const;
 
+// Rows that are "✓" on every tier say nothing in a matrix; show them once as chips.
+const CORE_ROWS = PRICING_TABLE_ROWS.filter((r) => TIER_ORDER.every((tier) => r[tier] === "✓"));
+const MATRIX_ROWS = PRICING_TABLE_ROWS.filter((r) => !CORE_ROWS.includes(r));
+
 function PricingPageContent() {
   const { status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const { t } = useLanguage();
+  const rm = useReducedMotion();
 
   async function handleSelect(tier: string) {
     if (tier === "free") {
@@ -87,129 +94,158 @@ function PricingPageContent() {
     ] as string[];
 
   return (
-    <div className="relative">
+    <div className="light-surface relative overflow-x-clip">
       <AmbientBackground />
       <Navbar />
 
       <main>
-        {/* Hero strip */}
-        <section className="border-b hairline bg-grain">
-          <div className="mx-auto max-w-6xl px-6 py-20">
-            <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-              {t.pricingTagline}
-            </p>
-            <motion.h1
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-              className="mt-4 max-w-2xl font-display text-5xl leading-[1.05] md:text-6xl"
-            >
-              {t.pricingTitle}
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.08 }}
-              className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70"
-            >
-              {t.pricingPageSubtitle}
-            </motion.p>
-          </div>
+        {/* Hero */}
+        <section className="mx-auto max-w-6xl px-6 pb-16 pt-12 md:pt-20">
+          <motion.h1
+            {...enter(0, rm)}
+            className="max-w-3xl font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl"
+          >
+            {t.pricingTitle}
+          </motion.h1>
+          <motion.p
+            {...enter(1, rm)}
+            className="mt-6 max-w-xl text-lg leading-relaxed text-ink/65"
+          >
+            {t.pricingPageSubtitle}
+          </motion.p>
         </section>
 
         {/* Plan cards */}
-        <section className="mx-auto max-w-6xl px-6 py-24">
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <section className="mx-auto max-w-6xl px-6 pb-24 md:pb-32">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {SELECTABLE_PLANS.map((plan, i) => (
               <motion.div
                 key={plan.tier}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.08 }}
-                className={cn(
-                  "flex flex-col rounded-2xl border bg-white/60 p-6 backdrop-blur",
-                  plan.highlight
-                    ? "border-nordic-600 shadow-[0_20px_60px_-30px_rgb(var(--accent)/0.45)]"
-                    : "hairline",
-                )}
+                {...reveal(i, rm)}
+                className={cn("bezel", plan.highlight && "xl:-my-3")}
               >
-                {plan.highlight && (
-                  <span className="mb-3 inline-block w-fit rounded-full bg-nordic-600 px-3 py-1 text-xs font-medium text-white">
-                    {t.pricingPopular}
-                  </span>
-                )}
-                <h3 className="font-display text-2xl">
-                  {getPlanName(plan.tier)}
-                </h3>
-                <p className="mt-2 font-sans text-3xl font-semibold">
-                  {plan.priceLabel}
-                </p>
-                <ul className="mt-6 flex-1 space-y-2 text-sm text-ink/80">
-                  {getFeatures(plan.tier).map((f) => (
-                    <li key={f} className="flex gap-2">
-                      <span className="text-nordic-600">✓</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => handleSelect(plan.tier)}
-                  disabled={loading === plan.tier}
+                <div
                   className={cn(
-                    "mt-7 rounded-full px-5 py-3 text-sm font-medium transition active:scale-[0.97] active:opacity-90",
-                    plan.highlight
-                      ? "bg-ink text-paper hover:bg-nordic-900"
-                      : "border border-ink/20 hover:border-ink/40",
-                    loading === plan.tier && "opacity-60",
+                    "bezel-core flex h-full flex-col p-6 xl:p-5",
+                    plan.highlight && "bg-ink text-paper",
                   )}
                 >
-                  {loading === plan.tier
-                    ? t.pricingLoading
-                    : plan.tier === "free"
-                      ? t.startFree
-                      : plan.tier === "enterprise"
-                        ? t.pricingContactUs
-                        : `${t.pricingChoosePlan} ${getPlanName(plan.tier)}`}
-                </button>
+                  <div className="flex items-center justify-between gap-2">
+                    <h2 className="font-display text-xl font-semibold tracking-tight">
+                      {getPlanName(plan.tier)}
+                    </h2>
+                    {plan.highlight && (
+                      <span className="rounded-full bg-nordic-600 px-2.5 py-1 text-[11px] font-medium text-white">
+                        {t.pricingPopular}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-3 whitespace-nowrap text-2xl font-semibold tracking-tight">{plan.priceLabel}</p>
+                  <ul
+                    className={cn(
+                      "mt-6 flex-1 space-y-2.5 text-sm",
+                      plan.highlight ? "text-paper/80" : "text-ink/75",
+                    )}
+                  >
+                    {getFeatures(plan.tier).map((f) => (
+                      <li key={f} className="flex gap-2.5">
+                        <Check
+                          className={cn(
+                            "mt-0.5 h-4 w-4 shrink-0",
+                            plan.highlight ? "text-nordic-300" : "text-nordic-600",
+                          )}
+                          strokeWidth={1.75}
+                        />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={() => handleSelect(plan.tier)}
+                    disabled={loading === plan.tier}
+                    className={cn(
+                      "mt-8 rounded-full px-5 py-3 text-sm font-medium transition duration-500 ease-premium active:scale-[0.98]",
+                      plan.highlight
+                        ? "bg-nordic-600 text-white hover:bg-nordic-700"
+                        : "border border-ink/15 hover:border-ink/40",
+                      loading === plan.tier && "opacity-60",
+                    )}
+                  >
+                    {loading === plan.tier
+                      ? t.pricingLoading
+                      : plan.tier === "free"
+                        ? t.startFree
+                        : plan.tier === "enterprise"
+                          ? t.pricingContactUs
+                          : `${t.pricingChoosePlan} ${getPlanName(plan.tier)}`}
+                  </button>
+                </div>
               </motion.div>
             ))}
           </div>
         </section>
 
-        {/* Feature comparison */}
-        <section className="border-t hairline bg-grain">
-          <div className="mx-auto max-w-6xl px-6 py-24">
-            <h2 className="mb-10 font-display text-3xl md:text-4xl">
-              {t.pricingComparisonTitle}
-            </h2>
-            <div className="overflow-x-auto">
+        {/* Feature comparison: shared features as chips, only differences in the matrix */}
+        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+          <h2 className="max-w-xl font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+            {t.pricingComparisonTitle}
+          </h2>
+
+          <div className="mt-12 flex flex-wrap items-center gap-2">
+            <span className="mr-2 text-sm font-medium text-ink/60">{t.pricingIncludedAll}</span>
+            {CORE_ROWS.map((row) => (
+              <span
+                key={row.labelKey}
+                className="light-surface inline-flex items-center gap-1.5 rounded-full bg-nordic-50 px-3.5 py-1.5 text-sm text-nordic-700"
+              >
+                <Check className="h-3.5 w-3.5" strokeWidth={2} />
+                {t[row.labelKey as keyof typeof t] as string}
+              </span>
+            ))}
+          </div>
+
+          <div className="bezel mt-10">
+            <div className="bezel-core overflow-x-auto p-2 md:p-4">
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead>
-                  <tr className="border-b hairline">
-                    <th className="pb-4 pr-8 font-medium text-ink/60" />
+                  <tr>
+                    <th className="px-4 pb-4 pt-3 font-medium text-ink/50" />
                     {TIER_ORDER.map((tier) => (
-                      <th key={tier} className="pb-4 pr-8 font-medium text-ink">
+                      <th key={tier} className="px-4 pb-4 pt-3 font-semibold text-ink">
                         {getPlanName(tier)}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y hairline">
-                  {PRICING_TABLE_ROWS.map((row) => (
-                    <tr key={row.labelKey}>
-                      <td className="py-4 pr-8">
+                <tbody>
+                  {MATRIX_ROWS.map((row) => (
+                    <tr key={row.labelKey} className="odd:bg-ink/[0.025]">
+                      <td className="rounded-l-xl px-4 py-3.5 text-ink/75">
                         {t[row.labelKey as keyof typeof t] as string}
                       </td>
-                      {TIER_ORDER.map((tier) => (
+                      {TIER_ORDER.map((tier, ti) => (
                         <td
                           key={tier}
                           className={cn(
-                            "py-4 pr-8",
-                            row[tier] === "-" && "text-ink/40",
+                            "px-4 py-3.5 tabular-nums",
+                            ti === TIER_ORDER.length - 1 && "rounded-r-xl",
                           )}
                         >
-                          {row[tier] === "∞" ? t.unlimited : row[tier]}
+                          {row[tier] === "✓" ? (
+                            <>
+                              <Check className="h-4 w-4 text-nordic-600" strokeWidth={2} aria-hidden />
+                              <span className="sr-only">{t.pricingIncluded}</span>
+                            </>
+                          ) : row[tier] === "-" ? (
+                            <>
+                              <Minus className="h-4 w-4 text-ink/25" strokeWidth={1.5} aria-hidden />
+                              <span className="sr-only">{t.pricingNotIncluded}</span>
+                            </>
+                          ) : row[tier] === "∞" ? (
+                            t.unlimited
+                          ) : (
+                            row[tier]
+                          )}
                         </td>
                       ))}
                     </tr>
@@ -220,53 +256,51 @@ function PricingPageContent() {
           </div>
         </section>
 
-        {/* FAQ */}
-        <section className="mx-auto max-w-6xl px-6 py-24">
-          <h2 className="mb-10 font-display text-3xl md:text-4xl">
+        {/* FAQ: native disclosure */}
+        <section className="mx-auto grid max-w-6xl gap-12 px-6 py-24 md:grid-cols-[1fr_1.6fr] md:gap-20 md:py-32">
+          <h2 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.pricingFaqTitle}
           </h2>
-          <div className="grid gap-6 sm:grid-cols-2">
-            {FAQ_KEYS.map((item, i) => (
-              <motion.div
-                key={item.q}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.06 }}
-                className="rounded-2xl border hairline bg-paper p-6"
-              >
-                <h3 className="font-display text-lg">
+          <div className="border-t hairline">
+            {FAQ_KEYS.map((item) => (
+              <details key={item.q} className="group border-b hairline">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-display text-lg font-semibold tracking-tight [&::-webkit-details-marker]:hidden">
                   {t[item.q as keyof typeof t] as string}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink/70">
+                  <span
+                    aria-hidden
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ink/5 transition duration-500 ease-premium group-open:rotate-45"
+                  >
+                    <Plus className="h-4 w-4" strokeWidth={1.5} />
+                  </span>
+                </summary>
+                <p className="max-w-xl pb-6 text-base leading-relaxed text-ink/65">
                   {t[item.a as keyof typeof t] as string}
                 </p>
-              </motion.div>
+              </details>
             ))}
           </div>
         </section>
 
-        {/* Bottom CTA */}
-        <section className="border-t hairline bg-grain">
-          <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 md:grid-cols-2">
-            <div>
-              <h2 className="font-display text-3xl md:text-4xl">
-                {t.pricingBottomTitle}
-              </h2>
-              <p className="mt-3 max-w-md text-ink/70">
-                {t.pricingBottomSubtitle}
-              </p>
-              <Link
-                href="/register"
-                className="mt-8 inline-block rounded-full bg-nordic-600 px-8 py-3.5 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
-              >
-                {t.startFree}
-              </Link>
+        {/* Bottom CTA with the trial visual */}
+        <section className="mx-auto max-w-6xl px-6 pb-24 md:pb-32">
+          <motion.div {...reveal(0, rm)} className="bezel">
+            <div className="bezel-core light-surface grid items-center gap-12 overflow-hidden bg-[radial-gradient(120%_100%_at_100%_100%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] p-8 md:grid-cols-2 md:p-14">
+              <div>
+                <h2 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight">
+                  {t.pricingBottomTitle}
+                </h2>
+                <p className="mt-4 max-w-md text-base leading-relaxed text-ink/65">
+                  {t.pricingBottomSubtitle}
+                </p>
+                <CtaLink href="/register" className="mt-10">
+                  {t.startFree}
+                </CtaLink>
+              </div>
+              <div className="flex md:justify-end">
+                <TrialVisual />
+              </div>
             </div>
-            <div className="flex md:justify-end">
-              <TrialVisual />
-            </div>
-          </div>
+          </motion.div>
         </section>
       </main>
 

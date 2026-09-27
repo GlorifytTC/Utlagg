@@ -35,6 +35,10 @@ const config: Config = {
         display: ["var(--font-jakarta)", "system-ui", "sans-serif"],
         sans: ["var(--font-jakarta)", "system-ui", "sans-serif"],
       },
+      // Marketing easing: fast start, long soft settle.
+      transitionTimingFunction: {
+        premium: "cubic-bezier(0.32, 0.72, 0, 1)",
+      },
       keyframes: {
         "fade-up": {
           "0%": { opacity: "0", transform: "translateY(12px)" },

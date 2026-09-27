@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import Link from "next/link";
+import { ClipboardCheck, Clock, FileWarning, ScanLine } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
@@ -9,27 +9,32 @@ import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { ChatBox } from "@/components/ChatBox";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { WorkQueueVisual } from "@/components/landing/PageVisuals";
+import { CtaLink, CtaPanel } from "@/components/landing/Cta";
+import { StepsSticky } from "@/components/landing/StepsSticky";
+import { enter, reveal } from "@/components/landing/motion";
+import { cn } from "@/lib/utils";
 
 const SIGNUP = "/register?type=accountant";
 
-// Reduced motion keeps the fade, drops the slide.
-const reveal = (i = 0, reduced: boolean | null = false) =>
-  ({
-    initial: { opacity: 0, y: reduced ? 0 : 14 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
-    transition: { type: "spring", bounce: 0, duration: 0.5, delay: i * 0.06 },
-  }) as const;
+// Workspace bento on a 6-column grid: 4+2, 2+2+2, 6. Exactly six cells, two tinted.
+const WORK_CELLS = [
+  { span: "md:col-span-4", bg: "light-surface bg-nordic-50" },
+  { span: "md:col-span-2", bg: "" },
+  { span: "md:col-span-2", bg: "" },
+  { span: "md:col-span-2", bg: "" },
+  { span: "md:col-span-2", bg: "" },
+  { span: "md:col-span-6", bg: "bg-grain bg-paper" },
+];
 
 function ForAccountantsContent() {
   const { t } = useLanguage();
   const rm = useReducedMotion();
 
   const queue = [
-    { title: t.fbQueue1Title, body: t.fbQueue1Body },
-    { title: t.fbQueue2Title, body: t.fbQueue2Body },
-    { title: t.fbQueue3Title, body: t.fbQueue3Body },
-    { title: t.fbQueue4Title, body: t.fbQueue4Body },
+    { icon: ClipboardCheck, title: t.fbQueue1Title, body: t.fbQueue1Body },
+    { icon: FileWarning, title: t.fbQueue2Title, body: t.fbQueue2Body },
+    { icon: ScanLine, title: t.fbQueue3Title, body: t.fbQueue3Body },
+    { icon: Clock, title: t.fbQueue4Title, body: t.fbQueue4Body },
   ];
   const work = [
     { title: t.fbWork1Title, body: t.fbWork1Body },
@@ -52,75 +57,65 @@ function ForAccountantsContent() {
   ];
 
   return (
-    <div className="relative">
+    <div className="light-surface relative overflow-x-clip">
       <AmbientBackground />
       <Navbar />
 
       <main>
         {/* Hero */}
-        <section className="border-b hairline bg-grain">
-          <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center">
-            <div>
-              <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-                {t.fbKicker}
-              </p>
-              <motion.h1
-                initial={{ opacity: 0, y: rm ? 0 : 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-                className="mt-4 max-w-2xl font-display text-5xl leading-[1.05] md:text-6xl"
-              >
-                {t.fbTitle}
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: rm ? 0 : 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.08 }}
-                className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70"
-              >
-                {t.fbSubtitle}
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: rm ? 0 : 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.14 }}
-                className="mt-9 flex flex-wrap items-center gap-3"
-              >
-                <Link
-                  href={SIGNUP}
-                  className="inline-block rounded-full bg-nordic-600 px-7 py-3.5 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
-                >
-                  {t.fbCta}
-                </Link>
-                <a
-                  href="#how"
-                  className="rounded-full border hairline px-6 py-3.5 text-sm font-medium transition hover:border-ink/40 active:scale-[0.97] active:opacity-80"
-                >
-                  {t.fbCtaSecondary}
-                </a>
-              </motion.div>
-              <p className="mt-4 text-xs text-ink/45">{t.fbDisclaimer}</p>
-            </div>
-            <WorkQueueVisual />
+        <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-12 md:grid-cols-2 md:pb-28 md:pt-20">
+          <div>
+            <motion.p {...enter(0, rm)} className="text-sm font-medium text-nordic-600">
+              {t.fbKicker}
+            </motion.p>
+            <motion.h1
+              {...enter(1, rm)}
+              className="mt-5 max-w-xl font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl"
+            >
+              {t.fbTitle}
+            </motion.h1>
+            <motion.p
+              {...enter(2, rm)}
+              className="mt-6 max-w-lg text-lg leading-relaxed text-ink/65"
+            >
+              {t.fbSubtitle}
+            </motion.p>
+            <motion.div {...enter(3, rm)} className="mt-10 flex flex-wrap items-center gap-3">
+              <CtaLink href={SIGNUP}>{t.fbCta}</CtaLink>
+              <CtaLink href="#how" variant="ghost">
+                {t.fbCtaSecondary}
+              </CtaLink>
+            </motion.div>
           </div>
+          <motion.div
+            initial={{ opacity: 0, scale: rm ? 1 : 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.9, delay: 0.15 }}
+            className="bezel"
+          >
+            <div className="bezel-core light-surface overflow-hidden bg-[radial-gradient(120%_90%_at_80%_0%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] px-6 pt-14">
+              <WorkQueueVisual />
+            </div>
+          </motion.div>
         </section>
 
-        {/* What the queue catches */}
-        <section className="mx-auto grid max-w-6xl gap-12 px-6 py-24 md:grid-cols-[1fr_1.4fr]">
-          <div>
-            <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-              {t.fbQueueKicker}
-            </p>
-            <h2 className="mt-3 font-display text-4xl leading-tight md:text-5xl">{t.fbQueueTitle}</h2>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink/65">{t.fbQueueBody}</p>
+        {/* What the queue catches: pinned heading, list scrolls past */}
+        <section className="mx-auto grid max-w-6xl gap-12 px-6 py-24 md:grid-cols-[1fr_1.3fr] md:gap-20 md:py-32">
+          <div className="md:sticky md:top-32 md:self-start">
+            <h2 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+              {t.fbQueueTitle}
+            </h2>
+            <p className="mt-5 max-w-sm text-base leading-relaxed text-ink/65">{t.fbQueueBody}</p>
           </div>
-          <ul className="divide-y hairline border-y hairline">
-            {queue.map((q, i) => (
-              <motion.li key={q.title} {...reveal(i, rm)} className="flex gap-4 py-5">
-                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-nordic-600" />
+          <ul className="space-y-10">
+            {queue.map(({ icon: Icon, title, body }, i) => (
+              <motion.li key={title} {...reveal(i, rm)} className="flex gap-5">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink/[0.04] text-nordic-600 ring-1 ring-ink/5">
+                  <Icon className="h-5 w-5" strokeWidth={1.5} />
+                </span>
                 <div>
-                  <h3 className="font-display text-xl">{q.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-ink/65">{q.body}</p>
+                  <h3 className="font-display text-xl font-semibold tracking-tight">{title}</h3>
+                  <p className="mt-2 max-w-md text-base leading-relaxed text-ink/65">{body}</p>
                 </div>
               </motion.li>
             ))}
@@ -128,86 +123,54 @@ function ForAccountantsContent() {
         </section>
 
         {/* Workspace */}
-        <section className="border-y hairline bg-grain">
-          <div className="mx-auto max-w-6xl px-6 py-24">
-            <h2 className="max-w-xl font-display text-3xl md:text-4xl">{t.fbWorkTitle}</h2>
-            <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border hairline bg-ink/10 sm:grid-cols-2 lg:grid-cols-3">
-              {work.map((w, i) => (
-                <motion.div
-                  key={w.title}
-                  {...reveal(i, rm)}
-                  className="bg-paper p-8 transition-colors hover:bg-ink/[0.02]"
-                >
-                  <h3 className="font-display text-xl">{w.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-ink/70">{w.body}</p>
-                </motion.div>
-              ))}
-            </div>
+        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+          <h2 className="max-w-xl font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+            {t.fbWorkTitle}
+          </h2>
+          <div className="mt-14 grid grid-flow-dense gap-5 md:grid-cols-6">
+            {work.map((w, i) => (
+              <motion.div
+                key={w.title}
+                {...reveal(i % 3, rm)}
+                className={cn("bezel", WORK_CELLS[i].span)}
+              >
+                <div className={cn("bezel-core h-full p-8", WORK_CELLS[i].bg)}>
+                  <h3 className="font-display text-xl font-semibold tracking-tight">{w.title}</h3>
+                  <p className="mt-3 max-w-lg text-sm leading-relaxed text-ink/65">{w.body}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </section>
 
         <Testimonials audience="firm" />
 
-        {/* Getting clients */}
-        <section className="mx-auto max-w-6xl px-6 py-24">
-          <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-            {t.fbGrowKicker}
-          </p>
-          <h2 className="mt-3 max-w-xl font-display text-4xl leading-tight md:text-5xl">
+        {/* Getting clients: plain columns, no cards */}
+        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+          <h2 className="max-w-xl font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.fbGrowTitle}
           </h2>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-ink/65">{t.fbGrowBody}</p>
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-ink/65">{t.fbGrowBody}</p>
+          <div className="mt-14 grid gap-10 md:grid-cols-3">
             {grow.map((g, i) => (
-              <motion.div key={g.title} {...reveal(i, rm)} className="rounded-2xl border hairline bg-paper p-6">
-                <h3 className="font-display text-xl">{g.title}</h3>
+              <motion.div key={g.title} {...reveal(i, rm)}>
+                <span aria-hidden className="block h-px w-10 bg-nordic-600" />
+                <h3 className="mt-6 font-display text-xl font-semibold tracking-tight">{g.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-ink/65">{g.body}</p>
               </motion.div>
             ))}
           </div>
         </section>
 
-        {/* How it works: a real sequence, so the numbers carry meaning */}
-        <section id="how" className="scroll-mt-24 border-t hairline bg-grain">
-          <div className="mx-auto max-w-6xl px-6 py-24">
-            <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-              {t.fbHowKicker}
-            </p>
-            <h2 className="mt-3 max-w-xl font-display text-4xl leading-tight md:text-5xl">
-              {t.fbHowTitle}
-            </h2>
-            <ol className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-              {steps.map((s, i) => (
-                <motion.li key={s.title} {...reveal(i, rm)} className="border-t-2 border-ink pt-6">
-                  <span className="font-display text-5xl text-nordic-600/90">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="mt-4 font-display text-2xl">{s.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-ink/65">{s.body}</p>
-                </motion.li>
-              ))}
-            </ol>
-          </div>
-        </section>
+        <StepsSticky id="how" title={t.fbHowTitle} steps={steps} />
 
-        {/* CTA strip */}
-        <section className="mx-auto max-w-6xl px-6 py-24">
-          <motion.div
-            {...reveal(0, rm)}
-            className="flex flex-col gap-6 rounded-3xl border hairline bg-paper p-8 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div>
-              <h2 className="font-display text-2xl">{t.fbCtaTitle}</h2>
-              <p className="mt-1 text-sm text-ink/60">{t.fbCtaBody}</p>
-            </div>
-            <Link
-              href={SIGNUP}
-              className="shrink-0 rounded-full bg-ink px-7 py-3.5 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.97] active:opacity-90"
-            >
-              {t.fbCta}
-            </Link>
-          </motion.div>
-        </section>
+        <CtaPanel
+          title={t.fbCtaTitle}
+          body={t.fbCtaBody}
+          href={SIGNUP}
+          label={t.fbCta}
+          note={t.fbDisclaimer}
+        />
       </main>
 
       <Footer />

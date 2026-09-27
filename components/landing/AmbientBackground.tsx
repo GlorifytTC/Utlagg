@@ -5,9 +5,7 @@
 const BG_RECEIPTS: { pos: React.CSSProperties; w: number; r: number; dur: number; mdOnly?: boolean }[] = [
   { pos: { top: "62%", left: "3%" }, w: 96, r: -12, dur: 9, mdOnly: true },
   { pos: { top: "20%", right: "3%" }, w: 80, r: 14, dur: 11 },
-  { pos: { top: "7%", left: "7%" }, w: 64, r: 8, dur: 8 },
-  { pos: { top: "80%", right: "9%" }, w: 84, r: -9, dur: 10 },
-  { pos: { top: "3%", left: "50%" }, w: 60, r: -16, dur: 12, mdOnly: true },
+  { pos: { top: "80%", right: "9%" }, w: 84, r: -9, dur: 10, mdOnly: true },
 ];
 
 export function AmbientBackground() {
@@ -20,7 +18,7 @@ export function AmbientBackground() {
         className="amb-blob"
         style={{
           position: "absolute", top: "-18%", left: "-10%", width: "55vw", height: "55vw",
-          background: "radial-gradient(circle at center, rgba(91,138,166,0.15) 0%, rgba(91,138,166,0.09) 40%, transparent 78%)",
+          background: "radial-gradient(circle at center, rgba(196,82,47,0.10) 0%, rgba(196,82,47,0.05) 40%, transparent 78%)",
           animation: "amb1 26s ease-in-out infinite",
           willChange: "transform",
         }}
@@ -38,7 +36,7 @@ export function AmbientBackground() {
         className="amb-blob"
         style={{
           position: "absolute", bottom: "-22%", left: "22%", width: "52vw", height: "52vw",
-          background: "radial-gradient(circle at center, rgba(47,96,121,0.11) 0%, rgba(47,96,121,0.065) 40%, transparent 78%)",
+          background: "radial-gradient(circle at center, rgba(120,90,60,0.08) 0%, rgba(120,90,60,0.04) 40%, transparent 78%)",
           animation: "amb3 38s ease-in-out infinite",
           willChange: "transform",
         }}

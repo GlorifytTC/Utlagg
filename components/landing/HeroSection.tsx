@@ -1,68 +1,60 @@
 // components/landing/HeroSection.tsx
 "use client";
 
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { HeroVisual, HeroVisualMobile } from "./HeroVisual";
+import { CtaLink } from "./Cta";
+import { enter } from "./motion";
 
 export function HeroSection() {
   const { t } = useLanguage();
+  const rm = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="mx-auto grid max-w-6xl items-center gap-8 px-6 pb-16 pt-14 md:grid-cols-2 md:pt-20">
+    <section className="relative">
+      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-16 pt-12 md:grid-cols-[1fr_1.05fr] md:pb-24 md:pt-20">
         <div>
           <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-            className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600"
+            {...enter(0, rm)}
+            className="text-sm font-medium text-nordic-600"
           >
             {t.heroTagline}
           </motion.p>
           <motion.h1
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.05 }}
-            className="mt-4 font-display text-5xl leading-[1.05] md:text-6xl"
+            {...enter(1, rm)}
+            className="mt-5 font-display text-4xl font-semibold leading-[1.04] tracking-tight sm:text-5xl md:text-[2.75rem] lg:text-5xl xl:text-6xl"
           >
             {t.heroTitleLine1}
             <br />
             <span className="text-nordic-600">{t.heroTitleLine2}</span>
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.12 }}
-            className="mt-6 max-w-md text-lg leading-relaxed text-ink/70"
+            {...enter(2, rm)}
+            className="mt-6 max-w-md text-lg leading-relaxed text-ink/65"
           >
             {t.heroDescription}
           </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.18 }}
-            className="mt-9 flex flex-wrap gap-3"
-          >
-            <Link
-              href="/register"
-              className="rounded-full bg-nordic-600 px-7 py-3.5 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
-            >
-              {t.heroCtaPrimary}
-            </Link>
-            <Link
-              href="/pricing"
-              className="rounded-full border border-ink/20 px-7 py-3.5 text-sm font-medium transition hover:border-ink/40 active:scale-[0.97] active:opacity-80"
-            >
+          <motion.div {...enter(3, rm)} className="mt-10 flex flex-wrap items-center gap-3">
+            <CtaLink href="/register">{t.heroCtaPrimary}</CtaLink>
+            <CtaLink href="/pricing" variant="ghost">
               {t.heroCtaSecondary}
-            </Link>
+            </CtaLink>
           </motion.div>
-          <p className="mt-5 text-xs text-ink/45">{t.heroDisclaimer}</p>
           <HeroVisualMobile />
         </div>
 
-        <HeroVisual />
+        {/* Product stage: the live visual sits in a bezel tray instead of floating on the page */}
+        <motion.div
+          initial={{ opacity: 0, scale: rm ? 1 : 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", bounce: 0, duration: 0.9, delay: 0.15 }}
+          className="bezel hidden md:block"
+        >
+          <div className="bezel-core light-surface relative overflow-hidden bg-[radial-gradient(120%_90%_at_80%_10%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] px-6">
+            <HeroVisual />
+          </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -32,18 +32,16 @@ function ContactContent() {
   ];
 
   return (
-    <div className="relative">
+    <div className="light-surface relative overflow-x-clip">
       <AmbientBackground />
       <Navbar />
-      <main className="mx-auto grid max-w-6xl items-start gap-12 px-6 pb-24 pt-16 md:grid-cols-[1fr_1.2fr] md:gap-16 md:pt-24">
+      <main className="mx-auto grid max-w-6xl items-start gap-12 px-6 pb-24 pt-12 md:grid-cols-[1fr_1.15fr] md:gap-20 md:pb-32 md:pt-20">
         <div>
-          <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-            {t.contactKicker}
-          </p>
-          <h1 className="mt-4 font-display text-5xl leading-[1.05] md:text-6xl">
+          <p className="text-sm font-medium text-nordic-600">{t.contactKicker}</p>
+          <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
             {t.contactTitle}
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70">{t.contactLead}</p>
+          <p className="mt-6 max-w-lg text-lg leading-relaxed text-ink/65">{t.contactLead}</p>
 
           {/* Contact info */}
           <div className="mt-12 space-y-8">
@@ -51,14 +49,14 @@ function ContactContent() {
               const Icon = c.icon;
               const inner = (
                 <div className="flex items-start gap-4">
-                  <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border hairline text-nordic-600">
-                    <Icon className="h-5 w-5" />
+                  <span className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink/[0.04] text-nordic-600 ring-1 ring-ink/5">
+                    <Icon className="h-5 w-5" strokeWidth={1.5} />
                   </span>
                   <div>
-                    <p className="font-sans text-xs uppercase tracking-[0.16em] text-ink/40">
+                    <p className="text-sm text-ink/55">
                       {c.label}
                     </p>
-                    <p className="mt-1 font-display text-xl text-ink">{c.value}</p>
+                    <p className="mt-0.5 font-display text-xl font-semibold tracking-tight text-ink">{c.value}</p>
                   </div>
                 </div>
               );
@@ -74,53 +72,55 @@ function ContactContent() {
         </div>
 
         {/* Form */}
-        <div className="rounded-3xl border hairline bg-grain p-8">
-          <h2 className="font-display text-2xl">{t.contactFormTitle}</h2>
-          <p className="mt-2 text-sm text-ink/60">{t.contactFormDesc}</p>
-          <div className="mt-6 space-y-4">
-            <div>
-              <label htmlFor="contact-name" className="text-sm text-ink/70">{t.contactName}</label>
-              <input
-                id="contact-name"
-                autoComplete="name"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-ink/15 bg-paper px-4 py-3 text-sm outline-none transition focus:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
-              />
+        <div className="bezel">
+          <div className="bezel-core p-8 md:p-10">
+            <h2 className="font-display text-2xl font-semibold tracking-tight">{t.contactFormTitle}</h2>
+            <p className="mt-2 text-sm text-ink/60">{t.contactFormDesc}</p>
+            <div className="mt-6 space-y-4">
+              <div>
+                <label htmlFor="contact-name" className="text-sm font-medium text-ink/75">{t.contactName}</label>
+                <input
+                  id="contact-name"
+                  autoComplete="name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="mt-1.5 w-full rounded-2xl border border-ink/20 bg-paper px-4 py-3 text-sm outline-none transition placeholder:text-ink/45 focus:border-nordic-600 focus-visible:ring-4 focus-visible:ring-nordic-600/15"
+                />
+              </div>
+              <div>
+                <label htmlFor="contact-email" className="text-sm font-medium text-ink/75">{t.contactEmailField}</label>
+                <input
+                  id="contact-email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="mt-1.5 w-full rounded-2xl border border-ink/20 bg-paper px-4 py-3 text-sm outline-none transition placeholder:text-ink/45 focus:border-nordic-600 focus-visible:ring-4 focus-visible:ring-nordic-600/15"
+                />
+              </div>
+              <div>
+                <label htmlFor="contact-message" className="text-sm font-medium text-ink/75">{t.contactMessage}</label>
+                <textarea
+                  id="contact-message"
+                  required
+                  rows={5}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={t.contactMessagePh}
+                  className="mt-1.5 w-full resize-none rounded-2xl border border-ink/20 bg-paper px-4 py-3 text-sm outline-none transition placeholder:text-ink/45 focus:border-nordic-600 focus-visible:ring-4 focus-visible:ring-nordic-600/15"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={send}
+                disabled={!name || !email || !message}
+                className="w-full rounded-full bg-nordic-600 px-6 py-3.5 text-sm font-medium text-white transition duration-500 ease-premium hover:bg-nordic-700 active:scale-[0.98] disabled:opacity-40"
+              >
+                {t.contactSend}
+              </button>
             </div>
-            <div>
-              <label htmlFor="contact-email" className="text-sm text-ink/70">{t.contactEmailField}</label>
-              <input
-                id="contact-email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-ink/15 bg-paper px-4 py-3 text-sm outline-none transition focus:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
-              />
-            </div>
-            <div>
-              <label htmlFor="contact-message" className="text-sm text-ink/70">{t.contactMessage}</label>
-              <textarea
-                id="contact-message"
-                required
-                rows={5}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder={t.contactMessagePh}
-                className="mt-1.5 w-full resize-none rounded-xl border border-ink/15 bg-paper px-4 py-3 text-sm outline-none transition focus:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={send}
-              disabled={!name || !email || !message}
-              className="w-full rounded-full bg-ink px-6 py-3.5 text-sm font-medium text-paper transition hover:bg-nordic-900 disabled:opacity-40"
-            >
-              {t.contactSend}
-            </button>
           </div>
         </div>
       </main>

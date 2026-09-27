@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
@@ -8,6 +8,9 @@ import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { ChatBox } from "@/components/ChatBox";
 import { VatSplitVisual } from "@/components/landing/PageVisuals";
+import { CtaLink, CtaPanel } from "@/components/landing/Cta";
+import { enter, reveal } from "@/components/landing/motion";
+import { cn } from "@/lib/utils";
 
 const COMPARISON_ROWS = [
   {
@@ -37,8 +40,14 @@ const COMPARISON_ROWS = [
   },
 ] as const;
 
+const COMPARE_COLS = [
+  { nameKey: "featuresCompareUtlagg", key: "utlaggKey", ours: true },
+  { nameKey: "featuresCompareTraditional", key: "tradKey", ours: false },
+] as const;
+
 function FeaturesPageContent() {
   const { t } = useLanguage();
+  const rm = useReducedMotion();
 
   // Grouped by where the receipt is in its life: capture → review → deliver.
   const GROUPS = [
@@ -69,165 +78,119 @@ function FeaturesPageContent() {
   ];
 
   return (
-    <div className="relative">
+    <div className="light-surface relative overflow-x-clip">
       <AmbientBackground />
       <Navbar />
 
       <main>
-        {/* Hero strip */}
-        <section className="border-b hairline bg-grain">
-          <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center">
-            <div>
-              <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-                {t.features}
-              </p>
-              <motion.h1
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-                className="mt-4 max-w-2xl font-display text-5xl leading-[1.05] md:text-6xl"
-              >
-                {t.featuresHeadline}
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  type: "spring",
-                  bounce: 0,
-                  duration: 0.5,
-                  delay: 0.08,
-                }}
-                className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70"
-              >
-                {t.featuresPageSubtitle}
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  type: "spring",
-                  bounce: 0,
-                  duration: 0.5,
-                  delay: 0.14,
-                }}
-                className="mt-9"
-              >
-                <Link
-                  href="/register"
-                  className="inline-block rounded-full bg-nordic-600 px-7 py-3.5 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.97] active:opacity-90"
-                >
-                  {t.startFree}
-                </Link>
-                <p className="mt-4 text-xs text-ink/45">{t.heroDisclaimer}</p>
-              </motion.div>
-            </div>
-            <VatSplitVisual />
-          </div>
-        </section>
-
-        {/* Grid */}
-        <section className="mx-auto max-w-6xl space-y-14 px-6 py-24">
-          {GROUPS.map((g) => (
-            <div key={g.label}>
-              <h2 className="mb-5 flex items-center gap-4 font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-                {g.label}
-                <span className="h-px flex-1 bg-ink/10" />
-              </h2>
-              <div className="grid gap-px overflow-hidden rounded-2xl border hairline bg-ink/10 sm:grid-cols-2 lg:grid-cols-3">
-                {g.items.map((f, i) => (
-                  <motion.div
-                    key={f.title}
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{
-                      type: "spring",
-                      bounce: 0,
-                      duration: 0.5,
-                      delay: i * 0.05,
-                    }}
-                    className="bg-paper p-8 transition-colors hover:bg-ink/[0.02]"
-                  >
-                    <h3 className="font-display text-xl">{f.title}</h3>
-                    <p className="mt-3 text-sm leading-relaxed text-ink/70">
-                      {f.body}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </section>
-
-        {/* Comparison table */}
-        <section className="border-t hairline bg-grain">
-          <div className="mx-auto max-w-6xl px-6 py-24">
-            <h2 className="mb-10 max-w-xl font-display text-3xl md:text-4xl">
-              {t.featuresCompareTitle}
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-left text-sm">
-                <thead>
-                  <tr className="border-b hairline">
-                    <th className="pb-4 pr-8 font-medium text-ink/60">
-                      {t.featuresCompareCapability}
-                    </th>
-                    <th className="pb-4 pr-8 font-medium text-ink">
-                      {t.featuresCompareUtlagg}
-                    </th>
-                    <th className="pb-4 pr-8 font-medium text-ink/60">
-                      {t.featuresCompareTraditional}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y hairline">
-                  {COMPARISON_ROWS.map((row) => (
-                    <tr key={row.labelKey}>
-                      <td className="py-4 pr-8">
-                        {t[row.labelKey as keyof typeof t] as string}
-                      </td>
-                      <td className="py-4 pr-8 font-medium text-nordic-600">
-                        {t[row.utlaggKey as keyof typeof t] as string}
-                      </td>
-                      <td className="py-4 pr-8 text-ink/60">
-                        {t[row.tradKey as keyof typeof t] as string}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA strip */}
-        <section className="mx-auto max-w-6xl px-6 pb-24">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-            className="flex flex-col gap-6 rounded-3xl border hairline bg-paper p-8 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div>
-              <h2 className="font-display text-2xl">{t.featuresCtaTitle}</h2>
-              <p className="mt-1 text-sm text-ink/60">{t.featuresCtaBody}</p>
-            </div>
-            <Link
-              href="/register"
-              className="shrink-0 rounded-full bg-ink px-7 py-3.5 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.97] active:opacity-90"
+        {/* Hero */}
+        <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-12 md:grid-cols-[1fr_1fr] md:pb-28 md:pt-20">
+          <div>
+            <motion.h1
+              {...enter(0, rm)}
+              className="max-w-xl font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl"
             >
-              {t.startFree}
-            </Link>
+              {t.featuresHeadline}
+            </motion.h1>
+            <motion.p
+              {...enter(1, rm)}
+              className="mt-6 max-w-lg text-lg leading-relaxed text-ink/65"
+            >
+              {t.featuresPageSubtitle}
+            </motion.p>
+            <motion.div {...enter(2, rm)} className="mt-10">
+              <CtaLink href="/register">{t.startFree}</CtaLink>
+            </motion.div>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: rm ? 1 : 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.9, delay: 0.15 }}
+            className="bezel"
+          >
+            <div className="bezel-core light-surface overflow-hidden bg-[radial-gradient(120%_90%_at_20%_0%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] px-6 pt-12">
+              <VatSplitVisual />
+            </div>
           </motion.div>
+        </section>
+
+        {/* The receipt's life in three stages, read left to right */}
+        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+          <div className="grid gap-14 md:grid-cols-3 md:gap-10">
+            {GROUPS.map((g, gi) => (
+              <motion.div key={g.label} {...reveal(gi, rm)} className="border-t-2 border-ink pt-6">
+                <h2 className="text-sm font-semibold text-nordic-600">{g.label}</h2>
+                <div className="mt-8 space-y-10">
+                  {g.items.map((f) => (
+                    <div key={f.title}>
+                      <h3 className="font-display text-xl font-semibold tracking-tight">{f.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-ink/65">{f.body}</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Comparison: two panels instead of a hairline table */}
+        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+          <h2 className="max-w-xl font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+            {t.featuresCompareTitle}
+          </h2>
+          <div className="mt-14 grid gap-5 md:grid-cols-[1.15fr_1fr]">
+            {COMPARE_COLS.map((col, ci) => (
+              <motion.div key={col.key} {...reveal(ci, rm)} className="bezel">
+                <div
+                  className={cn(
+                    "bezel-core h-full p-8 md:p-10",
+                    col.ours ? "light-surface bg-nordic-50" : "bg-transparent shadow-none",
+                  )}
+                >
+                  <p
+                    className={cn(
+                      "font-display text-2xl font-semibold tracking-tight",
+                      !col.ours && "text-ink/50",
+                    )}
+                  >
+                    {t[col.nameKey]}
+                  </p>
+                  <dl className="mt-8 space-y-6">
+                    {COMPARISON_ROWS.map((row) => (
+                      <div key={row.labelKey}>
+                        <dt className="text-xs font-medium text-ink/50">
+                          {t[row.labelKey as keyof typeof t] as string}
+                        </dt>
+                        <dd
+                          className={cn(
+                            "mt-1 text-base",
+                            col.ours ? "font-medium text-ink" : "text-ink/60",
+                          )}
+                        >
+                          {t[row[col.key] as keyof typeof t] as string}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </motion.div>
+            ))}
+          </div>
           <Link
             href="/for-accountants"
-            className="mt-6 inline-block text-sm text-nordic-600 transition hover:underline"
+            className="mt-10 inline-block text-sm font-medium text-nordic-600 transition hover:text-nordic-700"
           >
             {t.featuresFirmLink} →
           </Link>
         </section>
+
+        <CtaPanel
+          title={t.featuresCtaTitle}
+          body={t.featuresCtaBody}
+          href="/register"
+          label={t.startFree}
+          note={t.heroDisclaimer}
+        />
       </main>
 
       <Footer />

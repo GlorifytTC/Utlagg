@@ -360,6 +360,9 @@ export interface Translations {
   pricingTableLimits: string;
   pricingTableOnboarding: string;
   pricingTableSupport: string;
+  pricingIncludedAll: string;
+  pricingIncluded: string;
+  pricingNotIncluded: string;
   btnAddRow: string;
   btnToCompanies: string;
   btnNewInvoice: string;
@@ -2269,6 +2272,9 @@ export const strings: Record<Lang, Translations> = {
     pricingTableLimits: "Beloppsgränser",
     pricingTableOnboarding: "Anpassad onboarding",
     pricingTableSupport: "Prioriterad support",
+    pricingIncludedAll: "Ingår i alla paket",
+    pricingIncluded: "Ingår",
+    pricingNotIncluded: "Ingår inte",
     cookieTitle: "Integritet & Cookies",
     cookieBody: "Vi använder cookies för att hålla tjänsten igång på ett säkert sätt. Nödvändiga cookies är alltid aktiva enligt lag om elektronisk kommunikation (LEK). Icke-nödvändiga cookies - funktionella och analytiska - lagras endast med ditt uttryckliga samtycke enligt GDPR Art. 7. Du kan när som helst återkalla eller ändra ditt samtycke.",
     cookiePrivacyLink: "Integritetspolicy",
@@ -3758,6 +3764,9 @@ export const strings: Record<Lang, Translations> = {
     pricingTableLimits: "Spending limits",
     pricingTableOnboarding: "Custom onboarding",
     pricingTableSupport: "Priority support",
+    pricingIncludedAll: "Included in every plan",
+    pricingIncluded: "Included",
+    pricingNotIncluded: "Not included",
     cookieTitle: "Privacy & Cookies",
     cookieBody: "We use cookies to keep this service running securely. Necessary cookies are always active under the Swedish Electronic Communications Act (LEK). Any non-essential cookies - functional and analytics - are only stored with your explicit consent under GDPR Art. 7. You can withdraw or change consent at any time.",
     cookiePrivacyLink: "Privacy policy",

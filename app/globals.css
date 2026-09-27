@@ -52,6 +52,27 @@ body {
   border-color: rgba(22, 24, 29, 0.12);
 }
 
+/* Marketing "double bezel": a faint outer tray holding an inner core, like a
+   plate sitting in a machined frame. Radius system: panels 2rem, core inset by
+   the tray padding, interactive elements full pill. */
+@layer components {
+  .bezel {
+    border-radius: 2rem;
+    padding: 0.375rem;
+    background: rgba(26, 26, 26, 0.03);
+    box-shadow: 0 0 0 1px rgba(26, 26, 26, 0.06);
+  }
+  .bezel-core {
+    border-radius: calc(2rem - 0.375rem);
+    background: #fffdf8;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 1px 2px rgba(26, 26, 26, 0.04),
+      0 24px 48px -28px rgba(60, 40, 25, 0.22);
+  }
+}
+
+
 /* Paper base so the fixed ambient layer never flashes white */
 body {
   background-color: #FAF8F3;

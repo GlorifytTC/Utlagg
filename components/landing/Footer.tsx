@@ -34,27 +34,27 @@ export function Footer() {
   ];
 
   return (
-    <footer className="border-t hairline bg-grain">
-      <div className="mx-auto max-w-6xl px-6 py-16">
-        <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+    <footer className="border-t hairline">
+      <div className="mx-auto max-w-6xl px-6 pb-12 pt-20">
+        <div className="grid gap-12 md:grid-cols-[2fr_1fr_1fr_1fr]">
           <div>
-            <p className="font-display text-2xl">{t.footerTitle}</p>
+            <p className="font-display text-2xl font-semibold tracking-tight">{t.footerTitle}</p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink/60">
               {t.footerDescription}
             </p>
             <div className="mt-6 flex flex-wrap gap-2 text-xs text-ink/70">
-              <span className="rounded-full border hairline px-3 py-1">{t.footerGDPR}</span>
-              <span className="rounded-full border hairline px-3 py-1">{t.footerAudit}</span>
+              <span className="rounded-full bg-ink/[0.04] px-3 py-1.5">{t.footerGDPR}</span>
+              <span className="rounded-full bg-ink/[0.04] px-3 py-1.5">{t.footerAudit}</span>
             </div>
           </div>
 
           {cols.map((c) => (
             <div key={c.title}>
-              <p className="font-sans text-xs uppercase tracking-[0.18em] text-ink/40">{c.title}</p>
+              <p className="text-sm font-semibold text-ink">{c.title}</p>
               <ul className="mt-4 space-y-2.5 text-sm">
                 {c.links.map((l) => (
                   <li key={l.href}>
-                    <Link href={l.href} className="text-ink/70 transition hover:text-ink">
+                    <Link href={l.href} className="text-ink/60 transition duration-300 ease-premium hover:text-ink">
                       {l.label}
                     </Link>
                   </li>
@@ -64,7 +64,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 border-t hairline pt-6 text-xs text-ink/40">
+        <div className="mt-16 border-t hairline pt-6 text-xs text-ink/50">
           <p>{t.footerCopyright.replace("{year}", String(year))}</p>
         </div>
       </div>

@@ -1,15 +1,18 @@
 "use client";
 
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { ChatBox } from "@/components/ChatBox";
+import { CtaPanel } from "@/components/landing/Cta";
+import { enter, reveal } from "@/components/landing/motion";
+import { cn } from "@/lib/utils";
 
 function AboutContent() {
   const { t } = useLanguage();
+  const rm = useReducedMotion();
 
   const values = [
     { title: t.aboutVal1Title, body: t.aboutVal1Body },
@@ -23,104 +26,95 @@ function AboutContent() {
   ];
 
   return (
-    <div className="relative">
+    <div className="light-surface relative overflow-x-clip">
       <AmbientBackground />
       <Navbar />
       <main>
         {/* Hero */}
-        <section className="mx-auto max-w-6xl px-6 pt-16 md:pt-24">
-          <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
+        <section className="mx-auto max-w-6xl px-6 pb-20 pt-12 md:pb-28 md:pt-20">
+          <motion.p {...enter(0, rm)} className="text-sm font-medium text-nordic-600">
             {t.aboutKicker}
-          </p>
+          </motion.p>
           <motion.h1
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-            className="mt-4 max-w-3xl font-display text-5xl leading-[1.05] md:text-6xl"
+            {...enter(1, rm)}
+            className="mt-5 max-w-4xl font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl"
           >
             {t.aboutTitle}
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.08 }}
-            className="mt-6 max-w-2xl text-lg leading-relaxed text-ink/70"
+            {...enter(2, rm)}
+            className="mt-8 max-w-2xl text-lg leading-relaxed text-ink/65 md:text-xl"
           >
             {t.aboutLead}
           </motion.p>
         </section>
 
         {/* Story */}
-        <section className="mx-auto mt-20 max-w-6xl px-6 md:mt-28">
-          <div className="grid gap-10 border-t-2 border-ink pt-10 md:grid-cols-[1fr_1.4fr]">
-            <h2 className="font-display text-3xl leading-tight md:text-4xl">
+        <section className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+          <motion.div
+            {...reveal(0, rm)}
+            className="grid gap-10 border-t-2 border-ink pt-10 md:grid-cols-[1fr_1.4fr] md:gap-20"
+          >
+            <h2 className="font-display text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
               {t.aboutStoryTitle}
             </h2>
-            <p className="text-base leading-relaxed text-ink/70 md:text-lg">
-              {t.aboutStoryBody}
-            </p>
-          </div>
+            <p className="text-base leading-relaxed text-ink/70 md:text-lg">{t.aboutStoryBody}</p>
+          </motion.div>
         </section>
 
-        {/* Stats */}
-        <section className="mt-20 border-y hairline bg-grain md:mt-28">
-          <div className="mx-auto max-w-6xl px-6 py-16">
-            <p className="font-sans text-sm uppercase tracking-[0.2em] text-nordic-600">
-              {t.aboutStatsTitle}
-            </p>
-            <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border hairline bg-ink/10 sm:grid-cols-3">
-              {stats.map((s, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.08 }}
-                  className="bg-paper p-8"
-                >
-                  <p className="font-display text-4xl text-ink">{s.val}</p>
-                  <p className="mt-2 text-sm text-ink/60">{s.label}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Values */}
-        <section className="mx-auto max-w-6xl px-6 py-20 md:py-28">
-          <h2 className="max-w-md font-display text-4xl md:text-5xl">{t.aboutValuesTitle}</h2>
-          <div className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
-            {values.map((v, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ type: "spring", bounce: 0, duration: 0.5, delay: i * 0.08 }}
-                className="border-t-2 border-ink pt-6"
-              >
-                <h3 className="font-display text-2xl">{v.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-ink/65">{v.body}</p>
+        {/* Stats: large type on a tinted band, no cards */}
+        <section className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+          <h2 className="sr-only">{t.aboutStatsTitle}</h2>
+          <div className="light-surface grid divide-y divide-ink/10 rounded-[2rem] bg-nordic-50 px-8 md:grid-cols-3 md:divide-x md:divide-y-0 md:px-0 md:py-14">
+            {stats.map((s, i) => (
+              <motion.div key={i} {...reveal(i, rm)} className="py-10 md:px-10 md:py-0">
+                <p className="font-display text-4xl font-semibold tracking-tight text-nordic-700 md:text-5xl">
+                  {s.val}
+                </p>
+                <p className="mt-3 max-w-[16rem] text-sm leading-relaxed text-ink/65">{s.label}</p>
               </motion.div>
             ))}
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="mx-auto max-w-6xl px-6 pb-24">
-          <div className="flex flex-col gap-6 rounded-3xl border hairline bg-ink px-8 py-12 text-paper sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="font-display text-3xl">{t.aboutCtaTitle}</h2>
-              <p className="mt-2 text-sm text-paper/70">{t.aboutCtaBody}</p>
-            </div>
-            <Link
-              href="/register"
-              className="shrink-0 rounded-full bg-paper px-7 py-3.5 text-sm font-medium text-ink transition hover:bg-paper/90 active:scale-[0.97] active:opacity-90"
-            >
-              {t.startFree}
-            </Link>
+        {/* Values: asymmetric trio */}
+        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+          <h2 className="max-w-md font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+            {t.aboutValuesTitle}
+          </h2>
+          <div className="mt-14 grid grid-flow-dense gap-5 md:grid-cols-2">
+            {values.map((v, i) => (
+              <motion.div
+                key={i}
+                {...reveal(i, rm)}
+                className={cn("bezel", i === 0 && "md:row-span-2")}
+              >
+                <div
+                  className={cn(
+                    "bezel-core flex h-full flex-col p-8 md:p-10",
+                    i === 0 &&
+                      "light-surface justify-end bg-[radial-gradient(130%_100%_at_0%_0%,rgb(var(--accent-tint))_0%,#fffdf8_70%)] md:min-h-[22rem]",
+                  )}
+                >
+                  <h3 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">
+                    {v.title}
+                  </h3>
+                  <p className="mt-3 max-w-md text-base leading-relaxed text-ink/65">
+                    {v.body}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </section>
+
+        <CtaPanel
+          title={t.aboutCtaTitle}
+          body={t.aboutCtaBody}
+          href="/register"
+          label={t.startFree}
+          note={t.heroDisclaimer}
+        />
       </main>
       <Footer />
       <ChatBox />
