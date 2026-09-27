@@ -17,7 +17,7 @@ export const runtime = "nodejs";
  * register → wait → check-logs cycle while debugging delivery problems.
  *
  * Auth: either a logged-in admin session, OR a `x-debug-secret` header
- * matching CRON_SECRET — the latter exists so this is reachable even while
+ * matching CRON_SECRET - the latter exists so this is reachable even while
  * you can't log in yet (e.g. while debugging the verification email itself).
  */
 function timingSafeEqual(a: string, b: string): boolean {
@@ -55,12 +55,12 @@ export async function GET(req: NextRequest) {
   const describeKey = (v: string | undefined) =>
     v ? `${v.slice(0, 9)}... (len ${v.length})` : "(not set)";
   const keyTypeVerdict = !apiKey
-    ? "BREVO_API_KEY is NOT set — the HTTP API needs it (xkeysib-…)"
+    ? "BREVO_API_KEY is NOT set - the HTTP API needs it (xkeysib-…)"
     : apiKey.startsWith("xkeysib")
-      ? "OK — BREVO_API_KEY looks like a v3 API key"
+      ? "OK - BREVO_API_KEY looks like a v3 API key"
       : apiKey.startsWith("xsmtpsib")
-        ? "WRONG TYPE — BREVO_API_KEY holds an SMTP key (xsmtpsib-…). Create a key on the API Keys tab, not the SMTP tab."
-        : `UNKNOWN PREFIX — BREVO_API_KEY starts with "${apiKey.slice(0, 9)}", expected "xkeysib-"`;
+        ? "WRONG TYPE - BREVO_API_KEY holds an SMTP key (xsmtpsib-…). Create a key on the API Keys tab, not the SMTP tab."
+        : `UNKNOWN PREFIX - BREVO_API_KEY starts with "${apiKey.slice(0, 9)}", expected "xkeysib-"`;
 
   const masked = {
     BREVO_API_KEY_used_by_HTTP_API: describeKey(apiKey),
@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
   };
 
   // Per-variable byte-level health: flags invisible corruption (stripped by
-  // clean()) and rogue non-ASCII chars — e.g. a stray "ä" in the credentials —
+  // clean()) and rogue non-ASCII chars - e.g. a stray "ä" in the credentials -
   // that a masked dashboard field hides and that Brevo rejects with an opaque
   // 535. Never includes the secret values themselves.
   const credentials = emailConfigDiagnostics();
@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
   const configured = isEmailConfigured();
   const connection = configured
     ? await verifyEmailConnection()
-    : { ok: false as const, error: "Not configured — see env vars above" };
+    : { ok: false as const, error: "Not configured - see env vars above" };
 
   return NextResponse.json({ configured, env: masked, credentials, connection });
 }

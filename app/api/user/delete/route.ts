@@ -15,23 +15,23 @@ export const runtime = "nodejs";
  * Deletes the account. FK cascades remove the user's receipts, expenses,
  * subscriptions and integration tokens. audit_logs.userId is ON DELETE SET NULL,
  * so the 7-year audit trail (Bokföringslagen) survives de-identified rather than
- * being destroyed — this is the safer reading of the GDPR-vs-retention tension.
+ * being destroyed - this is the safer reading of the GDPR-vs-retention tension.
  *
  * Pre-deletion steps (in order):
  *   1. Firm owner guard: block if other members exist (delete the firm or
- *      transfer ownership first via firm settings). Auto-delete if sole member —
+ *      transfer ownership first via firm settings). Auto-delete if sole member -
  *      avoids an orphaned accountingFirms row with ownerId SET NULL and no
  *      recoverable owner role left in firmMembers.
  *   2. Company owner: auto-promote the oldest admin to owner so the company
  *      stays manageable. No admin → company survives without an owner, which is
  *      acceptable when the owner was the only member.
  *   3. Cancel active Stripe subscription immediately so billing stops. Non-
- *      blocking — a Stripe error never prevents erasure (erasure is the user's
+ *      blocking - a Stripe error never prevents erasure (erasure is the user's
  *      right under GDPR).
  *
  * Pricing V3 §E: if the account CONSUMED a trial, we persist a pseudonymised
  * one-way token derived from its email BEFORE the wipe, so the same email can't
- * simply delete-and-restart the free trial. Erasure otherwise proceeds fully —
+ * simply delete-and-restart the free trial. Erasure otherwise proceeds fully -
  * this token (an HMAC, non-reversible) is the only thing retained, disclosed in
  * the Privacy Policy (§F.5/§F.6).
  */
@@ -69,7 +69,7 @@ export async function DELETE(req: NextRequest) {
         { status: 409 },
       );
     }
-    // Sole member — delete the firm; FK cascades clean up firmMembers/accountantClients/workerAssignments.
+    // Sole member - delete the firm; FK cascades clean up firmMembers/accountantClients/workerAssignments.
     await db.delete(accountingFirms).where(eq(accountingFirms.id, ownedFirm.id));
   }
 
@@ -125,7 +125,7 @@ export async function DELETE(req: NextRequest) {
     try {
       await recordTrialGuard(u.email);
     } catch (e) {
-      // Never block erasure over the guard write — the deletion is the user's
+      // Never block erasure over the guard write - the deletion is the user's
       // right; the guard is a secondary anti-abuse layer.
       console.error("trial guard write failed (non-blocking):", e);
     }

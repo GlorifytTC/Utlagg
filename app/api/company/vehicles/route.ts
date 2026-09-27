@@ -44,7 +44,7 @@ const schema = z.object({
     .max(10)
     .transform((v) => v.toUpperCase().replace(/\s+/g, ""))
     .refine((v) => SWEDISH_PLATE.test(v), {
-      message: "Ogiltigt registreringsnummer – ange ABC123 eller ABC12A",
+      message: "Ogiltigt registreringsnummer - ange ABC123 eller ABC12A",
     }),
   model: z.string().trim().max(100).optional(),
   fuelType: z.enum(["petrol", "diesel", "hybrid", "electric"]).default("petrol"),

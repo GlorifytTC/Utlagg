@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Kvittino brand mark — a rounded-square badge in the terracotta accent holding a
+ * Kvittino brand mark - a rounded-square badge in the terracotta accent holding a
  * cream receipt silhouette (torn-perforation bottom edge) with three printed line
  * bars. Badge fills with the accent and the receipt takes the surface colour, both
  * theme-aware via Tailwind `fill-*` utilities so the mark works on paper and AMOLED.
@@ -31,7 +31,7 @@ export function LogoMark({
       className={className}
     >
       <rect x="2" y="2" width="28" height="28" rx="8" className="fill-nordic-600" />
-      {/* Receipt body — cream on paper, true-black on AMOLED (only when adaptive) */}
+      {/* Receipt body - cream on paper, true-black on AMOLED (only when adaptive) */}
       <path
         d="M9 8h14v13l-2.3-1.8L18.4 21l-2.3-1.8L13.8 21l-2.3-1.8L9 21z"
         className={cn("fill-paper", adaptive && "dark:fill-[#050505]")}

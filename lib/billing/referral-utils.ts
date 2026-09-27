@@ -1,5 +1,5 @@
 /**
- * Pure referral helpers (no I/O) — email normalisation, disposable-domain
+ * Pure referral helpers (no I/O) - email normalisation, disposable-domain
  * detection and referral-code generation. Kept side-effect-free so the dedup
  * rules can be unit-tested (see tests/unit/referrals.test.ts).
  */

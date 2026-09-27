@@ -8,7 +8,7 @@ import { logAudit } from "@/lib/audit";
 
 /**
  * Purchased credit packs (spec §3.3). Credits roll over and must not expire for
- * at least 12 months (consumer law) — set expiry to purchase + CREDIT_PACK
+ * at least 12 months (consumer law) - set expiry to purchase + CREDIT_PACK
  * .validMonths. Grants are keyed by the Stripe reference so replaying the
  * purchase webhook can never grant the same pack twice.
  */
@@ -47,7 +47,7 @@ export async function grantCreditPack(input: {
     .onConflictDoNothing({ target: scanCredits.stripeRef })
     .returning({ id: scanCredits.id });
 
-  if (inserted.length === 0) return { granted: false }; // replay — already granted
+  if (inserted.length === 0) return { granted: false }; // replay - already granted
 
   await logAudit({
     userId: input.userId,

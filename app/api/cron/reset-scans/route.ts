@@ -15,7 +15,7 @@ export const runtime = "nodejs";
  * Under PRICING_V2 the monthly plan quota resets implicitly: scan_usage rows are
  * keyed by billing period, so a new period gets a fresh row automatically. This
  * job then only needs to (a) keep the legacy counter reset for flag-off
- * environments and (b) close out ended periods — report accrued overage to
+ * environments and (b) close out ended periods - report accrued overage to
  * Stripe and fire upgrade nudges.
  */
 export async function GET(req: NextRequest) {

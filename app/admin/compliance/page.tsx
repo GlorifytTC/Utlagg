@@ -33,7 +33,7 @@ export default async function AdminCompliance() {
 
       <Card>
         <CardHeader>
-          <CardTitle>GDPR — Subject Access Request</CardTitle>
+          <CardTitle>GDPR - Subject Access Request</CardTitle>
           <CardDescription>Exportera all data för en användare som JSON</CardDescription>
         </CardHeader>
         <CardContent>

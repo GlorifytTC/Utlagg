@@ -1,6 +1,6 @@
 import { getT } from "@/lib/i18n-server";
 
-export const metadata = { title: "Säkerhet — Kvittino" };
+export const metadata = { title: "Säkerhet - Kvittino" };
 
 export default function SecurityPage() {
   const t = getT();

@@ -11,7 +11,7 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 
 /**
- * POST — the CLIENT (company owner/admin) revokes an accountant's access.
+ * POST - the CLIENT (company owner/admin) revokes an accountant's access.
  *
  * AUTHORIZATION (server-side, never trusts a browser companyId):
  *   authenticated user → resolve their CURRENT company from the DB → verify
@@ -20,18 +20,18 @@ export const runtime = "nodejs";
  *
  * Because the company is resolved from the caller's own membership, a user of
  * Company A can never revoke an accountant's relationship with Company B by
- * supplying an accountant id — the WHERE is bound to the caller's own company.
+ * supplying an accountant id - the WHERE is bound to the caller's own company.
  *
  * Revoke sets status=revoked, revokedAt=now, revokedBy=caller. Historical rows
  * are preserved (no delete). The accountant loses access immediately:
  * requireCompanyAccess only returns for status='active', so the next request
- * yields null. Only an ACTIVE relationship is affected — a pending request is
+ * yields null. Only an ACTIVE relationship is affected - a pending request is
  * untouched (this endpoint never creates or mutates a pending row), and a
  * repeated revoke is a no-op that writes no second audit event.
  *
  * Relationships created via BOTH the invitation accept and the connection
  * request accept live in the same accountantClients table, so both are
- * revocable here — there is no parallel model.
+ * revocable here - there is no parallel model.
  */
 export async function POST(
   req: NextRequest,
@@ -43,7 +43,7 @@ export async function POST(
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
 
-  // Company resolved from the caller's identity — never from input.
+  // Company resolved from the caller's identity - never from input.
   const membership = await getUserCompany(session.user.id);
   if (!membership) return NextResponse.json({ error: "Inget företag." }, { status: 404 });
   if (!canManageCompany(membership.role)) {

@@ -1,16 +1,16 @@
 /**
  * Sends transactional email via Brevo's HTTP API (https://api.brevo.com/v3/smtp/email).
  *
- * IMPORTANT — why HTTP and not SMTP: Vercel's serverless functions frequently
+ * IMPORTANT - why HTTP and not SMTP: Vercel's serverless functions frequently
  * block or throttle outbound SMTP (port 587/465), so nodemailer connections
- * hang or time out — the classic "account created but confirmation email
+ * hang or time out - the classic "account created but confirmation email
  * failed" symptom. An HTTPS POST works reliably in that environment. This is
  * the transport the app now uses.
  *
  * Brevo issues two different secrets: an SMTP key and a separate v3 API key.
  * The HTTP API requires the v3 API KEY (starts with "xkeysib-") in the
  * `api-key` header. We read BREVO_API_KEY, falling back to BREVO_SMTP_KEY for
- * backward compatibility, but for HTTP the value MUST be a v3 API key — an
+ * backward compatibility, but for HTTP the value MUST be a v3 API key - an
  * SMTP-only key will be rejected with 401.
  */
 
@@ -24,15 +24,15 @@ const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
  *   1. Surrounding quotes/backslashes baked in by Railway's/Vercel's variable
  *      editor, e.g. BREVO_FROM_EMAIL="noreply@utlagg.se" → the literal value
  *      including the quotes.
- *   2. Invisible junk — zero-width spaces, BOMs, non-breaking spaces, control
- *      characters — and stray surrounding whitespace. A pasted trailing
+ *   2. Invisible junk - zero-width spaces, BOMs, non-breaking spaces, control
+ *      characters - and stray surrounding whitespace. A pasted trailing
  *      newline in an API key produces a generic, hard-to-diagnose SMTP 535.
  *
  * It deliberately does NOT strip visible non-ASCII letters (e.g. the "ä" in a
  * display name like "Utlägg"), which are legitimate in some fields. Those are
  * reported by nonAsciiReport() instead, so a rogue "ä" in a field that MUST be
  * ASCII (email address, API key, login) is surfaced rather than silently
- * mangled — that exact character is what took mail down last time.
+ * mangled - that exact character is what took mail down last time.
  */
 function clean(v: string): string {
   return v
@@ -138,7 +138,7 @@ export function emailConfigDiagnostics(): Record<string, unknown> {
 }
 
 export function isEmailConfigured(): boolean {
-  // The HTTP API needs only the API key and a sender address — the SMTP
+  // The HTTP API needs only the API key and a sender address - the SMTP
   // login is no longer required (it was only for the SMTP relay).
   return Boolean(
     (process.env.BREVO_API_KEY || process.env.BREVO_SMTP_KEY) &&
@@ -166,7 +166,7 @@ async function brevoSendHttp(
       status: 401,
       error:
         "Wrong Brevo credential: BREVO_API_KEY holds an SMTP key (xsmtpsib-…). " +
-        "The HTTP API needs a v3 API key (xkeysib-…) — create one on Brevo's " +
+        "The HTTP API needs a v3 API key (xkeysib-…) - create one on Brevo's " +
         "\"API Keys\" tab (not the SMTP tab) and set it as BREVO_API_KEY.",
     };
   }
@@ -264,7 +264,7 @@ async function brevoSendSmtp(
  * Sends via the HTTP API first (reliable on serverless), and falls back to
  * SMTP if that fails for any reason. Using both means a scoped/rejected API
  * key, or a blocked outbound port, can no longer take email delivery down on
- * its own — whichever transport works, the mail goes out.
+ * its own - whichever transport works, the mail goes out.
  */
 async function brevoSend(
   to: string,
@@ -273,7 +273,7 @@ async function brevoSend(
 ): Promise<BrevoSendResult> {
   const http = await brevoSendHttp(to, subject, html);
   if (http.ok) return http;
-  console.error(`[EMAIL] HTTP API failed (${http.status}) — trying SMTP fallback. ${http.error}`);
+  console.error(`[EMAIL] HTTP API failed (${http.status}) - trying SMTP fallback. ${http.error}`);
   const smtp = await brevoSendSmtp(to, subject, html);
   if (smtp.ok) {
     console.log("[EMAIL] SMTP fallback succeeded.");
@@ -304,7 +304,7 @@ export async function verifyEmailConnection(): Promise<
       if (res.ok) return { ok: true, via: "http-api" };
       httpNote = `HTTP /v3/account ${res.status}${
         res.status === 401
-          ? " (key rejected here — may still be able to SEND if it is a scoped key)"
+          ? " (key rejected here - may still be able to SEND if it is a scoped key)"
           : ""
       }`;
     } catch (err) {
@@ -333,7 +333,7 @@ export async function verifyEmailConnection(): Promise<
       return { ok: true, via: `smtp (http check: ${httpNote})` };
     } catch (err) {
       const e = err as Error;
-      return { ok: false, error: `Both failed — ${httpNote}; SMTP: ${e.message}` };
+      return { ok: false, error: `Both failed - ${httpNote}; SMTP: ${e.message}` };
     }
   }
   return { ok: false, error: `${httpNote}; no SMTP credentials to fall back on` };
@@ -346,7 +346,7 @@ async function send(
 ): Promise<boolean> {
   if (!isEmailConfigured()) {
     console.error(
-      `[email] NOT CONFIGURED — missing BREVO_API_KEY (or BREVO_SMTP_KEY) or BREVO_FROM_EMAIL. Skipped "${subject}" to ${to}.`,
+      `[email] NOT CONFIGURED - missing BREVO_API_KEY (or BREVO_SMTP_KEY) or BREVO_FROM_EMAIL. Skipped "${subject}" to ${to}.`,
     );
     return false;
   }
@@ -365,7 +365,7 @@ async function send(
   const result = await brevoSend(to, subject, html);
   if (result.ok) {
     console.log(
-      `[EMAIL] <<< SENT OK in ${Date.now() - startedAt}ms — messageId=${result.messageId}`,
+      `[EMAIL] <<< SENT OK in ${Date.now() - startedAt}ms - messageId=${result.messageId}`,
     );
     console.log("=".repeat(70));
     return true;
@@ -473,7 +473,7 @@ function buildEmailHtml(
     } else if (line.trim().startsWith("### ")) {
       bodyHtml += `<h3 style="font-size:15px;margin:12px 0 8px">${escapeHtml(line.trim().slice(4))}</h3>`;
     } else if (line.trim().startsWith("- ")) {
-      bodyHtml += `<p style="margin:4px 0 4px 16px;line-height:1.6">– ${escapeHtml(line.trim().slice(2))}</p>`;
+      bodyHtml += `<p style="margin:4px 0 4px 16px;line-height:1.6">- ${escapeHtml(line.trim().slice(2))}</p>`;
     } else if (line.trim().startsWith("[button]")) {
       // Syntax: [button] url | Label text
       const rest = line.trim().slice(8).trim();
@@ -504,7 +504,7 @@ Ditt konto har skapats.
 
 Om du inte skapade detta konto, kontakta {{ support_email }}.
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
 
 const VERIFY_TEMPLATE = `# Verifiera din e-postadress
 
@@ -518,7 +518,7 @@ Länken gäller i {{ expiration_minutes }} minuter.
 
 Om du inte begärde detta kan du ignorera meddelandet eller kontakta {{ support_email }}.
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
 
 const RESET_TEMPLATE = `# Återställ lösenord
 
@@ -532,7 +532,7 @@ Länken gäller i {{ expiration_minutes }} minuter.
 
 Om du inte begärde detta kan du ignorera mejlet eller kontakta {{ support_email }}.
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
 
 const PASSWORD_CHANGED_TEMPLATE = `# Ditt lösenord har ändrats
 
@@ -542,7 +542,7 @@ Ditt lösenord har uppdaterats.
 
 Om du inte gjorde denna ändring, kontakta {{ support_email }} omedelbart.
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
 
 const SUBSCRIPTION_TEMPLATE = `# Prenumeration bekräftad
 
@@ -556,7 +556,7 @@ Nästa debiteringsdatum: {{ billing_date }}
 
 Frågor: {{ support_email }}
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
 
 const PAYMENT_RECEIPT_TEMPLATE = `# Betalningskvitto
 
@@ -570,7 +570,7 @@ Datum: {{ billing_date }}
 
 [button] {{ action_url }} | Se betalningsuppgifter
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
 
 const PAYMENT_FAILED_TEMPLATE = `# Betalning misslyckades
 
@@ -584,7 +584,7 @@ Vi försöker igen automatiskt inom kort. För att undvika avbrott i tjänsten, 
 
 Frågor: {{ support_email }}
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
 
 const SUBSCRIPTION_CANCELED_TEMPLATE = `# Prenumeration avslutad
 
@@ -598,7 +598,7 @@ Du har tillgång fram till {{ billing_date }}.
 
 För hjälp, kontakta {{ support_email }}.
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
 
 // ─── Public API ──────────────────────────────────────────────
 
@@ -712,7 +712,7 @@ export function sendPaymentFailed(
     action_url: params.actionUrl,
     support_email: SUPPORT_EMAIL,
   });
-  return send(to, "Betalning misslyckades – åtgärd krävs", html);
+  return send(to, "Betalning misslyckades - åtgärd krävs", html);
 }
 
 export function sendSubscriptionCanceled(
@@ -762,11 +762,11 @@ Du har nu **30 dagars kostnadsfri provperiod** med full tillgång till Kvittino 
 - **Efter provperioden:** planen **${params.planName}** (${params.priceLabel})
 - **Första betalning dras:** ${params.firstChargeDate}
 
-Om du inte säger upp prenumerationen före provperiodens slut övergår den automatiskt till en betald prenumeration. Du kan när som helst säga upp den utan kostnad via dina kontoinställningar — vi påminner dig via e-post innan den första betalningen dras.
+Om du inte säger upp prenumerationen före provperiodens slut övergår den automatiskt till en betald prenumeration. Du kan när som helst säga upp den utan kostnad via dina kontoinställningar - vi påminner dig via e-post innan den första betalningen dras.
 
 [button] ${params.actionUrl} | Hantera prenumeration
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
   const html = buildEmailHtml(body, {
     user_name: params.userName,
     app_name: APP_NAME,
@@ -800,7 +800,7 @@ Vill du inte fortsätta? Säg upp utan kostnad före dess via dina kontoinställ
 
 [button] ${params.actionUrl} | Hantera prenumeration
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
   const html = buildEmailHtml(body, {
     user_name: params.userName,
     app_name: APP_NAME,
@@ -829,24 +829,24 @@ export function sendPlanChangeNotice(
 
 Hej ${params.userName || "där"}!
 
-Vi har uppdaterat våra planer. Gratisplanen ersätts av en **30 dagars kostnadsfri provperiod** med full tillgång till Kvittino Pro. Ditt konto har nu startat provperioden — inget kort krävs, och den övergår inte automatiskt till en betald plan.
+Vi har uppdaterat våra planer. Gratisplanen ersätts av en **30 dagars kostnadsfri provperiod** med full tillgång till Kvittino Pro. Ditt konto har nu startat provperioden - inget kort krävs, och den övergår inte automatiskt till en betald plan.
 
 När provperioden tar slut övergår kontot till **läsläge**, där du alltid kan exportera dina kvitton (CSV) och ladda ner dina originalfiler.
 
 [button] ${params.actionUrl} | Öppna Kvittino
 
-— ${APP_NAME}`
+- ${APP_NAME}`
       : `# Ändring av din gratisplan
 
 Hej ${params.userName || "där"}!
 
-Vi har uppdaterat våra planer och gratisplanen upphör. Ditt konto övergår till **läsläge**. Dina uppgifter raderas inte nu — du behåller full tillgång att granska och exportera dina underlag (CSV) och ladda ner dina originalfiler, i enlighet med exportperioden i våra villkor.
+Vi har uppdaterat våra planer och gratisplanen upphör. Ditt konto övergår till **läsläge**. Dina uppgifter raderas inte nu - du behåller full tillgång att granska och exportera dina underlag (CSV) och ladda ner dina originalfiler, i enlighet med exportperioden i våra villkor.
 
 Vill du skanna igen? Aktivera en betald plan när som helst.
 
 [button] ${params.actionUrl} | Öppna Kvittino
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
   const html = buildEmailHtml(body, {
     user_name: params.userName,
     app_name: APP_NAME,
@@ -874,7 +874,7 @@ ${params.preview.length > 200 ? params.preview.slice(0, 200) + "…" : params.pr
 
 [button] ${params.chatUrl} | Öppna chatten
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
   const html = buildEmailHtml(body, {
     user_name: "",
     app_name: APP_NAME,
@@ -894,7 +894,7 @@ Du har blivit inbjuden att gå med i ett företag på ${APP_NAME}. Logga in elle
 
 [button] ${url} | Acceptera inbjudan
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
   const html = buildEmailHtml(body, {
     user_name: "",
     app_name: APP_NAME,
@@ -917,7 +917,7 @@ En redovisningskonsult har bjudit in dig att ge dem åtkomst till ditt företags
 
 [button] ${url} | Granska och acceptera
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
   const html = buildEmailHtml(body, {
     user_name: "",
     app_name: APP_NAME,
@@ -940,7 +940,7 @@ Du har blivit inbjuden att gå med i ett byråkonto på ${APP_NAME}. Logga in me
 
 [button] ${url} | Gå med i byrån
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
   const html = buildEmailHtml(body, {
     user_name: "",
     app_name: APP_NAME,
@@ -964,7 +964,7 @@ E-post: ${fromEmail}${note ? `\n\nMeddelande: ${note}` : ""}
 
 Svara dem direkt för att komma överens om pris, och sätt sedan deras plan till Enterprise i adminpanelen.
 
-— ${APP_NAME}`;
+- ${APP_NAME}`;
   const html = buildEmailHtml(body, {
     user_name: "",
     app_name: APP_NAME,
@@ -1031,7 +1031,7 @@ export async function sendTestEmail(
   }
   const result = await brevoSend(
     to,
-    "Kvittino — testmejl",
+    "Kvittino - testmejl",
     layout(
       "<h2>Testmejl</h2><p>Det här är ett testmejl från Kvittino's e-postdebug-endpoint. Om du ser det fungerar Brevo-konfigurationen.</p>",
     ),

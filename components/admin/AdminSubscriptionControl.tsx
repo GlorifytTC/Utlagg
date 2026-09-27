@@ -57,14 +57,14 @@ export function AdminSubscriptionControl({ userId, current }: Props) {
           {current.paused ? " · PAUSAD" : ""}
           {current.grantedUntil
             ? new Date(current.grantedUntil).getTime() < Date.now()
-              ? ` · UTGÅNGEN ${new Date(current.grantedUntil).toLocaleDateString("sv-SE")} — ingen aktiv plan`
+              ? ` · UTGÅNGEN ${new Date(current.grantedUntil).toLocaleDateString("sv-SE")} - ingen aktiv plan`
               : ` · gäller t.o.m. ${new Date(current.grantedUntil).toLocaleDateString("sv-SE")}`
             : ""}
         </p>
         {current.grantedUntil &&
           new Date(current.grantedUntil).getTime() < Date.now() && (
             <p className="mt-1 text-amber-700 dark:text-amber-300">
-              Den tilldelade planen har gått ut — användaren är nedgraderad till Free.
+              Den tilldelade planen har gått ut - användaren är nedgraderad till Free.
             </p>
           )}
         {!current.grantedUntil && current.tier === "free" && (

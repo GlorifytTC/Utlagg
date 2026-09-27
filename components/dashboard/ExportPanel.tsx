@@ -12,7 +12,7 @@ function toIso(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-/** Swedish VAT quarters: Q1 Jan–Mar, Q2 Apr–Jun, Q3 Jul–Sep, Q4 Oct–Dec —
+/** Swedish VAT quarters: Q1 Jan-Mar, Q2 Apr-Jun, Q3 Jul-Sep, Q4 Oct-Dec -
  * matches how Skatteverket actually structures quarterly VAT reporting,
  * not a generic rolling 3-month window. */
 function quarterRange(year: number, quarter: number): { from: Date; to: Date } {

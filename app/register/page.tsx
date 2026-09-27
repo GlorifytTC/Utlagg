@@ -7,7 +7,7 @@ import { Logo } from "@/components/brand/Logo";
 import { useLanguage } from "@/context/LanguageContext";
 
 // Cooldown between verification-email sends. Also armed right after signup so
-// the button can't be hit instantly — gives the original mail time to arrive.
+// the button can't be hit instantly - gives the original mail time to arrive.
 const RESEND_COOLDOWN = 30;
 
 export default function RegisterPage() {
@@ -124,7 +124,7 @@ function RegisterForm() {
             </p>
           )}
 
-          {/* Resend, available in both cases — whether the first send failed
+          {/* Resend, available in both cases - whether the first send failed
               outright or the mail simply never turned up. */}
           <div className="mt-6">
             <button

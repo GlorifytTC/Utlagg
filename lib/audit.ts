@@ -3,7 +3,7 @@ import { auditLogs } from "@/db/schema";
 import type { NextRequest } from "next/server";
 
 /**
- * Append an immutable audit-log entry. Required for Bokföringslagen — these
+ * Append an immutable audit-log entry. Required for Bokföringslagen - these
  * rows must be retained for 7 years and should never be updated or deleted by
  * application code. (Enforce retention at the DB/backup layer too.)
  */

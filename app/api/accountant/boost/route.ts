@@ -15,18 +15,18 @@ import {
 export const runtime = "nodejs";
 
 /**
- * POST — start a one-time Boost Checkout (49 kr / 7 days). Accountant-only
- * (requireAccountant → 403). The SERVER fixes amount/currency/duration — the
+ * POST - start a one-time Boost Checkout (49 kr / 7 days). Accountant-only
+ * (requireAccountant → 403). The SERVER fixes amount/currency/duration - the
  * browser sends nothing but the request itself, so it can never change the
  * price, currency, duration, or target another accountant (the accountant is
  * the authenticated session, never an input).
  *
  * Mirrors the existing credit-pack checkout: mode "payment", reuse the existing
  * Stripe customer, metadata read by the webhook. Boost is granted ONLY by the
- * verified webhook (idempotent on session id) — never here, never from /success.
+ * verified webhook (idempotent on session id) - never here, never from /success.
  *
  * If the accountant already has an active boost, we refuse a second purchase
- * (simplest safe behavior — avoids ambiguous overlapping expiries).
+ * (simplest safe behavior - avoids ambiguous overlapping expiries).
  */
 export async function POST(_req: NextRequest) {
   const acct = await requireAccountant();
@@ -111,7 +111,7 @@ export async function POST(_req: NextRequest) {
   }
 }
 
-/** GET — the accountant's authoritative boost state (for the UI). */
+/** GET - the accountant's authoritative boost state (for the UI). */
 export async function GET() {
   const acct = await requireAccountant();
   if (!acct) return NextResponse.json({ error: "Saknar behörighet" }, { status: 403 });

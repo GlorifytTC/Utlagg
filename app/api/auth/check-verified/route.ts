@@ -14,8 +14,8 @@ const schema = z.object({ email: z.string().email(), password: z.string().min(1)
 
 /**
  * After a failed credentials sign-in, the login page calls this to find out
- * *why* it failed — wrong password, or correct password but unverified
- * email — since NextAuth v4 collapses every authorize() failure into one
+ * *why* it failed - wrong password, or correct password but unverified
+ * email - since NextAuth v4 collapses every authorize() failure into one
  * generic error. Requires the correct password so it can't be used to probe
  * whether an email is registered.
  */

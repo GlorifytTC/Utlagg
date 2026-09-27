@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
     amount = String(m.amount);
   }
 
-  // Owners, admins and approvers don't need anyone to approve them — the
+  // Owners, admins and approvers don't need anyone to approve them - the
   // request is recorded already-approved instead of sitting pending (which
   // would otherwise mean approving your own expense). Only 'member' employees
   // create a pending request for a manager.

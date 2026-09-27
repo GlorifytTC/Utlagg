@@ -5,13 +5,13 @@ import { vendorCorrections } from "@/db/schema";
 /**
  * Shared, cross-user OCR learning. When any user corrects a vendor name
  * OCR got wrong, that correction is saved here keyed on the receipt's
- * Swedish org number ("556677-8899") — a fixed, OCR-reliable identifier
+ * Swedish org number ("556677-8899") - a fixed, OCR-reliable identifier
  * that's the same for every receipt from that company, regardless of how
  * garbled the store's stylized logo/name comes out in any given photo.
  *
  * Once one person corrects "net te" -> "Netto" for org number
- * 556677-8899, EVERY future receipt from that same company — for any
- * user, any company account — gets the right name automatically. This is
+ * 556677-8899, EVERY future receipt from that same company - for any
+ * user, any company account - gets the right name automatically. This is
  * what makes the system improve at the scale of "every Swedish company
  * that exists" without a paid API or a hand-maintained store list: the
  * userbase itself builds the list over time.
@@ -19,7 +19,7 @@ import { vendorCorrections } from "@/db/schema";
 
 /**
  * Records that a person corrected OCR's vendor guess. Safe to call even
- * when nothing actually changed — recordCorrection only writes when the
+ * when nothing actually changed - recordCorrection only writes when the
  * corrected value differs from what OCR produced.
  */
 export async function recordVendorCorrection(params: {
@@ -67,7 +67,7 @@ export async function recordVendorCorrection(params: {
       basCode: basCode ?? null,
     });
   } catch (e) {
-    // Learning is a nice-to-have layered on top of the regex parser —
+    // Learning is a nice-to-have layered on top of the regex parser -
     // never let a failure here block the person from saving their receipt.
     console.error("recordVendorCorrection failed (non-blocking):", e);
   }
@@ -75,7 +75,7 @@ export async function recordVendorCorrection(params: {
 
 /**
  * Looks up a learned correction. Org number match is exact and authoritative
- * (it's a fixed identifier, not fuzzy text) — checked first. Falls back to
+ * (it's a fixed identifier, not fuzzy text) - checked first. Falls back to
  * an exact OCR-text match for receipts where no org number was readable
  * (less powerful, since OCR noise varies photo to photo, but still catches
  * the same camera/lighting producing the same garbled text twice).

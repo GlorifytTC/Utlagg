@@ -1,15 +1,15 @@
 /**
- * SIE 4 export — the de-facto standard interchange format for Swedish accounting
+ * SIE 4 export - the de-facto standard interchange format for Swedish accounting
  * software (Fortnox, Visma, Bokio, …). RECEIPTS ONLY: customer invoices have a
  * separate export path and are never fed through this module. Each receipt
  * becomes one balanced verification (`#VER`) whose transaction rows (`#TRANS`)
  * sum to exactly 0.00:
  *
- *   1. cost account (receipt BAS code), net of VAT   — debit  (+)
- *   2. input VAT account 2640 (ingående moms)        — debit  (+)   [omitted if 0]
- *   3. payment / credit account                      — credit (−)
+ *   1. cost account (receipt BAS code), net of VAT   - debit  (+)
+ *   2. input VAT account 2640 (ingående moms)        - debit  (+)   [omitted if 0]
+ *   3. payment / credit account                      - credit (−)
  *
- * The credit account depends on HOW the receipt was paid — company card/bank
+ * The credit account depends on HOW the receipt was paid - company card/bank
  * (1930) vs. on account / unpaid (2440). Our receipts model does NOT record the
  * payment method, so the credit account is a caller-supplied parameter that
  * defaults to 1930. Confirm this, plus the BAS cost mapping, with the company's
@@ -21,7 +21,7 @@
  * (merged with any requested date range). This keeps all-time exports loadable.
  *
  * Spec: SIE file format v4B, https://sie.se/ . Output is CP437 ("PC8") encoded
- * bytes — see lib/cp437.ts for why UTF-8 is not acceptable.
+ * bytes - see lib/cp437.ts for why UTF-8 is not acceptable.
  */
 import { encodeCp437, type Cp437Warning } from "@/lib/cp437";
 import { getBasAccount } from "@/lib/bas";
@@ -38,7 +38,7 @@ const KNOWN_ACCOUNT_NAMES: Record<string, string> = {
   "2890": "Övriga kortfristiga skulder",
   "6991": "Övriga externa kostnader, avdragsgilla",
 };
-const DEFAULT_COST_ACCOUNT = "6991"; // misc deductible — matches lib/fortnox.ts
+const DEFAULT_COST_ACCOUNT = "6991"; // misc deductible - matches lib/fortnox.ts
 
 /** The subset of receipt fields the generator needs (framework-agnostic). */
 export interface SieReceiptInput {
@@ -98,7 +98,7 @@ export class SieBalanceError extends Error {
 /**
  * Validate/normalise a Swedish organisationsnummer. Valid = exactly 10 digits
  * (ignoring separators), emitted as NNNNNN-NNNN. Malformed values are returned
- * as-is with `valid: false` so the caller can warn instead of failing —
+ * as-is with `valid: false` so the caller can warn instead of failing -
  * important for test data like "02468-4360" (9 digits).
  */
 export function normalizeOrgNumber(raw: string): { value: string; valid: boolean } {
@@ -193,13 +193,13 @@ export function buildSie(opts: BuildSieOptions): BuildSieResult {
     let verDate = toDate(r.date);
     if (!verDate) {
       verDate = toDate(r.createdAt) ?? generatedAt;
-      warnings.push(`Kvitto ${r.id} saknar datum — använder ${sieDate(verDate)} istället.`);
+      warnings.push(`Kvitto ${r.id} saknar datum - använder ${sieDate(verDate)} istället.`);
     }
     if (!minVerDate || verDate < minVerDate) minVerDate = verDate;
     if (!maxVerDate || verDate > maxVerDate) maxVerDate = verDate;
 
     if (toNumber(r.totalAmount) === 0) {
-      warnings.push(`Kvitto ${r.id} har 0 kr i totalbelopp — verifikationen blir tom.`);
+      warnings.push(`Kvitto ${r.id} har 0 kr i totalbelopp - verifikationen blir tom.`);
     }
 
     const text = field(r.vendorName || "Kvitto");
@@ -234,12 +234,12 @@ export function buildSie(opts: BuildSieOptions): BuildSieResult {
     const org = normalizeOrgNumber(opts.company.orgNumber);
     if (!org.valid) {
       warnings.push(
-        `Ogiltigt organisationsnummer "${opts.company.orgNumber}" (måste vara 10 siffror, NNNNNN-NNNN) — exporterar ändå.`,
+        `Ogiltigt organisationsnummer "${opts.company.orgNumber}" (måste vara 10 siffror, NNNNNN-NNNN) - exporterar ändå.`,
       );
     }
     lines.push(`#ORGNR ${org.value}`);
   } else {
-    warnings.push("Organisationsnummer saknas — filen exporteras utan #ORGNR.");
+    warnings.push("Organisationsnummer saknas - filen exporteras utan #ORGNR.");
   }
 
   lines.push(`#FNAMN ${field(opts.company.name)}`);

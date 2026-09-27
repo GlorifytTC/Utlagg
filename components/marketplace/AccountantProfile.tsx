@@ -66,7 +66,7 @@ function Stars({ rating, max = 5 }: { rating: number; max?: number }) {
 }
 
 
-/** Rename and/or set the logo of the caller's firm. Owner/admin only — enforced server-side. Toasts on failure. */
+/** Rename and/or set the logo of the caller's firm. Owner/admin only - enforced server-side. Toasts on failure. */
 async function patchFirm(body: { name?: string; logoUrl?: string | null }, errorMsg: string): Promise<boolean> {
   const res = await fetch("/api/accountant/firm", {
     method: "PATCH",
@@ -144,7 +144,7 @@ interface Props {
   viewerAccountantId?: string;
   /** Back-link href (e.g. "/dashboard/marketplace" or "/accountant/marketplace"). */
   backHref: string;
-  /** The signed-in user's id — needed to align chat bubbles. */
+  /** The signed-in user's id - needed to align chat bubbles. */
   currentUserId?: string;
 }
 
@@ -343,7 +343,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               )}
             </div>
 
-            {/* CTA — inside content col, no risk of overflowing card */}
+            {/* CTA - inside content col, no risk of overflowing card */}
             <div className="shrink-0">
               {isSelf ? (
                 <button
@@ -410,7 +410,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         </div>
       </motion.div>
 
-      {/* Chat panel — visible when connected and toggled open */}
+      {/* Chat panel - visible when connected and toggled open */}
       <div ref={chatRef} />
       {data.myStatus === "active" && data.clientId && currentUserId && chatOpen && (
         <motion.div
@@ -423,7 +423,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         </motion.div>
       )}
 
-      {/* FAB — sticky message shortcut when connected */}
+      {/* FAB - sticky message shortcut when connected */}
       {data.myStatus === "active" && data.clientId && currentUserId && (
         <motion.button
           initial={{ opacity: 0, scale: 0.85, y: 12 }}

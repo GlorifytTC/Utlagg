@@ -32,7 +32,7 @@ function validLogo(v: string | null | undefined): { ok: boolean; error?: string 
  * GET / PATCH the caller's company discovery profile.
  *
  * Company resolved from the session (never a browser companyId). PATCH is
- * owner/admin only. Only the three discovery fields are writable — the strict
+ * owner/admin only. Only the three discovery fields are writable - the strict
  * schema rejects anything else, so this can't touch org/vat/name etc.
  */
 export async function GET() {

@@ -3,7 +3,7 @@ import type { ExtractedReceipt } from "@/lib/ocr-parse";
 /**
  * Reads a receipt image with Google Gemini's vision model.
  *
- * Uses the Gemini free tier (Flash / Flash-Lite) by default — no credit
+ * Uses the Gemini free tier (Flash / Flash-Lite) by default - no credit
  * card required, ~1,500 requests/day. Unlike Tesseract (which only reads
  * text and cannot understand layout), Gemini actually understands an
  * arbitrary receipt: any vendor, any format, any language, returning
@@ -13,7 +13,7 @@ import type { ExtractedReceipt } from "@/lib/ocr-parse";
  * content to improve their models. Receipts contain business financial
  * data, so this is a deliberate tradeoff the operator has chosen. To opt
  * out of training, the project must move to a paid Gemini tier (set
- * GEMINI_PAID=true once billing is enabled) — the code path is identical.
+ * GEMINI_PAID=true once billing is enabled) - the code path is identical.
  *
  * Requires GEMINI_API_KEY in the environment (get one free, no card, at
  * https://aistudio.google.com/apikey). If unset, this throws and the
@@ -98,7 +98,7 @@ export async function readReceiptWithGemini(base64Image: string): Promise<Extrac
     ],
     generationConfig: {
       temperature: 0.1,
-      // Ask Gemini to return JSON directly — supported on the free tier.
+      // Ask Gemini to return JSON directly - supported on the free tier.
       responseMimeType: "application/json",
     },
   };

@@ -17,7 +17,7 @@ const schema = z.object({
  * Owner/admin decides on a pending receipt: "approve" moves it into the
  * dashboard (status → approved), "remove" rejects it. Server re-checks that
  * the caller is an owner/admin, the receipt belongs to their company, and
- * it's still pending — so a member can't approve their own bill and nobody
+ * it's still pending - so a member can't approve their own bill and nobody
  * can act on another company's receipts.
  */
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {

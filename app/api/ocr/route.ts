@@ -10,11 +10,11 @@ export const maxDuration = 30;
 /**
  * DECISION (recorded here so it isn't silently reversed by an env var
  * appearing later): this app does not call paid OCR/vision APIs, and does
- * not use OCR.space's shared "helloworld" demo key as a fallback — it
+ * not use OCR.space's shared "helloworld" demo key as a fallback - it
  * produced unusable results (e.g. "net te" for a ZARA receipt) and is a
  * shared, rate-limited resource that doesn't belong in a production app
  * regardless of cost. The primary, supported OCR path is free, local
- * Tesseract.js running in the browser (lib/ocr-client.ts) — this route
+ * Tesseract.js running in the browser (lib/ocr-client.ts) - this route
  * exists only for back-compat / manual testing of the parsing logic on
  * already-extracted text, and as an explicit opt-in if someone deliberately
  * sets a paid API key AND sets ALLOW_PAID_OCR_FALLBACK=true.
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       result = parseReceiptText(parsed.data.text);
     } else if (parsed.data.image) {
       if (!PAID_FALLBACK_ALLOWED) {
-        // No silent OCR.space demo-key call, no silent paid API call —
+        // No silent OCR.space demo-key call, no silent paid API call -
         // tell the caller plainly instead of guessing badly.
         return NextResponse.json(
           {

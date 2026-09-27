@@ -14,7 +14,7 @@ function csvCell(v: string | number | null): string {
 }
 
 /** Optional ?from=&to= (YYYY-MM-DD). A pass counts if its validity period
- * overlaps the requested range at all — e.g. a March–April pass should
+ * overlaps the requested range at all - e.g. a March-April pass should
  * still show up in a March-only export, not just an April one. */
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);

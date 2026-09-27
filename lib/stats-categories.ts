@@ -2,7 +2,7 @@
  * Groups the ~26 granular BAS accounts (lib/bas.ts) into a small set of
  * human-friendly spending buckets for the Statistik dashboard. Grouping by
  * BAS code prefix (not the free-text category name) because basCode is the
- * reliable, structured value — category is just BAS_ACCOUNTS[code].name
+ * reliable, structured value - category is just BAS_ACCOUNTS[code].name
  * copied in at save time, and matching against translated/edited text would
  * be fragile.
  */

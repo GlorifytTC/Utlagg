@@ -199,7 +199,7 @@ export function AccountantClientStats({
           </div>
           <div className="p-5">
             {categories.length === 0 ? (
-              <p className="py-6 text-center text-sm text-gray-400">—</p>
+              <p className="py-6 text-center text-sm text-gray-400">-</p>
             ) : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart
@@ -254,7 +254,7 @@ export function AccountantClientStats({
           </div>
           <div className="p-5">
             {yearTrend.length === 0 ? (
-              <p className="py-6 text-center text-sm text-gray-400">—</p>
+              <p className="py-6 text-center text-sm text-gray-400">-</p>
             ) : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={yearTrend}>
@@ -310,7 +310,7 @@ export function AccountantClientStats({
               <li key={r.id} className="flex items-center justify-between px-5 py-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
-                    {r.vendorName || "—"}
+                    {r.vendorName || "-"}
                   </p>
                   <p className="text-xs text-gray-400">
                     {formatDate(r.date ?? r.createdAt)}

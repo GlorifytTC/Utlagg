@@ -107,7 +107,7 @@ export function InvoiceHistory() {
                       {new Date(inv.created).toLocaleDateString(locale)}
                     </td>
                     <td className="py-3 pr-4 font-mono text-xs text-gray-500 dark:text-gray-400">
-                      {inv.number ?? "—"}
+                      {inv.number ?? "-"}
                     </td>
                     <td className="py-3 pr-4 whitespace-nowrap font-medium text-gray-900 dark:text-white">
                       {fmtAmount(inv.amount, inv.currency)}

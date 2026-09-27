@@ -18,7 +18,7 @@ import { getUserCompany, canManageCompany } from "@/lib/company";
 export const runtime = "nodejs";
 
 /**
- * GET /api/marketplace/accountants/[id] — full accountant profile.
+ * GET /api/marketplace/accountants/[id] - full accountant profile.
  *
  * Returns safe display fields, reviews (company name + rating + comment),
  * viewer's request/relationship state, and whether the viewer may request

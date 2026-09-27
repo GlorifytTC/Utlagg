@@ -66,7 +66,7 @@ function configured(name: string, ok: boolean): HealthStatus {
 }
 
 /**
- * Real Gemini probe: doesn't just check the env var exists — it makes the
+ * Real Gemini probe: doesn't just check the env var exists - it makes the
  * cheapest possible API call (listing models) to verify the KEY IS VALID.
  * A wrong-console key (e.g. a Vertex/Cloud key instead of an AI Studio
  * "AIza..." key) exists as an env var but fails this call, which is
@@ -86,7 +86,7 @@ export async function checkGemini(): Promise<HealthStatus> {
       if (!res.ok) {
         const body = await res.text().catch(() => "");
         throw new Error(
-          `Gemini svarade ${res.status}${res.status === 400 || res.status === 403 ? " — nyckeln avvisades (kontrollera att den är aktiv i AI Studio och inte begränsad bort från Gemini API)" : ` — ${body.slice(0, 120)}`}`,
+          `Gemini svarade ${res.status}${res.status === 400 || res.status === 403 ? " - nyckeln avvisades (kontrollera att den är aktiv i AI Studio och inte begränsad bort från Gemini API)" : ` - ${body.slice(0, 120)}`}`,
         );
       }
     } finally {

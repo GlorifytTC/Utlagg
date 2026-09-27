@@ -88,7 +88,7 @@ export default function ProfilePage() {
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t.prEmailLabel} {session?.user?.email ?? "—"}
+            {t.prEmailLabel} {session?.user?.email ?? "-"}
           </p>
           <Button onClick={updateName} disabled={loading}>
             {t.btnSaveChanges}

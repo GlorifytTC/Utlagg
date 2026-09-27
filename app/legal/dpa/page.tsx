@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const metadata = { title: "Personuppgiftsbiträdesavtal — Kvittino" };
+export const metadata = { title: "Personuppgiftsbiträdesavtal - Kvittino" };
 
 export default function DpaPage() {
   return (
@@ -109,7 +109,7 @@ export default function DpaPage() {
               sina rättigheter enligt kapitel III GDPR;
             </li>
             <li>
-              bistå dig med att fullgöra skyldigheterna enligt art. 32–36 GDPR, med
+              bistå dig med att fullgöra skyldigheterna enligt art. 32-36 GDPR, med
               hänsyn till behandlingens art och den information vi har tillgång till;
             </li>
             <li>
@@ -157,7 +157,7 @@ export default function DpaPage() {
           <p>
             Överföring av personuppgifter till ett land utanför EU/EES sker endast om
             lämpliga skyddsåtgärder enligt kapitel V GDPR finns på plats, t.ex.
-            EU-kommissionens standardavtalsklausuler (SCC) eller EU–US Data Privacy
+            EU-kommissionens standardavtalsklausuler (SCC) eller EU-US Data Privacy
             Framework. Se{" "}
             <Link className="underline underline-offset-2" href="/legal/privacy">
               integritetspolicyn
@@ -204,7 +204,7 @@ export default function DpaPage() {
             Vi ska underrätta dig utan onödigt dröjsmål efter att vi fått kännedom om en
             personuppgiftsincident som rör de uppgifter vi behandlar för din räkning,
             och bistå dig med sådan information som rimligen krävs för att du ska kunna
-            fullgöra dina skyldigheter enligt art. 33–34 GDPR.
+            fullgöra dina skyldigheter enligt art. 33-34 GDPR.
           </p>
         </section>
 
@@ -221,7 +221,7 @@ export default function DpaPage() {
 
         <div className="rounded-xl border border-ink/10 dark:border-white/10 p-4 space-y-2 text-ink/80 dark:text-gray-300">
           <p>
-            <strong>Bilaga A — Tekniska och organisatoriska säkerhetsåtgärder:</strong>{" "}
+            <strong>Bilaga A - Tekniska och organisatoriska säkerhetsåtgärder:</strong>{" "}
             se{" "}
             <Link className="underline underline-offset-2" href="/security">
               /security
@@ -229,7 +229,7 @@ export default function DpaPage() {
             , som utgör en integrerad del av detta DPA.
           </p>
           <p>
-            <strong>Bilaga B — Underbiträden:</strong> se{" "}
+            <strong>Bilaga B - Underbiträden:</strong> se{" "}
             <Link className="underline underline-offset-2" href="/legal/subprocessors">
               /legal/subprocessors
             </Link>

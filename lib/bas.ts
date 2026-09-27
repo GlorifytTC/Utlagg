@@ -1,6 +1,6 @@
 /**
- * Swedish BAS chart of accounts — a working SUBSET of the most common expense
- * accounts (cost classes 4xxx–6xxx + a few input-VAT accounts). The full
+ * Swedish BAS chart of accounts - a working SUBSET of the most common expense
+ * accounts (cost classes 4xxx-6xxx + a few input-VAT accounts). The full
  * BAS-kontoplan contains several hundred accounts; extend this list as needed
  * or import the official CSV from https://www.bas.se/ for completeness.
  *

@@ -23,7 +23,7 @@ export async function GET() {
   const usage = await getUsageSnapshot(ctx.userId).catch(() => null);
   const referralCode = await ensureReferralCode(ctx.userId).catch(() => null);
 
-  // Accountant flag — for showing the "Accountant" nav entry only. Every real
+  // Accountant flag - for showing the "Accountant" nav entry only. Every real
   // accountant authorization check is done server-side by requireAccountant();
   // this value is display-only and deliberately not in the JWT.
   const [u] = await db

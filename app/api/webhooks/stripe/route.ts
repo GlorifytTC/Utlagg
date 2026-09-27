@@ -28,7 +28,7 @@ import {
 } from "@/lib/billing/config";
 
 export const runtime = "nodejs";
-// Stripe needs the raw body for signature verification — don't let Next parse it.
+// Stripe needs the raw body for signature verification - don't let Next parse it.
 export const dynamic = "force-dynamic";
 
 // Legacy per-user scanLimit column (only consulted when PRICING_V2 is off).
@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
         break;
       }
       case "customer.subscription.trial_will_end": {
-        // Pre-charge reminder (~3 days before) — required for the consumer flow
+        // Pre-charge reminder (~3 days before) - required for the consumer flow
         // (spec §9/§10).
         const sub = event.data.object as Stripe.Subscription;
         await handleTrialWillEnd(sub);
@@ -228,7 +228,7 @@ async function syncSubscription(sub: Stripe.Subscription) {
   if (pricingV3Enabled() && sub.status === "trialing") {
     const now = new Date();
     const trialEndsAt = sub.trial_end ? new Date(sub.trial_end * 1000) : null;
-    // First entry into the trial? (subscription.updated re-fires while trialing —
+    // First entry into the trial? (subscription.updated re-fires while trialing -
     // only send the start disclosure once.)
     const existingUser = await findUserRowByCustomer(customerId);
     const firstEntry = existingUser?.subscriptionStatus !== "trialing";
@@ -261,7 +261,7 @@ async function syncSubscription(sub: Stripe.Subscription) {
       details: `postPlan=${planTier} ends=${trialEndsAt?.toISOString() ?? "?"}`,
     });
 
-    // Up-front disclosure at trial start (spec §10) — once, on first entry.
+    // Up-front disclosure at trial start (spec §10) - once, on first entry.
     if (firstEntry && existingUser?.email) {
       const cfg = tierConfig(planTier);
       const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
@@ -269,7 +269,7 @@ async function syncSubscription(sub: Stripe.Subscription) {
         userName: existingUser.name ?? "där",
         planName: planForTier(planTier).name,
         priceLabel:
-          cfg.priceOre != null ? `${formatOre(cfg.priceOre)}/mån inkl. moms` : "—",
+          cfg.priceOre != null ? `${formatOre(cfg.priceOre)}/mån inkl. moms` : "-",
         firstChargeDate: trialEndsAt
           ? trialEndsAt.toLocaleDateString("sv-SE")
           : "",
@@ -320,7 +320,7 @@ async function syncSubscription(sub: Stripe.Subscription) {
   });
 
   // Best-effort: record the card fingerprint for referral ring-detection. Never
-  // let this fail the webhook — it's a fraud signal, not core billing state.
+  // let this fail the webhook - it's a fraud signal, not core billing state.
   await captureCardFingerprint(sub, customerId).catch((e) =>
     console.error("card fingerprint capture failed (non-blocking):", e),
   );
@@ -440,7 +440,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     }
   }
 
-  // Receipt email — skip 0 kr invoices (trials, 100% coupons).
+  // Receipt email - skip 0 kr invoices (trials, 100% coupons).
   if (invoice.amount_paid > 0 && user.email) {
     const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
     const plan = planForTier(user.subscriptionTier as Tier);
@@ -466,7 +466,7 @@ async function handleTrialWillEnd(sub: Stripe.Subscription) {
     "pro") as Tier;
   const cfg = tierConfig(planTier);
   const priceLabel =
-    cfg.priceOre != null ? `${formatOre(cfg.priceOre)}/mån inkl. moms` : "—";
+    cfg.priceOre != null ? `${formatOre(cfg.priceOre)}/mån inkl. moms` : "-";
   const firstChargeDate = sub.trial_end
     ? new Date(sub.trial_end * 1000).toLocaleDateString("sv-SE")
     : "";
@@ -498,7 +498,7 @@ async function handleInvoiceFailed(invoice: Stripe.Invoice) {
   if (!user) return;
 
   // A payment that fails AT TRIAL CONVERSION (the account is still `trialing`)
-  // lapses to read-only (spec §C) — never back to reusable free scans. A failed
+  // lapses to read-only (spec §C) - never back to reusable free scans. A failed
   // RENEWAL on an already-active paid subscription goes past_due as before
   // (Stripe keeps retrying; a later cancel would then lapse it).
   const lapsingTrial =
@@ -543,7 +543,7 @@ async function downgradeToFree(sub: Stripe.Subscription) {
   // reusable free scans, and DATA IS NEVER DELETED at lapse. The account keeps
   // CSV + original-file export; premium/SIE exports are gated. Deletion only
   // ever happens at the end of the 12-month export ladder (§7). We keep the
-  // tier for reference — read-only status is what gates access.
+  // tier for reference - read-only status is what gates access.
   if (pricingV3Enabled()) {
     await db
       .update(subscriptions)

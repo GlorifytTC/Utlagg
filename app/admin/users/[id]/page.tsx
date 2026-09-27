@@ -12,7 +12,7 @@ export const metadata = { title: "Admin · Användare" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminUserDetail({ params }: { params: { id: string } }) {
-  // Gate at the data-fetch point, not just the parent layout — this page reads
+  // Gate at the data-fetch point, not just the parent layout - this page reads
   // arbitrary user PII + audit logs, so it must not depend solely on the layout.
   if (!(await requireAdmin())) notFound();
   const [user] = await db.select().from(users).where(eq(users.id, params.id)).limit(1);
@@ -43,7 +43,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{user.email}</h1>
         <p className="text-gray-500 dark:text-gray-400">
-          {user.name ?? "—"} · {user.subscriptionTier} · {user.subscriptionStatus} · sedan {formatDate(user.createdAt)}
+          {user.name ?? "-"} · {user.subscriptionTier} · {user.subscriptionStatus} · sedan {formatDate(user.createdAt)}
         </p>
       </div>
 
@@ -53,7 +53,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>Prenumeration — full kontroll</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Prenumeration - full kontroll</CardTitle></CardHeader>
         <CardContent>
           <AdminSubscriptionControl
             userId={user.id}
@@ -94,7 +94,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
             <ul className="divide-y divide-gray-100 text-sm dark:divide-gray-800">
               {userReceipts.map((r: Record<string, unknown>) => (
                 <li key={r.id as string} className="flex justify-between py-2">
-                  <span>{(r.vendorName as string) ?? "—"}</span>
+                  <span>{(r.vendorName as string) ?? "-"}</span>
                   <span>{formatSek(Number(r.totalAmount ?? 0))}</span>
                 </li>
               ))}

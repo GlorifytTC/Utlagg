@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 /**
  * Lists receipts that COULD be sent to Fortnox but haven't been yet, so the
  * person can pick exactly which ones to sync instead of an unreviewed
- * "send everything" button. Only approved receipts are offered — pending
+ * "send everything" button. Only approved receipts are offered - pending
  * or rejected expenses have no business reaching bookkeeping yet.
  */
 export async function GET() {

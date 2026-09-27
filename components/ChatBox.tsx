@@ -264,7 +264,7 @@ export function ChatBox() {
                 </AnimatePresence>
               </div>
 
-              {/* Reset — visible after first question */}
+              {/* Reset - visible after first question */}
               <AnimatePresence>
                 {asked.size > 0 && (
                   <motion.button

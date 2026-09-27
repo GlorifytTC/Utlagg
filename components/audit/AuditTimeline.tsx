@@ -100,8 +100,8 @@ function formatChanges(
   const keys = Object.keys(next);
   if (keys.length === 1) {
     const k = keys[0];
-    const from = old?.[k] ?? "–";
-    const to = next[k] ?? "–";
+    const from = old?.[k] ?? "-";
+    const to = next[k] ?? "-";
     return `${k}: ${from} → ${to}`;
   }
   return keys.join(", ");
@@ -111,7 +111,7 @@ function formatChanges(
 
 interface Props {
   entries: AuditEntry[];
-  /** Show actor name/email — used in company view where multiple accountants act */
+  /** Show actor name/email - used in company view where multiple accountants act */
   showActor?: boolean;
   /** Shown while loading */
   loading?: boolean;

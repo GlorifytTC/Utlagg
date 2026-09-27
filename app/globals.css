@@ -5,7 +5,7 @@
 :root {
   color-scheme: light;
 
-  /* Kvittino brand accent — single terracotta hue, carried across both themes.
+  /* Kvittino brand accent - single terracotta hue, carried across both themes.
      Stored as space-separated RGB channels so Tailwind's /opacity modifier works. */
   --accent: 196 82 47;        /* #C4522F  primary accent (light) */
   --accent-strong: 165 64 31; /* darker terracotta for hover/pressed */
@@ -64,7 +64,7 @@ html.dark:has(.app-shell) {
   background-color: #000;
 }
 
-/* Ambient drifting background — slow, soft, premium. Reduced-motion safe. */
+/* Ambient drifting background - slow, soft, premium. Reduced-motion safe. */
 @keyframes amb1 {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
   50% { transform: translate3d(4vw, 5vh, 0) scale(1.12); }

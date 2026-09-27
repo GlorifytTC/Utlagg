@@ -13,7 +13,7 @@ import {
 } from "@/db/schema";
 
 /**
- * Accountant authorization layer — FIRM-scoped, role-aware, with per-worker
+ * Accountant authorization layer - FIRM-scoped, role-aware, with per-worker
  * customer assignments.
  *
  * Firm roles: owner > admin > member (worker).
@@ -77,7 +77,7 @@ export function firmRoleAtLeast(role: FirmRole, min: FirmRole): boolean {
   return ROLE_RANK[role] >= ROLE_RANK[min];
 }
 
-/** Owner or admin — the roles that manage people, assignments, and customers. */
+/** Owner or admin - the roles that manage people, assignments, and customers. */
 export function canManageFirm(role: FirmRole): boolean {
   return firmRoleAtLeast(role, "admin");
 }
@@ -121,7 +121,7 @@ export type CompanyAccess = {
   logoUrl: string | null;
   firmId: string;
   role: FirmRole;
-  /** userIds of the company's CURRENT members — the scope for every query. */
+  /** userIds of the company's CURRENT members - the scope for every query. */
   memberIds: string[];
 };
 

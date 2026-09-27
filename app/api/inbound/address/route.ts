@@ -22,7 +22,7 @@ export async function GET() {
   }
   const domain = process.env.INBOUND_EMAIL_DOMAIN;
   if (!domain) {
-    // Feature not provisioned (no inbound domain configured) — tell the UI so
+    // Feature not provisioned (no inbound domain configured) - tell the UI so
     // it can hide the card rather than show a broken address.
     return NextResponse.json({ enabled: false });
   }

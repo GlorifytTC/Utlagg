@@ -30,7 +30,7 @@ function AcceptInner() {
         className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper hover:bg-nordic-900 disabled:opacity-60">
         {status === "loading" ? t.aiJoining : t.aiAccept}
       </button>
-      {error && <p className="text-sm text-red-600">{error} — <Link href="/login" className="underline">{t.regNoMailLogin}</Link> {t.aiLoginFirst}</p>}
+      {error && <p className="text-sm text-red-600">{error} - <Link href="/login" className="underline">{t.regNoMailLogin}</Link> {t.aiLoginFirst}</p>}
     </div>
   );
 }

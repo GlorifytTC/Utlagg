@@ -17,7 +17,7 @@ const schema = z.object({
 });
 
 /**
- * GET ?token= — validate a company invite and return email + name for the
+ * GET ?token= - validate a company invite and return email + name for the
  * set-password page. No session required.
  */
 export async function GET(req: NextRequest) {
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
 }
 
 /**
- * POST — the invitee sets their password and joins the company, WITHOUT prior
+ * POST - the invitee sets their password and joins the company, WITHOUT prior
  * login (the token proves email ownership). Sets the password only if the
  * account has none yet (can't hijack an account that already has one). Adds
  * company membership (idempotent) and marks the invite accepted.

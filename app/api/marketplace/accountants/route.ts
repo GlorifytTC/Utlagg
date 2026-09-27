@@ -46,7 +46,7 @@ type RankedItem = AccountantRow & {
 };
 
 /**
- * GET /api/marketplace/accountants — unified accountant marketplace.
+ * GET /api/marketplace/accountants - unified accountant marketplace.
  *
  * Any signed-in user can browse. Accountants are ranked by relevance (industry
  * match vs viewer's company) + popularity (active client count), with boost as
@@ -284,7 +284,7 @@ export async function GET(req: NextRequest) {
 }
 
 /**
- * PATCH /api/marketplace/accountants — accountant updates their own marketplace profile.
+ * PATCH /api/marketplace/accountants - accountant updates their own marketplace profile.
  */
 export async function PATCH(req: NextRequest) {
   const acct = await requireAccountant();

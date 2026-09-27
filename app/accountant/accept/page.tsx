@@ -8,7 +8,7 @@ import { useLanguage } from "@/context/LanguageContext";
  * Minimal accept page for an accountant invitation. Reads ?token=, posts to
  * the accept endpoint, and handles the three outcomes: success, needs-company
  * (client must create a company first, then we retry), and error. This is the
- * only UI in scope for the invitation flow — no dashboard beyond this.
+ * only UI in scope for the invitation flow - no dashboard beyond this.
  */
 function AccountantAcceptInner() {
   const params = useSearchParams();
@@ -41,7 +41,7 @@ function AccountantAcceptInner() {
         return;
       }
       if (res.status === 401) {
-        // Not signed in — send them to login and back here afterwards.
+        // Not signed in - send them to login and back here afterwards.
         router.push(`/login?next=${encodeURIComponent(`/accountant/accept?token=${token}`)}`);
         return;
       }

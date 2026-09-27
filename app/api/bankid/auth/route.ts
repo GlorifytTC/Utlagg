@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 
 /**
  * Starts a BankID order and returns the seeds the client needs to animate the
- * QR code. The client then calls signIn("bankid", { orderRef }) — the NextAuth
+ * QR code. The client then calls signIn("bankid", { orderRef }) - the NextAuth
  * "bankid" provider polls collect and creates/finds the account.
  */
 export async function POST(req: NextRequest) {

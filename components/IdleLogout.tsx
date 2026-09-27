@@ -46,8 +46,8 @@ export function IdleLogout() {
   useEffect(() => {
     if (status !== "authenticated") return;
     const events = ["mousemove", "mousedown", "keydown", "scroll", "touchstart"];
-    // While the warning is up, activity should NOT auto-dismiss it — the user
-    // must click "stay" — so we only listen for activity when not warning.
+    // While the warning is up, activity should NOT auto-dismiss it - the user
+    // must click "stay" - so we only listen for activity when not warning.
     const onActivity = () => {
       if (!warning) reset();
     };

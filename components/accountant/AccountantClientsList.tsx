@@ -121,7 +121,7 @@ export function AccountantClientsList() {
                     </div>
                   </td>
                   <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
-                    {c.city || "—"}
+                    {c.city || "-"}
                   </td>
                   <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
                     {c.receiptCount}

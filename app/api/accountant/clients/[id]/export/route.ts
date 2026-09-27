@@ -27,13 +27,13 @@ function csvCell(value: unknown): string {
 }
 
 /**
- * POST — accountant exports a client's receipts (CSV or SIE) for a period.
+ * POST - accountant exports a client's receipts (CSV or SIE) for a period.
  *
  * AUTHORIZATION (relationship-first, member-scoped, in order):
  *   1. requireAccountant()                → 403
  *   2. requireCompanyAccess(acct, [id])   → 404 if no ACTIVE relationship
  *   3. CURRENT companyMembers resolved
- *   4. receipts scoped by inArray(userId, memberIds) — NEVER receipts.companyId
+ *   4. receipts scoped by inArray(userId, memberIds) - NEVER receipts.companyId
  *
  * Export authorization is by RELATIONSHIP + client ownership, deliberately NOT
  * by the accountant's own subscription plan (assertExportAllowed is for the
@@ -154,7 +154,7 @@ export async function POST(
     });
   }
 
-  // SIE — reuse the existing buildSie() builder with the CLIENT company's meta.
+  // SIE - reuse the existing buildSie() builder with the CLIENT company's meta.
   const rows = await db
     .select()
     .from(receipts)
@@ -216,7 +216,7 @@ export async function POST(
 }
 
 /**
- * GET — export history for this client. Same relationship-first authorization;
+ * GET - export history for this client. Same relationship-first authorization;
  * paginated like the other accountant list endpoints.
  */
 export async function GET(

@@ -19,7 +19,7 @@ const strings = {
 
     // Work queue (hero)
     todoTitle: "Att göra",
-    todoEmpty: "Inget väntar på dig — allt är granskat. Bra jobbat!",
+    todoEmpty: "Inget väntar på dig - allt är granskat. Bra jobbat!",
     todoToReview: "Kvitton att granska",
     todoMissingInfo: "Saknar moms/kategori/BAS",
     todoLowConfidence: "Osäkra AI-avläsningar",
@@ -219,7 +219,7 @@ const strings = {
     marketplaceDesc: "Företag söker revisor direkt i marknadsplatsen.",
     requestsSubtitle: "Företag som vill koppla dig som revisor.",
     marketplacePageTitle: "Marknadsplatsen",
-    marketplacePageDesc: "Så här ser företag dig. Din profil visas bland alla revisorer — rankad efter relevans, popularitet och om du har en aktiv boost.",
+    marketplacePageDesc: "Så här ser företag dig. Din profil visas bland alla revisorer - rankad efter relevans, popularitet och om du har en aktiv boost.",
     allClients: "Alla klienter",
     backToClient: "Tillbaka till klienten",
   },
@@ -234,7 +234,7 @@ const strings = {
     overviewSubtitle: "Your work today and new opportunities.",
 
     todoTitle: "To do",
-    todoEmpty: "Nothing waiting — everything is reviewed. Nice work!",
+    todoEmpty: "Nothing waiting - everything is reviewed. Nice work!",
     todoToReview: "Receipts to review",
     todoMissingInfo: "Missing VAT/category/BAS",
     todoLowConfidence: "Uncertain AI reads",
@@ -429,7 +429,7 @@ const strings = {
     marketplaceDesc: "Companies look for accountants directly in the marketplace.",
     requestsSubtitle: "Companies that want to connect you as their accountant.",
     marketplacePageTitle: "Marketplace",
-    marketplacePageDesc: "This is how companies see you. Your profile is listed among all accountants — ranked by relevance, popularity and whether you have an active boost.",
+    marketplacePageDesc: "This is how companies see you. Your profile is listed among all accountants - ranked by relevance, popularity and whether you have an active boost.",
     allClients: "All clients",
     backToClient: "Back to client",
   },

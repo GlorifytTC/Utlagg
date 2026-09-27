@@ -8,7 +8,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 
 /**
- * Accountant logo settings — the firm logo shown in the discovery directory.
+ * Accountant logo settings - the firm logo shown in the discovery directory.
  * Binds to GET/PATCH /api/accountant/logo (own logo only, server-authorized).
  */
 export function AccountantLogoCard() {

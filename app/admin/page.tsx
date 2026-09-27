@@ -19,7 +19,7 @@ export default async function AdminOverview() {
     },
     {
       label: "LTV (≈)",
-      value: m.ltvApprox == null ? "—" : formatSek(m.ltvApprox),
+      value: m.ltvApprox == null ? "-" : formatSek(m.ltvApprox),
     },
   ];
   return (

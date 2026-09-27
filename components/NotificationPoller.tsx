@@ -22,7 +22,7 @@ function playNotifSound() {
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
     osc.start(); osc.stop(ctx.currentTime + 0.28);
   } catch {
-    // AudioContext blocked (no user gesture yet) — silent fail is fine
+    // AudioContext blocked (no user gesture yet) - silent fail is fine
   }
 }
 
@@ -77,7 +77,7 @@ export function NotificationPoller() {
         since = data.now;
         localStorage.setItem(key, since);
       } catch {
-        // A failed poll is a no-op — never surface it as a toast.
+        // A failed poll is a no-op - never surface it as a toast.
       }
     }
 

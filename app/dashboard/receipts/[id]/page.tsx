@@ -49,16 +49,16 @@ export default async function ReceiptDetailPage({
   };
 
   const fields: { label: string; value: React.ReactNode }[] = [
-    { label: t.colVendor, value: receipt.vendorName ?? "—" },
+    { label: t.colVendor, value: receipt.vendorName ?? "-" },
     { label: t.colDate, value: formatDate(receipt.date) },
-    { label: t.receiptNumberLabel, value: receipt.receiptNumber ?? "—" },
+    { label: t.receiptNumberLabel, value: receipt.receiptNumber ?? "-" },
     {
       label: t.colBas,
       value: receipt.basCode
         ? `${receipt.basCode}${basAccount ? ` · ${basAccount.name}` : ""}`
-        : "—",
+        : "-",
     },
-    { label: t.colCategory, value: receipt.category ?? "—" },
+    { label: t.colCategory, value: receipt.category ?? "-" },
     {
       label: t.colVat,
       value: (

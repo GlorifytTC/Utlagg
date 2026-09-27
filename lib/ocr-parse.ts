@@ -1,10 +1,10 @@
 /**
- * Pure, dependency-free Swedish receipt text parsing — no network calls, no
+ * Pure, dependency-free Swedish receipt text parsing - no network calls, no
  * process.env, no server-only code. Deliberately split out from lib/ocr.ts
  * (which also contains the paid-API-calling functions: Google Vision,
  * OCR.space, Mindee, the vision LLM) so this can be safely imported into
  * CLIENT components, e.g. to parse text that came back from a local,
- * in-browser OCR engine (Tesseract.js — see lib/ocr-client.ts) without
+ * in-browser OCR engine (Tesseract.js - see lib/ocr-client.ts) without
  * pulling server secrets or fetch-to-external-APIs code into the browser
  * bundle.
  *
@@ -101,15 +101,15 @@ const KNOWN_MERCHANTS: Array<[RegExp, string]> = [
   [/apoteket|apotek hjärtat|kronans|apotea/i, "Apotek"],
   [/\bsj\b|\bvy\b|\bsl\b|taxi|uber|bolt/i, "Resa"],
 
-  // Parking — extremely common on Swedish business-trip receipts and easy
+  // Parking - extremely common on Swedish business-trip receipts and easy
   // to miss without explicit matching, since the printed name is often just
   // the app/operator, not a recognizable "shop".
   [/easypark|parkster|aimo park|apcoa|q-?park|parkman\b/i, "Parkering"],
 
-  // Hotels / lodging — chains common for business travel in Sweden.
+  // Hotels / lodging - chains common for business travel in Sweden.
   [/scandic|nordic choice|elite hotel|best western|radisson|comfort hotel|quality hotel|clarion hotel|first hotel/i, "Hotell"],
 
-  // Courier / postage — frequent for businesses shipping goods or documents.
+  // Courier / postage - frequent for businesses shipping goods or documents.
   [/postnord|\bdhl\b|\bups\b|bring\b|schenker|instabox|budbee/i, "Frakt"],
 
   // Car rental.
@@ -119,10 +119,10 @@ const KNOWN_MERCHANTS: Array<[RegExp, string]> = [
   // from grocery shopping).
   [/max hamburgare|\bmax\b restaurang|burger king|mcdonald|sibylla|o'?learys|subway\b/i, "Restaurang"],
 
-  // Office supplies / print / stationery — frequent for B2B expense receipts.
+  // Office supplies / print / stationery - frequent for B2B expense receipts.
   [/staples|kontorsexpressen|svensk\s*kontorsservice/i, "Kontorsmateriel"],
 
-  // Telecom / mobile / broadband — recurring B2B expenses.
+  // Telecom / mobile / broadband - recurring B2B expenses.
   [/\btelia\b/i, "Telia"],
   [/\btele2\b/i, "Tele2"],
   [/\bthree\b|\b3\s*sverige/i, "Tre"],
@@ -130,7 +130,7 @@ const KNOWN_MERCHANTS: Array<[RegExp, string]> = [
   [/halebop/i, "Halebop"],
   [/comviq/i, "Comviq"],
 
-  // Banking / financial fees — appear on B2B statements as line items.
+  // Banking / financial fees - appear on B2B statements as line items.
   [/swedbank/i, "Swedbank"],
   [/handelsbanken/i, "Handelsbanken"],
   [/seb\b|skandinaviska enskilda banken/i, "SEB"],
@@ -144,7 +144,7 @@ const KNOWN_MERCHANTS: Array<[RegExp, string]> = [
   [/city ?gross/i, "City Gross"],
   [/coop ?nära|coopnara/i, "Coop"],
 
-  // More home/DIY/garden — common B2B premises-maintenance spend.
+  // More home/DIY/garden - common B2B premises-maintenance spend.
   [/optimera/i, "Optimera"],
   [/woody bygghandel|woody\b/i, "Woody"],
   [/cervera/i, "Cervera"],
@@ -160,7 +160,7 @@ const KNOWN_MERCHANTS: Array<[RegExp, string]> = [
   [/lloyds apotek/i, "Apotek"],
   [/doktor\.se|doktor24|kry\b/i, "Vårdtjänst"],
 
-  // Co-working / office space — common modern B2B expense.
+  // Co-working / office space - common modern B2B expense.
   [/regus\b|wework\b|convendum/i, "Kontorshyra"],
 
   // More cafés / bakeries / lunch chains common on Swedish receipts.
@@ -195,11 +195,11 @@ function decimalAmountOnLine(line: string): number | null {
 // format the line as "TOTALT <item count> <amount>,<öre>" (e.g. "TOTALT 3
 // 640,00" = 3 items, 640 kr). Plain digit-amount matching reads "3
 // 640,00" as ONE number (3640), because Sweden ALSO writes large amounts
-// with a space as the thousands separator (e.g. "1 234,56 kr") — the two
+// with a space as the thousands separator (e.g. "1 234,56 kr") - the two
 // conventions are genuinely ambiguous from the digits alone. This resolves
 // it the way a person reading the receipt would: a lone 1-2 digit integer
 // immediately after the label, followed by a separate properly-formatted
-// amount, is the item count, not part of the price — so it's stripped
+// amount, is the item count, not part of the price - so it's stripped
 // before the amount is extracted.
 function totalLineReadings(line: string, totalRe: RegExp): number[] {
   const stripped = line.replace(totalRe, "").trim();
@@ -230,7 +230,7 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
 
   // --- Receipt / kvitto number (only when clearly labelled) ---
   // Real receipts vary a lot in how this is printed: "Bongnr", "Bong nr:",
-  // "Kvittonummer", "Ordernr", "Transaktion", "Receipt No." — the label and
+  // "Kvittonummer", "Ordernr", "Transaktion", "Receipt No." - the label and
   // the digits can also land on separate lines after OCR. This matches the
   // label word(s) first, then allows an optional second word (nr/nummer/no),
   // then any punctuation/whitespace (including a line break), then digits.
@@ -292,7 +292,7 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   if (vendorName) confidenceHits++;
 
   // --- Date: ISO, dd/mm/yyyy, "DD Mon YYYY" (Swedish or English month
-  // names — needed for international POS templates), footer "DD MM YY" ---
+  // names - needed for international POS templates), footer "DD MM YY" ---
   const pad = (s: string) => s.padStart(2, "0");
   let date: string | null = null;
   const MONTHS: Record<string, string> = {
@@ -340,7 +340,7 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   const isNegative = (l: string) => /[-−]\s*\d/.test(l);
 
   // The net subtotal ("Totalsumma netto", "Netto", etc.) has no item-count
-  // ambiguity — it's used below to pick the right reading of a TOTALT line
+  // ambiguity - it's used below to pick the right reading of a TOTALT line
   // when "<item count> <amount>" vs. a genuine 4+ digit total can't be
   // told apart from the digits alone (see totalLineAmount's comment).
   const nettoLine = lines.find(
@@ -353,14 +353,14 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   if (readings.length) {
     if (nettoAmount != null) {
       // The real total (incl. VAT) is always >= netto and normally within
-      // ~50% of it (VAT in Sweden tops out at 25%) — a reading that's
+      // ~50% of it (VAT in Sweden tops out at 25%) - a reading that's
       // wildly larger is almost certainly the item-count-merge artefact
       // (e.g. "TOTALT 3 640,00" misread as 3640), so prefer the smallest
       // reading that still clears the netto bar.
       const plausible = readings.filter((n) => n >= nettoAmount * 0.99);
       totalAmount = plausible.length ? Math.min(...plausible) : Math.max(...readings);
     } else {
-      // No netto line to cross-check against — fall back to the largest
+      // No netto line to cross-check against - fall back to the largest
       // reading, same as the original behavior (covers "Totalsumma netto"
       // AND "TOTALT" both matching TOTAL_RE, where the real total is the
       // bigger one).
@@ -383,7 +383,7 @@ export function parseReceiptText(rawText: string): ExtractedReceipt {
   // --- VAT rate + amount ---
   // "moms" is the Swedish term, but receipts from international chains
   // (e.g. Zara, H&M) or shared POS software often print "IVA" (Spanish/
-  // Italian/Portuguese), "VAT" (English), or "TAX" — all legally the same
+  // Italian/Portuguese), "VAT" (English), or "TAX" - all legally the same
   // Swedish moms for a Swedish purchase, so treated as equivalent here.
   const VAT_WORD = "(?:moms|iva|vat|tax)";
   let vatAmount: number | null = null;

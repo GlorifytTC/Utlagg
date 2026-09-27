@@ -11,9 +11,9 @@ import { logAudit, clientIp } from "@/lib/audit";
 export const runtime = "nodejs";
 
 /**
- * POST — the COMPANY (owner/admin) ACCEPTS an accountant's connection request.
+ * POST - the COMPANY (owner/admin) ACCEPTS an accountant's connection request.
  * Mirror of the accountant-side accept, but company-authorized: the request is
- * loaded by id AND the caller's own company (from the session — never a browser
+ * loaded by id AND the caller's own company (from the session - never a browser
  * companyId), so a company can only accept requests addressed to itself. Only a
  * pending request can be accepted. Accept activates the accountantClients
  * relationship (create or reactivate), respecting the unique constraint.
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: "Endast ägare/admin." }, { status: 403 });
   }
 
-  // Scoped to the caller's company — a request for another company → 404.
+  // Scoped to the caller's company - a request for another company → 404.
   const [reqRow] = await db
     .select()
     .from(accountantConnectionRequests)

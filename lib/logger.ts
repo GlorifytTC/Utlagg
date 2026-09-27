@@ -2,7 +2,7 @@
  * Minimal zero-dependency structured logger with a pino-like API
  * (logger.info({ ctx }, "message")). Emits one JSON line per call to stdout/
  * stderr, which Railway/Vercel capture. Swap in `pino` later if you want
- * transports/redaction — the call sites won't change.
+ * transports/redaction - the call sites won't change.
  */
 type Level = "debug" | "info" | "warn" | "error";
 

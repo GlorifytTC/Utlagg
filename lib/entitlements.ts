@@ -13,7 +13,7 @@ import { resolveAccountState, type AccessState } from "@/lib/billing/access";
  * Resolve the signed-in user's EFFECTIVE tier (honours pause + trial expiry).
  *
  * When a manual/admin grant has EXPIRED we don't just compute "free" in
- * memory — we write the downgrade back to the database. Previously the DB
+ * memory - we write the downgrade back to the database. Previously the DB
  * kept saying e.g. "business" forever while the gates treated the account as
  * free, so the subscription page proudly showed "You're on the Business plan"
  * next to a locked, upgrade-walled Mileage page. Persisting the transition
@@ -50,7 +50,7 @@ export async function currentTier(): Promise<{
     v3Enabled: v3,
   });
 
-  // For FEATURE gating, a lapsed (read-only) account keeps no premium features —
+  // For FEATURE gating, a lapsed (read-only) account keeps no premium features -
   // its export access is handled separately by canUseExport, not requireFeature.
   // Trials get full Pro; active accounts get their entitled tier.
   let tier: Tier = state === "read_only" ? "free" : entitledTier;
@@ -76,7 +76,7 @@ export async function currentTier(): Promise<{
         })
         .where(eq(users.id, session.user.id));
     } catch (e) {
-      // Never break the request over this — the in-memory downgrade below
+      // Never break the request over this - the in-memory downgrade below
       // still applies, so access is correctly denied either way.
       console.error("failed to persist expired-grant downgrade:", e);
     }
@@ -94,7 +94,7 @@ export interface Gate {
 
 /**
  * Server-side feature gate for API routes. Returns ok=false with 401 (not
- * signed in) or 403 (insufficient tier). This is the real enforcement — UI
+ * signed in) or 403 (insufficient tier). This is the real enforcement - UI
  * hiding is cosmetic.
  */
 export async function requireFeature(feature: Feature): Promise<Gate> {

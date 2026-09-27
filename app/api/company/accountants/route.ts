@@ -9,7 +9,7 @@ import { getUserCompany, canManageCompany } from "@/lib/company";
 export const runtime = "nodejs";
 
 /**
- * GET — lists the accountants with ACTIVE access to the authenticated user's
+ * GET - lists the accountants with ACTIVE access to the authenticated user's
  * CURRENT company, so the company settings UI can show and revoke them.
  *
  * AUTHORIZATION (never trusts a browser companyId):

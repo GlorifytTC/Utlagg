@@ -8,7 +8,7 @@ import { logAudit, clientIp } from "@/lib/audit";
 export const runtime = "nodejs";
 
 /**
- * DELETE — owner dissolves the firm. FK cascades remove firmMembers,
+ * DELETE - owner dissolves the firm. FK cascades remove firmMembers,
  * firmInvites, workerAssignments, and accountantClients rows. Irreversible.
  * Only the firm owner may do this; admins and members are refused.
  */

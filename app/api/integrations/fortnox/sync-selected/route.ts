@@ -13,7 +13,7 @@ export const maxDuration = 60;
 const schema = z.object({ receiptIds: z.array(z.string().uuid()).min(1).max(200) });
 
 /**
- * Pushes ONLY the receipts the person explicitly picked — replaces the old
+ * Pushes ONLY the receipts the person explicitly picked - replaces the old
  * "sync everything unsynced" behavior so nothing leaves Kvittino without the
  * person reviewing exactly what's being sent first.
  */
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     .limit(1);
   if (!token) return NextResponse.json({ error: "Fortnox är inte kopplat" }, { status: 409 });
 
-  // Only the person's OWN, approved, not-yet-synced receipts — even if a
+  // Only the person's OWN, approved, not-yet-synced receipts - even if a
   // client sent extra/foreign IDs, this can never push someone else's data
   // or anything still pending approval.
   const selected = await db

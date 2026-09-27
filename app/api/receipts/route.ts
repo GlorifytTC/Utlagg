@@ -10,8 +10,8 @@ import { createReceipt } from "@/lib/receipts/create";
 
 export const runtime = "nodejs";
 
-// Columns the receipt LIST needs. Deliberately excludes the heavy fields —
-// `imageUrl` (often a full base64 data URL) and `receiptText` (raw OCR) — so
+// Columns the receipt LIST needs. Deliberately excludes the heavy fields -
+// `imageUrl` (often a full base64 data URL) and `receiptText` (raw OCR) - so
 // the list payload stays tiny no matter how many receipts a user has. The
 // image is loaded lazily on the per-receipt detail page instead. `hasImage`
 // lets the UI show an indicator without shipping the bytes.

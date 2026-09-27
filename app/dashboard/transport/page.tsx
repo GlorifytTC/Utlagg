@@ -83,7 +83,7 @@ export default function TransportPage() {
   }
 
   const monthLabel = new Date().toLocaleDateString(locale, { month: "long", year: "numeric" });
-  const providerLabel = (p: Pass) => (p.provider === "Other" ? p.providerOther || "—" : p.provider);
+  const providerLabel = (p: Pass) => (p.provider === "Other" ? p.providerOther || "-" : p.provider);
 
   return (
     <div className="space-y-6">
@@ -219,13 +219,13 @@ export default function TransportPage() {
                   {passes.map((p) => (
                     <tr key={p.id} className="border-b dark:border-white/[0.07] dark:text-gray-100">
                       <td className="p-2">
-                        {new Date(p.validFrom).toLocaleDateString(locale)} –{" "}
+                        {new Date(p.validFrom).toLocaleDateString(locale)} -{" "}
                         {new Date(p.validTo).toLocaleDateString(locale)}
                       </td>
                       <td className="p-2">{providerLabel(p)}</td>
                       <td className="p-2 text-right">{Number(p.amount).toFixed(2)} kr</td>
                       <td className="p-2 text-right">
-                        {p.vatAmount ? `${Number(p.vatAmount).toFixed(2)} kr` : "—"}
+                        {p.vatAmount ? `${Number(p.vatAmount).toFixed(2)} kr` : "-"}
                       </td>
                       <td className="p-2 text-right">
                         {p.isRecurring ? t.trRecurringTag : t.trOnceTag}

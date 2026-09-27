@@ -27,7 +27,7 @@ export async function GET() {
     .limit(1);
 
   // No Stripe customer yet (free tier) or Stripe not configured: empty list,
-  // not an error — the UI just shows the empty state.
+  // not an error - the UI just shows the empty state.
   if (!sub?.stripeCustomerId || !process.env.STRIPE_SECRET_KEY) {
     return NextResponse.json({ invoices: [] });
   }

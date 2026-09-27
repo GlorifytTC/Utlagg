@@ -16,7 +16,7 @@ import {
 
 /**
  * The SINGLE export entitlement helper (spec §C.1). Every export entry point
- * calls {@link assertExportAllowed} — there are NO inline format checks anywhere
+ * calls {@link assertExportAllowed} - there are NO inline format checks anywhere
  * else, so the legal guardrail can't drift. The pure decision lives in
  * lib/billing/export-gating-core.ts (unit-tested); this module adds the state
  * lookup and the flag gate.
@@ -51,7 +51,7 @@ export async function exportAccessState(userId: string): Promise<AccessState> {
 /**
  * Server-side gate for an export route. Resolves the user's state and applies
  * {@link canUseExport}. When export gating is disabled (flag off) it always
- * allows — the flag is the rollback switch, but the always-available invariant
+ * allows - the flag is the rollback switch, but the always-available invariant
  * still holds because those formats never reach the gated branch anyway.
  */
 export async function assertExportAllowed(

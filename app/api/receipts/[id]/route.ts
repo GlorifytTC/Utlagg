@@ -94,7 +94,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Kvitto hittades inte" }, { status: 404 });
   }
 
-  // The row is gone — its R2 image object would otherwise be orphaned. Best-
+  // The row is gone - its R2 image object would otherwise be orphaned. Best-
   // effort cleanup (no-ops for inline data-URL / external images).
   await deleteReceiptImageIfR2(deleted.imageUrl);
 

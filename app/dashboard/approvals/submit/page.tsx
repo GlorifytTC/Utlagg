@@ -84,7 +84,7 @@ export default function SubmitApprovalPage() {
               <option value="">{t.phSelectReceipt}</option>
               {receipts.map((r) => (
                 <option key={r.id} value={r.id}>
-                  {(r.vendorName ?? t.unknownShort)} — {Number(r.totalAmount ?? 0).toFixed(2).replace(".", ",")} kr
+                  {(r.vendorName ?? t.unknownShort)} - {Number(r.totalAmount ?? 0).toFixed(2).replace(".", ",")} kr
                 </option>
               ))}
             </select>

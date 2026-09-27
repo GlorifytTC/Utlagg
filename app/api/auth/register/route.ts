@@ -17,7 +17,7 @@ const schema = z.object({
   name: z.string().min(1).optional(),
   companyName: z.string().optional(),
   // Account type chosen at registration. The SERVER derives isAccountant from
-  // this validated enum — the client never sends isAccountant directly, so a
+  // this validated enum - the client never sends isAccountant directly, so a
   // raw `isAccountant: true` in the body is ignored (unknown field). This is
   // the ONLY path that can set isAccountant=true; there is no profile PATCH for
   // it. Defaults to a normal user account.
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
     if (existing) {
       if (existing.emailVerified) {
-        // A real, active account — this email is genuinely taken.
+        // A real, active account - this email is genuinely taken.
         return NextResponse.json(
           { error: "E-postadressen är redan registrerad" },
           { status: 409 },
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
         !existing.emailVerificationTokenExpires ||
         existing.emailVerificationTokenExpires < new Date();
       if (!expired) {
-        // They registered minutes ago and the link is still valid — don't
+        // They registered minutes ago and the link is still valid - don't
         // silently delete a pending registration, but don't leave them
         // stuck either: tell them what's actually going on.
         return NextResponse.json(
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
         );
       }
       // Never verified and the 24h window has passed: this row is dead
-      // weight, not a real account. Remove it so the email can be reused —
+      // weight, not a real account. Remove it so the email can be reused -
       // this is what actually unblocks "I never got the email, now I'm
       // stuck" instead of leaving an orphaned unverified row forever.
       await db.delete(users).where(eq(users.id, existing.id));
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(parsed.data.password, 12);
 
-    // Account is created but stays unverified — emailVerified is null until
+    // Account is created but stays unverified - emailVerified is null until
     // they click the link, and login is blocked until then (see lib/auth.ts).
     const rawToken = crypto.randomBytes(32).toString("hex");
     const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");

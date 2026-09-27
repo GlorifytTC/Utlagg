@@ -6,7 +6,7 @@ import { users } from "@/db/schema";
 
 export const runtime = "nodejs";
 
-/** GET /api/auth/verify-email?token=... — marks the email verified. */
+/** GET /api/auth/verify-email?token=... - marks the email verified. */
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token");
   if (!token) {

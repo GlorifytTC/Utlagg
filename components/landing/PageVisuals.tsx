@@ -95,7 +95,7 @@ function Split({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** Pricing bottom CTA: what the trial looks like, day by day — risk reversal made concrete. */
+/** Pricing bottom CTA: what the trial looks like, day by day - risk reversal made concrete. */
 export function TrialVisual() {
   const { t } = useLanguage();
   const reduced = useReducedMotion();
@@ -226,7 +226,7 @@ export function WorkQueueVisual() {
         </ul>
       </div>
 
-      {/* Done toast — same pill as HeroVisual's approval toast; waits for the last stamp to land */}
+      {/* Done toast - same pill as HeroVisual's approval toast; waits for the last stamp to land */}
       <AnimatePresence>
         {done && (
           <motion.div

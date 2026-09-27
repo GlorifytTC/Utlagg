@@ -1,7 +1,7 @@
 import { Client, Receiver } from "@upstash/qstash";
 
 /**
- * Upstash QStash — offload long-running OCR off the request path so serverless
+ * Upstash QStash - offload long-running OCR off the request path so serverless
  * timeouts don't truncate it. Optional: if QSTASH_TOKEN is unset, callers
  * should fall back to synchronous OCR (/api/ocr still works).
  */

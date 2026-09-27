@@ -21,7 +21,7 @@ const schema = z.object({
 
 /**
  * Attaches the user's final, confirmed values to a training row after they
- * save a receipt. These confirmed values are the "labels" — the ground
+ * save a receipt. These confirmed values are the "labels" - the ground
  * truth a future model would be trained against. `wasCorrected` flags the
  * rows where the user changed what the AI proposed, which are the most
  * valuable training examples (the AI's actual mistakes).

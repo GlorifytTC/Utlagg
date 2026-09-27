@@ -12,7 +12,7 @@ export const runtime = "nodejs";
 /**
  * A single receipt for one client company, for the accountant.
  *
- * AUTHORIZATION — relationship-first, member-scoped:
+ * AUTHORIZATION - relationship-first, member-scoped:
  *   1. requireAccountant()
  *   2. requireCompanyAccess(accountantId, companyId) → active relationship +
  *      CURRENT member userIds (null ⇒ 404)
@@ -107,7 +107,7 @@ type EditableRow = {
 };
 
 /**
- * PATCH — accountant edits / reviews a client's receipt.
+ * PATCH - accountant edits / reviews a client's receipt.
  *
  * AUTHORIZATION (relationship-first, member-scoped, in order):
  *   1. requireAccountant()                       → 403 if not an accountant
@@ -155,7 +155,7 @@ export async function PATCH(
   if ("note" in d) updates.note = d.note ?? null;
   if (d.reviewed === true) {
     updates.reviewedAt = new Date();
-    updates.reviewedBy = acct.userId; // server-derived reviewer — never from input
+    updates.reviewedBy = acct.userId; // server-derived reviewer - never from input
   } else if (d.reviewed === false) {
     updates.reviewedAt = null;
     updates.reviewedBy = null;

@@ -54,7 +54,7 @@ export function AccountantOverview() {
               {s.label}
             </p>
             <p className="font-display text-[22px] font-semibold leading-none tracking-tight text-gray-900 dark:text-white">
-              {s.value ?? "—"}
+              {s.value ?? "-"}
             </p>
           </div>
         ))}

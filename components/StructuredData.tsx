@@ -1,6 +1,6 @@
 /**
  * JSON-LD structured data for the landing page. Honest by design: NO fabricated
- * aggregateRating/review counts (the spec suggested "4.8 / 127 reviews" — fake
+ * aggregateRating/review counts (the spec suggested "4.8 / 127 reviews" - fake
  * review markup violates search engines' guidelines and can get you penalised).
  * Add a real AggregateRating only once you have genuine reviews.
  */

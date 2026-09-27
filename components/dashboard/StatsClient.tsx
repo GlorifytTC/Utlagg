@@ -55,7 +55,7 @@ const BUCKET_KEYS: Record<Bucket, string> = {
   other: "stBucketOther",
 };
 
-// A few distinct, vivid palettes — deliberately livelier than the rest of
+// A few distinct, vivid palettes - deliberately livelier than the rest of
 // the app's restrained nordic theme, since this page only is meant to feel
 // like a colorful BI dashboard. Stored client-side (no account-wide effect).
 const THEMES: Record<string, { name: string; colors: string[] }> = {
@@ -257,7 +257,7 @@ export function StatsClient() {
           <CardContent className="flex flex-1 flex-col justify-center p-5 pt-5 text-white">
             <p className="text-sm opacity-90">{t.stTopCategory}</p>
             <p className="mt-1 truncate text-2xl font-bold">
-              {data?.kpi.topCategory ? (t[BUCKET_KEYS[data.kpi.topCategory.bucket] as keyof typeof t] as string) : "—"}
+              {data?.kpi.topCategory ? (t[BUCKET_KEYS[data.kpi.topCategory.bucket] as keyof typeof t] as string) : "-"}
             </p>
           </CardContent>
         </Card>

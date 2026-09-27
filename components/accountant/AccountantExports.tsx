@@ -161,7 +161,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
                         {h.createdAt?.slice(0, 10)}
                       </td>
                       <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
-                        {h.fromDate || h.toDate ? `${h.fromDate ?? "…"} – ${h.toDate ?? "…"}` : t.exAll}
+                        {h.fromDate || h.toDate ? `${h.fromDate ?? "…"} - ${h.toDate ?? "…"}` : t.exAll}
                       </td>
                       <td className="px-5 py-3 text-sm uppercase text-gray-500 dark:text-gray-400">
                         {h.format}

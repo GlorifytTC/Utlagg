@@ -42,7 +42,7 @@ const recordSchema = z.object({
 });
 
 /**
- * Records a vendor-name correction the person made — called from the
+ * Records a vendor-name correction the person made - called from the
  * receipt save flow, never blocking the save itself if it fails.
  */
 export async function POST(req: NextRequest) {

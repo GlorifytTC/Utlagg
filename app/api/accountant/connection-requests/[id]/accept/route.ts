@@ -9,13 +9,13 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 
 /**
- * POST — the accountant ACCEPTS a pending connection request.
+ * POST - the accountant ACCEPTS a pending connection request.
  *
  * AUTHORIZATION: requireAccountant() → load the request by id AND
  * accountantId (so it can only be this accountant's own request; another
  * accountant's id yields no row → 404). Only a pending request can be
  * accepted. On accept, the accountantClients relationship is created or
- * (if a prior revoked row exists) reactivated — mirroring the invitation
+ * (if a prior revoked row exists) reactivated - mirroring the invitation
  * accept exactly, and respecting the unique (accountantId, companyId)
  * constraint. Idempotent: re-accepting an already-active pair is a no-op.
  *
@@ -32,7 +32,7 @@ export async function POST(
   const acct = await requireAccountant();
   if (!acct) return NextResponse.json({ error: "Saknar behörighet" }, { status: 403 });
 
-  // Scoped to this accountant — another accountant's request → 404.
+  // Scoped to this accountant - another accountant's request → 404.
   const [reqRow] = await db
     .select()
     .from(accountantConnectionRequests)

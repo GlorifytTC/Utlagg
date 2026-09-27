@@ -18,7 +18,7 @@ interface Message {
 
 interface Props {
   clientId: string;
-  /** The current user's ID — used to align messages left/right. */
+  /** The current user's ID - used to align messages left/right. */
   currentUserId: string;
   /** Fill the parent's height instead of the fixed inline height. */
   fill?: boolean;

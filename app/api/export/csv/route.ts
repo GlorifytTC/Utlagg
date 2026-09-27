@@ -24,8 +24,8 @@ export async function GET(req: NextRequest) {
   }
 
   // Routed through the single export gate for consistency. CSV is in
-  // ALWAYS_AVAILABLE_EXPORTS, so this ALWAYS resolves to allowed — even in
-  // read-only state — which is the legal guardrail (spec §C). Never gate CSV.
+  // ALWAYS_AVAILABLE_EXPORTS, so this ALWAYS resolves to allowed - even in
+  // read-only state - which is the legal guardrail (spec §C). Never gate CSV.
   await assertExportAllowed(session.user.id, "csv");
 
   // Optional date range: ?from=YYYY-MM-DD&to=YYYY-MM-DD (inclusive).
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
     "Kvitto-ID",
   ];
 
-  // Use semicolon — the delimiter Excel expects in Swedish locale.
+  // Use semicolon - the delimiter Excel expects in Swedish locale.
   const lines = [header.join(";")];
   for (const r of rows) {
     lines.push(
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
   await logAudit({
     userId: session.user.id,
     action: "export.csv",
-    details: `Exported ${rows.length} receipts${from || to ? ` (${fromStr ?? "…"}–${toStr ?? "…"})` : ""}`,
+    details: `Exported ${rows.length} receipts${from || to ? ` (${fromStr ?? "…"}-${toStr ?? "…"})` : ""}`,
   });
 
   const rangeSuffix = from || to ? `-${fromStr ?? "start"}_${toStr ?? "nu"}` : "";

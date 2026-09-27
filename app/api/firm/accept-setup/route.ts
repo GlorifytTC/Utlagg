@@ -16,7 +16,7 @@ const schema = z.object({
 });
 
 /**
- * GET ?token= — validate a firm invite token and return the invitee's email +
+ * GET ?token= - validate a firm invite token and return the invitee's email +
  * name so the set-password page can greet them. Does NOT require a session.
  */
 export async function GET(req: NextRequest) {
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
 }
 
 /**
- * POST — the invitee sets their password and joins the firm, WITHOUT any prior
+ * POST - the invitee sets their password and joins the firm, WITHOUT any prior
  * login (the invite token proves email ownership). Flow:
  *   1. validate token (pending, unexpired)
  *   2. find the pre-created user by the invite email
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
 
   // Only set the password if the account has none yet. If it already has one,
   // this invite must not overwrite it (that account belongs to a real person
-  // who set it) — they should just log in and accept via the session flow.
+  // who set it) - they should just log in and accept via the session flow.
   if (!user.hashedPassword) {
     const hashed = await bcrypt.hash(parsed.data.password, 12);
     await db.update(users).set({ hashedPassword: hashed, isAccountant: true }).where(eq(users.id, user.id));

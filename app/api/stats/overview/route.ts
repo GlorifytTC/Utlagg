@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
       .groupBy(sql`date_trunc(${sql.raw(`'${trunc}'`)}, ${periodDate})`)
       .orderBy(sql`date_trunc(${sql.raw(`'${trunc}'`)}, ${periodDate}) asc`)) as TrendRow[];
 
-    // Category breakdown — scoped to the selected period, grouped by the
+    // Category breakdown - scoped to the selected period, grouped by the
     // receipt's BAS code and mapped to a spend bucket (food/travel/office/
     // etc.) so the diagram shows named categories for the chosen month/year.
     const categoryRows = (await db

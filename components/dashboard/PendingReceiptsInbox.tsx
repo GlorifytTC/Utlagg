@@ -22,12 +22,12 @@ interface PendingReceipt {
 }
 
 function money(v: string | null): string {
-  if (v == null) return "—";
+  if (v == null) return "-";
   return `${Number(v).toFixed(2).replace(".", ",")} kr`;
 }
 
 /**
- * "Awaiting your approval" — where an owner/admin sees every bill a member
+ * "Awaiting your approval" - where an owner/admin sees every bill a member
  * uploaded that's still pending. Expand to see details (image + fields),
  * then approve it (into the dashboard) or remove it (reject).
  */
@@ -90,7 +90,7 @@ export function PendingReceiptsInbox() {
                         {r.vendorName || t.apUnknownVendor} · {money(r.totalAmount)}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {t.apFrom} {r.uploaderName || r.uploaderEmail || "—"}
+                        {t.apFrom} {r.uploaderName || r.uploaderEmail || "-"}
                         {r.date ? ` · ${new Date(r.date).toLocaleDateString("sv-SE")}` : ""}
                       </p>
                     </button>
@@ -112,7 +112,7 @@ export function PendingReceiptsInbox() {
                     <div className="mt-3 grid gap-4 rounded-lg bg-gray-50 p-4 dark:bg-white/[0.03] sm:grid-cols-[1fr_auto]">
                       <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                         <dt className="text-gray-500">{t.apDetailVendor}</dt>
-                        <dd>{r.vendorName || "—"}</dd>
+                        <dd>{r.vendorName || "-"}</dd>
                         <dt className="text-gray-500">{t.apDetailTotal}</dt>
                         <dd>{money(r.totalAmount)}</dd>
                         <dt className="text-gray-500">{t.apDetailVat}</dt>
@@ -121,11 +121,11 @@ export function PendingReceiptsInbox() {
                           {r.vatRate ? ` (${r.vatRate}%)` : ""}
                         </dd>
                         <dt className="text-gray-500">{t.apDetailDate}</dt>
-                        <dd>{r.date ? new Date(r.date).toLocaleDateString("sv-SE") : "—"}</dd>
+                        <dd>{r.date ? new Date(r.date).toLocaleDateString("sv-SE") : "-"}</dd>
                         <dt className="text-gray-500">{t.apDetailCategory}</dt>
-                        <dd>{r.category || "—"}</dd>
+                        <dd>{r.category || "-"}</dd>
                         <dt className="text-gray-500">{t.apDetailNumber}</dt>
-                        <dd>{r.receiptNumber || "—"}</dd>
+                        <dd>{r.receiptNumber || "-"}</dd>
                       </dl>
                       {r.imageUrl && (
                         // eslint-disable-next-line @next/next/no-img-element

@@ -14,7 +14,7 @@ const STATUS_STYLE: Record<string, string> = {
 
 type SortKey = "date" | "vendor" | "bas" | "vat" | "amount" | "status";
 
-// Trimmed shape returned by GET /api/receipts — no image bytes or OCR text.
+// Trimmed shape returned by GET /api/receipts - no image bytes or OCR text.
 type ReceiptRow = {
   id: string;
   vendorName: string | null;
@@ -291,7 +291,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
             exit={{ opacity: 0 }}
             className="p-10 text-center text-sm text-gray-500 dark:text-gray-400"
           >
-            {total === 0 && !debouncedQuery && !from && !to ? t.receiptNone : "—"}
+            {total === 0 && !debouncedQuery && !from && !to ? t.receiptNone : "-"}
           </motion.p>
         ) : (
           <motion.div
@@ -326,7 +326,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                     <td className="px-5 py-3">{formatDate(r.date)}</td>
                     <td className="px-5 py-3 font-medium">
                       <div className="flex items-center gap-2">
-                        <span>{r.vendorName ?? "—"}</span>
+                        <span>{r.vendorName ?? "-"}</span>
                         {r.hasImage && (
                           <svg
                             viewBox="0 0 20 20"
@@ -343,9 +343,9 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                         )}
                       </div>
                     </td>
-                    <td className="px-5 py-3 font-mono text-gray-500 dark:text-gray-400">{r.basCode ?? "—"}</td>
+                    <td className="px-5 py-3 font-mono text-gray-500 dark:text-gray-400">{r.basCode ?? "-"}</td>
                     <td className="px-5 py-3">
-                      {r.vatRate ? `${r.vatRate}%` : "—"} <span className="text-gray-400 dark:text-gray-400">{formatSek(r.vatAmount)}</span>
+                      {r.vatRate ? `${r.vatRate}%` : "-"} <span className="text-gray-400 dark:text-gray-400">{formatSek(r.vatAmount)}</span>
                     </td>
                     <td className="px-5 py-3">{formatSek(r.totalAmount)}</td>
                     <td className="px-5 py-3">

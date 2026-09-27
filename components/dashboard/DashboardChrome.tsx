@@ -55,7 +55,7 @@ const navGroups = [
   },
 ];
 
-// Keep this flat array for the mobile bottom nav — it reads by href
+// Keep this flat array for the mobile bottom nav - it reads by href
 const nav = navGroups.flatMap((g) => g.items);
 
 const bottomNav = nav.filter((n) => ["/dashboard", "/dashboard/receipts", "/dashboard/stats", "/dashboard/subscription", "/dashboard/profile"].includes(n.href));

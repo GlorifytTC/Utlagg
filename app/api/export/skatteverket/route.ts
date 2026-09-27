@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Skatteverket export is CSV-shaped (a complete, machine-readable record set),
-  // so it is treated as "csv" and ALWAYS available — never gated (spec §C).
+  // so it is treated as "csv" and ALWAYS available - never gated (spec §C).
   await assertExportAllowed(session.user.id, "csv");
 
   const from = req.nextUrl.searchParams.get("from");
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
   await logAudit({
     userId: session.user.id,
     action: "receipt.export.skatteverket",
-    details: `${rows.length} rows${from || to ? ` (${from ?? "…"}–${to ?? "…"})` : ""}`,
+    details: `${rows.length} rows${from || to ? ` (${from ?? "…"}-${to ?? "…"})` : ""}`,
     ipAddress: clientIp(req),
   });
 

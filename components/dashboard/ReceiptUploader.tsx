@@ -22,7 +22,7 @@ interface Draft {
   vatRate: VatRate;
   basCode: string | null;
   // True only when basCode was filled in automatically from the vendor
-  // name (not picked by the person) — drives the "auto-detected" hint and
+  // name (not picked by the person) - drives the "auto-detected" hint and
   // is cleared the moment they touch the category selector themselves.
   basCodeAutoDetected: boolean;
   aiConfidence: number | null;
@@ -91,7 +91,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
 
   const [scanStatus, setScanStatus] = useState<string>("");
   // Snapshot of exactly what OCR originally guessed, kept around so save()
-  // can detect which fields the person actually corrected — those
+  // can detect which fields the person actually corrected - those
   // corrections are the real "self-learning" signal (see lib/ocr-learn.ts).
   const [ocrSnapshot, setOcrSnapshot] = useState<{
     vendorName: string | null;
@@ -134,7 +134,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       setDraft({
         vendorName: data.vendorName ?? "",
         receiptNumber: data.receiptNumber ?? "",
-        // Leave blank rather than silently defaulting to today — a wrong
+        // Leave blank rather than silently defaulting to today - a wrong
         // date that LOOKS correct (e.g. today's date on a 2022 receipt) is
         // worse than an empty field the person notices and fills in.
         date: data.date ?? "",
@@ -206,7 +206,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
           console.error("AI OCR unavailable, falling back to local:", e);
         }
 
-        // Step 1: free, local OCR in the browser — no API key, no cost,
+        // Step 1: free, local OCR in the browser - no API key, no cost,
         // runs even with zero AI keys configured anywhere. Default path.
         setScanStatus(t.rcScanningLocally);
         let localText = "";
@@ -226,7 +226,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
         if (localParsed) {
           // Before showing OCR's guess, check whether ANY user has
           // already corrected this exact vendor before (matched by org
-          // number — reliable — or, failing that, the same garbled OCR
+          // number - reliable - or, failing that, the same garbled OCR
           // text). If so, use the crowd-corrected name/category instead
           // of repeating the same mistake. Best-effort: a failed lookup
           // (network hiccup, not logged in yet, etc.) just falls through
@@ -247,11 +247,11 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             console.error("vendor correction lookup failed (non-blocking):", e);
           }
 
-          // Always use what Tesseract found — even a low-confidence local
+          // Always use what Tesseract found - even a low-confidence local
           // read is more honest than OCR.space's free demo key, which is
           // shared, rate-limited, and has produced garbage results (e.g.
           // "net te" for a ZARA receipt). No paid API is used as a
-          // fallback here by design — see the decision recorded below.
+          // fallback here by design - see the decision recorded below.
           applyExtractedData(
             {
               vendorName: vendorOverride?.vendorName ?? localParsed.vendorName,
@@ -281,7 +281,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
           }
         } else {
           // Tesseract found literally no text at all (blurry photo, OCR
-          // worker failed to load, etc.) — don't silently call a paid API
+          // worker failed to load, etc.) - don't silently call a paid API
           // or the free-but-unreliable OCR.space fallback; ask the person
           // to fill it in by hand instead, with an honest explanation.
           setDraft(emptyDraft());
@@ -345,7 +345,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
     setDraft((d) => ({
       ...d,
       basCode: code,
-      basCodeAutoDetected: false, // person took over — no longer "just a guess"
+      basCodeAutoDetected: false, // person took over - no longer "just a guess"
       vatRate: account ? resolveVatRate(account.vatCategory, new Date(d.date)) : d.vatRate,
     }));
   }
@@ -384,7 +384,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
         return;
       }
       // Teach the shared correction history if the person changed the
-      // vendor name from what OCR guessed — best-effort, never blocks the
+      // vendor name from what OCR guessed - best-effort, never blocks the
       // save that just succeeded above.
       if (ocrSnapshot && draft.vendorName && draft.vendorName !== ocrSnapshot.vendorName) {
         fetch("/api/ocr/vendor-lookup", {
@@ -400,7 +400,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       }
       // Attach the final confirmed values as the training label for the row
       // Gemini created when it read this receipt. wasCorrected flags whether
-      // the user changed what the AI proposed — the highest-value examples.
+      // the user changed what the AI proposed - the highest-value examples.
       if (trainingId) {
         const wasCorrected =
           !!ocrSnapshot &&
@@ -435,7 +435,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
     <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]">
       {/* Rendered through a portal on document.body: the uploader card uses
           backdrop-blur, and backdrop-filter establishes a containing block
-          for position:fixed descendants — so without the portal this "full
+          for position:fixed descendants - so without the portal this "full
           screen" overlay was being clamped to the card's box instead of the
           viewport. */}
       {typeof document !== "undefined" &&
@@ -449,7 +449,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 className="fixed inset-0 z-50 bg-black"
               >
             {/* The preview fills the entire viewport. object-contain keeps the
-                whole receipt visible (never cropped — the edges matter for
+                whole receipt visible (never cropped - the edges matter for
                 OCR) while scaling as large as the screen allows, on both
                 phones and wide desktop monitors. */}
             <video

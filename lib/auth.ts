@@ -29,8 +29,8 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials.password) return null;
 
         const email = credentials.email.toLowerCase();
-        // Throttle password attempts per account (5/min). Keyed by email —
-        // not spoofable like an IP header — so targeted brute force against
+        // Throttle password attempts per account (5/min). Keyed by email -
+        // not spoofable like an IP header - so targeted brute force against
         // one account is bounded. Gate BEFORE bcrypt so a flood can't burn
         // CPU on hash comparisons. Fails open only when Upstash is unset.
         if (!(await checkLimit("auth", `login:${email}`))) return null;
@@ -60,7 +60,7 @@ export const authOptions: NextAuthOptions = {
         if (!valid) return null;
 
         // Account exists and password is correct, but the email link was
-        // never clicked — don't open the dashboard for this person.
+        // never clicked - don't open the dashboard for this person.
         // (NextAuth v4 swallows thrown messages into a generic
         // "CredentialsSignin" error, so the client checks verification
         // status itself via /api/auth/check-verified before/after this.)

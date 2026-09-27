@@ -128,7 +128,7 @@ export default async function DashboardPage() {
 
       <AccountantEntryLink />
 
-      {/* Export quick action — the one thing people come back for every
+      {/* Export quick action - the one thing people come back for every
           VAT period, so it gets a direct link right on the landing page
           instead of being buried two clicks deep in Settings. */}
       <Link

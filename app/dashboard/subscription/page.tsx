@@ -24,7 +24,7 @@ export default async function SubscriptionPage() {
   if (membership && membership.role !== "owner") redirect("/dashboard");
 
   // Read the raw row FIRST (to see if a grant just lapsed), then resolve the
-  // effective tier — currentTier() also persists an expired grant, so after
+  // effective tier - currentTier() also persists an expired grant, so after
   // this call the DB and the UI agree.
   const [before] = await db
     .select()
@@ -37,7 +37,7 @@ export default async function SubscriptionPage() {
     !!before.subscriptionGrantedUntil &&
     new Date(before.subscriptionGrantedUntil).getTime() < Date.now();
 
-  // IMPORTANT: show the EFFECTIVE tier — the same one the feature gates use.
+  // IMPORTANT: show the EFFECTIVE tier - the same one the feature gates use.
   // Reading users.subscriptionTier directly made this page claim "You're on
   // the Business plan" while the gates treated the account as free, so the
   // premium pages showed an upgrade wall. One source of truth now.

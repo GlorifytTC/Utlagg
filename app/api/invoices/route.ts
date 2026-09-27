@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
   const membership = await getUserCompany(gate.userId!);
   if (!membership) {
     return NextResponse.json(
-      { error: "Skapa ett företag först — säljaruppgifterna hämtas därifrån." },
+      { error: "Skapa ett företag först - säljaruppgifterna hämtas därifrån." },
       { status: 409 },
     );
   }
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
 
   const totals = computeInvoiceTotals(d.lineItems, d.reverseCharge);
 
-  // Invoice number is optional — auto-generate a per-company sequential number
+  // Invoice number is optional - auto-generate a per-company sequential number
   // (YYYY-NNNN) when the user leaves it blank.
   let invoiceNumber = d.invoiceNumber?.trim();
   if (!invoiceNumber) {

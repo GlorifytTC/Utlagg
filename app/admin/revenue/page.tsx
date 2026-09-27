@@ -56,7 +56,7 @@ export default async function AdminRevenue() {
 
       <p className="text-xs text-gray-400">
         MRR/ARR beräknas från nuvarande aktiva planer (Pro 149 kr, Företag 299 kr). En
-        historisk MRR-kurva kräver att vi sparar månatliga ögonblicksbilder — det finns inte ännu.
+        historisk MRR-kurva kräver att vi sparar månatliga ögonblicksbilder - det finns inte ännu.
       </p>
     </div>
   );

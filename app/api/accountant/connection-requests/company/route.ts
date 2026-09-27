@@ -12,13 +12,13 @@ export const runtime = "nodejs";
 const schema = z.object({ companyId: z.string().uuid() });
 
 /**
- * POST /api/accountant/connection-requests/company — the ACCOUNTANT initiates a
+ * POST /api/accountant/connection-requests/company - the ACCOUNTANT initiates a
  * connection request to a discoverable company (reverse of the company-side
  * request). Reuses the SAME accountantConnectionRequests table + lifecycle; no
  * second relationship system.
  *
  * AUTHORIZATION: requireAccountant() → the target company must currently be
- * accountant_discoverable = true (else 404 — no probing non-discoverable
+ * accountant_discoverable = true (else 404 - no probing non-discoverable
  * companies). Creating a request grants NO access; only company acceptance
  * flips accountantClients to active. Duplicate pending is not stacked; an
  * existing active relationship returns 409; a prior declined/revoked request
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "Ogiltiga uppgifter" }, { status: 400 });
   const { companyId } = parsed.data;
 
-  // The company must currently be discoverable — otherwise it's as if it
+  // The company must currently be discoverable - otherwise it's as if it
   // doesn't exist to an accountant (no existence probing).
   const [company] = await db
     .select({ id: companies.id, discoverable: companies.accountantDiscoverable })

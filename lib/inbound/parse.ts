@@ -1,5 +1,5 @@
 /**
- * Pure helpers for the inbound-email receipt webhook — no server deps, so they
+ * Pure helpers for the inbound-email receipt webhook - no server deps, so they
  * stay unit-testable. See app/api/inbound/email/route.ts for the flow.
  */
 
@@ -17,7 +17,7 @@ export function recipientToken(addresses: Array<string | undefined>): string | n
   return null;
 }
 
-/** Minimal HTML→text — only used when an email has no plaintext part. */
+/** Minimal HTML→text - only used when an email has no plaintext part. */
 export function htmlToText(html: string): string {
   return html
     .replace(/<style[\s\S]*?<\/style>/gi, " ")

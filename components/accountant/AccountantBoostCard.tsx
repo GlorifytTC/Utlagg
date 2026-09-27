@@ -104,7 +104,7 @@ export function AccountantBoostCard() {
         </p>
         <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
           {t.boostActiveUntil}{" "}
-          <span className="font-medium text-gray-900 dark:text-white">{until ?? "—"}</span>
+          <span className="font-medium text-gray-900 dark:text-white">{until ?? "-"}</span>
           {state.daysLeft != null && (
             <span className="text-gray-400"> · {state.daysLeft} {t.boostDaysLeft}</span>
           )}

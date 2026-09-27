@@ -1,7 +1,7 @@
 // components/landing/AmbientBackground.tsx
 "use client";
 
-// Faint paper receipts drifting behind the content — plain DOM, so crisp at any DPR.
+// Faint paper receipts drifting behind the content - plain DOM, so crisp at any DPR.
 const BG_RECEIPTS: { pos: React.CSSProperties; w: number; r: number; dur: number; mdOnly?: boolean }[] = [
   { pos: { top: "62%", left: "3%" }, w: 96, r: -12, dur: 9, mdOnly: true },
   { pos: { top: "20%", right: "3%" }, w: 80, r: 14, dur: 11 },
@@ -14,7 +14,7 @@ export function AmbientBackground() {
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       {/* Soft drifting colour washes (base depth). The softness is baked into the
-          gradient falloff instead of filter: blur() — Firefox re-rasterises large
+          gradient falloff instead of filter: blur() - Firefox re-rasterises large
           blurred surfaces far too often for animated elements. */}
       <div
         className="amb-blob"
@@ -58,7 +58,7 @@ export function AmbientBackground() {
         </div>
       ))}
 
-      {/* Paper tint + grain overlay. No backdrop-filter — the tint keeps text
+      {/* Paper tint + grain overlay. No backdrop-filter - the tint keeps text
           contrast and everything underneath is already soft. */}
       <div
         className="absolute inset-0 pointer-events-none"

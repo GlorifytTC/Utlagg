@@ -8,7 +8,7 @@ import { users } from "@/db/schema";
 
 /**
  * Admin gate. A user is an admin if EITHER:
- *   (a) their users.role = 'admin' (the normal path — promote via /api/admin/promote), OR
+ *   (a) their users.role = 'admin' (the normal path - promote via /api/admin/promote), OR
  *   (b) their email is in the ADMIN_EMAILS allowlist (bootstrap, so the owner can
  *       always get in and promote the first real admin without a chicken-and-egg).
  * New users default to role 'member' and are NOT admins.

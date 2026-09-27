@@ -15,22 +15,22 @@ import { ChatBox } from "@/components/ChatBox";
 import { TrialVisual } from "@/components/landing/PageVisuals";
 
 // Scan quotas + feature matrix. Numbers mirror lib/billing/config.ts (the
-// single source of truth) — keep them in sync if the tier table changes.
-// Free is a deprecated tombstone (spec §7) — the offerable ladder now starts at
+// single source of truth) - keep them in sync if the tier table changes.
+// Free is a deprecated tombstone (spec §7) - the offerable ladder now starts at
 // Starter. SIE/SIE4 export is included on every paid tier (core), so it's a "✓"
 // across the board; it is only ever gated in read-only/lapsed state (spec §C).
 const PRICING_TABLE_ROWS = [
   { labelKey: "pricingTableReceipts", starter: "100", pro: "500", business: "1 500", max: "5 000", enterprise: "∞" },
-  { labelKey: "pricingTableMembers", starter: "1", pro: "1", business: "5–10", max: "∞", enterprise: "∞" },
+  { labelKey: "pricingTableMembers", starter: "1", pro: "1", business: "5-10", max: "∞", enterprise: "∞" },
   { labelKey: "pricingTableOcr", starter: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
   { labelKey: "pricingTableBas", starter: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
   { labelKey: "pricingTableCurrency", starter: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
   { labelKey: "pricingTableSie4", starter: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableSync", starter: "—", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableRoles", starter: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableLimits", starter: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableOnboarding", starter: "—", pro: "—", business: "—", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableSupport", starter: "—", pro: "—", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableSync", starter: "-", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableRoles", starter: "-", pro: "-", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableLimits", starter: "-", pro: "-", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableOnboarding", starter: "-", pro: "-", business: "-", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableSupport", starter: "-", pro: "-", business: "✓", max: "✓", enterprise: "✓" },
 ] as const;
 
 const FAQ_KEYS = [
@@ -206,7 +206,7 @@ function PricingPageContent() {
                           key={tier}
                           className={cn(
                             "py-4 pr-8",
-                            row[tier] === "—" && "text-ink/40",
+                            row[tier] === "-" && "text-ink/40",
                           )}
                         >
                           {row[tier] === "∞" ? t.unlimited : row[tier]}

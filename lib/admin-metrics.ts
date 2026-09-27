@@ -28,7 +28,7 @@ export async function computeMetrics(): Promise<Metrics> {
     totalUsers += Number(r.count);
   }
 
-  // Revenue counts ONLY genuinely paying customers — exclude admin-comped
+  // Revenue counts ONLY genuinely paying customers - exclude admin-comped
   // ("manual") grants and anything not currently active.
   const payingRows = (await db
     .select({ tier: users.subscriptionTier, count: sql<number>`count(*)::int` })

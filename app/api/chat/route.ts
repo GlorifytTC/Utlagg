@@ -9,7 +9,7 @@ import { accountantClients, chatMessages, companies, companyMembers, users } fro
 export const runtime = "nodejs";
 
 /**
- * GET /api/chat — the caller's conversations for the inbox list, newest
+ * GET /api/chat - the caller's conversations for the inbox list, newest
  * activity first, each with the last message as a preview.
  *
  * Mirrors resolveAccess in ./[clientId]/route.ts: an active relationship is

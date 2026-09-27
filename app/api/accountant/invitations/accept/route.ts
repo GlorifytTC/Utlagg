@@ -24,7 +24,7 @@ const schema = z.object({ token: z.string().min(10) });
  * being redeemed by a different account.
  *
  * Company binding: the accountant connects to the client's COMPANY. If the
- * client has no company we do NOT silently create one — we return 409 with
+ * client has no company we do NOT silently create one - we return 409 with
  * needsCompany:true so the UI can route them through the existing
  * POST /api/company flow and retry. On success the accountantClients row is
  * activated (idempotent: a retry that finds it already active just succeeds).
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Länken är ogiltig eller har gått ut" }, { status: 400 });
   }
 
-  // Email binding — the invite is tied to the address it was sent to.
+  // Email binding - the invite is tied to the address it was sent to.
   if (invite.email && invite.email.toLowerCase() !== session.user.email?.toLowerCase()) {
     return NextResponse.json(
       { error: "Inbjudan är kopplad till en annan e-postadress." },
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
   }
 
   // The client must have a company for the relationship to bind to. If not,
-  // tell the UI to create one first — never auto-create silently.
+  // tell the UI to create one first - never auto-create silently.
   const membership = await getUserCompany(session.user.id);
   if (!membership) {
     return NextResponse.json(

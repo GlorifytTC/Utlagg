@@ -17,13 +17,13 @@ export { trialGuardHash };
  *
  * FRAMING (do not overclaim): the hash is PSEUDONYMISED personal data processed
  * on legitimate interest (Art. 6.1.f), NOT "anonymous". It stops the lazy
- * same-email path, not a determined abuser with fresh addresses — the
+ * same-email path, not a determined abuser with fresh addresses - the
  * card-required trial is the primary control; this is a secondary layer.
  *
  * The HMAC secret is a STABLE server-side secret from the env store
  * (`TRIAL_GUARD_HMAC_SECRET`); rotating it invalidates every stored token. If it
  * is unset the guard fails OPEN (never blocks a legitimate signup) and writes
- * become no-ops — logged so the misconfiguration is visible.
+ * become no-ops - logged so the misconfiguration is visible.
  */
 
 /** ms-safe "now + N months" without pulling in a date lib. */
@@ -41,7 +41,7 @@ export async function isTrialEmailBlocked(email: string): Promise<boolean> {
   if (!trialEmailGuardEnabled()) return false;
   const hash = trialGuardHash(email);
   if (!hash) {
-    console.warn("TRIAL_GUARD_HMAC_SECRET unset — trial email guard disabled");
+    console.warn("TRIAL_GUARD_HMAC_SECRET unset - trial email guard disabled");
     return false;
   }
   const [row] = await db
@@ -68,7 +68,7 @@ export async function recordTrialGuard(email: string): Promise<boolean> {
   if (!trialEmailGuardEnabled()) return false;
   const hash = trialGuardHash(email);
   if (!hash) {
-    console.warn("TRIAL_GUARD_HMAC_SECRET unset — cannot record trial guard token");
+    console.warn("TRIAL_GUARD_HMAC_SECRET unset - cannot record trial guard token");
     return false;
   }
   const now = new Date();

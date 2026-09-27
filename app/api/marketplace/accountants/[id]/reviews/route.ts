@@ -15,7 +15,7 @@ const schema = z.object({
 });
 
 /**
- * POST /api/marketplace/accountants/[id]/reviews — submit or update a review.
+ * POST /api/marketplace/accountants/[id]/reviews - submit or update a review.
  *
  * Requires an active accountant_clients relationship between the viewer's
  * company and this accountant. One review per company; subsequent POSTs
@@ -68,7 +68,7 @@ export async function POST(
 
   const { rating, comment } = parsed.data;
 
-  // Upsert — one review per (accountantId, companyId) pair.
+  // Upsert - one review per (accountantId, companyId) pair.
   const [existing] = await db
     .select({ id: accountantReviews.id })
     .from(accountantReviews)

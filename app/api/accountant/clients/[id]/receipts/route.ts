@@ -7,7 +7,7 @@ import { logAuditEvent, clientIp } from "@/lib/audit";
 
 export const runtime = "nodejs";
 
-// Same list columns and conventions as GET /api/receipts — heavy fields
+// Same list columns and conventions as GET /api/receipts - heavy fields
 // (imageUrl, receiptText) deliberately excluded from the list payload.
 const listColumns = {
   id: receipts.id,
@@ -37,7 +37,7 @@ const MAX_PAGE_SIZE = 100;
 /**
  * Receipts for one client company, for the accountant.
  *
- * AUTHORIZATION — relationship-first, member-scoped, in this exact order:
+ * AUTHORIZATION - relationship-first, member-scoped, in this exact order:
  *   1. requireAccountant()
  *   2. requireCompanyAccess(accountantId, companyId) → active relationship +
  *      the company's CURRENT member userIds (null ⇒ 404, no data queried)
@@ -71,7 +71,7 @@ export async function GET(
   const sortCol = SORT_COLUMNS[sortKey] ?? receipts.date;
   const dir = sp.get("dir") === "asc" ? sql`asc` : sql`desc`;
 
-  // A company with no current members has no authorized receipts — return an
+  // A company with no current members has no authorized receipts - return an
   // empty page rather than an unscoped query.
   if (memberIds.length === 0) {
     return NextResponse.json({ receipts: [], total: 0, page, pageSize });

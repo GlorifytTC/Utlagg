@@ -10,7 +10,7 @@ import { logAudit, clientIp } from "@/lib/audit";
 export const runtime = "nodejs";
 
 /**
- * POST — the COMPANY (owner/admin) DECLINES an accountant's connection request.
+ * POST - the COMPANY (owner/admin) DECLINES an accountant's connection request.
  * Company-scoped (request must belong to the caller's own company). Only
  * pending can be declined. Sets status=revoked, respondedAt. Creates NO
  * relationship and grants NO access.

@@ -1,5 +1,5 @@
 /**
- * Subscription plans — the consumer-facing view of the tier table.
+ * Subscription plans - the consumer-facing view of the tier table.
  *
  * Prices, quotas and Stripe lookup keys are the SINGLE SOURCE OF TRUTH in
  * lib/billing/config.ts; this module only adds display copy (feature bullet
@@ -30,7 +30,7 @@ export interface Plan {
 
 /** Feature bullet copy per tier (Swedish). Display only. */
 const FEATURES: Record<Tier, string[]> = {
-  // Free is a deprecated tombstone (spec §7) — kept for existing rows and the
+  // Free is a deprecated tombstone (spec §7) - kept for existing rows and the
   // 30-day Trial's entitlement copy, never shown as an offerable plan.
   free: ["15 skanningar/mån", "Grundläggande OCR", "CSV-export"],
   starter: [
@@ -49,7 +49,7 @@ const FEATURES: Record<Tier, string[]> = {
   business: [
     "1 500 skanningar/mån (delas i teamet)",
     "Allt i Pro",
-    "5–10 användare, roller",
+    "5-10 användare, roller",
     "Attestflöden",
     "Bokföringsintegrationer",
   ],
@@ -59,7 +59,7 @@ const FEATURES: Record<Tier, string[]> = {
     "Flera klienter",
     "Prioriterad support",
   ],
-  // Enterprise: contact-sales only. Do NOT list SSO/API/white-label as live —
+  // Enterprise: contact-sales only. Do NOT list SSO/API/white-label as live -
   // they are roadmap items, not built features.
   enterprise: [
     "Allt i Max",

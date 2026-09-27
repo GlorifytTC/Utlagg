@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { accountantBoosts } from "@/db/schema";
 
 /**
- * Accountant Boost — server-side entitlement logic.
+ * Accountant Boost - server-side entitlement logic.
  *
  * Product: 49 kr, 7 days, ONE-TIME payment (not a subscription). The price and
  * duration are fixed here on the server; the browser can only ask to "buy
@@ -22,7 +22,7 @@ export interface BoostState {
 
 /**
  * The authoritative boost state for an accountant. A boost counts as active iff
- * status='active' AND expiresAt > now() — evaluated at query time, so ranking
+ * status='active' AND expiresAt > now() - evaluated at query time, so ranking
  * correctness never depends on a cron marking rows expired.
  */
 export async function getBoostState(accountantId: string): Promise<BoostState> {
@@ -55,7 +55,7 @@ export async function isBoostActive(accountantId: string): Promise<boolean> {
 
 /**
  * Activates a boost from a VERIFIED Stripe webhook. Idempotent on the checkout
- * session id (unique index) — a replayed webhook updates the same row rather
+ * session id (unique index) - a replayed webhook updates the same row rather
  * than creating a second boost. Never called from the browser or success URL.
  */
 export async function activateBoostFromWebhook(params: {
@@ -107,7 +107,7 @@ export async function activateBoostFromWebhook(params: {
 /**
  * Deterministic accountant ranking: relevance FIRST, boost SECOND. `relevance`
  * is a caller-computed score (location/specialty/etc). A boost only breaks ties
- * or lifts an accountant above a COMPARABLE non-boosted one — it never
+ * or lifts an accountant above a COMPARABLE non-boosted one - it never
  * overrides a materially more relevant result, because relevance is the primary
  * sort key. Used wherever accountants are shown to companies.
  */

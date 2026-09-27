@@ -37,7 +37,7 @@ export const accountantRelStatus = pgEnum("accountant_rel_status", [
   "revoked",
 ]);
 export const subscriptionTier = pgEnum("subscription_tier", [
-  "free", // Pricing V3 tombstone — retained for existing rows, never offered again
+  "free", // Pricing V3 tombstone - retained for existing rows, never offered again
   "starter",
   "pro",
   "business",
@@ -80,7 +80,7 @@ export const referralStatus = pgEnum("referral_status", [
   "void",
 ]);
 
-/** Scope a usage / credit balance is billed against (spec §7.3 — pooled). */
+/** Scope a usage / credit balance is billed against (spec §7.3 - pooled). */
 export const billingScope = pgEnum("billing_scope", ["user", "company"]);
 
 /* ------------------------------------------------------------------ */
@@ -91,7 +91,7 @@ export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: varchar("email", { length: 320 }).notNull().unique(),
   hashedPassword: text("hashed_password"), // nullable: BankID users have none
-  // SHA-256 of the BankID personnummer — lets us match returning BankID users
+  // SHA-256 of the BankID personnummer - lets us match returning BankID users
   // without storing the raw personal number. Nullable + unique.
   bankIdSubject: varchar("bank_id_subject", { length: 64 }).unique(),
   name: varchar("name", { length: 200 }),
@@ -135,9 +135,9 @@ export const users = pgTable("users", {
   // the migration to avoid a forward-reference here.
   referredByUserId: uuid("referred_by_user_id"),
   // Normalised email (lower-case, Gmail dots/+alias stripped) for referral
-  // dedup — a plain unique index can't catch alias-based duplicate signups.
+  // dedup - a plain unique index can't catch alias-based duplicate signups.
   emailNormalized: varchar("email_normalized", { length: 320 }),
-  // Signup IP — one signal used by referral ring-detection.
+  // Signup IP - one signal used by referral ring-detection.
   signupIp: varchar("signup_ip", { length: 64 }),
   // --- Pricing V3 §A: one-time 30-day Trial (all nullable) ---
   // When the current trial started / ends. The account is on the `trialing`
@@ -158,7 +158,7 @@ export const users = pgTable("users", {
   // | 'paid_unchanged'). For support/audit; not read by gating logic.
   migrationNoticeSentAt: timestamp("migration_notice_sent_at", { withTimezone: true }),
   migrationPath: varchar("migration_path", { length: 20 }),
-  // Accountant role flag — a user who can connect to client companies and
+  // Accountant role flag - a user who can connect to client companies and
   // review their receipts. Deliberately SEPARATE from `role` (platform/company
   // role) and from `subscriptionTier`: being an accountant is not a tier and
   // not an admin privilege. Read fresh from the DB by requireAccountant();
@@ -203,7 +203,7 @@ export const receipts = pgTable(
     // money stored as numeric to avoid float rounding errors
     totalAmount: numeric("total_amount", { precision: 12, scale: 2 }),
     vatAmount: numeric("vat_amount", { precision: 12, scale: 2 }),
-    // 6 | 12 | 25 — stored as integer percentage
+    // 6 | 12 | 25 - stored as integer percentage
     vatRate: integer("vat_rate"),
     category: varchar("category", { length: 120 }),
     basCode: varchar("bas_code", { length: 10 }), // Swedish BAS account code
@@ -211,14 +211,14 @@ export const receipts = pgTable(
     // Who (owner/admin) approved or rejected this receipt, if anyone.
     approvedBy: uuid("approved_by").references(() => users.id),
     aiConfidence: real("ai_confidence"),
-    receiptText: text("receipt_text"), // raw OCR text — kept for audit
+    receiptText: text("receipt_text"), // raw OCR text - kept for audit
     // Fortnox sync state
     fortnoxSynced: boolean("fortnox_synced").notNull().default(false),
     fortnoxSyncedAt: timestamp("fortnox_synced_at", { withTimezone: true }),
     fortnoxVoucherId: varchar("fortnox_voucher_id", { length: 64 }),
     // Company scoping (nullable: solo users have no company)
     companyId: uuid("company_id"),
-    // SHA-256 of the stored image bytes — tamper-evidence (Bokföringslagen 2024)
+    // SHA-256 of the stored image bytes - tamper-evidence (Bokföringslagen 2024)
     fileHash: varchar("file_hash", { length: 64 }),
     // Accountant review fields (Phase 1). All nullable/additive: an accountant
     // with an active relationship may leave a note and mark a receipt reviewed.
@@ -265,7 +265,7 @@ export const expenses = pgTable("expenses", {
 });
 
 /* ------------------------------------------------------------------ */
-/* audit_logs  (7-year retention — Bokföringslagen)                   */
+/* audit_logs  (7-year retention - Bokföringslagen)                   */
 /* ------------------------------------------------------------------ */
 
 export const auditLogs = pgTable(
@@ -285,7 +285,7 @@ export const auditLogs = pgTable(
     oldValues: jsonb("old_values"),
     newValues: jsonb("new_values"),
     userAgent: text("user_agent"),
-    // Which client company the accountant was acting on — enables company-scoped
+    // Which client company the accountant was acting on - enables company-scoped
     // audit queries without string-parsing the details field.
     targetCompanyId: uuid("target_company_id"),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -325,7 +325,7 @@ export const subscriptions = pgTable("subscriptions", {
   // User-set monthly overage spend ceiling in öre (spec §3.4). Null = use the
   // config default (DEFAULT_OVERAGE_CAP_ORE).
   overageSpendCapOre: integer("overage_spend_cap_ore"),
-  // Stripe card fingerprint of the payment method — a referral ring-detection
+  // Stripe card fingerprint of the payment method - a referral ring-detection
   // signal (same card on both sides of a referral is blocked).
   stripeCardFingerprint: varchar("stripe_card_fingerprint", { length: 64 }),
 });
@@ -426,12 +426,12 @@ export const companyInvites = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
-/* Accountant ecosystem — Phase 1 foundation                          */
+/* Accountant ecosystem - Phase 1 foundation                          */
 /*                                                                    */
 /* An accountant (users.isAccountant) connects to a BUSINESS (company)*/
 /* through an explicit relationship. The company OWNS its data; the   */
 /* accountant EARNS access. Access is scoped through the company's    */
-/* CURRENT membership at query time — never through receipts.companyId*/
+/* CURRENT membership at query time - never through receipts.companyId*/
 /* (a nullable snapshot). See lib/accountant.ts.                      */
 /* ------------------------------------------------------------------ */
 
@@ -553,7 +553,7 @@ export const accountantExports = pgTable(
 export type AccountantExport = typeof accountantExports.$inferSelect;
 
 /**
- * Accountant Boost — a one-time paid visibility purchase (49 kr / 7 days).
+ * Accountant Boost - a one-time paid visibility purchase (49 kr / 7 days).
  * Stripe is the payment authority; this table is the entitlement authority.
  * status/startsAt/expiresAt/stripePaymentIntentId are SERVER-controlled only
  * (set from the verified webhook, never from the browser). Ranking treats a
@@ -592,7 +592,7 @@ export const accountantBoosts = pgTable(
 export type AccountantBoost = typeof accountantBoosts.$inferSelect;
 
 /* ------------------------------------------------------------------ */
-/* accountant_reviews — one review per company per accountant.         */
+/* accountant_reviews - one review per company per accountant.         */
 /* Only companies with an active accountant_clients relationship may   */
 /* submit. Rating 1-5 enforced by DB CHECK constraint.                 */
 /* ------------------------------------------------------------------ */
@@ -620,7 +620,7 @@ export const accountantReviews = pgTable(
 export type AccountantReview = typeof accountantReviews.$inferSelect;
 
 /* ------------------------------------------------------------------ */
-/* Accounting firms (revisorbyrå) — multi-user teams with roles and    */
+/* Accounting firms (revisorbyrå) - multi-user teams with roles and    */
 /* per-worker customer assignments.                                    */
 /*                                                                     */
 /* Roles: owner (main account) > admin > member (worker).             */
@@ -731,7 +731,7 @@ export const workerAssignments = pgTable(
 export type WorkerAssignment = typeof workerAssignments.$inferSelect;
 
 /* ------------------------------------------------------------------ */
-/* customer_invoices (kundfakturor — invoices the company sends out)    */
+/* customer_invoices (kundfakturor - invoices the company sends out)    */
 /* ------------------------------------------------------------------ */
 
 export const customerInvoices = pgTable(
@@ -835,7 +835,7 @@ export const approvalRequests = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
-/* webhook_events (Stripe idempotency — process each event once)       */
+/* webhook_events (Stripe idempotency - process each event once)       */
 /* ------------------------------------------------------------------ */
 
 export const webhookEvents = pgTable("webhook_events", {
@@ -847,7 +847,7 @@ export const webhookEvents = pgTable("webhook_events", {
 });
 
 /* ------------------------------------------------------------------ */
-/* scan_usage (Pricing V2 §2.2) — metered scans per billing period     */
+/* scan_usage (Pricing V2 §2.2) - metered scans per billing period     */
 /* One row per billing account per period. planScansUsed resets each    */
 /* cycle; overage columns accrue within the cycle. The unique index on   */
 /* (scope, scopeId, periodStart) is what makes metering idempotent and   */
@@ -890,10 +890,10 @@ export const scanUsage = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
-/* scan_credits (Pricing V2 §3.3) — purchased packs that roll over      */
+/* scan_credits (Pricing V2 §3.3) - purchased packs that roll over      */
 /* Consumed BEFORE overage billing. Must not expire < 12 months         */
 /* (consumer law). Tracked with their own expiry; monthly plan scans     */
-/* (scan_usage) reset and never roll over — two separate balances.       */
+/* (scan_usage) reset and never roll over - two separate balances.       */
 /* ------------------------------------------------------------------ */
 export const scanCredits = pgTable(
   "scan_credits",
@@ -908,7 +908,7 @@ export const scanCredits = pgTable(
       .notNull()
       .defaultNow(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-    // Stripe PaymentIntent / Checkout Session id — UNIQUE so replaying the
+    // Stripe PaymentIntent / Checkout Session id - UNIQUE so replaying the
     // purchase webhook can't grant the same pack twice (idempotency).
     stripeRef: varchar("stripe_ref", { length: 255 }).unique(),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -922,7 +922,7 @@ export const scanCredits = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
-/* referral_rewards (Pricing V2 §4) — one reward per referred user       */
+/* referral_rewards (Pricing V2 §4) - one reward per referred user       */
 /* The UNIQUE constraint on referredUserId is the load-bearing            */
 /* idempotency control: one referred conversion → at most one reward.     */
 /* ------------------------------------------------------------------ */
@@ -933,7 +933,7 @@ export const referralRewards = pgTable(
     referrerUserId: uuid("referrer_user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    // One reward per referred user — enforced unique.
+    // One reward per referred user - enforced unique.
     referredUserId: uuid("referred_user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" })
@@ -964,11 +964,11 @@ export const referralRewards = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
-/* trial_email_guard (Pricing V3 §E) — repeat-trial guard              */
+/* trial_email_guard (Pricing V3 §E) - repeat-trial guard              */
 /* Blocks "delete account → same email starts a new trial" WITHOUT      */
 /* retaining readable personal data after erasure. Holds only an        */
 /* HMAC-SHA256 of the normalised email (pseudonymised, one-way) with an  */
-/* expiry — NO plaintext email and no other identifying columns. The     */
+/* expiry - NO plaintext email and no other identifying columns. The     */
 /* hash is written on account deletion (before the wipe) and checked at  */
 /* trial start; rows past expiresAt are purged by the retention job.     */
 /* ------------------------------------------------------------------ */
@@ -1043,7 +1043,7 @@ export type NewScanUsage = typeof scanUsage.$inferInsert;
 export type ScanCredit = typeof scanCredits.$inferSelect;
 export type ReferralReward = typeof referralRewards.$inferSelect;
 
-/* OCR training samples — manual field annotations for future model training. */
+/* OCR training samples - manual field annotations for future model training. */
 export const ocrSamples = pgTable("ocr_samples", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
@@ -1096,7 +1096,7 @@ export const companyVehicles = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
-/* transport_passes (Periodbiljetter — månadskort etc.)                */
+/* transport_passes (Periodbiljetter - månadskort etc.)                */
 /* ------------------------------------------------------------------ */
 export const transportPasses = pgTable(
   "transport_passes",
@@ -1131,19 +1131,19 @@ export type CompanyVehicle = typeof companyVehicles.$inferSelect;
 export type TransportPass = typeof transportPasses.$inferSelect;
 
 /* ------------------------------------------------------------------ */
-/* mileage_routes — saved/recurring trips (daily commute, fixed runs)  */
+/* mileage_routes - saved/recurring trips (daily commute, fixed runs)  */
 /* so users don't retype the same trip every day.                      */
 /* ------------------------------------------------------------------ */
 /* ------------------------------------------------------------------ */
 /* Shared OCR vendor-name learning                                    */
 /* When ANY user corrects a vendor name OCR got wrong, that correction*/
 /* is recorded here keyed on the Swedish org number (556677-8899 style)*/
-/* read off the same receipt — org numbers are fixed-format and OCR   */
+/* read off the same receipt - org numbers are fixed-format and OCR   */
 /* reads them far more reliably than a store's stylized logo/name, so */
 /* they survive across different photos of the same chain far better */
 /* than trying to fuzzy-match the garbled vendor text itself. Once a  */
 /* correction exists for an org number, EVERY user's future receipts  */
-/* from that same company get the right name automatically — this is */
+/* from that same company get the right name automatically - this is */
 /* what makes the system improve across the whole user base rather    */
 /* than relearning the same store separately for every person.        */
 /* ------------------------------------------------------------------ */
@@ -1151,7 +1151,7 @@ export const vendorCorrections = pgTable(
   "vendor_corrections",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    // Swedish org number, "556677-8899" format — the stable lookup key.
+    // Swedish org number, "556677-8899" format - the stable lookup key.
     orgNumber: varchar("org_number", { length: 11 }),
     // What OCR actually produced before correction (kept for the
     // text-similarity fallback when no org number was readable).
@@ -1174,7 +1174,7 @@ export const vendorCorrections = pgTable(
 /* Every receipt read by the AI (Gemini) is captured here: the image, */
 /* exactly what the AI returned, and what the user finally confirmed   */
 /* after any manual edits. This is a labeled dataset of real Swedish   */
-/* receipts — the raw material needed if/when the operator later wants */
+/* receipts - the raw material needed if/when the operator later wants */
 /* to train their own receipt-reading model and reduce reliance on the */
 /* paid/free Gemini API. NOTE: accumulating this data is step one of   */
 /* training a model; turning it into a working model is a separate     */
@@ -1200,7 +1200,7 @@ export const receiptTrainingData = pgTable(
     confirmedTotal: numeric("confirmed_total", { precision: 12, scale: 2 }),
     confirmedVat: numeric("confirmed_vat", { precision: 12, scale: 2 }),
     confirmedVatRate: integer("confirmed_vat_rate"),
-    // True if the user changed anything the AI proposed — the most
+    // True if the user changed anything the AI proposed - the most
     // valuable training signal (these are the AI's mistakes).
     wasCorrected: boolean("was_corrected").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -1236,7 +1236,7 @@ export type MileageRoute = typeof mileageRoutes.$inferSelect;
 export type VendorCorrection = typeof vendorCorrections.$inferSelect;
 
 /* ------------------------------------------------------------------ */
-/* chat_messages — per accountant<->company relationship              */
+/* chat_messages - per accountant<->company relationship              */
 /* ------------------------------------------------------------------ */
 export const chatMessages = pgTable(
   "chat_messages",
@@ -1249,7 +1249,7 @@ export const chatMessages = pgTable(
     senderId: uuid("sender_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    // 'accountant' | 'company' — denormalised so queries need no join.
+    // 'accountant' | 'company' - denormalised so queries need no join.
     senderRole: varchar("sender_role", { length: 10 }).notNull(),
     body: text("body").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -1263,7 +1263,7 @@ export const chatMessages = pgTable(
 export type ChatMessage = typeof chatMessages.$inferSelect;
 
 /* ------------------------------------------------------------------ */
-/* chat_reports — user reports moderator reviews in admin panel        */
+/* chat_reports - user reports moderator reviews in admin panel        */
 /* ------------------------------------------------------------------ */
 export const chatReportStatus = pgEnum("chat_report_status", [
   "pending",

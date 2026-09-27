@@ -54,7 +54,7 @@ export function RecentReceipts({ receipts }: { receipts: Receipt[] }) {
                     {r.vendorName ?? t.unknownVendor}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {r.date ? formatDate(r.date) : "—"}
+                    {r.date ? formatDate(r.date) : "-"}
                   </p>
                 </div>
                 <div className="ml-4 text-right">

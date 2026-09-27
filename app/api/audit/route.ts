@@ -13,7 +13,7 @@ export const runtime = "nodejs";
  * events. (For multi-seat companies, scope by company_id once that exists.)
  *
  * These rows are append-only and retained 7 years (Bokföringslagen).
- * This endpoint is read/export only — it never mutates or deletes.
+ * This endpoint is read/export only - it never mutates or deletes.
  */
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);

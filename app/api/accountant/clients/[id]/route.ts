@@ -12,12 +12,12 @@ export const runtime = "nodejs";
  *
  * AUTHORIZATION (relationship-first, member-scoped):
  *   1. requireAccountant()
- *   2. requireCompanyAccess(accountantId, companyId) — active relationship only
+ *   2. requireCompanyAccess(accountantId, companyId) - active relationship only
  *   3. counts are scoped to the company's CURRENT members
  *
  * Returns 404 (not 403) when the accountant has no active relationship with
  * the company, so it never reveals whether the company exists. Only minimal,
- * accountant-relevant fields are returned — no member list, billing,
+ * accountant-relevant fields are returned - no member list, billing,
  * subscription, credential, or private data.
  */
 export async function GET(
@@ -29,7 +29,7 @@ export async function GET(
 
   const access = await requireCompanyAccess(acct.userId, params.id);
   if (!access) {
-    // Do not reveal existence — same 404 whether the company is unknown or
+    // Do not reveal existence - same 404 whether the company is unknown or
     // simply not this accountant's client.
     return NextResponse.json({ error: "Hittades inte" }, { status: 404 });
   }

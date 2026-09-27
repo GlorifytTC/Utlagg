@@ -1,6 +1,6 @@
 /**
  * Shared receipt-creation core. The single place a receipt row is born, no
- * matter the intake channel — the manual/scan API (POST /api/receipts) and the
+ * matter the intake channel - the manual/scan API (POST /api/receipts) and the
  * inbound-email webhook (POST /api/inbound/email) both route through here, so
  * metering, member-approval, auto-categorization and the audit trail stay
  * identical across channels. Do NOT re-implement any of this in a caller.
@@ -46,7 +46,7 @@ export async function createReceipt(
   d: CreateReceiptInput,
   ipAddress?: string | null,
 ): Promise<CreateReceiptResult> {
-  // Scan metering — the single choke-point (lib/billing/metering.ts) enforces
+  // Scan metering - the single choke-point (lib/billing/metering.ts) enforces
   // the monthly cap, consumes credits before overage, applies the tapered
   // overage rate and honours the spend cap. Do NOT add cap checks elsewhere.
   const meter = await meterScan(userId);

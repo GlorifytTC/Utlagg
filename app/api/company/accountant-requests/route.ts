@@ -9,12 +9,12 @@ import { getUserCompany, canManageCompany } from "@/lib/company";
 export const runtime = "nodejs";
 
 /**
- * GET /api/company/accountant-requests — the caller's OWN company's
+ * GET /api/company/accountant-requests - the caller's OWN company's
  * accountant request + relationship state, so the "Find an accountant" UI can
  * label each accountant as pending / connected and avoid duplicate requests.
  *
  * Company is resolved from the session (never a browser companyId); owner/admin
- * only. Returns just { accountantId, status } pairs — no accountant-private
+ * only. Returns just { accountantId, status } pairs - no accountant-private
  * data. Company A can never see Company B's requests.
  */
 export async function GET() {

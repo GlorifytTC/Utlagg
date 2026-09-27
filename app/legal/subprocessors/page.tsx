@@ -2,14 +2,14 @@ import Link from "next/link";
 import { getT } from "@/lib/i18n-server";
 import type { Translations } from "@/lib/translations";
 
-export const metadata = { title: "Underbiträden — Kvittino" };
+export const metadata = { title: "Underbiträden - Kvittino" };
 
 const rows = (t: Translations): [string, string, string, string][] => [
-  ["Railway", t.spPurposeHosting, "EU", "—"],
-  ["Cloudflare R2", t.spPurposeStorage, "EU", "—"],
+  ["Railway", t.spPurposeHosting, "EU", "-"],
+  ["Cloudflare R2", t.spPurposeStorage, "EU", "-"],
   ["Stripe", t.spPurposePayments, "EU/US", "SCC / DPF"],
   ["Resend", t.spPurposeEmail, "US", "SCC / DPF"],
-  ["Upstash", t.spPurposeRedis, "EU", "—"],
+  ["Upstash", t.spPurposeRedis, "EU", "-"],
   ["Google Cloud Vision", t.spPurposeOcr, "EU", t.spEuRegion],
 ];
 

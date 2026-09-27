@@ -22,8 +22,8 @@ import {
  * Referral program (spec §4). Rewards the REFERRER with 14 days of Pro when the
  * user they referred completes their first paid subscription and survives a
  * 30-day hold. Payment on a distinct card is the load-bearing anti-abuse anchor
- * (BankID is disabled). The reward is time-boxed Pro / pushed billing — never a
- * cash payout — so there's no payout or moms/VAT accounting.
+ * (BankID is disabled). The reward is time-boxed Pro / pushed billing - never a
+ * cash payout - so there's no payout or moms/VAT accounting.
  */
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -48,7 +48,7 @@ export async function ensureReferralCode(userId: string): Promise<string> {
       await db.update(users).set({ referralCode: code }).where(eq(users.id, userId));
       return code;
     } catch {
-      /* collision — try another */
+      /* collision - try another */
     }
   }
   throw new Error("could not allocate referral code");
@@ -73,7 +73,7 @@ export async function referrerIdForCode(code: string): Promise<string | null> {
  * Record referrer → referred on the referred user's account. Attribution is set
  * ONCE and is immutable; self-referral is rejected outright. Returns true if a
  * new attribution was written. Reward eligibility (caps, ring detection) is
- * evaluated later at first-paid time — attribution itself is cheap and
+ * evaluated later at first-paid time - attribution itself is cheap and
  * reversible-proof.
  */
 export async function captureReferral(input: {
@@ -164,7 +164,7 @@ async function capsExceeded(referrerId: string): Promise<string | null> {
 }
 
 /* ------------------------------------------------------------------ */
-/* Reward trigger — referred user's first paid invoice                 */
+/* Reward trigger - referred user's first paid invoice                 */
 /* ------------------------------------------------------------------ */
 
 /**
@@ -240,7 +240,7 @@ export async function onReferredFirstPaid(input: {
       })
       .onConflictDoNothing({ target: referralRewards.referredUserId })
       .returning({ id: referralRewards.id });
-    if (!row) return null; // conflict — created concurrently
+    if (!row) return null; // conflict - created concurrently
     await logAudit({
       userId: referrerId,
       action: "referral.reward_pending",
@@ -270,7 +270,7 @@ export async function vestDueReferralRewards(now: Date = new Date()): Promise<nu
 
   let granted = 0;
   for (const reward of due) {
-    // Claim the reward atomically — flip pending→granted only if still pending.
+    // Claim the reward atomically - flip pending→granted only if still pending.
     const claimed = await db
       .update(referralRewards)
       .set({ status: "granted", grantedAt: now, updatedAt: now })
@@ -344,7 +344,7 @@ export async function applyReferralEventForReferred(
 }
 
 /* ------------------------------------------------------------------ */
-/* Grant mechanics (time-boxed Pro / pushed billing — never cash)      */
+/* Grant mechanics (time-boxed Pro / pushed billing - never cash)      */
 /* ------------------------------------------------------------------ */
 
 async function grantReferralPro(referrerUserId: string, days: number): Promise<void> {
@@ -383,7 +383,7 @@ async function grantReferralPro(referrerUserId: string, days: number): Promise<v
 
   // Otherwise grant / extend a time-boxed Pro entitlement (the existing manual
   // grant machinery; entitlements.ts auto-expires it). Never downgrade a
-  // higher manual tier — extend at their current tier if already ≥ Pro.
+  // higher manual tier - extend at their current tier if already ≥ Pro.
   const now = Date.now();
   const base =
     u.grantedUntil && new Date(u.grantedUntil).getTime() > now
@@ -413,7 +413,7 @@ async function clawbackReferralPro(referrerUserId: string, days: number): Promis
     .where(eq(users.id, referrerUserId))
     .limit(1);
   // Only reverse a banked/manual referral grant here. A pushed Stripe billing
-  // date can't be cleanly rewound from code — flag it for manual handling.
+  // date can't be cleanly rewound from code - flag it for manual handling.
   if (!u || u.source !== "referral" || !u.grantedUntil) {
     await logAudit({
       userId: referrerUserId,

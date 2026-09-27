@@ -8,7 +8,7 @@ import { accountantStrings } from "@/lib/accountant-i18n";
 
 /**
  * Shows a link into the accountant workspace only when the signed-in user is
- * an accountant (from /api/me — display only; the workspace itself is gated
+ * an accountant (from /api/me - display only; the workspace itself is gated
  * server-side by requireAccountant()). Renders nothing otherwise, so it's
  * invisible to ordinary users.
  */

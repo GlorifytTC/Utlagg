@@ -21,7 +21,7 @@ export type ReferralEvent =
 
 export interface TransitionResult {
   next: ReferralState;
-  /** True when moving out of `granted` — the caller must reverse the grant. */
+  /** True when moving out of `granted` - the caller must reverse the grant. */
   clawback: boolean;
   /** No-op transition (event doesn't apply in this state). */
   noop: boolean;

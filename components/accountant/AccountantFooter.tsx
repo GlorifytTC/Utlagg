@@ -6,7 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 
 /**
- * Footer logout for the accountant workspace — a clear, always-visible sign-out
+ * Footer logout for the accountant workspace - a clear, always-visible sign-out
  * at the bottom of the dashboard (in addition to the one in the avatar menu).
  * Reuses the app's standard signOut({ callbackUrl: "/" }).
  */

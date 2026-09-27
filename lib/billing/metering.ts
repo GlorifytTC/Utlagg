@@ -15,7 +15,7 @@ import { decideScan, type ConsumeSource, type ScanReason } from "@/lib/billing/q
 import { logAudit } from "@/lib/audit";
 
 /**
- * Scan metering — THE single choke-point (spec §6). Every place that consumes a
+ * Scan metering - THE single choke-point (spec §6). Every place that consumes a
  * scan calls {@link meterScan}; the cap check and usage accounting live here and
  * nowhere else. Today the app's one persistence point for a scanned receipt is
  * POST /api/receipts, so that's where this is wired in; if a server-side OCR
@@ -232,7 +232,7 @@ export async function meterScan(userId: string): Promise<MeterOutcome> {
     case "credit": {
       const ok = await consumeOneCredit(ctx.scope, ctx.scopeId);
       if (!ok) {
-        // Lost a race for the last credit — re-meter so we fall through to
+        // Lost a race for the last credit - re-meter so we fall through to
         // overage / hard-stop correctly rather than granting a free scan.
         return meterScan(userId);
       }
@@ -264,7 +264,7 @@ export async function getUsageSnapshot(userId: string): Promise<MeterOutcome | n
   if (!ctx) return null;
   if (!pricingV2Enabled()) return legacyMeter(userId, { peek: true });
 
-  // Read-only: nothing to meter — scanning is locked (exports remain open).
+  // Read-only: nothing to meter - scanning is locked (exports remain open).
   if (ctx.state === "read_only") {
     return {
       allowed: false,

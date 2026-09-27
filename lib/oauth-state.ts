@@ -17,7 +17,7 @@ const redis =
     ? Redis.fromEnv()
     : null;
 
-const TTL_SECONDS = 600; // 10 min — an OAuth consent round-trip is far shorter.
+const TTL_SECONDS = 600; // 10 min - an OAuth consent round-trip is far shorter.
 const key = (state: string) => `oauth_state:${state}`;
 
 export const oauthStateEnabled = () => redis !== null;

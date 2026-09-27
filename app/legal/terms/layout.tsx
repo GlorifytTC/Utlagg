@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Användarvillkor — Kvittino",
+  title: "Användarvillkor - Kvittino",
   alternates: { canonical: "/legal/terms" },
 };
 

@@ -14,10 +14,10 @@ import { AccountantClientDistribution } from "@/components/accountant/Accountant
 /**
  * Work-focused accountant dashboard. Information architecture, in priority of
  * the accountant's daily need:
- *   1. Work queue ("Att göra") — the hero: what needs attention now.
- *   2. Clients — the working list, most-needing-attention first.
- *   3. Activity — real throughput/momentum.
- *   4. Growth ("Väx din byrå") — discovery + boost, demoted secondary.
+ *   1. Work queue ("Att göra") - the hero: what needs attention now.
+ *   2. Clients - the working list, most-needing-attention first.
+ *   3. Activity - real throughput/momentum.
+ *   4. Growth ("Väx din byrå") - discovery + boost, demoted secondary.
  * Profile/logo lives in the header avatar menu, not here.
  */
 export function AccountantDashboard() {
@@ -31,7 +31,7 @@ export function AccountantDashboard() {
         <p className="text-sm text-gray-500 dark:text-gray-400">{t.overviewSubtitle}</p>
       </div>
 
-      {/* 1. KPI overview — data-first: totals before the task queue */}
+      {/* 1. KPI overview - data-first: totals before the task queue */}
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.firmStatsTitle}</h2>
         <AccountantFirmStats />
@@ -41,7 +41,7 @@ export function AccountantDashboard() {
       {/* 2. Hero work queue */}
       <AccountantWorkQueue />
 
-      {/* 3. Clients — the working list */}
+      {/* 3. Clients - the working list */}
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.clientsTitle}</h2>
         <AccountantClientsList />
@@ -50,7 +50,7 @@ export function AccountantDashboard() {
       {/* 3. Activity / momentum */}
       <AccountantActivity />
 
-      {/* 4. Growth — demoted */}
+      {/* 4. Growth - demoted */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.growthTitle}</h2>
 

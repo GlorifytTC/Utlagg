@@ -28,7 +28,7 @@ if (isBuildPhase && !connectionString) {
   );
 } else {
   if (!connectionString) {
-    // Runtime with no DB configured — make the cause obvious in the logs.
+    // Runtime with no DB configured - make the cause obvious in the logs.
     throw new Error(
       "DATABASE_URL is not set. Configure it in the runtime environment " +
         "(Railway/Vercel project variables), then redeploy.",

@@ -9,7 +9,7 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 
 /**
- * POST — the accountant DECLINES a pending connection request.
+ * POST - the accountant DECLINES a pending connection request.
  *
  * requireAccountant() → load by id AND accountantId (another accountant's
  * request → 404). Only pending can be declined. Sets status to the terminal

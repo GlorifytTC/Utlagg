@@ -28,7 +28,7 @@ type StoredConsent = ConsentPrefs & {
 
 type CategoryId = "necessary" | "functional" | "analytics";
 
-// ── Exported hook — read consent anywhere in the app ───────────────────────────
+// ── Exported hook - read consent anywhere in the app ───────────────────────────
 
 export function useCookieConsent(): ConsentPrefs | null {
   const [prefs, setPrefs] = useState<ConsentPrefs | null>(null);
@@ -146,7 +146,7 @@ function Toggle({
       type="button"
       role="switch"
       aria-checked={checked}
-      aria-label={`${label} cookies — ${checked ? "enabled" : "disabled"}`}
+      aria-label={`${label} cookies - ${checked ? "enabled" : "disabled"}`}
       disabled={disabled}
       onClick={() => onChange?.(!checked)}
       className={cn(
@@ -404,7 +404,7 @@ export function CookieConsent() {
                           rel="noopener noreferrer"
                           className="text-nordic-600 underline decoration-dotted transition hover:decoration-solid"
                         >
-                          IMY — Integritetsskyddsmyndigheten
+                          IMY - Integritetsskyddsmyndigheten
                         </a>
                         . {t.cookieGdprRights}
                       </p>
@@ -424,7 +424,7 @@ export function CookieConsent() {
                 {t.cookieAcceptAll}
               </button>
 
-              {/* Equal-prominence reject — required by IMY guidance */}
+              {/* Equal-prominence reject - required by IMY guidance */}
               <button
                 onClick={() => commit({ functional: false, analytics: false })}
                 className="rounded-full border hairline px-5 py-2.5 text-sm font-medium text-ink/75 transition hover:border-ink/30 hover:text-ink"

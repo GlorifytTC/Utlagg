@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   }
   // Export gating (spec §C): pushing to an accounting integration is a gated
-  // export format — blocked in read-only / lapsed state (CSV + original files
+  // export format - blocked in read-only / lapsed state (CSV + original files
   // remain available instead).
   const gate = await assertExportAllowed(session.user.id, "integration_fortnox");
   if (!gate.allowed) {

@@ -18,7 +18,7 @@ import { logAudit } from "@/lib/audit";
  * §13.4): during the trial the account is entitled as Pro (see
  * lib/billing/access.ts), hard-stops at TRIAL_SCANS with no overage
  * (lib/billing/metering.ts), and on expiry converts (card-required) or lapses to
- * read-only (spec §C) — never back to reusable free scans.
+ * read-only (spec §C) - never back to reusable free scans.
  */
 
 export type TrialIneligibleReason =
@@ -37,7 +37,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * Trial eligibility (spec §A.2 + §E.3): no account-level `trial_consumed_at` AND
  * no matching non-expired email-guard row. The email-guard check is skipped when
  * its flag is off. Messaging to the user must be GENERIC (never confirm a prior
- * deleted account) — callers surface a single "not eligible" line, not the
+ * deleted account) - callers surface a single "not eligible" line, not the
  * reason.
  */
 export async function checkTrialEligibility(
@@ -104,7 +104,7 @@ export async function beginTrialState(input: {
 
 /**
  * Lapse an account to read-only (spec §C). Used when a trial ends without a
- * valid payment, or a paid subscription lapses. Data is NEVER deleted here — the
+ * valid payment, or a paid subscription lapses. Data is NEVER deleted here - the
  * 12-month export ladder (§7) is the only path that removes data. Idempotent.
  */
 export async function lapseToReadOnly(userId: string, reason: string): Promise<void> {

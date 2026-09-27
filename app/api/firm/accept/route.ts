@@ -15,7 +15,7 @@ export const runtime = "nodejs";
 const schema = z.object({ token: z.string().min(10) });
 
 /**
- * POST — a signed-in accountant accepts a firm invitation.
+ * POST - a signed-in accountant accepts a firm invitation.
  *
  * Security: authenticated + invite exists + token hash matches + pending + not
  * expired + invited email === the caller's email (case-insensitive). The
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
   const existingFirm = await getUserFirm(session.user.id);
   if (existingFirm) {
     if (existingFirm.firmId === invite.firmId) {
-      // Already a member — treat as success (idempotent).
+      // Already a member - treat as success (idempotent).
       await db
         .update(firmInvites)
         .set({ status: "active", acceptedAt: new Date(), acceptedBy: session.user.id })

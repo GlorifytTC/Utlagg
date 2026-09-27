@@ -12,7 +12,7 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 
 /**
- * GET — the caller's firm + its members. Any firm member may view the roster
+ * GET - the caller's firm + its members. Any firm member may view the roster
  * (they work together); only owner/admin can mutate (other routes).
  */
 export async function GET() {
@@ -59,7 +59,7 @@ const inviteSchema = z.object({
 });
 
 /**
- * POST — invite a colleague into the firm (owner/admin only). Mirrors the
+ * POST - invite a colleague into the firm (owner/admin only). Mirrors the
  * accountant-invite token pattern: 32-byte token, sha256 stored, 7-day expiry,
  * single-use. The invitee accepts via /firm/accept.
  */

@@ -1,6 +1,6 @@
 /**
  * Disposable / throwaway email domains used by referral anti-abuse (spec §4).
- * BankID is disabled, so payment is the identity anchor — but rejecting obvious
+ * BankID is disabled, so payment is the identity anchor - but rejecting obvious
  * throwaway inboxes at signup/attribution time is a cheap first filter against
  * referral rings minting free accounts.
  *

@@ -15,7 +15,7 @@ const schema = z.object({
 
 /**
  * Admin sets a user's subscription tier directly. This is how you grant
- * Enterprise (custom-priced, negotiated off-platform) after closing a deal —
+ * Enterprise (custom-priced, negotiated off-platform) after closing a deal -
  * the tier immediately unlocks every built premium feature via entitlements.
  */
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {

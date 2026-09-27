@@ -2,12 +2,12 @@
  * Billing / pricing single source of truth (Pricing V2).
  *
  * Every price, quota, overage rate and referral constant used by the metering,
- * overage, credit and referral logic lives here — business code must never hard
+ * overage, credit and referral logic lives here - business code must never hard
  * code a number. Consumer-facing screens read tiers from here too, so the
  * pricing page and the plan gate can never drift apart.
  *
  * MONEY IS IN ÖRE (the smallest SEK unit). 149 kr === 14900 öre. Never store or
- * compute money as a float — integer öre only, format to kronor at the edges.
+ * compute money as a float - integer öre only, format to kronor at the edges.
  *
  * The rollout is gated behind {@link PRICING_V2_ENABLED} so an environment can
  * keep the legacy "unlimited Pro / 25 free scans" behaviour until it flips the
@@ -24,7 +24,7 @@ import type { Tier } from "@/lib/plans";
 /**
  * Master switch for the Pricing V2 behaviour (metered caps, overage, credit
  * packs, referral rewards). Off by default so existing environments and users
- * are never broken by a deploy — flip `PRICING_V2_ENABLED=true` per environment
+ * are never broken by a deploy - flip `PRICING_V2_ENABLED=true` per environment
  * once the Stripe products (see scripts/stripe-setup.ts) exist.
  */
 export function pricingV2Enabled(): boolean {
@@ -51,7 +51,7 @@ export function pricingV3Enabled(): boolean {
  * Gate premium/SIE exports behind an active subscription when an account is in
  * read-only / lapsed / expired-trial state (spec §C). Independently
  * toggleable/rollback-able. CSV + original-file download are NEVER gated by this
- * flag — that invariant lives in {@link ALWAYS_AVAILABLE_EXPORTS} and the
+ * flag - that invariant lives in {@link ALWAYS_AVAILABLE_EXPORTS} and the
  * canUseExport helper, not here.
  */
 export function exportGatingEnabled(): boolean {
@@ -70,7 +70,7 @@ export function trialEmailGuardEnabled(): boolean {
  * Card-required trial (spec §3.3, default TRUE). With BankID down, requiring a
  * card at trial start makes payment the identity anchor and neutralises
  * new-email trial farming. Set `TRIAL_REQUIRE_CARD=false` for the no-card
- * variant (which still expires to read-only lockout — never to reusable free
+ * variant (which still expires to read-only lockout - never to reusable free
  * scans).
  */
 export function trialRequireCard(): boolean {
@@ -81,12 +81,12 @@ export function trialRequireCard(): boolean {
 export const BILLING_TIMEZONE = "Europe/Stockholm";
 
 /* ------------------------------------------------------------------ */
-/* Trial (spec §A) — one-time, 30 days, full Pro entitlement           */
+/* Trial (spec §A) - one-time, 30 days, full Pro entitlement           */
 /* ------------------------------------------------------------------ */
 
 /** Trial length in days (spec §3.1). ToS §F.2 quotes "trettio (30)". */
 export const TRIAL_DAYS = intFromEnv("TRIAL_DAYS", 30);
-/** Included scans during the trial — full Pro entitlement, no overage. */
+/** Included scans during the trial - full Pro entitlement, no overage. */
 export const TRIAL_SCANS = intFromEnv("TRIAL_SCANS", 500);
 /**
  * The plan a card-required trial converts to when the user didn't actively pick
@@ -129,7 +129,7 @@ export interface TierConfig {
    * Whether this tier can be picked at checkout / shown on the pricing page as
    * an offerable plan. Free is a deprecated V2 tombstone (spec §7): the enum
    * value and live rows are retained for referential integrity until migrated,
-   * but it is NEVER offered again — the one-time Trial replaces it.
+   * but it is NEVER offered again - the one-time Trial replaces it.
    * @deprecated `free` is not an offerable plan under Pricing V3.
    */
   selectable: boolean;
@@ -138,7 +138,7 @@ export interface TierConfig {
 /**
  * The full tier table. Order matters: it's the display + rank order.
  *
- * NOTE: enterprise SSO / API / white-label are roadmap / contact-sales only —
+ * NOTE: enterprise SSO / API / white-label are roadmap / contact-sales only -
  * they are NOT built, so we do not advertise them as live features (see §7.5 of
  * the spec). Feature copy lives in lib/plans.ts which reads from here.
  */
@@ -147,7 +147,7 @@ export const TIERS: Record<Tier, TierConfig> = {
     tier: "free",
     name: "Gratis",
     priceOre: 0,
-    monthlyScans: 15, // FREE_MONTHLY_SCANS — recurring monthly quota, not lifetime
+    monthlyScans: 15, // FREE_MONTHLY_SCANS - recurring monthly quota, not lifetime
     seats: 1,
     overageOrePerScan: null, // no payment method on file → never auto-charge
     stripeLookupKey: null,
@@ -180,7 +180,7 @@ export const TIERS: Record<Tier, TierConfig> = {
     name: "Företag",
     priceOre: 29_900, // 299 kr
     monthlyScans: 1_500,
-    seats: 10, // 5–10 seats; enforced max is 10
+    seats: 10, // 5-10 seats; enforced max is 10
     overageOrePerScan: 29, // 0.29 kr/scan
     stripeLookupKey: "kvittino_business_monthly",
     selectable: true,
@@ -210,7 +210,7 @@ export const TIERS: Record<Tier, TierConfig> = {
 /** Single config constant for the free quota (spec §2.4). Change it here only. */
 export const FREE_MONTHLY_SCANS = TIERS.free.monthlyScans;
 
-/** Ascending rank — used for upgrade nudges ("next tier up"). */
+/** Ascending rank - used for upgrade nudges ("next tier up"). */
 export const TIER_ORDER: Tier[] = [
   "free",
   "starter",
@@ -220,7 +220,7 @@ export const TIER_ORDER: Tier[] = [
   "enterprise",
 ];
 
-/** Offerable plans, in display order (Free tombstone excluded — spec §7). */
+/** Offerable plans, in display order (Free tombstone excluded - spec §7). */
 export const SELECTABLE_TIERS: Tier[] = TIER_ORDER.filter(
   (t) => TIERS[t].selectable,
 );
@@ -247,7 +247,7 @@ export function nextTierUp(tier: Tier): Tier | null {
 /**
  * A purchasable one-off pack of scans. Credits are consumed BEFORE overage
  * billing and, being pre-paid, must not expire sooner than 12 months (Swedish
- * consumer-law requirement) — unlike monthly plan scans, they roll over.
+ * consumer-law requirement) - unlike monthly plan scans, they roll over.
  */
 export const CREDIT_PACK = {
   lookupKey: "kvittino_credit_pack_100",
@@ -269,13 +269,13 @@ export const CREDIT_PACK = {
 export const DEFAULT_OVERAGE_CAP_ORE = 20_000; // 200 kr
 
 /* ------------------------------------------------------------------ */
-/* Export gating (spec §C) — the legal guardrail lives here            */
+/* Export gating (spec §C) - the legal guardrail lives here            */
 /* ------------------------------------------------------------------ */
 
 /**
  * Canonical export format identifiers used by {@link canUseExport}
  * (lib/billing/export-gating.ts). Every export entry point maps its output to
- * one of these — no inline format string checks anywhere else.
+ * one of these - no inline format string checks anywhere else.
  */
 export type ExportFormat =
   | "csv"
@@ -292,7 +292,7 @@ export type ExportFormat =
  * every accounting-integration export (Fortnox today).
  *
  * ⚠️ Adding a format here that a user needs to satisfy their 7-year archiving
- * duty (Bokföringslagen) is a legal-exposure change — CSV and original files
+ * duty (Bokföringslagen) is a legal-exposure change - CSV and original files
  * must never appear here. See ALWAYS_AVAILABLE_EXPORTS.
  */
 export const GATED_EXPORT_FORMATS: ExportFormat[] = [
@@ -317,7 +317,7 @@ export const ALWAYS_AVAILABLE_EXPORTS: ExportFormat[] = ["csv", "original_files"
 /**
  * How long a pseudonymised trial-guard token is retained after account deletion
  * (spec §E.2 / §8; default 24 months). MUST stay consistent with the "tjugofyra
- * (24) månader" figure in the Privacy Policy clause F.5 — note the coupling in
+ * (24) månader" figure in the Privacy Policy clause F.5 - note the coupling in
  * the PR. The HMAC secret itself (`TRIAL_GUARD_HMAC_SECRET`) is a stable
  * server-side secret from the env store; rotating it invalidates the table.
  */

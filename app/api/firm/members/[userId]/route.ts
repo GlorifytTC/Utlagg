@@ -8,7 +8,7 @@ import { logAudit, clientIp } from "@/lib/audit";
 export const runtime = "nodejs";
 
 /**
- * POST — remove a person from the firm (owner/admin only). Guards:
+ * POST - remove a person from the firm (owner/admin only). Guards:
  *   - the target must be in the CALLER's firm (never another firm)
  *   - the OWNER can never be removed (would orphan the firm)
  *   - an admin cannot remove the owner (enforced by the owner-guard above)

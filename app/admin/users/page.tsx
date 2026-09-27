@@ -92,7 +92,7 @@ export default async function AdminUsersPage({
                     {u.email as string}
                   </Link>
                 </td>
-                <td className="px-4 py-3">{(u.name as string) ?? "—"}</td>
+                <td className="px-4 py-3">{(u.name as string) ?? "-"}</td>
                 <td className="px-4 py-3">{u.tier as string}</td>
                 <td className="px-4 py-3">{u.status as string}</td>
                 <td className="px-4 py-3">{formatDate(u.createdAt as Date)}</td>

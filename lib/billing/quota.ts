@@ -1,11 +1,11 @@
 /**
- * Pure scan-quota decision logic (no I/O) — the heart of metering, kept
+ * Pure scan-quota decision logic (no I/O) - the heart of metering, kept
  * side-effect-free so the taper, credit-ordering and spend-cap rules can be
  * unit-tested in isolation (see tests/unit/quota.test.ts).
  *
- * Consumption order (spec §2–§3):
+ * Consumption order (spec §2-§3):
  *   1. Included monthly plan scans (free, reset each cycle, no roll-over)
- *   2. Purchased credit packs (pre-paid, roll over ≥12 months) — BEFORE overage
+ *   2. Purchased credit packs (pre-paid, roll over ≥12 months) - BEFORE overage
  *   3. Auto-overage at the tier's tapered per-scan rate, up to the spend cap
  * Free tier has no overage: it hard-stops at its quota with an upgrade prompt.
  */
@@ -13,12 +13,12 @@
 export type ConsumeSource = "plan" | "credit" | "overage";
 
 export type ScanReason =
-  | "unlimited" // legacy-grandfathered Pro / enterprise — never capped
+  | "unlimited" // legacy-grandfathered Pro / enterprise - never capped
   | "plan" // within included monthly quota
   | "credit" // paid from a rolled-over credit pack
   | "overage" // billed as tapered per-scan overage
-  | "free_hard_stop" // free tier exhausted — no auto-charge, prompt upgrade
-  | "spend_cap_reached"; // paid tier hit its overage spend ceiling — stop + notify
+  | "free_hard_stop" // free tier exhausted - no auto-charge, prompt upgrade
+  | "spend_cap_reached"; // paid tier hit its overage spend ceiling - stop + notify
 
 export interface ScanDecisionInput {
   /** Legacy-unlimited Pro or an UNLIMITED-quota tier (enterprise). */
@@ -61,7 +61,7 @@ export function decideScan(i: ScanDecisionInput): ScanDecision {
     return { allowed: true, consume: "credit", overageChargeOre: 0, reason: "credit" };
   }
 
-  // 3a. Free tier hard-stops — never auto-charge an account with no card.
+  // 3a. Free tier hard-stops - never auto-charge an account with no card.
   if (i.overageRateOre == null) {
     return { allowed: false, consume: null, overageChargeOre: 0, reason: "free_hard_stop" };
   }

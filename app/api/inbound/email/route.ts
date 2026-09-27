@@ -1,10 +1,10 @@
 /**
- * Inbound-email receipt intake — the no-OCR digital channel.
+ * Inbound-email receipt intake - the no-OCR digital channel.
  *
  * Users get a personal forwarding address (kvitto+<token>@<inbound domain>).
  * Emailed receipts and forwarded Kivra PDFs sent there arrive here via Brevo's
  * Inbound Parsing webhook. We read the machine text that's already in the email
- * body / PDF text layer and feed the EXISTING free parser (lib/ocr-parse.ts) —
+ * body / PDF text layer and feed the EXISTING free parser (lib/ocr-parse.ts) -
  * no image, no vision tokens. The source document (PDF) and raw text are kept
  * for audit parity with scanned receipts.
  *
@@ -118,7 +118,7 @@ async function handleItem(item: BrevoItem): Promise<void> {
   }
 
   const combined = parts.join("\n\n").trim();
-  if (!combined) return; // nothing parseable (e.g. image-only email) — drop.
+  if (!combined) return; // nothing parseable (e.g. image-only email) - drop.
 
   const extracted = parseReceiptText(combined);
   const result = await createReceipt(user.id, {
@@ -133,7 +133,7 @@ async function handleItem(item: BrevoItem): Promise<void> {
     receiptText: combined.slice(0, 20000),
   });
   if (!result.ok) {
-    // Quota reached — nothing to retry, so don't 500 (Brevo would resend).
+    // Quota reached - nothing to retry, so don't 500 (Brevo would resend).
     console.warn("inbound receipt blocked by quota for user", user.id, result.meter.reason);
   }
 }

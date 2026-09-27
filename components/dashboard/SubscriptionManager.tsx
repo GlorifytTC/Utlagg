@@ -65,7 +65,7 @@ export function SubscriptionManager({
       if (res.ok && data.url) {
         window.location.href = data.url;
       } else if (res.ok && data.switched) {
-        // Existing subscription was updated in place — no checkout needed.
+        // Existing subscription was updated in place - no checkout needed.
         toast.success(t.toastPlanSwitched);
         setLoading(null);
         router.refresh();
@@ -163,7 +163,7 @@ export function SubscriptionManager({
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{current ? priceLbl(current.priceLabel) : "—"}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">{current ? priceLbl(current.priceLabel) : "-"}</p>
           <div className="flex flex-wrap items-center gap-2">
             {hasBilling && (
               <Button variant="outline" onClick={openPortal} disabled={loading !== null}>

@@ -16,7 +16,7 @@ const schema = z.object({
 });
 
 /**
- * Full admin control over a user's subscription — including comping a free
+ * Full admin control over a user's subscription - including comping a free
  * trial without Stripe.
  *   grant  : set tier (+ optional trial length in days), source='manual'
  *   pause  : suspend premium access (keeps the tier to resume later)

@@ -12,11 +12,11 @@ const MAX_PAGE_SIZE = 100;
  * Lists the companies this accountant has an ACTIVE relationship with.
  * Pending and revoked relationships are never returned. Only minimal,
  * non-sensitive company fields are exposed (name/city/country + a receipt
- * count) — no member, billing, subscription, credential, or private data.
+ * count) - no member, billing, subscription, credential, or private data.
  *
  * AUTHORIZATION: requireAccountant() first; every row is filtered by
  * accountantId = this accountant AND status = 'active'. A browser cannot ask
- * for another accountant's clients — the accountantId comes from the session,
+ * for another accountant's clients - the accountantId comes from the session,
  * never from input.
  */
 export async function GET(req: NextRequest) {

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Genuinely free, local OCR — runs Tesseract.js entirely in the browser as
+ * Genuinely free, local OCR - runs Tesseract.js entirely in the browser as
  * a Web Worker + WebAssembly. No API key, no per-request cost, no server
  * call for the text-extraction step itself (only the structured-field
  * parsing happens server-side-or-client-side in parseReceiptText, which is
@@ -10,7 +10,7 @@
  * This exists because every other path in lib/ocr.ts (Mindee, the vision
  * LLM, Google Vision) requires a paid API key, and without one configured
  * the app was silently falling through to OCR.space's shared "helloworld"
- * demo key — a heavily rate-limited, low-quality fallback. Tesseract.js was
+ * demo key - a heavily rate-limited, low-quality fallback. Tesseract.js was
  * already a dependency in package.json but had never been wired up to
  * actually run.
  *
@@ -19,7 +19,7 @@
  * don't want to repeat that for every receipt).
  *
  * NOTE: Tesseract.js's worker script and language training data load from
- * cdn.jsdelivr.net / tessdata.projectnaptha.com by default — see
+ * cdn.jsdelivr.net / tessdata.projectnaptha.com by default - see
  * middleware.ts for the matching CSP allowances.
  */
 
@@ -33,7 +33,7 @@ let currentProgressCallback: ((status: string, progress: number) => void) | null
  * Wraps a promise with a hard timeout. Without this, a blocked CDN request
  * (e.g. the Content-Security-Policy blocking Tesseract's worker/language
  * files) can leave the worker's setup promise unresolved forever in some
- * browsers — worker.onerror doesn't always fire promptly for a CSP block,
+ * browsers - worker.onerror doesn't always fire promptly for a CSP block,
  * so try/catch around an un-timed-out await can hang the UI indefinitely
  * with zero error shown. This guarantees the caller always gets a result,
  * one way or the other.
@@ -70,7 +70,7 @@ async function getWorker() {
         });
         // Tesseract's default page-segmentation mode assumes a document with
         // multiple paragraphs/columns. A receipt is one narrow column of
-        // text, so SINGLE_COLUMN reads it far more reliably — this is the
+        // text, so SINGLE_COLUMN reads it far more reliably - this is the
         // standard, documented tuning for receipt OCR specifically (not a
         // guess), and is the single biggest accuracy lever available without
         // a paid API.
@@ -80,7 +80,7 @@ async function getWorker() {
       20000,
       "Tesseract worker setup",
     ).catch((e) => {
-      // Don't leave a rejected promise cached — the NEXT upload attempt
+      // Don't leave a rejected promise cached - the NEXT upload attempt
       // should retry from scratch rather than instantly fail forever
       // because the first attempt's setup failed once.
       workerPromise = null;
@@ -97,7 +97,7 @@ export interface LocalOcrResult {
 
 /**
  * Runs OCR on an image entirely in the browser. Accepts a data URL,
- * object URL, or File/Blob — anything Tesseract.js's recognize() accepts.
+ * object URL, or File/Blob - anything Tesseract.js's recognize() accepts.
  */
 export async function recognizeReceiptLocally(
   image: string | File | Blob,
@@ -114,8 +114,8 @@ export async function recognizeReceiptLocally(
 }
 
 /** Call when the uploader unmounts for good (e.g. navigating away) to free
- * the WASM worker's memory. Safe to skip — the browser will clean it up on
- * page unload regardless — but tidy to call if you have a natural spot. */
+ * the WASM worker's memory. Safe to skip - the browser will clean it up on
+ * page unload regardless - but tidy to call if you have a natural spot. */
 export async function terminateLocalOcrWorker() {
   if (workerPromise) {
     const worker = await workerPromise;

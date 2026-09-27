@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Kvittino — AI-driven kvittohantering",
+    name: "Kvittino - AI-driven kvittohantering",
     short_name: "Kvittino",
     description:
       "Smart kvittoscanning med AI, svensk momshantering och Fortnox-integration.",

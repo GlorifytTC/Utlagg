@@ -11,7 +11,7 @@ import { resolveAccountState, type AccessState } from "@/lib/billing/access";
  * Which account a user's scans + credits are billed against.
  *
  * Spec §7.3 default: Business/Max scans are POOLED per organisation. We model
- * that simply — if the acting user belongs to a company, usage and credits are
+ * that simply - if the acting user belongs to a company, usage and credits are
  * scoped to that company (shared across the team); otherwise they are scoped to
  * the user. The plan/quota itself is read from the acting user's effective tier
  * (the app tracks tier per user today), so a solo user and a team member are
@@ -25,7 +25,7 @@ export interface BillingContext {
   tier: Tier;
   /** Pricing V3 access state: active | trial | read_only (spec §A/§C). */
   state: AccessState;
-  /** Grandfathered "unlimited scans" Pro (spec §2.5) — never capped. */
+  /** Grandfathered "unlimited scans" Pro (spec §2.5) - never capped. */
   legacyUnlimited: boolean;
   subscription: Subscription | null;
 }

@@ -244,19 +244,19 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                         onClick={() => setOpenId(openId === r.id ? null : r.id)}
                       >
                         <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
-                          {r.date ? r.date.slice(0, 10) : "—"}
+                          {r.date ? r.date.slice(0, 10) : "-"}
                         </td>
                         <td className="px-5 py-3 text-sm font-medium text-gray-900 dark:text-white">
-                          {r.vendorName || "—"}
+                          {r.vendorName || "-"}
                         </td>
                         <td className="px-5 py-3 font-mono text-sm text-gray-500 dark:text-gray-400">
-                          {r.basCode || "—"}
+                          {r.basCode || "-"}
                         </td>
                         <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
-                          {r.totalAmount ?? "—"}
+                          {r.totalAmount ?? "-"}
                         </td>
                         <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
-                          {r.vatAmount ?? "—"}
+                          {r.vatAmount ?? "-"}
                         </td>
                         <td className="px-5 py-3">
                           <span

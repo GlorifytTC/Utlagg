@@ -1,5 +1,5 @@
 /**
- * Account access-state resolution (Pricing V3 §A/§C) — pure, no I/O, so the
+ * Account access-state resolution (Pricing V3 §A/§C) - pure, no I/O, so the
  * trial / read-only / lapse rules can be unit-tested in isolation.
  *
  * One function decides three things every gate needs to agree on:
@@ -28,7 +28,7 @@ export interface AccountStateInput {
   subscriptionGrantedUntil: Date | null;
   /** End of the current trial, if any. An elapsed trial → read-only. */
   trialEndsAt: Date | null;
-  /** Pricing V3 master flag — when false, legacy V2 behaviour. */
+  /** Pricing V3 master flag - when false, legacy V2 behaviour. */
   v3Enabled: boolean;
   now?: Date;
 }

@@ -106,7 +106,7 @@ export async function POST(
     .limit(1);
 
   if (access.role === "accountant") {
-    // Notify company members (owners + admins) — just grab the first owner/admin.
+    // Notify company members (owners + admins) - just grab the first owner/admin.
     const [recipient] = await db
       .select({ email: users.email })
       .from(companyMembers)

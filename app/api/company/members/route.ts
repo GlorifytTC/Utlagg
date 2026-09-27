@@ -10,7 +10,7 @@ import { getUserCompany, canManageCompany } from "@/lib/company";
 export const runtime = "nodejs";
 
 /**
- * GET — the company's members. Only owner/admin may see the list (a plain
+ * GET - the company's members. Only owner/admin may see the list (a plain
  * member cannot). Returns myRole + myUserId so the UI can hide self-actions.
  */
 export async function GET() {
@@ -43,7 +43,7 @@ const patchSchema = z.object({
 });
 
 /**
- * PATCH — change a member's role. OWNER ONLY (admins can invite and remove, but
+ * PATCH - change a member's role. OWNER ONLY (admins can invite and remove, but
  * cannot change positions). Never on the owner, and never on oneself.
  */
 export async function PATCH(req: NextRequest) {
@@ -79,7 +79,7 @@ export async function PATCH(req: NextRequest) {
 }
 
 /**
- * DELETE — remove a member. Owner/admin may remove others, but never the owner
+ * DELETE - remove a member. Owner/admin may remove others, but never the owner
  * and never themselves. Removing a person keeps their user + receipts (only the
  * membership row is deleted), so their bills stay in the company dashboard.
  */

@@ -15,7 +15,7 @@ import { LogoUploader } from "@/components/dashboard/LogoUploader";
  *
  * Profile pic and firm logo are the accountant's own `logoUrl` split by intent;
  * both use GET/PATCH /api/accountant/logo (own record, server-authorized).
- * (Profile picture reuses the same field for now — a dedicated avatar field is
+ * (Profile picture reuses the same field for now - a dedicated avatar field is
  * part of the firm-accounts plan.)
  */
 export function AccountantAvatarMenu() {

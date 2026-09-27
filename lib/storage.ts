@@ -11,7 +11,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 /**
  * Cloudflare R2 (S3-compatible) storage for receipt images.
  *
- * IMPORTANT — privacy: receipts are financial PII. The spec's original draft
+ * IMPORTANT - privacy: receipts are financial PII. The spec's original draft
  * made the bucket public (anyone with the URL could read any customer's
  * receipt). We DO NOT do that. Objects stay private; we store the object KEY in
  * receipts.imageUrl and mint short-lived presigned URLs only for the owner.
@@ -52,7 +52,7 @@ export function isStorageConfigured(): boolean {
 
 /**
  * Accepts a raw base64 string or a `data:...;base64,...` data URL. Handles image
- * types and application/pdf — the latter is a forwarded digital receipt (email /
+ * types and application/pdf - the latter is a forwarded digital receipt (email /
  * Kivra) stored as its original document.
  */
 function decodeImage(input: string): { buffer: Buffer; contentType: string } {
@@ -73,7 +73,7 @@ function extFor(contentType: string): string {
 }
 
 /**
- * Upload a receipt image. Returns the object key — store THIS in
+ * Upload a receipt image. Returns the object key - store THIS in
  * receipts.imageUrl. Use getSignedReceiptUrl(key) to display it.
  */
 export async function uploadReceiptImage(
@@ -136,7 +136,7 @@ export function isR2Key(imageUrl: string | null | undefined): imageUrl is string
 
 /**
  * Best-effort R2 cleanup for a stored imageUrl. Safe to call with any imageUrl
- * shape (or null) and when storage isn't configured — it no-ops rather than
+ * shape (or null) and when storage isn't configured - it no-ops rather than
  * throwing, so it can't break the DB delete it accompanies.
  */
 export async function deleteReceiptImageIfR2(

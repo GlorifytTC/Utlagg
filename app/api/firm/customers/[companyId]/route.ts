@@ -8,20 +8,20 @@ import { logAudit, clientIp } from "@/lib/audit";
 export const runtime = "nodejs";
 
 /**
- * POST — remove a customer the firm works with. OWNER ONLY (per the rule that
- * only the main account can end a customer relationship — an admin cannot).
+ * POST - remove a customer the firm works with. OWNER ONLY (per the rule that
+ * only the main account can end a customer relationship - an admin cannot).
  *
  * Scoped to the caller's own firm: the relationship must be for the caller's
  * firmId, so an owner can never remove another firm's customer. Sets the
  * relationship to 'revoked' (history preserved) and clears all worker
  * assignments for that customer in the firm, so every worker loses access at
- * once — consistent with requireCompanyAccess.
+ * once - consistent with requireCompanyAccess.
  */
 export async function POST(
   req: NextRequest,
   { params }: { params: { companyId: string } },
 ) {
-  // Owner only — admins are explicitly not allowed to remove a customer.
+  // Owner only - admins are explicitly not allowed to remove a customer.
   const m = await requireFirmRole("owner");
   if (!m) {
     return NextResponse.json(

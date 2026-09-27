@@ -5,7 +5,7 @@
  * where one exists (so metering matches what they actually pay for), otherwise
  * to the calendar month in Europe/Stockholm (free users have no Stripe cycle).
  *
- * All calendar-month math is done in Swedish wall-clock time — never UTC — so a
+ * All calendar-month math is done in Swedish wall-clock time - never UTC - so a
  * reset at "the 1st, 00:00" means 00:00 in Stockholm, not 00:00 UTC (which is
  * 01:00/02:00 local and would reset an hour "early" for Swedish users).
  */
@@ -14,7 +14,7 @@ import { BILLING_TIMEZONE } from "@/lib/billing/config";
 export interface BillingPeriod {
   start: Date;
   end: Date;
-  /** How the period was derived — useful for logging/debugging. */
+  /** How the period was derived - useful for logging/debugging. */
   source: "stripe" | "calendar";
 }
 
@@ -33,7 +33,7 @@ function tzOffsetMs(instant: Date, tz: string): number {
   const p = Object.fromEntries(
     dtf.formatToParts(instant).map((x) => [x.type, x.value]),
   ) as Record<string, string>;
-  // `hour` can come back as "24" at midnight in some engines — normalise.
+  // `hour` can come back as "24" at midnight in some engines - normalise.
   const hour = p.hour === "24" ? 0 : Number(p.hour);
   const asLocal = Date.UTC(
     Number(p.year),

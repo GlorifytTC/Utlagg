@@ -20,7 +20,7 @@ const upstashConfigured = Boolean(
 // misconfigured deploy is visible instead of quietly unprotected.
 if (!upstashConfigured && process.env.NODE_ENV === "production") {
   console.error(
-    "[rate-limit] UPSTASH_REDIS_REST_URL/TOKEN not set in production — " +
+    "[rate-limit] UPSTASH_REDIS_REST_URL/TOKEN not set in production - " +
       "ALL rate limiting is DISABLED (auth, register, OCR). Configure Upstash.",
   );
 }

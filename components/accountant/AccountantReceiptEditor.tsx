@@ -20,7 +20,7 @@ interface ReceiptDetail {
 /**
  * Inline editor for a single receipt. Loads via
  * GET /api/accountant/clients/[id]/receipts/[receiptId] and saves the
- * WHITELISTED fields via PATCH — exactly the fields the API allows
+ * WHITELISTED fields via PATCH - exactly the fields the API allows
  * (category, vatAmount, vatRate, basCode, vendorName, note) plus the
  * `reviewed` action. No controls exist for non-editable fields.
  */
@@ -128,7 +128,7 @@ export function AccountantReceiptEditor({
               onChange={(e) => setVatRate(e.target.value)}
               className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
             >
-              <option value="">—</option>
+              <option value="">-</option>
               <option value="6">6</option>
               <option value="12">12</option>
               <option value="25">25</option>

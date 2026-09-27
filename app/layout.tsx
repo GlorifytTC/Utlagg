@@ -15,7 +15,7 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL ?? "http://localhost:3000"),
   title: {
-    default: "Kvittino — AI-driven expense management för svenska företag",
+    default: "Kvittino - AI-driven expense management för svenska företag",
     template: "%s · Kvittino",
   },
   description:
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "BAS-konto",
   ],
   openGraph: {
-    title: "Kvittino — AI-driven expense management",
+    title: "Kvittino - AI-driven expense management",
     description:
       "Skanna, bokför och exportera kvitton automatiskt. Byggd för svenska moms- och bokföringsregler.",
     locale: "sv_SE",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kvittino — AI-driven kvittohantering",
+    title: "Kvittino - AI-driven kvittohantering",
     description: "Smart kvittoscanning med AI för svenska företag.",
   },
   robots: { index: true, follow: true },

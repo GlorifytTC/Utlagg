@@ -15,10 +15,10 @@ export const runtime = "nodejs";
 /**
  * GET /api/export/sie[?from=YYYY-MM-DD&to=YYYY-MM-DD][&credit=1930]
  *
- * SIE 4 export of the signed-in user's RECEIPTS (never invoices — those have a
+ * SIE 4 export of the signed-in user's RECEIPTS (never invoices - those have a
  * separate export path). With `from`/`to` the range is inclusive; omitting the
  * range exports ALL receipts regardless of date. `credit` overrides the
- * payment/credit account (default 1930 — company bank; use 2440 for
+ * payment/credit account (default 1930 - company bank; use 2440 for
  * on-account/unpaid). A missing or malformed organisationsnummer is logged as a
  * warning but does not block the export.
  */
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
 
-  // Export gating (spec §C): SIE4 is a premium format — blocked in read-only /
+  // Export gating (spec §C): SIE4 is a premium format - blocked in read-only /
   // lapsed state, where CSV + original files remain available instead.
   const gate = await assertExportAllowed(session.user.id, "sie4");
   if (!gate.allowed) {
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Receipts only — this endpoint must never touch customer_invoices.
+  // Receipts only - this endpoint must never touch customer_invoices.
   const conds: SQL[] = [eq(receipts.userId, session.user.id)];
   if (from) conds.push(gte(receipts.date, from));
   if (to) conds.push(lte(receipts.date, to));

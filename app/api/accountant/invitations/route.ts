@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   const email = parsed.data.email.toLowerCase();
 
   // Don't stack multiple live (pending, unexpired) invites from this accountant
-  // to the same email — return the existing one's state instead.
+  // to the same email - return the existing one's state instead.
   const [existing] = await db
     .select({ id: accountantInvites.id })
     .from(accountantInvites)

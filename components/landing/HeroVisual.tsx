@@ -34,7 +34,7 @@ export function HeroVisual() {
     return () => clearTimeout(id);
   }, [step, reduced]);
 
-  // Pointer tilt on springs — follows the cursor, retargets mid-flight, eases home on leave.
+  // Pointer tilt on springs - follows the cursor, retargets mid-flight, eases home on leave.
   const px = useMotionValue(0);
   const py = useMotionValue(0);
   const rotateY = useSpring(useTransform(px, [-0.5, 0.5], [-7, 7]), {
@@ -115,7 +115,7 @@ export function HeroVisual() {
           style={{ transform: "translateZ(40px)" }}
         />
 
-        {/* Approval toast — the moment of relief */}
+        {/* Approval toast - the moment of relief */}
         <AnimatePresence>
           {step === 3 && (
             <motion.div
@@ -138,7 +138,7 @@ export function HeroVisual() {
   );
 }
 
-// Mobile gets the finished card only — no receipt, tilt or loop.
+// Mobile gets the finished card only - no receipt, tilt or loop.
 export function HeroVisualMobile() {
   return (
     <div aria-hidden className="mt-10 select-none md:hidden">

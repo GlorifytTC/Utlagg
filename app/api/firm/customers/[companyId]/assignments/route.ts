@@ -11,10 +11,10 @@ export const runtime = "nodejs";
 /**
  * Customer <-> worker assignments for one customer company. Owner/admin only.
  *
- * GET  — who is assigned to this customer (+ the firm's workers, so the UI can
+ * GET  - who is assigned to this customer (+ the firm's workers, so the UI can
  *        offer the rest to assign).
- * POST — assign a worker to this customer.
- * DELETE — unassign a worker from this customer.
+ * POST - assign a worker to this customer.
+ * DELETE - unassign a worker from this customer.
  *
  * Every action verifies: the customer belongs to the CALLER's firm (active
  * accountant_clients row for firmId+companyId), and the worker is a member of

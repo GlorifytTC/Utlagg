@@ -15,7 +15,7 @@ export const runtime = "nodejs";
 const createSchema = z.object({ accountantId: z.string().uuid() });
 
 /**
- * POST — a company (owner/admin) requests a connection with an accountant.
+ * POST - a company (owner/admin) requests a connection with an accountant.
  *
  * AUTHORIZATION (server-side, never trusts a browser companyId):
  *   authenticated user → resolve their CURRENT company from the DB →
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "Ogiltiga uppgifter" }, { status: 400 });
   const { accountantId } = parsed.data;
 
-  // Company is resolved from the DB by the caller's identity — never from input.
+  // Company is resolved from the DB by the caller's identity - never from input.
   const membership = await getUserCompany(session.user.id);
   if (!membership) {
     return NextResponse.json({ error: "Du behöver ett företag först.", needsCompany: true }, { status: 409 });
@@ -119,10 +119,10 @@ export async function POST(req: NextRequest) {
 }
 
 /**
- * GET — the AUTHENTICATED ACCOUNTANT's incoming connection requests (§2).
+ * GET - the AUTHENTICATED ACCOUNTANT's incoming connection requests (§2).
  * Returns only requests where accountantId = this accountant; another
  * accountant's requests never appear. Exposes company id/name + request
- * status only — no members, billing, credentials, or private user data.
+ * status only - no members, billing, credentials, or private user data.
  */
 export async function GET(req: NextRequest) {
   const acct = await requireAccountant();

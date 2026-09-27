@@ -11,7 +11,7 @@ import { pricingV2Enabled } from "@/lib/billing/config";
  *
  * Overage accrues per scan into scan_usage.overageBilledOre during the period
  * (metering.ts). We report it to Stripe ONCE per period, at close-out, as a
- * single invoice item in öre — this fits the app's existing fixed-price
+ * single invoice item in öre - this fits the app's existing fixed-price
  * subscription model (no metered price plumbing required) and is naturally
  * idempotent via the overageFlushedAt marker.
  *
@@ -105,7 +105,7 @@ export async function closeOutEndedPeriods(
           currency: "sek",
           description: `Extra skanningar ${row.periodStart
             .toISOString()
-            .slice(0, 10)} – ${row.periodEnd.toISOString().slice(0, 10)} (${row.overageScansUsed} st)`,
+            .slice(0, 10)} - ${row.periodEnd.toISOString().slice(0, 10)} (${row.overageScansUsed} st)`,
         });
         flushed++;
       } catch (e) {
@@ -125,7 +125,7 @@ export async function closeOutEndedPeriods(
       await logAudit({
         userId: row.scope === "user" ? row.scopeId : null,
         action: "billing.upgrade_nudge",
-        details: `scope=${row.scope}:${row.scopeId} consecutive overage — suggest next tier`,
+        details: `scope=${row.scope}:${row.scopeId} consecutive overage - suggest next tier`,
       });
       // TODO(pricing-v2): also send the "upgrade to the next tier" email via
       // lib/email.ts once the template exists.

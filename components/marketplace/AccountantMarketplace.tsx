@@ -325,7 +325,7 @@ export function AccountantMarketplace({
                         )}
                       </div>
 
-                      {/* Rating — top-right, prominent like app store */}
+                      {/* Rating - top-right, prominent like app store */}
                       {a.avgRating != null && a.reviewCount > 0 ? (
                         <RatingBadge rating={a.avgRating} count={a.reviewCount} />
                       ) : (

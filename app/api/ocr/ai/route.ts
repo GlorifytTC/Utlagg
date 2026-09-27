@@ -10,7 +10,7 @@ import { checkLimit } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-// ~15MB of base64 ≈ an 11MB image — generous for a phone photo, but bounded
+// ~15MB of base64 ≈ an 11MB image - generous for a phone photo, but bounded
 // so a caller can't stream an arbitrarily large body into memory / to Gemini.
 const schema = z.object({
   image: z.string().min(10).max(15_000_000),

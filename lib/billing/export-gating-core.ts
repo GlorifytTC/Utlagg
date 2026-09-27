@@ -1,10 +1,10 @@
 /**
- * Pure export-gating decision (spec §C) — no I/O, no `server-only`, no db, so
+ * Pure export-gating decision (spec §C) - no I/O, no `server-only`, no db, so
  * the legal guardrail can be unit-tested in isolation
  * (tests/unit/export-gating.test.ts).
  *
  * ⚠️ CRITICAL GUARDRAIL: in read-only / lapsed / expired-trial state a COMPLETE
- * CSV export and ORIGINAL-FILE download MUST remain available — the user may
+ * CSV export and ORIGINAL-FILE download MUST remain available - the user may
  * hold the only copy of records they must keep for 7 years (Bokföringslagen).
  * This function NEVER blocks a format in ALWAYS_AVAILABLE_EXPORTS, regardless of
  * state. Only the convenience/premium formats in GATED_EXPORT_FORMATS are gated,
@@ -23,7 +23,7 @@ export interface ExportDecision {
   allowed: boolean;
   format: ExportFormat;
   reason: "ok" | ExportDenyReason;
-  /** User-facing explanation (never a silent failure — spec §C.3). */
+  /** User-facing explanation (never a silent failure - spec §C.3). */
   message?: string;
   /** Always-available fallbacks to surface alongside a denial (spec §C.3). */
   fallback?: { csvUrl: string; filesHint: string };
@@ -53,7 +53,7 @@ export function canUseExport(
   }
 
   // Read-only: only the gated formats are blocked; anything not explicitly
-  // gated stays open (fail-open toward availability — spec §C).
+  // gated stays open (fail-open toward availability - spec §C).
   if (GATED_EXPORT_FORMATS.includes(format)) {
     return {
       allowed: false,

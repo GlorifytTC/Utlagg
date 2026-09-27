@@ -162,7 +162,7 @@ export function AccountantFirmStats() {
           </div>
           <div className="p-5">
             {stats.categories.length === 0 ? (
-              <p className="py-6 text-center text-sm text-gray-400">—</p>
+              <p className="py-6 text-center text-sm text-gray-400">-</p>
             ) : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart

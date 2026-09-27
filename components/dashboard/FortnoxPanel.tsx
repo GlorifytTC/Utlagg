@@ -32,7 +32,7 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
       .then((r) => (r.ok ? r.json() : { receipts: [] }))
       .then((d) => {
         setPending(d.receipts ?? []);
-        // Nothing pre-selected — the person opts in receipt by receipt
+        // Nothing pre-selected - the person opts in receipt by receipt
         // (or uses "select all"), rather than everything being sent by default.
       })
       .catch(() => setPending([]));
@@ -169,13 +169,13 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
                       className="h-4 w-4 rounded border-gray-300 text-nordic-600 focus:ring-nordic-500"
                     />
                     <span className="flex-1 truncate text-sm text-gray-900 dark:text-white">
-                      {r.vendorName || "—"}
+                      {r.vendorName || "-"}
                     </span>
                     <span className="shrink-0 text-xs text-gray-400">
-                      {r.date ? new Date(r.date).toLocaleDateString("sv-SE") : "—"}
+                      {r.date ? new Date(r.date).toLocaleDateString("sv-SE") : "-"}
                     </span>
                     <span className="shrink-0 truncate text-xs text-gray-500 dark:text-gray-400" style={{ maxWidth: 140 }}>
-                      {r.category || "—"}
+                      {r.category || "-"}
                     </span>
                     <span className="shrink-0 text-sm font-medium text-gray-900 dark:text-white">
                       {formatSek(r.totalAmount)}

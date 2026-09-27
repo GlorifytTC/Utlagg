@@ -9,7 +9,7 @@ import { getUserCompany } from "@/lib/company";
 export const runtime = "nodejs";
 
 /**
- * GET /api/notifications?since=<ISO> — social events for the caller newer than
+ * GET /api/notifications?since=<ISO> - social events for the caller newer than
  * `since`, so the client can toast them live without a page reload. First poll
  * omits `since` (defaults to now) so no backlog is toasted. The client passes
  * the returned `now` back as the next `since`; unread is tracked client-side,
@@ -33,10 +33,10 @@ export async function GET(req: NextRequest) {
   if (Number.isNaN(parsed.getTime())) {
     return NextResponse.json({ error: "Ogiltig since" }, { status: 400 });
   }
-  // Never look into the future (clock skew / tampering) — clamp to now.
+  // Never look into the future (clock skew / tampering) - clamp to now.
   const cutoff = parsed > now ? now : parsed;
 
-  // isAccountant is read fresh from the DB (never cached in the JWT — see schema).
+  // isAccountant is read fresh from the DB (never cached in the JWT - see schema).
   const [u] = await db.select({ isAccountant: users.isAccountant }).from(users).where(eq(users.id, me)).limit(1);
   const membership = await getUserCompany(me);
   const isAccountant = !!u?.isAccountant;

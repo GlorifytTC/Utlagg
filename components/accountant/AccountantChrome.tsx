@@ -139,7 +139,7 @@ function NavList({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: (
 
 /**
  * Accountant's picture (their logoUrl) in the sidebar footer, linking to their
- * own public marketplace profile — the page companies see.
+ * own public marketplace profile - the page companies see.
  */
 function SidebarProfile({ label, onNavigate }: { label: string; onNavigate?: () => void }) {
   const { data: session } = useSession();

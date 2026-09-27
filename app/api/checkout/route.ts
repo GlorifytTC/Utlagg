@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
               {
                 error:
-                  "Betalningen nekades – uppdatera ditt kort och försök igen.",
+                  "Betalningen nekades - uppdatera ditt kort och försök igen.",
               },
               { status: 402 },
             );
@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
       mode: "subscription",
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
-      // Billing address + org-/momsnummer on the invoice — expected by
+      // Billing address + org-/momsnummer on the invoice - expected by
       // Swedish B2B customers and required for EU reverse charge.
       billing_address_collection: "required",
       tax_id_collection: { enabled: true },

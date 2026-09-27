@@ -1,6 +1,6 @@
 /**
  * Automatically suggests a BAS account (and therefore a spending category)
- * from the vendor name OCR already extracted — so the person doesn't have
+ * from the vendor name OCR already extracted - so the person doesn't have
  * to manually pick a category on every single receipt. They can always
  * change it afterwards; this is a suggestion, not a lock.
  *
@@ -8,7 +8,7 @@
  * KNOWN_MERCHANTS, mapped forward to the BAS codes in lib/bas.ts. Kept as
  * its own lookup table (rather than baking BAS codes into ocr.ts) so the
  * OCR module stays focused on text extraction and this one stays focused
- * on classification — the two evolve independently.
+ * on classification - the two evolve independently.
  */
 
 // Vendor name (as returned by OCR/KNOWN_MERCHANTS or typed by hand) → BAS code.
@@ -27,12 +27,12 @@ const VENDOR_TO_BAS: Array<[RegExp, string]> = [
   [/^parkering$/i, "5800"], // parking while traveling on business
   [/^biluthyrning$/i, "5800"],
 
-  // Hotels / lodging — domestic by default; the person can switch to the
+  // Hotels / lodging - domestic by default; the person can switch to the
   // "abroad" account (5832) themselves if it was an international trip,
   // since OCR alone can't reliably tell domestic vs. foreign.
   [/^hotell$/i, "5831"],
 
-  // Restaurants / fast food — representation, deductible by default.
+  // Restaurants / fast food - representation, deductible by default.
   [/^restaurang$/i, "6071"],
 
   // Courier / postage.
@@ -46,7 +46,7 @@ const VENDOR_TO_BAS: Array<[RegExp, string]> = [
   [/^elektronik$/i, "6550"],
   [/^(kjell & company|teknikmagasinet|webhallen)$/i, "6550"],
 
-  // Clothing — no dedicated BAS line in this subset; falls through to "other".
+  // Clothing - no dedicated BAS line in this subset; falls through to "other".
 
   // Pharmacy / health
   [/^apotek$/i, "6990"],
@@ -55,7 +55,7 @@ const VENDOR_TO_BAS: Array<[RegExp, string]> = [
   // Office supplies (exact match to the real BAS account name/spelling).
   [/^kontorsmateriel$/i, "6110"],
 
-  // Telecom / mobile — recognized merchants map to mobile phone cost;
+  // Telecom / mobile - recognized merchants map to mobile phone cost;
   // generic operators without a brand match fall through to "other".
   [/^(telia|tele2|tre|telenor|halebop|comviq)$/i, "6212"],
 

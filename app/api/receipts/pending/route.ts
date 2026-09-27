@@ -8,7 +8,7 @@ import { requireFeature } from "@/lib/entitlements";
 export const runtime = "nodejs";
 
 /**
- * Lists receipts awaiting approval for the current owner/admin — every
+ * Lists receipts awaiting approval for the current owner/admin - every
  * receipt a MEMBER uploaded that's still `status = "pending"` in this
  * company. This is the "Awaiting your approval" inbox. Owners and admins
  * only; members get an empty list (they don't approve anyone).

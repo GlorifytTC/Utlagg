@@ -1,6 +1,6 @@
 /**
  * Receipt OCR via paid providers (Google Cloud Vision, OCR.space, Mindee,
- * vision LLM) — server-only, since each needs a secret API key from
+ * vision LLM) - server-only, since each needs a secret API key from
  * process.env. The actual text-parsing logic (turning raw OCR text into
  * vendor/date/amount/VAT fields) lives in lib/ocr-parse.ts instead, since
  * that part has no server dependencies and is also used client-side for
@@ -92,7 +92,7 @@ export async function runOcrSpace(imageBase64: string): Promise<ExtractedReceipt
 
 
 /**
- * Mindee Expense-Receipts API — a receipt-trained model that returns structured
+ * Mindee Expense-Receipts API - a receipt-trained model that returns structured
  * fields (vendor, date, total, taxes, org number) directly, instead of us
  * guessing from raw OCR text. Enabled only when MINDEE_API_KEY is set; the
  * caller falls back to OCR.space/Vision if this throws.
@@ -112,7 +112,7 @@ export async function runMindee(image: string): Promise<ExtractedReceipt> {
   );
   if (!res.ok) throw new Error(`Mindee HTTP ${res.status}`);
 
-  // Defensive parsing — field names per Mindee Expense-Receipts v5.
+  // Defensive parsing - field names per Mindee Expense-Receipts v5.
   const json = (await res.json()) as Record<string, unknown>;
   const doc = json?.document as { inference?: { prediction?: Record<string, unknown> } } | undefined;
   const p = (doc?.inference?.prediction ?? {}) as Record<string, unknown>;
@@ -158,7 +158,7 @@ export async function runMindee(image: string): Promise<ExtractedReceipt> {
 }
 
 /**
- * Vision LLM extraction — sends the receipt IMAGE to a multimodal model that
+ * Vision LLM extraction - sends the receipt IMAGE to a multimodal model that
  * reads the layout the way a person would, returning structured fields. This is
  * the most accurate path (handles logos, table-style VAT, cash/change rows).
  * Enabled when OPENAI_API_KEY is set; callers fall back to Mindee/OCR on error.
