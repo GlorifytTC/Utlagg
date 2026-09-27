@@ -46,7 +46,7 @@ export function AccountantChatPage({
 
   if (!detail?.clientId) {
     return (
-      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+      <div className="rounded-2xl panel p-10 text-center">
         <p className="text-sm text-gray-500 dark:text-gray-400">{t.chatUnavailable}</p>
       </div>
     );

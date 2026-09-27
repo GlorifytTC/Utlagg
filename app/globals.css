@@ -70,6 +70,31 @@ body {
       0 1px 2px rgba(26, 26, 26, 0.04),
       0 24px 48px -28px rgba(60, 40, 25, 0.22);
   }
+
+  /* App surface (dashboard + accountant workspace). Solid, not blurred: these
+     cards scroll, and backdrop-filter on scrolling content repaints every frame.
+     Radius and padding stay on the element. */
+  .panel {
+    border: 1px solid rgba(26, 26, 26, 0.07);
+    background: #fffefb;
+    box-shadow:
+      0 1px 2px rgba(26, 26, 26, 0.03),
+      0 16px 32px -24px rgba(60, 40, 25, 0.16);
+  }
+  /* :where() keeps this at single-class specificity so utilities on the element
+     (border-l-nordic-600, dark:bg-*) still win in dark mode. */
+  :where(.dark) .panel {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: #0d0d0d;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+  /* Panel surface colour without border/shadow, for cells inside a hairline grid */
+  .panel-fill {
+    background: #fffefb;
+  }
+  :where(.dark) .panel-fill {
+    background: #0d0d0d;
+  }
 }
 
 

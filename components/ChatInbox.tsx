@@ -95,7 +95,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
 
     if (conversations.length === 0) {
       return (
-        <div className="flex flex-col items-center rounded-2xl border border-gray-900/[0.07] bg-white/60 px-6 py-14 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className="flex flex-col items-center rounded-2xl panel px-6 py-14 text-center">
           <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-nordic-600/10 text-nordic-600 dark:bg-nordic-600/20">
             <MessageSquare className="h-5 w-5" strokeWidth={1.75} />
           </span>
@@ -115,7 +115,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
     }
 
     return (
-      <div className="grid h-[calc(100dvh-16rem)] min-h-[420px] overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] md:h-[calc(100dvh-13rem)] lg:h-[calc(100dvh-10.5rem)] lg:grid-cols-[320px_1fr] xl:grid-cols-[360px_1fr]">
+      <div className="grid h-[calc(100dvh-16rem)] min-h-[420px] overflow-hidden rounded-2xl panel md:h-[calc(100dvh-13rem)] lg:h-[calc(100dvh-10.5rem)] lg:grid-cols-[320px_1fr] xl:grid-cols-[360px_1fr]">
         {/* Conversation list */}
         <aside className={cn("min-h-0 flex-col border-gray-900/[0.07] dark:border-white/[0.08] lg:flex lg:border-r", selected ? "hidden" : "flex")}>
           <div className="p-3">

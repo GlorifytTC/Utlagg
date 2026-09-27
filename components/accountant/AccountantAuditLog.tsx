@@ -36,7 +36,7 @@ export function AccountantAuditLog({ companyId }: { companyId: string }) {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+      className="overflow-hidden rounded-2xl panel"
     >
       <div className="flex items-center justify-between border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
         <div className="flex items-center gap-2.5">

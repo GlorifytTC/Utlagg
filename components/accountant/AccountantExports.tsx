@@ -81,17 +81,17 @@ export function AccountantExports({ companyId }: { companyId: string }) {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+        className="rounded-2xl panel p-6"
       >
         <div className="flex flex-wrap items-end gap-3">
           <div>
-            <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+            <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
               {t.rcFrom}
             </label>
             <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+            <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
               {t.rcTo}
             </label>
             <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputCls} />
@@ -122,7 +122,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
 
       {/* History */}
       <div>
-        <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+        <p className="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
           {t.exHistory}
         </p>
         {histStatus === "loading" ? (
@@ -132,11 +132,11 @@ export function AccountantExports({ companyId }: { companyId: string }) {
         ) : histStatus === "error" ? (
           <p className="text-sm text-red-600">{t.exHistoryError}</p>
         ) : history.length === 0 ? (
-          <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400">
+          <div className="rounded-2xl panel p-8 text-center text-sm text-gray-500 dark:text-gray-400">
             {t.exEmpty}
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+          <div className="overflow-hidden rounded-2xl panel">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -144,7 +144,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
                     {[t.rcColDate, t.exColPeriod, t.exColFormat, t.colReceipts].map((h) => (
                       <th
                         key={h}
-                        className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400"
+                        className="px-5 py-3 text-xs font-medium text-gray-500 dark:text-gray-400"
                       >
                         {h}
                       </th>

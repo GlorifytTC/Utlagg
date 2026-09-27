@@ -89,7 +89,7 @@ export function AccountantBoostCard() {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-l-2 border-gray-900/[0.07] border-l-nordic-600 bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+        className="panel rounded-2xl border-l-2 border-l-nordic-600 p-5"
       >
         <div className="flex items-center gap-2">
           <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
@@ -117,7 +117,7 @@ export function AccountantBoostCard() {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-l-2 border-gray-900/[0.07] border-l-nordic-600 bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+      className="panel rounded-2xl border-l-2 border-l-nordic-600 p-5"
     >
       <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
         {t.boostTitle}

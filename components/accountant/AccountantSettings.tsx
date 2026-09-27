@@ -7,7 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import { LogoUploader } from "@/components/dashboard/LogoUploader";
 
-const card = "rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]";
+const card = "rounded-2xl panel p-6";
 const label = "mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500";
 const input = "w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white";
 

@@ -109,7 +109,7 @@ export default async function ReceiptDetailPage({
           </div>
         </dl>
 
-        <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-3 dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className="panel rounded-2xl p-3">
           {imageSrc ? (
             <a href={imageSrc} target="_blank" rel="noreferrer" title={t.receiptOpenImage}>
               {/* eslint-disable-next-line @next/next/no-img-element */}

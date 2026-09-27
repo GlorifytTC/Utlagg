@@ -72,7 +72,7 @@ export function AccountantAvatarMenu() {
       {open && (
         <div className="absolute right-0 z-20 mt-2 w-72 overflow-hidden rounded-xl border border-gray-900/[0.12] bg-white/75 py-1 shadow-lg backdrop-blur-xl dark:border-white/[0.12] dark:bg-[#111]">
           <div className="px-4 py-3">
-            <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+            <p className="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
               {t.menuProfile}
             </p>
             <LogoUploader value={logo} label={t.menuProfilePic} onSave={saveLogo} />

@@ -79,7 +79,7 @@ export function AccountantRequests() {
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400">
+      <div className="rounded-2xl panel p-10 text-center text-sm text-gray-500 dark:text-gray-400">
         {t.reqEmpty}
       </div>
     );
@@ -89,7 +89,7 @@ export function AccountantRequests() {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+      className="overflow-hidden rounded-2xl panel"
     >
       <ul>
         {rows.map((r) => {

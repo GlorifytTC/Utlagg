@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Users, Clock, TrendingUp, Receipt } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from "recharts";
 import { formatSek } from "@/lib/utils";
+import { StatGrid } from "@/components/ui/stat";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import { BUCKET_LABELS, type SpendBucket } from "@/lib/stats-categories";
@@ -20,6 +21,8 @@ interface FirmStats {
   throughput: { bucket: string; count: number }[];
 }
 
+const EMPTY_STATS: FirmStats = { totalClients: 0, pendingCount: 0, monthAmount: 0, monthVat: 0, clientsWithPending: [], categories: [], throughput: [] };
+
 const shortMonth = (bucket: string) => {
   const m = parseInt(bucket.split("-")[1] ?? "1", 10);
   return ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"][m - 1] ?? bucket;
@@ -31,21 +34,16 @@ export function AccountantFirmStats() {
   const [stats, setStats] = useState<FirmStats | null>(null);
 
   useEffect(() => {
+    // Any failure (network or non-2xx) falls back to zeros, never an endless skeleton
     fetch("/api/accountant/firm/stats")
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => d && setStats(d))
-      .catch(() =>
-        setStats({ totalClients: 0, pendingCount: 0, monthAmount: 0, monthVat: 0, clientsWithPending: [], categories: [], throughput: [] }),
-      );
+      .then((d) => setStats(d ?? EMPTY_STATS))
+      .catch(() => setStats(EMPTY_STATS));
   }, []);
 
   if (!stats) {
     return (
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-24 animate-pulse rounded-2xl bg-gray-100 dark:bg-white/5" />
-        ))}
-      </div>
+      <div className="h-[116px] animate-pulse rounded-2xl bg-gray-900/[0.04] dark:bg-white/[0.04]" />
     );
   }
 
@@ -87,39 +85,19 @@ export function AccountantFirmStats() {
       className="space-y-4"
     >
       {/* KPI row */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {kpiCards.map((card, i) => (
-          <motion.div
-            key={card.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.06, duration: 0.25 }}
-            className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm transition-transform active:scale-[0.98] dark:border-white/[0.08] dark:bg-[#0D0D0D]"
-          >
-            <card.icon
-              className={`mb-3 h-4 w-4 ${card.accent ? "text-amber-500" : "text-gray-400"}`}
-              strokeWidth={1.5}
-            />
-            <p className="text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
-              {card.label}
-            </p>
-            <p
-              className={`mt-1 font-display text-[22px] font-semibold leading-none tracking-tight ${
-                card.accent
-                  ? "text-amber-600 dark:text-amber-400"
-                  : "text-gray-900 dark:text-white"
-              }`}
-            >
-              {card.value}
-            </p>
-          </motion.div>
-        ))}
-      </div>
+      <StatGrid
+        items={kpiCards.map((c) => ({
+          label: c.label,
+          value: c.value,
+          icon: c.icon,
+          tone: c.accent ? ("warn" as const) : ("default" as const),
+        }))}
+      />
 
       {/* Clients needing attention + category breakdown */}
       <div className="grid gap-3 md:grid-cols-2">
         {/* Pending clients */}
-        <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className="overflow-hidden rounded-2xl panel">
           <div className="border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
               {t.firmStatsNeedsAttention}
@@ -154,7 +132,7 @@ export function AccountantFirmStats() {
         </div>
 
         {/* Category spend */}
-        <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className="overflow-hidden rounded-2xl panel">
           <div className="border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
               {t.firmStatsCategories}
@@ -211,7 +189,7 @@ export function AccountantFirmStats() {
 
       {/* 12-month throughput */}
       {stats.throughput.length > 0 && (
-        <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className="overflow-hidden rounded-2xl panel">
           <div className="border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
               {t.firmStatsThroughput}

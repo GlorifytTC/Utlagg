@@ -123,7 +123,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
       {/* Filters */}
       <div className="flex flex-wrap items-end gap-3">
         <div className="min-w-[180px] flex-1">
-          <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
             {t.rcSearch}
           </label>
           <input
@@ -137,7 +137,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
           />
         </div>
         <div>
-          <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
             {t.rcFrom}
           </label>
           <input
@@ -151,7 +151,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
           />
         </div>
         <div>
-          <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
             {t.rcTo}
           </label>
           <input
@@ -192,7 +192,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
             key="empty"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400"
+            className="rounded-2xl panel p-10 text-center text-sm text-gray-500 dark:text-gray-400"
           >
             {t.rcEmpty}
           </motion.div>
@@ -201,7 +201,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
             key="table"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+            className="overflow-hidden rounded-2xl panel transition-shadow hover:shadow-sm"
           >
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -229,7 +229,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                         </span>
                       </th>
                     ))}
-                    <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+                    <th className="px-5 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">
                       {t.rcColStatus}
                     </th>
                     <th className="px-5 py-3" />

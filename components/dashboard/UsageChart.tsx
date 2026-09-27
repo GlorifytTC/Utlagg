@@ -13,7 +13,7 @@ export function UsageChart({
   const pct = unlimited ? 0 : Math.min(100, Math.round((used / Math.max(1, limit)) * 100));
 
   return (
-    <Card className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+    <Card className="rounded-2xl panel transition-shadow hover:shadow-sm">
       <CardHeader className="pb-4">
         <CardTitle className="font-display text-lg text-gray-900 dark:text-white">
           {t.scansThisMonth}

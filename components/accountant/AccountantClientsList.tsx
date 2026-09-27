@@ -55,7 +55,7 @@ export function AccountantClientsList() {
 
   if (status === "error") {
     return (
-      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+      <div className="rounded-2xl panel p-8 text-center">
         <p className="text-sm text-red-600">{t.clientsLoadError}</p>
         <button
           onClick={() => load(page)}
@@ -69,7 +69,7 @@ export function AccountantClientsList() {
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+      <div className="rounded-2xl panel p-10 text-center">
         <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
           {t.clientsEmpty}
         </p>
@@ -87,22 +87,22 @@ export function AccountantClientsList() {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+        className="overflow-hidden rounded-2xl panel transition-shadow hover:shadow-sm"
       >
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="text-left">
-                <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+                <th className="px-5 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">
                   {t.colCompany}
                 </th>
-                <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+                <th className="px-5 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">
                   {t.colCity}
                 </th>
-                <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+                <th className="px-5 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">
                   {t.colReceipts}
                 </th>
-                <th className="px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+                <th className="px-5 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">
                   {t.rcColStatus}
                 </th>
                 <th className="px-5 py-3" />

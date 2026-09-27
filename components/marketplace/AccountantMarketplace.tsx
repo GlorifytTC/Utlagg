@@ -251,7 +251,7 @@ export function AccountantMarketplace({
       ) : loadState === "error" ? (
         <p className="text-sm text-red-600">{t.mktLoadError}</p>
       ) : rows.length === 0 ? (
-        <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 px-8 py-14 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className="rounded-2xl panel px-8 py-14 text-center">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t.mktEmpty}</p>
           {hasFilters && (
             <button

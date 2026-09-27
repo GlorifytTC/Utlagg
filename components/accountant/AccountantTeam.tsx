@@ -23,7 +23,7 @@ interface Client {
 }
 
 const CARD =
-  "rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]";
+  "rounded-2xl panel p-5";
 const BTN =
   "inline-flex items-center gap-1.5 rounded-full bg-nordic-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-50";
 const BTN_GHOST =

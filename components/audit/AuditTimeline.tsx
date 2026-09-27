@@ -135,7 +135,7 @@ export function AuditTimeline({ entries, showActor = false, loading = false }: P
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col items-center gap-3 px-6 py-14 text-center"
       >
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl panel">
           <Eye className="h-5 w-5 text-gray-300 dark:text-gray-600" />
         </div>
         <p className="font-display text-sm font-medium text-gray-900 dark:text-white">{t.auditEmptyTitle}</p>
@@ -165,7 +165,7 @@ export function AuditTimeline({ entries, showActor = false, loading = false }: P
       {groups.map((group) => (
         <div key={group.day}>
           {/* Day label */}
-          <p className="mb-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+          <p className="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
             {group.label}
           </p>
 

@@ -121,7 +121,7 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
 
   const frame = cn(
     "flex flex-col",
-    fill ? "h-full min-h-0" : "rounded-2xl border border-gray-900/[0.07] bg-white/60 dark:border-white/[0.08] dark:bg-[#0D0D0D]",
+    fill ? "h-full min-h-0" : "panel rounded-2xl",
   );
 
   if (status !== "ok") {

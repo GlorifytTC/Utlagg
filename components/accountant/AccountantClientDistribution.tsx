@@ -58,7 +58,7 @@ function PiePanel({ data, dataKey, label, othersLabel, formatter, onSliceClick, 
 
   return (
     <div className={`p-5${divider ? " border-t border-gray-900/[0.05] sm:border-l sm:border-t-0 dark:border-white/[0.05]" : ""}`}>
-      <p className="mb-1 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">{label}</p>
+      <p className="mb-1 text-xs font-medium text-gray-500 dark:text-gray-400">{label}</p>
       <ResponsiveContainer width="100%" height={190}>
         <PieChart>
           <Pie
@@ -140,7 +140,7 @@ export function AccountantClientDistribution() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+      className="overflow-hidden rounded-2xl panel"
     >
       <div className="flex items-center justify-between border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
         <p className="text-sm font-semibold text-gray-900 dark:text-white">{t.clientDistTitle}</p>

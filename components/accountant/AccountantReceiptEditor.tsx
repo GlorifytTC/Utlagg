@@ -148,7 +148,7 @@ export function AccountantReceiptEditor({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-3 dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+      <div className="panel rounded-2xl p-3">
         {imageSrc ? (
           <a href={imageSrc} target="_blank" rel="noreferrer">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -171,7 +171,7 @@ export function AccountantReceiptEditor({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="mb-1 block text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">{label}</label>
+      <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{label}</label>
       {children}
     </div>
   );

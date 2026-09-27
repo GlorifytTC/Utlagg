@@ -166,13 +166,13 @@ export function AccountantClientStats({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.06, duration: 0.25 }}
-            className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm transition-transform active:scale-[0.98] dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+            className="overflow-hidden rounded-2xl panel p-5 transition-transform active:scale-[0.98]"
           >
             <card.icon
               className={`mb-3 h-4 w-4 ${card.accent ? "text-amber-500" : "text-gray-400"}`}
               strokeWidth={1.5}
             />
-            <p className="text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400">
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
               {card.label}
             </p>
             <p
@@ -191,7 +191,7 @@ export function AccountantClientStats({
       {/* Category breakdown + 12-month trend */}
       <div className="grid gap-3 md:grid-cols-2">
         {/* Categories */}
-        <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className="overflow-hidden rounded-2xl panel">
           <div className="border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
               {t.clientStatsCategories}
@@ -246,7 +246,7 @@ export function AccountantClientStats({
         </div>
 
         {/* 12-month trend */}
-        <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className="overflow-hidden rounded-2xl panel">
           <div className="border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
               {t.clientStatsTrend}
@@ -293,7 +293,7 @@ export function AccountantClientStats({
 
       {/* Recent receipts */}
       {recentReceipts.length > 0 && (
-        <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className="overflow-hidden rounded-2xl panel">
           <div className="flex items-center justify-between border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
               {t.clientStatsRecent}

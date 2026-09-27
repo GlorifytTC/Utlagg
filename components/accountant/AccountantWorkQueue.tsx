@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { CircleCheck, ClipboardCheck, Clock, FileWarning, ScanLine } from "lucide-react";
+import { StatGrid, type StatItem } from "@/components/ui/stat";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 
@@ -23,49 +24,37 @@ export function AccountantWorkQueue() {
       .finally(() => setLoaded(true));
   }, []);
 
-  if (!loaded) return null;
+  // Reserve the space while loading so the page below doesn't jump
+  if (!loaded) {
+    return (
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.todoTitle}</h2>
+        <div className="h-[116px] animate-pulse rounded-2xl bg-gray-900/[0.04] dark:bg-white/[0.04]" />
+      </section>
+    );
+  }
 
   const totals = data?.totals ?? { toReview: 0, missingInfo: 0, lowConfidence: 0, pending: 0 };
-  const nothing =
-    totals.toReview + totals.missingInfo + totals.lowConfidence + totals.pending === 0;
-
-  const rows = [
-    { key: "toReview", label: t.todoToReview, value: totals.toReview },
-    { key: "missingInfo", label: t.todoMissingInfo, value: totals.missingInfo },
-    { key: "lowConfidence", label: t.todoLowConfidence, value: totals.lowConfidence },
-    { key: "pending", label: t.todoPending, value: totals.pending },
+  const items: StatItem[] = [
+    { label: t.todoToReview, value: totals.toReview, icon: ClipboardCheck },
+    { label: t.todoMissingInfo, value: totals.missingInfo, icon: FileWarning, tone: "warn" as const },
+    { label: t.todoLowConfidence, value: totals.lowConfidence, icon: ScanLine },
+    { label: t.todoPending, value: totals.pending, icon: Clock },
   ].filter((r) => r.value > 0);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
-    >
-      <p className="mb-0.5 text-[9.5px] font-medium uppercase tracking-[0.2em] text-nordic-600">
-        {t.todoTitle}
-      </p>
-      {nothing ? (
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{t.todoEmpty}</p>
-      ) : (
-        <div className="mt-4 overflow-hidden rounded-xl border border-gray-900/[0.07] bg-gray-900/[0.07] dark:border-white/[0.07] dark:bg-white/[0.07]">
-          <div className="grid grid-cols-2 sm:grid-cols-4">
-            {rows.map((r) => (
-              <div
-                key={r.key}
-                className="bg-[#F5F4F0] p-4 dark:bg-[#0D0D0D]"
-              >
-                <p className="font-display text-[22px] font-semibold leading-none tracking-tight text-gray-900 dark:text-white">
-                  {r.value}
-                </p>
-                <p className="mt-2 text-[9.5px] font-medium uppercase tracking-[0.14em] text-gray-400">
-                  {r.label}
-                </p>
-              </div>
-            ))}
-          </div>
+    <section className="space-y-3">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.todoTitle}</h2>
+      {items.length === 0 ? (
+        <div className="panel flex items-center gap-3 rounded-2xl p-5">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <CircleCheck className="h-[18px] w-[18px]" strokeWidth={1.75} />
+          </span>
+          <p className="text-sm text-gray-600 dark:text-gray-300">{t.todoEmpty}</p>
         </div>
+      ) : (
+        <StatGrid items={items} />
       )}
-    </motion.div>
+    </section>
   );
 }

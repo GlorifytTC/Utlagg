@@ -60,7 +60,7 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
 
   if (status === "notfound") {
     return (
-      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-10 text-center backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+      <div className="rounded-2xl panel p-10 text-center">
         <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
           {t.cwNotAvailable}
         </p>
@@ -95,7 +95,7 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+        className="rounded-2xl panel p-5"
       >
         <div className="flex items-center gap-4">
           <ClientAvatar name={detail.companyName} logoUrl={detail.logoUrl} size="lg" />

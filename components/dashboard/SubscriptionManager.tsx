@@ -153,7 +153,7 @@ export function SubscriptionManager({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]"
+        className="panel rounded-2xl transition-shadow hover:shadow-sm"
       >
         <CardHeader>
           <CardTitle className="font-display text-lg text-gray-900 dark:text-white">{t.subCurrentPlan}</CardTitle>

@@ -206,7 +206,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
   };
 
   return (
-    <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+    <div className="rounded-2xl panel transition-shadow hover:shadow-sm">
       <div className="flex flex-col gap-3 border-b border-gray-900/[0.07] p-5 dark:border-white/[0.07]">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-xl text-gray-900 dark:text-white">{t.navReceipts}</h2>

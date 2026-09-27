@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 type Variant = "default" | "outline" | "destructive" | "ghost";
 
 const variants: Record<Variant, string> = {
-  default: "bg-nordic-600 text-white hover:bg-nordic-900",
+  default: "bg-nordic-600 text-white hover:bg-nordic-700",
   outline:
-    "border border-gray-300 bg-transparent hover:bg-gray-50 dark:border-white/[0.12] dark:text-white dark:hover:bg-white/[0.07]",
+    "border border-gray-900/15 bg-transparent hover:border-gray-900/30 hover:bg-gray-900/[0.03] dark:border-white/[0.14] dark:text-white dark:hover:border-white/30 dark:hover:bg-white/[0.06]",
   destructive: "bg-red-600 text-white hover:bg-red-700",
-  ghost: "hover:bg-gray-100 dark:hover:bg-white/[0.07] dark:text-white",
+  ghost: "hover:bg-gray-900/[0.05] dark:hover:bg-white/[0.07] dark:text-white",
 };
 
 export interface ButtonProps
@@ -21,7 +21,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     <button
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition duration-300 ease-premium active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 disabled:pointer-events-none disabled:opacity-50",
         variants[variant],
         className,
       )}

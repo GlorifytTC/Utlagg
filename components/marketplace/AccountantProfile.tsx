@@ -84,7 +84,7 @@ function FirmSidebar({ firm }: { firm: Firm }) {
   const roleLabels: Record<string, string> = { owner: t.teamRoleOwner, admin: t.teamRoleAdmin, member: t.profRoleMember };
   return (
     <div className="self-start lg:sticky lg:top-6 space-y-4">
-      <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+      <div className="rounded-2xl panel p-5">
         {/* Firm header */}
         <div className="mb-4 flex items-center gap-3">
           {firm.logoUrl ? (
@@ -313,7 +313,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col gap-4 rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] sm:flex-row sm:items-start"
+        className="flex flex-col gap-4 rounded-2xl panel p-6 sm:flex-row sm:items-start"
       >
         {/* Avatar */}
         {heroLogo ? (
@@ -450,7 +450,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+          className="rounded-2xl panel p-6"
         >
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.profEdit}</h2>
           <p className="mb-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -534,7 +534,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
 
       {/* Bio */}
       {accountant.bio && (
-        <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className="rounded-2xl panel p-6">
           <h2 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">{t.profAbout}</h2>
           <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{accountant.bio}</p>
         </div>
@@ -551,7 +551,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
 
         {/* Submit / edit review form */}
         {data.viewerCanReview && (
-          <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+          <div className="rounded-2xl panel p-5">
             <p className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
               {data.viewerExistingReview ? t.profYourReview : t.profLeaveReview}
             </p>
@@ -586,7 +586,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         )}
 
         {reviews.length > 0 && (
-          <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+          <div className="rounded-2xl panel p-5">
             <div className="space-y-0.5">
               {[5, 4, 3, 2, 1].map((star) => {
                 const count = reviews.filter((r) => r.rating === star).length;
@@ -627,11 +627,11 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         )}
 
         {reviews.length === 0 ? (
-          <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400">
+          <div className="rounded-2xl panel p-8 text-center text-sm text-gray-500 dark:text-gray-400">
             {t.profNoReviews}
           </div>
         ) : reviews.filter((r) => ratingFilter === null || r.rating === ratingFilter).length === 0 ? (
-          <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-8 text-center text-sm text-gray-500 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:text-gray-400">
+          <div className="rounded-2xl panel p-8 text-center text-sm text-gray-500 dark:text-gray-400">
             {t.profNoStarReviews.replace("{star}", String(ratingFilter))}
           </div>
         ) : (
@@ -641,7 +641,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                 key={r.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#0D0D0D]"
+                className="rounded-2xl panel p-5"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>

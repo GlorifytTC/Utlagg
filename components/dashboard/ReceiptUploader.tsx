@@ -432,7 +432,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   }
 
   return (
-    <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-6 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]">
+    <div className="panel rounded-2xl p-6 transition-shadow hover:shadow-sm">
       {/* Rendered through a portal on document.body: the uploader card uses
           backdrop-blur, and backdrop-filter establishes a containing block
           for position:fixed descendants - so without the portal this "full

@@ -19,7 +19,7 @@ export function UsageMeter({
   const { t } = useLanguage();
 
   return (
-    <div className="rounded-2xl border border-gray-900/[0.07] bg-white/60 p-5 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]">
+    <div className="panel rounded-2xl p-5 transition-shadow hover:shadow-sm">
       <div className="flex items-baseline justify-between">
         <p className="text-sm text-gray-500 dark:text-gray-400">{t.scansThisMonth}</p>
         <motion.span
