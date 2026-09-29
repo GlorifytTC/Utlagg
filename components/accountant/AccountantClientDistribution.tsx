@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import { formatSek } from "@/lib/utils";
+import { Select } from "@/components/ui/input";
 
 type Range = "day" | "week" | "month" | "3m" | "6m" | "year";
 
@@ -144,25 +145,26 @@ export function AccountantClientDistribution() {
     >
       <div className="flex items-center justify-between border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
         <p className="text-sm font-semibold text-gray-900 dark:text-white">{t.clientDistTitle}</p>
-        <select
+        <Select
           value={range}
           onChange={(e) => setRange(e.target.value as Range)}
-          className="rounded-lg border border-gray-900/[0.10] bg-white/80 px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:border-gray-900/20 focus:outline-none focus:ring-2 focus:ring-nordic-600/30 dark:border-white/[0.15] dark:bg-white/[0.06] dark:text-gray-300"
+          aria-label={t.clientDistTitle}
+          className="h-9 !w-auto rounded-full pr-8"
         >
           {rangeOptions.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
-        </select>
+        </Select>
       </div>
 
       {clients === null ? (
         <div className="grid grid-cols-2 divide-x divide-gray-900/[0.05] dark:divide-white/[0.05]">
-          <div className="h-[238px] animate-pulse bg-gray-50 dark:bg-white/[0.03]" />
-          <div className="h-[238px] animate-pulse bg-gray-50 dark:bg-white/[0.03]" />
+          <div className="skeleton h-[238px]" />
+          <div className="skeleton h-[238px]" />
         </div>
       ) : clients.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-sm text-gray-400">{t.clientDistEmpty}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t.clientDistEmpty}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2">

@@ -29,7 +29,7 @@ export function AccountantWorkQueue() {
     return (
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.todoTitle}</h2>
-        <div className="h-[116px] animate-pulse rounded-2xl bg-gray-900/[0.04] dark:bg-white/[0.04]" />
+        <div className="skeleton h-[116px] rounded-2xl" />
       </section>
     );
   }

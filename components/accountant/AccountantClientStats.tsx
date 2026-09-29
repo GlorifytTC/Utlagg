@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { TrendingUp, Receipt, CheckCircle, Clock } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from "recharts";
@@ -111,10 +110,10 @@ export function AccountantClientStats({
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-24 animate-pulse rounded-2xl bg-gray-100 dark:bg-white/5" />
+            <div key={i} className="skeleton h-24 rounded-2xl" />
           ))}
         </div>
-        <div className="h-48 animate-pulse rounded-2xl bg-gray-100 dark:bg-white/5" />
+        <div className="skeleton h-48 rounded-2xl" />
       </div>
     );
   }
@@ -169,7 +168,7 @@ export function AccountantClientStats({
             className="overflow-hidden rounded-2xl panel p-5 transition-transform active:scale-[0.98]"
           >
             <card.icon
-              className={`mb-3 h-4 w-4 ${card.accent ? "text-amber-500" : "text-gray-400"}`}
+              className={`mb-3 h-4 w-4 ${card.accent ? "text-amber-500" : "text-gray-500 dark:text-gray-400"}`}
               strokeWidth={1.5}
             />
             <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -199,7 +198,7 @@ export function AccountantClientStats({
           </div>
           <div className="p-5">
             {categories.length === 0 ? (
-              <p className="py-6 text-center text-sm text-gray-400">-</p>
+              <p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">-</p>
             ) : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart
@@ -254,7 +253,7 @@ export function AccountantClientStats({
           </div>
           <div className="p-5">
             {yearTrend.length === 0 ? (
-              <p className="py-6 text-center text-sm text-gray-400">-</p>
+              <p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">-</p>
             ) : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={yearTrend}>
@@ -312,7 +311,7 @@ export function AccountantClientStats({
                   <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
                     {r.vendorName || "-"}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {formatDate(r.date ?? r.createdAt)}
                   </p>
                 </div>

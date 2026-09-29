@@ -43,7 +43,7 @@ export function AccountantFirmStats() {
 
   if (!stats) {
     return (
-      <div className="h-[116px] animate-pulse rounded-2xl bg-gray-900/[0.04] dark:bg-white/[0.04]" />
+      <div className="skeleton h-[116px] rounded-2xl" />
     );
   }
 
@@ -140,7 +140,7 @@ export function AccountantFirmStats() {
           </div>
           <div className="p-5">
             {stats.categories.length === 0 ? (
-              <p className="py-6 text-center text-sm text-gray-400">-</p>
+              <p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">-</p>
             ) : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart

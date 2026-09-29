@@ -40,12 +40,12 @@ export function AccountantAuditLog({ companyId }: { companyId: string }) {
     >
       <div className="flex items-center justify-between border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
         <div className="flex items-center gap-2.5">
-          <ShieldCheck className="h-4 w-4 text-gray-400" strokeWidth={1.75} />
+          <ShieldCheck className="h-4 w-4 text-gray-500 dark:text-gray-400" strokeWidth={1.75} />
           <p className="font-display text-sm font-semibold text-gray-900 dark:text-white">
             {t.auditTitle}
           </p>
         </div>
-        <span className="rounded-full border border-gray-900/[0.07] px-2.5 py-0.5 text-[10px] font-medium text-gray-400 dark:border-white/[0.07]">
+        <span className="rounded-full border border-gray-900/[0.07] px-2.5 py-0.5 text-[10px] font-medium text-gray-500 dark:text-gray-400 dark:border-white/[0.07]">
           {t.audit30Days}
         </span>
       </div>

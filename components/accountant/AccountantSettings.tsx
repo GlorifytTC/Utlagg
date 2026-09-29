@@ -9,10 +9,13 @@ import { accountantStrings, type AccountantStrings } from "@/lib/accountant-i18n
 import { CREDENTIAL_ACCEPT, MAX_CREDENTIAL_BYTES } from "@/lib/verification";
 import { LogoUploader } from "@/components/dashboard/LogoUploader";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { Button, buttonClass } from "@/components/ui/button";
+import { fieldClass } from "@/components/ui/input";
+import { PageHeader } from "@/components/ui/page-header";
 
 const card = "rounded-2xl panel p-6";
-const label = "mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500";
-const input = "w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white";
+const label = "mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300";
+const input = `${fieldClass} h-10 py-2`;
 
 type VerificationStatus = "pending" | "approved" | "rejected" | null;
 
@@ -73,14 +76,11 @@ export function AccountantSettings({
   }
 
   return (
-    <div className="max-w-xl space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">{at.settingsTitle}</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{at.settingsSubtitle}</p>
-      </div>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader title={at.settingsTitle} subtitle={at.settingsSubtitle} />
 
       <section className={card}>
-        <p className={label}>{at.menuProfilePic}</p>
+        <h2 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">{at.menuProfilePic}</h2>
         <LogoUploader value={logoUrl} label={at.menuProfilePic} onSave={saveLogo} />
       </section>
 
@@ -93,13 +93,9 @@ export function AccountantSettings({
           <label htmlFor="acct-email" className={label}>{at.settingsEmail}</label>
           <input id="acct-email" value={email} readOnly className={`${input} cursor-not-allowed text-gray-500 dark:text-gray-400`} />
         </div>
-        <button
-          type="submit"
-          disabled={saving || !name.trim() || name.trim() === initialName}
-          className="rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-[background-color,transform] hover:bg-nordic-700 active:scale-[0.98] disabled:opacity-60"
-        >
+        <Button type="submit" disabled={saving || !name.trim() || name.trim() === initialName}>
           {saving ? at.settingsSaving : at.settingsSave}
-        </button>
+        </Button>
       </form>
 
       <VerificationCard at={at} status={verificationStatus} note={verificationNote} onSubmitted={() => router.refresh()} />
@@ -164,23 +160,23 @@ function VerificationCard({
   return (
     <section className={`${card} space-y-3`}>
       <div className="flex items-center gap-2">
-        <p className={`${label} mb-0`}>{at.verifyTitle}</p>
+        <h2 className="text-base font-semibold text-gray-900 dark:text-white">{at.verifyTitle}</h2>
         {status === "approved" && <VerifiedBadge />}
       </div>
       {status !== "approved" && <p className="text-sm text-gray-600 dark:text-gray-300">{at.verifyIntro}</p>}
       <p className="text-sm font-medium text-gray-900 dark:text-white" role="status">{statusText}</p>
       {status === "rejected" && note && (
-        <p className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700 dark:bg-white/[0.04] dark:text-gray-300">
+        <p className="rounded-xl bg-gray-900/[0.03] p-3 text-sm text-gray-700 dark:bg-white/[0.04] dark:text-gray-300">
           {at.verifyNote}: {note}
         </p>
       )}
       {status !== "approved" && (
         <div>
-          <label className="inline-flex cursor-pointer items-center rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-[background-color,transform] focus-within:ring-2 focus-within:ring-nordic-600/40 hover:bg-nordic-700 active:scale-[0.98]">
+          <label className={buttonClass("default", "cursor-pointer focus-within:ring-4 focus-within:ring-nordic-600/20")}>
             {uploading ? at.verifyUploading : status ? at.verifyReplace : at.verifyUpload}
             <input type="file" accept={CREDENTIAL_ACCEPT} onChange={upload} disabled={uploading} className="sr-only" />
           </label>
-          <p className="mt-2 text-xs text-gray-500">{at.verifyHint}</p>
+          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{at.verifyHint}</p>
         </div>
       )}
     </section>

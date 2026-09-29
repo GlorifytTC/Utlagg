@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
+import { Button } from "@/components/ui/button";
 
 interface BoostState {
   active: boolean;
@@ -89,7 +90,7 @@ export function AccountantBoostCard() {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="panel rounded-2xl border-l-2 border-l-nordic-600 p-5"
+        className="panel rounded-2xl bg-nordic-50 p-5 dark:bg-nordic-600/[0.06]"
       >
         <div className="flex items-center gap-2">
           <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
@@ -106,7 +107,7 @@ export function AccountantBoostCard() {
           {t.boostActiveUntil}{" "}
           <span className="font-medium text-gray-900 dark:text-white">{until ?? "-"}</span>
           {state.daysLeft != null && (
-            <span className="text-gray-400"> · {state.daysLeft} {t.boostDaysLeft}</span>
+            <span className="text-gray-500 dark:text-gray-400"> · {state.daysLeft} {t.boostDaysLeft}</span>
           )}
         </p>
       </motion.div>
@@ -117,7 +118,7 @@ export function AccountantBoostCard() {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="panel rounded-2xl border-l-2 border-l-nordic-600 p-5"
+      className="panel rounded-2xl bg-nordic-50 p-5 dark:bg-nordic-600/[0.06]"
     >
       <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
         {t.boostTitle}
@@ -132,15 +133,9 @@ export function AccountantBoostCard() {
           </span>{" "}
           {t.boostPriceTerms}
         </p>
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={buy}
-          disabled={busy}
-          className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-nordic-900 disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
-        >
+        <Button onClick={buy} disabled={busy} className="h-10 !px-5">
           {busy ? t.boostOpening : t.boostCta}
-        </motion.button>
+        </Button>
       </div>
     </motion.div>
   );

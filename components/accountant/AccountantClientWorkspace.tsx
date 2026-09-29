@@ -5,6 +5,8 @@ import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { buttonClass } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 import { AccountantClientStats } from "@/components/accountant/AccountantClientStats";
 import { AccountantReceipts } from "@/components/accountant/AccountantReceipts";
@@ -51,29 +53,39 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
     load();
   }, [load]);
 
+  const back = { href: "/accountant", label: t.allClients };
+
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center p-10">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
+      <div className="space-y-6" aria-busy="true">
+        <div className="skeleton h-5 w-28 rounded-full" />
+        <div className="flex items-center gap-4">
+          <div className="skeleton h-14 w-14 rounded-full" />
+          <div className="skeleton h-9 w-64 rounded-xl" />
+        </div>
+        <div className="skeleton h-11 w-96 max-w-full rounded-full" />
+        <div className="skeleton h-72 rounded-2xl" />
       </div>
     );
   }
 
   if (status === "notfound") {
     return (
-      <div className="rounded-2xl panel p-10 text-center">
-        <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
-          {t.cwNotAvailable}
-        </p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {t.cwNotAvailableHint}
-        </p>
+      <div className="space-y-6">
+        <PageHeader title={t.cwNotAvailable} back={back} />
+        <div className="rounded-2xl panel p-10 text-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t.cwNotAvailableHint}</p>
+        </div>
       </div>
     );
   }
 
   if (status === "error" || !detail) {
-    return <p className="text-sm text-red-600">{t.cwLoadError}</p>;
+    return (
+      <div className="space-y-6">
+        <PageHeader title={t.cwLoadError} back={back} />
+      </div>
+    );
   }
 
   const tabs: { key: Tab; label: string }[] = [
@@ -86,7 +98,7 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
 
   const tabCls = (active: boolean) =>
     cn(
-      "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+      "whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition duration-300 ease-premium",
       active
         ? "bg-nordic-600 text-white"
         : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white",
@@ -94,41 +106,42 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
 
   return (
     <div className="space-y-6">
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl panel p-5"
-      >
-        <div className="flex items-center gap-4">
-          <ClientAvatar name={detail.companyName} logoUrl={detail.logoUrl} size="lg" />
-          <div>
-            <h1 className="font-display text-xl font-semibold text-gray-900 dark:text-white">
-              {detail.companyName}
-            </h1>
-            <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-              {detail.receiptCount} {t.distReceiptUnit}
-            </p>
-          </div>
-        </div>
-      </motion.div>
+      <PageHeader
+        back={back}
+        title={
+          <span className="flex items-center gap-4">
+            <span aria-hidden>
+              <ClientAvatar name={detail.companyName} logoUrl={detail.logoUrl} size="lg" />
+            </span>
+            <span className="min-w-0 truncate">{detail.companyName}</span>
+          </span>
+        }
+        subtitle={`${detail.receiptCount} ${t.distReceiptUnit}`}
+        actions={
+          detail.clientId && (
+            <Link href={`/accountant/clients/${companyId}/chat`} className={buttonClass("outline")}>
+              <MessageSquare className="h-4 w-4" strokeWidth={1.75} />
+              {t.chatTitle}
+            </Link>
+          )
+        }
+      />
 
-      <div className="flex items-center gap-2">
-        <div className="inline-flex gap-1 rounded-full border border-gray-900/[0.07] bg-white/60 p-1 backdrop-blur-sm dark:border-white/[0.08] dark:bg-white/[0.04]">
+      {/* Scrolls sideways on phones instead of wrapping five tabs onto two rows */}
+      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+        <div role="tablist" className="panel inline-flex gap-1 rounded-full p-1">
           {tabs.map((tb) => (
-            <button key={tb.key} onClick={() => setTab(tb.key)} className={tabCls(tab === tb.key)}>
+            <button
+              key={tb.key}
+              role="tab"
+              aria-selected={tab === tb.key}
+              onClick={() => setTab(tb.key)}
+              className={tabCls(tab === tb.key)}
+            >
               {tb.label}
             </button>
           ))}
         </div>
-        {detail.clientId && (
-          <Link
-            href={`/accountant/clients/${companyId}/chat`}
-            className="inline-flex items-center gap-1.5 rounded-full border border-gray-900/[0.07] bg-white/60 px-4 py-1.5 text-sm font-medium text-gray-500 backdrop-blur-sm transition-colors hover:text-gray-800 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-gray-400 dark:hover:text-white"
-          >
-            <MessageSquare className="h-3.5 w-3.5" />
-            {t.chatTitle}
-          </Link>
-        )}
       </div>
 
       <AnimatePresence mode="wait">

@@ -47,8 +47,10 @@ export function AccountantClientsList() {
 
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center p-10">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
+      <div className="space-y-2" aria-busy="true">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="skeleton h-16 rounded-xl" />
+        ))}
       </div>
     );
   }
@@ -87,7 +89,7 @@ export function AccountantClientsList() {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="overflow-hidden rounded-2xl panel transition-shadow hover:shadow-sm"
+        className="overflow-hidden rounded-2xl panel"
       >
         <div className="overflow-x-auto">
           <table className="w-full">

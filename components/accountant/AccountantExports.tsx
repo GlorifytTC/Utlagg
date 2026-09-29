@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
+import { fieldClass } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface ExportRow {
   id: string;
@@ -72,8 +74,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
     }
   }
 
-  const inputCls =
-    "rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white";
+  const inputCls = `${fieldClass} h-10 !w-auto py-2`;
 
   return (
     <div className="space-y-6">
@@ -85,36 +86,24 @@ export function AccountantExports({ companyId }: { companyId: string }) {
       >
         <div className="flex flex-wrap items-end gap-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+            <label htmlFor="ex-from" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
               {t.rcFrom}
             </label>
-            <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputCls} />
+            <input id="ex-from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+            <label htmlFor="ex-to" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
               {t.rcTo}
             </label>
-            <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputCls} />
+            <input id="ex-to" type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputCls} />
           </div>
           <div className="flex gap-2">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => doExport("csv")}
-              disabled={busy !== null}
-              className="rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-60"
-            >
+            <Button onClick={() => doExport("csv")} disabled={busy !== null} className="h-10">
               {busy === "csv" ? t.exExporting : t.exCsv}
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => doExport("sie")}
-              disabled={busy !== null}
-              className="rounded-full border border-gray-900/[0.15] px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-gray-900/30 disabled:opacity-60 dark:border-white/[0.15] dark:text-gray-300"
-            >
+            </Button>
+            <Button variant="outline" onClick={() => doExport("sie")} disabled={busy !== null} className="h-10">
               {busy === "sie" ? t.exExporting : t.exSie}
-            </motion.button>
+            </Button>
           </div>
         </div>
         {err && <p className="mt-3 text-sm text-red-600">{err}</p>}
@@ -126,8 +115,10 @@ export function AccountantExports({ companyId }: { companyId: string }) {
           {t.exHistory}
         </p>
         {histStatus === "loading" ? (
-          <div className="flex items-center justify-center p-8">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
+          <div className="space-y-2" aria-busy="true">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="skeleton h-12 rounded-xl" />
+            ))}
           </div>
         ) : histStatus === "error" ? (
           <p className="text-sm text-red-600">{t.exHistoryError}</p>

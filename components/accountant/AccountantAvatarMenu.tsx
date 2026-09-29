@@ -59,7 +59,8 @@ export function AccountantAvatarMenu() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label={t.menuProfileLabel}
-        className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-gray-200 bg-white transition-colors hover:border-gray-900/40 dark:border-white/[0.15] dark:bg-white/[0.06] dark:hover:border-white/40"
+        aria-expanded={open}
+        className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-gray-900/10 bg-white transition duration-300 ease-premium hover:border-nordic-600/50 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:border-white/[0.15] dark:bg-white/[0.06] dark:hover:border-nordic-600/60"
       >
         {logo ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -70,7 +71,7 @@ export function AccountantAvatarMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-20 mt-2 w-72 overflow-hidden rounded-xl border border-gray-900/[0.12] bg-white/75 py-1 shadow-lg backdrop-blur-xl dark:border-white/[0.12] dark:bg-[#111]">
+        <div className="panel absolute right-0 z-20 mt-2 w-72 overflow-hidden rounded-2xl py-1">
           <div className="px-4 py-3">
             <p className="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
               {t.menuProfile}
@@ -82,13 +83,15 @@ export function AccountantAvatarMenu() {
             <div className="flex gap-1.5 px-4 py-2">
               <button
                 onClick={() => setLanguage("sv")}
-                className={`rounded-full border px-3 py-1 text-xs transition-colors ${lang === "sv" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/[0.12] text-gray-500 hover:border-gray-900/30 dark:border-white/[0.12] dark:text-gray-400"}`}
+                aria-pressed={lang === "sv"}
+                className={`rounded-full border px-3 py-1 text-xs transition duration-300 ease-premium ${lang === "sv" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/15 text-gray-500 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-400 dark:hover:border-white/30"}`}
               >
                 Svenska
               </button>
               <button
                 onClick={() => setLanguage("en")}
-                className={`rounded-full border px-3 py-1 text-xs transition-colors ${lang === "en" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/[0.12] text-gray-500 hover:border-gray-900/30 dark:border-white/[0.12] dark:text-gray-400"}`}
+                aria-pressed={lang === "en"}
+                className={`rounded-full border px-3 py-1 text-xs transition duration-300 ease-premium ${lang === "en" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/15 text-gray-500 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-400 dark:hover:border-white/30"}`}
               >
                 English
               </button>

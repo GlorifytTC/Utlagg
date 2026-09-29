@@ -67,8 +67,10 @@ export function AccountantRequests() {
 
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center p-10">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
+      <div className="space-y-2" aria-busy="true">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="skeleton h-16 rounded-xl" />
+        ))}
       </div>
     );
   }
@@ -101,7 +103,7 @@ export function AccountantRequests() {
             >
               <div>
                 <p className="text-sm font-medium text-gray-900 dark:text-white">{r.companyName}</p>
-                <p className="text-xs text-gray-400">{r.createdAt?.slice(0, 10)}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{r.createdAt?.slice(0, 10)}</p>
               </div>
               <div className="flex items-center gap-3">
                 <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${s.cls}`}>

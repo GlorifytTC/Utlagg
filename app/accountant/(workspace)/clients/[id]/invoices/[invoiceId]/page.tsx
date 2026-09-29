@@ -73,7 +73,7 @@ export default async function AccountantInvoicePage({ params }: Params) {
 
       <InvoiceSheet inv={inv} t={getT()} logoUrl={company?.logoUrl} />
 
-      <p className="text-xs text-gray-400 print:hidden">{t.ivReadOnly}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400 print:hidden">{t.ivReadOnly}</p>
     </div>
   );
 }

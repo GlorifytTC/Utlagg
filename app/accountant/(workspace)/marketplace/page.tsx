@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { AccountantMarketplace } from "@/components/marketplace/AccountantMarketplace";
 import { getServerLang } from "@/lib/i18n-server";
 import { accountantStrings } from "@/lib/accountant-i18n";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Marknadsplatsen" };
 export const dynamic = "force-dynamic";
@@ -14,13 +15,8 @@ export default async function AccountantMarketplacePage() {
   const t = accountantStrings(getServerLang());
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">{t.marketplacePageTitle}</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {t.marketplacePageDesc}
-        </p>
-      </div>
+    <div className="max-w-6xl space-y-6">
+      <PageHeader title={t.marketplacePageTitle} subtitle={t.marketplacePageDesc} />
       <AccountantMarketplace
         viewerAccountantId={session.user.id}
         profileBasePath="/accountant/marketplace"

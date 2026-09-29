@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { AccountantChat } from "@/components/AccountantChat";
 import { ClientAvatar } from "@/components/accountant/ClientAvatar";
+import { PageHeader } from "@/components/ui/page-header";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 
@@ -36,28 +37,45 @@ export function AccountantChatPage({
 
   useEffect(() => { load(); }, [load]);
 
+  const back = { href: `/accountant/clients/${companyId}`, label: t.backToClient };
+
   if (detail === undefined) {
     return (
-      <div className="flex items-center justify-center p-10">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
+      <div className="space-y-6" aria-busy="true">
+        <div className="skeleton h-5 w-28 rounded-full" />
+        <div className="flex items-center gap-4">
+          <div className="skeleton h-11 w-11 rounded-full" />
+          <div className="skeleton h-9 w-56 rounded-xl" />
+        </div>
+        <div className="skeleton h-96 rounded-2xl" />
       </div>
     );
   }
 
   if (!detail?.clientId) {
     return (
-      <div className="rounded-2xl panel p-10 text-center">
-        <p className="text-sm text-gray-500 dark:text-gray-400">{t.chatUnavailable}</p>
+      <div className="space-y-6">
+        <PageHeader title={t.chatTitle} back={back} />
+        <div className="rounded-2xl panel p-10 text-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t.chatUnavailable}</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <ClientAvatar name={detail.companyName} logoUrl={detail.logoUrl} size="md" />
-        <p className="font-display text-lg font-semibold text-gray-900 dark:text-white">{detail.companyName}</p>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        back={back}
+        title={
+          <span className="flex items-center gap-3">
+            <span aria-hidden>
+              <ClientAvatar name={detail.companyName} logoUrl={detail.logoUrl} size="md" />
+            </span>
+            <span className="min-w-0 truncate">{detail.companyName}</span>
+          </span>
+        }
+      />
       <AccountantChat clientId={detail.clientId} currentUserId={currentUserId} />
     </div>
   );

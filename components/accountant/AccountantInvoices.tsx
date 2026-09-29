@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import type { InvoiceIncomeSummary } from "@/lib/invoice-income";
+import { StatGrid } from "@/components/ui/stat";
 
 interface InvoiceRow {
   id: string;
@@ -41,8 +42,10 @@ export function AccountantInvoices({ companyId }: { companyId: string }) {
 
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center p-10">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
+      <div className="space-y-2" aria-busy="true">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="skeleton h-12 rounded-xl" />
+        ))}
       </div>
     );
   }
@@ -51,24 +54,23 @@ export function AccountantInvoices({ companyId }: { companyId: string }) {
     return <div className="rounded-2xl panel p-10 text-center text-sm text-gray-500 dark:text-gray-400">{t.ivEmpty}</div>;
   }
 
-  const th = "px-5 py-3 text-[9.5px] font-medium uppercase tracking-[0.16em] text-gray-400";
+  const th = "px-5 py-3 text-xs font-medium text-gray-500 dark:text-gray-400";
   const td = "px-5 py-3 text-sm text-gray-500 dark:text-gray-400";
 
   return (
     <div className="space-y-4">
       {summary && (
-        <div className="grid gap-3 sm:grid-cols-3">
-          {[
-            [t.ivIncome, summary.incomeNet],
-            [t.ivVat, summary.vatToRemit],
-            [t.ivOutstanding, summary.outstandingGross],
-          ].map(([label, value]) => (
-            <div key={label as string} className="rounded-2xl panel p-4">
-              <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
-              <p className="mt-1 font-display text-lg font-semibold tabular-nums text-gray-900 dark:text-white">{kr(value)}</p>
-            </div>
-          ))}
-        </div>
+        <StatGrid
+          items={[
+            { label: t.ivIncome, value: kr(summary.incomeNet) },
+            { label: t.ivVat, value: kr(summary.vatToRemit) },
+            {
+              label: t.ivOutstanding,
+              value: kr(summary.outstandingGross),
+              tone: Number(summary.outstandingGross) > 0 ? "warn" : "default",
+            },
+          ]}
+        />
       )}
 
       <div className="overflow-hidden rounded-2xl panel">
@@ -91,7 +93,7 @@ export function AccountantInvoices({ companyId }: { companyId: string }) {
                   className="border-t border-gray-900/[0.07] transition-colors hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
                 >
                   <td className="px-5 py-3 text-sm font-medium">
-                    <Link href={`/accountant/clients/${companyId}/invoices/${r.id}`} className="text-nordic-600 hover:underline">
+                    <Link href={`/accountant/clients/${companyId}/invoices/${r.id}`} className="text-nordic-600 transition hover:text-nordic-700 dark:text-nordic-300">
                       {r.invoiceNumber}
                     </Link>
                   </td>

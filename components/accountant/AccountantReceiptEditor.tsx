@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 
@@ -123,16 +123,12 @@ export function AccountantReceiptEditor({
           <Field label={t.reCategory}><Input value={category} onChange={(e) => setCategory(e.target.value)} /></Field>
           <Field label={t.reVatSek}><Input value={vatAmount} onChange={(e) => setVatAmount(e.target.value)} inputMode="decimal" /></Field>
           <Field label={t.reVatRate}>
-            <select
-              value={vatRate}
-              onChange={(e) => setVatRate(e.target.value)}
-              className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
-            >
+            <Select value={vatRate} onChange={(e) => setVatRate(e.target.value)}>
               <option value="">-</option>
               <option value="6">6</option>
               <option value="12">12</option>
               <option value="25">25</option>
-            </select>
+            </Select>
           </Field>
           <Field label={t.reBasAccount}><Input value={basCode} onChange={(e) => setBasCode(e.target.value)} /></Field>
           <Field label={t.reNote}><Input value={note} onChange={(e) => setNote(e.target.value)} /></Field>
@@ -155,11 +151,11 @@ export function AccountantReceiptEditor({
             <img
               src={imageSrc}
               alt={detail.vendorName ?? ""}
-              className="w-full rounded-lg object-contain"
+              className="w-full rounded-xl object-contain"
             />
           </a>
         ) : (
-          <div className="flex aspect-[3/4] items-center justify-center rounded-lg bg-gray-900/[0.03] p-6 text-center text-sm text-gray-400 dark:bg-white/[0.03]">
+          <div className="flex aspect-[3/4] items-center justify-center rounded-xl bg-gray-900/[0.03] p-6 text-center text-sm text-gray-500 dark:text-gray-400 dark:bg-white/[0.03]">
             {t.reNoImage}
           </div>
         )}
@@ -170,9 +166,10 @@ export function AccountantReceiptEditor({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div>
-      <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{label}</label>
+    // Wrapping label binds the text to the control without threading ids through.
+    <label className="block">
+      <span className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{label}</span>
       {children}
-    </div>
+    </label>
   );
 }

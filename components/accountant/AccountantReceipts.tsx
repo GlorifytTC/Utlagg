@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AccountantReceiptEditor } from "@/components/accountant/AccountantReceiptEditor";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
+import { fieldClass } from "@/components/ui/input";
 
 interface ReceiptRow {
   id: string;
@@ -115,18 +116,20 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
-  const inputCls =
-    "rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600";
+  const inputCls = `${fieldClass} h-10 py-2`;
+  const dateCls = `${fieldClass} h-10 !w-auto py-2`;
 
   return (
     <div className="space-y-4">
       {/* Filters */}
       <div className="flex flex-wrap items-end gap-3">
         <div className="min-w-[180px] flex-1">
-          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          <label htmlFor="rc-q" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
             {t.rcSearch}
           </label>
           <input
+            id="rc-q"
+            type="search"
             value={q}
             onChange={(e) => {
               setQ(e.target.value);
@@ -137,31 +140,33 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          <label htmlFor="rc-from" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
             {t.rcFrom}
           </label>
           <input
+            id="rc-from"
             type="date"
             value={from}
             onChange={(e) => {
               setFrom(e.target.value);
               setPage(1);
             }}
-            className={inputCls}
+            className={dateCls}
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          <label htmlFor="rc-to" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
             {t.rcTo}
           </label>
           <input
+            id="rc-to"
             type="date"
             value={to}
             onChange={(e) => {
               setTo(e.target.value);
               setPage(1);
             }}
-            className={inputCls}
+            className={dateCls}
           />
         </div>
       </div>
@@ -173,10 +178,13 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex items-center justify-center p-10 text-sm text-gray-500 dark:text-gray-400"
+            className="space-y-2"
+            aria-busy="true"
+            aria-label={t.rcLoading}
           >
-            <div className="mr-3 h-6 w-6 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent" />
-            {t.rcLoading}
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className="skeleton h-12 rounded-xl" />
+            ))}
           </motion.div>
         ) : status === "error" ? (
           <motion.p
@@ -201,7 +209,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
             key="table"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="overflow-hidden rounded-2xl panel transition-shadow hover:shadow-sm"
+            className="overflow-hidden rounded-2xl panel"
           >
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -216,17 +224,17 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                     ].map(({ label, k }) => (
                       <th
                         key={k}
-                        onClick={() => toggleSort(k)}
-                        className="cursor-pointer select-none px-5 py-3"
+                        aria-sort={sort === k ? (dir === "asc" ? "ascending" : "descending") : "none"}
+                        className="px-5 py-3"
                       >
-                        <span
-                          className={`inline-flex items-center gap-1 text-[9.5px] font-medium uppercase tracking-[0.16em] transition-colors ${sort === k ? "text-nordic-600" : "text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"}`}
+                        <button
+                          type="button"
+                          onClick={() => toggleSort(k)}
+                          className={`inline-flex items-center gap-1 rounded-full text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 ${sort === k ? "text-nordic-700 dark:text-nordic-300" : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"}`}
                         >
                           {label}
-                          <span className="text-[9px] leading-none">
-                            {sort === k ? (dir === "asc" ? "↑" : "↓") : ""}
-                          </span>
-                        </span>
+                          {sort === k && <span aria-hidden>{dir === "asc" ? "↑" : "↓"}</span>}
+                        </button>
                       </th>
                     ))}
                     <th className="px-5 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">
