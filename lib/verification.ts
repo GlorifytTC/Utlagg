@@ -11,12 +11,12 @@ export const CREDENTIAL_ACCEPT = "application/pdf,image/png,image/jpeg,image/web
 
 // First bytes each allowed type must start with. The data-URL prefix is
 // client-controlled, so the bytes must match what it claims.
-const MAGIC: Record<string, (b: Buffer) => boolean> = {
-  "application/pdf": (b) => b.subarray(0, 5).toString("latin1") === "%PDF-",
-  "image/png": (b) => b.subarray(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47])),
-  "image/jpeg": (b) => b.subarray(0, 3).equals(Buffer.from([0xff, 0xd8, 0xff])),
-  "image/webp": (b) =>
-    b.subarray(0, 4).toString("latin1") === "RIFF" && b.subarray(8, 12).toString("latin1") === "WEBP",
+// Matched against the hex of the first decoded bytes.
+const MAGIC: Record<string, RegExp> = {
+  "application/pdf": /^255044462d/, // %PDF-
+  "image/png": /^89504e47/,
+  "image/jpeg": /^ffd8ff/,
+  "image/webp": /^52494646.{8}57454250/, // RIFF....WEBP
 };
 
 /** Validates a credential scan sent as a base64 data URL (PDF, PNG, JPEG or WebP, max 3 MB). */
@@ -30,7 +30,7 @@ export function validateCredentialDoc(v: unknown): { ok: boolean; error?: string
   if (!m) return { ok: false, error: "Filen måste vara PDF, PNG, JPEG eller WebP." };
   const bytes = Math.floor((m[2].length * 3) / 4) - (m[2].match(/=*$/)?.[0].length ?? 0);
   if (bytes > MAX_CREDENTIAL_BYTES) return { ok: false, error: "Filen är för stor (max 3 MB)." };
-  if (!MAGIC[m[1]](Buffer.from(m[2].slice(0, 16), "base64"))) {
+  if (!MAGIC[m[1]].test(Buffer.from(m[2].slice(0, 16), "base64").toString("hex"))) {
     return { ok: false, error: "Filens innehåll matchar inte filtypen." };
   }
   return { ok: true };

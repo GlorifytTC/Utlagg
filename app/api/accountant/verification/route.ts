@@ -63,5 +63,5 @@ export async function POST(req: NextRequest) {
     newValues: { status: "pending" },
     ipAddress: clientIp(req),
   });
-  return NextResponse.json({ ok: true, status: "pending" });
+  return NextResponse.json({ ok: true });
 }
