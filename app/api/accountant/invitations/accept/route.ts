@@ -6,7 +6,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { accountantInvites, accountantClients } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
-import { getUserCompany } from "@/lib/company";
+import { getUserCompany, canManageCompany } from "@/lib/company";
 import { getUserFirm } from "@/lib/accountant";
 import { logAudit, clientIp } from "@/lib/audit";
 import { enforceRateLimit } from "@/lib/rate-limit";
@@ -78,6 +78,11 @@ export async function POST(req: NextRequest) {
       },
       { status: 409 },
     );
+  }
+  // Connecting an accountant exposes every member's receipts - owner/admin only,
+  // same rule as the connection-request routes.
+  if (!canManageCompany(membership.role)) {
+    return NextResponse.json({ error: "Endast ägare/admin kan koppla en redovisningskonsult." }, { status: 403 });
   }
   const companyId = membership.companyId;
 

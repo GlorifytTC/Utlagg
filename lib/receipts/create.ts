@@ -35,6 +35,31 @@ export type CreateReceiptResult =
   | { ok: false; meter: MeterOutcome };
 
 /**
+ * True when `userId`'s receipts must be approved by someone else: a plain
+ * member of a company that has an owner/admin/approver besides them. Such a
+ * user may never set a receipt's status themselves.
+ */
+export async function needsApproval(
+  userId: string,
+  membership?: Awaited<ReturnType<typeof getUserCompany>>,
+): Promise<boolean> {
+  if (membership === undefined) membership = await getUserCompany(userId);
+  if (!membership || membership.role !== "member") return false;
+  const approvers = await db
+    .select({ id: companyMembers.id })
+    .from(companyMembers)
+    .where(
+      and(
+        eq(companyMembers.companyId, membership.companyId),
+        ne(companyMembers.userId, userId),
+        inArray(companyMembers.role, ["owner", "admin", "approver"]),
+      ),
+    )
+    .limit(1);
+  return approvers.length > 0;
+}
+
+/**
  * Create a receipt for `userId`. Enforces the scan quota (the sole metering
  * choke-point), sets pending/approved status by company role, auto-categorizes
  * from the vendor name when no BAS code was given, inserts the row and writes
@@ -53,22 +78,9 @@ export async function createReceipt(
   if (!meter.allowed) return { ok: false, meter };
 
   const membership = await getUserCompany(userId);
-  // Members need approval only if the company actually has an approver
-  // (owner/admin/approver besides them). Otherwise auto-approve.
-  let receiptStatus: "pending" | "approved" = "approved";
-  if (membership && membership.role === "member") {
-    const approvers = await db
-      .select({ id: companyMembers.id })
-      .from(companyMembers)
-      .where(
-        and(
-          eq(companyMembers.companyId, membership.companyId),
-          ne(companyMembers.userId, userId),
-          inArray(companyMembers.role, ["owner", "admin", "approver"]),
-        ),
-      );
-    if (approvers.length > 0) receiptStatus = "pending";
-  }
+  const receiptStatus: "pending" | "approved" = (await needsApproval(userId, membership))
+    ? "pending"
+    : "approved";
 
   // Safety net: if no category was supplied, suggest one from the vendor name
   // so receipts never silently land in "no category" for a known merchant.

@@ -7,6 +7,7 @@ import { receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
 import { deleteReceiptImageIfR2 } from "@/lib/storage";
+import { needsApproval } from "@/lib/receipts/create";
 
 export const runtime = "nodejs";
 
@@ -37,6 +38,13 @@ export async function PUT(
     }
     const d = parsed.data;
 
+    // A member whose receipts need approval can't approve them here, and any
+    // edit (e.g. the amount) sends an approved receipt back for re-approval.
+    const gated = await needsApproval(session.user.id);
+    if (gated && d.status) {
+      return NextResponse.json({ error: "Kvittot måste godkännas av en admin." }, { status: 403 });
+    }
+
     const [updated] = await db
       .update(receipts)
       .set({
@@ -47,7 +55,7 @@ export async function PUT(
         vatRate: d.vatRate,
         category: d.category,
         basCode: d.basCode,
-        status: d.status,
+        status: gated ? "pending" : d.status,
       })
       // ownership enforced in WHERE so users can't edit others' receipts
       .where(
@@ -96,7 +104,7 @@ export async function DELETE(
 
   // The row is gone - its R2 image object would otherwise be orphaned. Best-
   // effort cleanup (no-ops for inline data-URL / external images).
-  await deleteReceiptImageIfR2(deleted.imageUrl);
+  await deleteReceiptImageIfR2(deleted.imageUrl, session.user.id);
 
   await logAudit({
     userId: session.user.id,

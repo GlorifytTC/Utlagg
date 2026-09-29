@@ -31,6 +31,9 @@ export async function POST(
     .where(and(eq(approvalRequests.id, params.id), eq(approvalRequests.approverEmail, email)))
     .limit(1);
   if (!reqRow) return NextResponse.json({ error: "Hittas inte" }, { status: 404 });
+  if (reqRow.requesterId === session.user.id) {
+    return NextResponse.json({ error: "Du kan inte attestera din egen begäran." }, { status: 403 });
+  }
   if (reqRow.status !== "pending") {
     return NextResponse.json({ error: "Redan beslutad" }, { status: 409 });
   }

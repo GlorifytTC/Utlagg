@@ -104,7 +104,7 @@ export async function uploadReceiptImage(
 
 /** Ownership guard: a key must live under the requesting user's prefix. */
 export function keyBelongsToUser(key: string, userId: string): boolean {
-  return key.startsWith(`receipts/${userId}/`);
+  return key.startsWith(`receipts/${userId}/`) && !key.includes("..");
 }
 
 /** Short-lived (default 5 min) presigned GET URL for the owner to view. */
@@ -137,12 +137,15 @@ export function isR2Key(imageUrl: string | null | undefined): imageUrl is string
 /**
  * Best-effort R2 cleanup for a stored imageUrl. Safe to call with any imageUrl
  * shape (or null) and when storage isn't configured - it no-ops rather than
- * throwing, so it can't break the DB delete it accompanies.
+ * throwing, so it can't break the DB delete it accompanies. Only deletes keys
+ * under `ownerId`'s prefix: a row's imageUrl is user-supplied, so without this
+ * one user could point a receipt at another's image and delete it.
  */
 export async function deleteReceiptImageIfR2(
   imageUrl: string | null | undefined,
+  ownerId: string,
 ): Promise<void> {
-  if (!isR2Key(imageUrl) || !isStorageConfigured()) return;
+  if (!isR2Key(imageUrl) || !keyBelongsToUser(imageUrl, ownerId) || !isStorageConfigured()) return;
   try {
     await deleteReceiptImage(imageUrl);
   } catch (err) {

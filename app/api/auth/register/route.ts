@@ -52,22 +52,30 @@ export async function POST(req: NextRequest) {
         id: users.id,
         emailVerified: users.emailVerified,
         emailVerificationTokenExpires: users.emailVerificationTokenExpires,
+        hashedPassword: users.hashedPassword,
+        bankIdSubject: users.bankIdSubject,
       })
       .from(users)
       .where(eq(users.email, email))
       .limit(1);
 
     if (existing) {
-      if (existing.emailVerified) {
+      // Only an abandoned self-registration may be recycled below. BankID
+      // accounts and invite-created users are never "verified" by email and
+      // have no token expiry - deleting them would let anyone wipe a real
+      // account (and its receipts) just by registering its address.
+      const selfRegistered =
+        !!existing.hashedPassword &&
+        !existing.bankIdSubject &&
+        !!existing.emailVerificationTokenExpires;
+      if (existing.emailVerified || !selfRegistered) {
         // A real, active account - this email is genuinely taken.
         return NextResponse.json(
           { error: "E-postadressen är redan registrerad" },
           { status: 409 },
         );
       }
-      const expired =
-        !existing.emailVerificationTokenExpires ||
-        existing.emailVerificationTokenExpires < new Date();
+      const expired = existing.emailVerificationTokenExpires! < new Date();
       if (!expired) {
         // They registered minutes ago and the link is still valid - don't
         // silently delete a pending registration, but don't leave them
