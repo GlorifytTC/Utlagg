@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { AccountantChat } from "@/components/AccountantChat";
 import { useLanguage } from "@/context/LanguageContext";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 interface AccountantRow {
   relationshipId: string;
@@ -17,6 +18,7 @@ interface AccountantRow {
   email: string;
   status: string;
   connectedAt: string | null;
+  isVerified: boolean;
 }
 
 /**
@@ -100,7 +102,10 @@ export function CompanyAccountantAccess() {
               <li key={a.relationshipId} className="py-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <p className="font-medium">{a.name ?? a.email}</p>
+                    <p className="flex flex-wrap items-center gap-1.5 font-medium">
+                      {a.name ?? a.email}
+                      {a.isVerified && <VerifiedBadge />}
+                    </p>
                     <p className="text-xs text-gray-500">{a.email}</p>
                   </div>
                   <div className="flex items-center gap-2">

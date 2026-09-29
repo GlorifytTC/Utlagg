@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { users, accountantClients } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
@@ -40,6 +40,7 @@ export async function GET() {
       email: users.email,
       status: accountantClients.status,
       connectedAt: accountantClients.activatedAt,
+      isVerified: sql<boolean>`coalesce(${users.verificationStatus} = 'approved', false)`,
     })
     .from(accountantClients)
     .innerJoin(users, eq(users.id, accountantClients.accountantId))

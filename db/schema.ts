@@ -36,6 +36,14 @@ export const accountantRelStatus = pgEnum("accountant_rel_status", [
   "active",
   "revoked",
 ]);
+// Accountant credential verification. A null users.verification_status means
+// never submitted. Only an admin (later: an automatic scanner) sets
+// approved/rejected; the accountant can only move it to pending.
+export const accountantVerificationStatus = pgEnum("accountant_verification_status", [
+  "pending",
+  "approved",
+  "rejected",
+]);
 export const subscriptionTier = pgEnum("subscription_tier", [
   "free", // Pricing V3 tombstone - retained for existing rows, never offered again
   "starter",
@@ -171,6 +179,14 @@ export const users = pgTable("users", {
   accountantCity: varchar("accountant_city", { length: 100 }),
   accountantBio: text("accountant_bio"),
   accountantSpecializations: jsonb("accountant_specializations").$type<string[]>(),
+  // Credential verification (see accountantVerificationStatus). The doc key is
+  // a private R2 object key and is never sent to non-admins. The note is the
+  // reviewer's message, shown to the accountant. Reviewer and history live in
+  // audit_logs.
+  verificationStatus: accountantVerificationStatus("verification_status"),
+  verificationDocKey: text("verification_doc_key"),
+  verificationNote: text("verification_note"),
+  verificationUpdatedAt: timestamp("verification_updated_at", { withTimezone: true }),
   // Chat moderation. While bannedUntil is in the future the user can't sign in
   // and existing sessions lose their user id (see lib/auth.ts jwt callback).
   bannedUntil: timestamp("banned_until", { withTimezone: true }),

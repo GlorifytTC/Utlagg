@@ -75,6 +75,21 @@ const strings = {
     settingsSaving: "Sparar…",
     settingsSaved: "Sparat",
 
+    // Credential verification
+    verifyTitle: "Verifiering",
+    verifyIntro: "Ladda upp en skanning av ditt auktorisationsbevis eller annat relevant dokument. När vi har granskat det visas märket Verifierad bredvid ditt namn.",
+    verifyNone: "Inte verifierad",
+    verifyPending: "Under granskning. Vi hör av oss när dokumentet är granskat.",
+    verifyApproved: "Verifierad. Märket visas bredvid ditt namn.",
+    verifyRejected: "Verifieringen avslogs. Du kan ladda upp ett nytt dokument.",
+    verifyNote: "Kommentar från granskaren",
+    verifyUpload: "Ladda upp dokument",
+    verifyReplace: "Byt dokument",
+    verifyUploading: "Laddar upp…",
+    verifyHint: "PDF, PNG, JPEG eller WebP, max 3 MB. Att byta namn kräver ny granskning.",
+    verifyTooLarge: "Filen är för stor (max 3 MB).",
+    verifySubmitted: "Dokumentet är skickat för granskning",
+
     // Team / firm management
     navChats: "Chattar",
     navTeam: "Team",
@@ -300,6 +315,21 @@ const strings = {
     settingsSave: "Save",
     settingsSaving: "Saving…",
     settingsSaved: "Saved",
+
+    // Credential verification
+    verifyTitle: "Verification",
+    verifyIntro: "Upload a scan of your accounting licence or another relevant document. Once we have reviewed it, a Verified badge appears next to your name.",
+    verifyNone: "Not verified",
+    verifyPending: "Under review. We'll let you know once the document has been reviewed.",
+    verifyApproved: "Verified. The badge appears next to your name.",
+    verifyRejected: "Verification was rejected. You can upload a new document.",
+    verifyNote: "Reviewer's comment",
+    verifyUpload: "Upload document",
+    verifyReplace: "Replace document",
+    verifyUploading: "Uploading…",
+    verifyHint: "PDF, PNG, JPEG or WebP, max 3 MB. Changing your name requires a new review.",
+    verifyTooLarge: "The file is too large (max 3 MB).",
+    verifySubmitted: "Document submitted for review",
 
     // Team / firm management
     navChats: "Chats",
