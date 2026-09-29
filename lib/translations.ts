@@ -172,6 +172,7 @@ export interface Translations {
   subSwitchTo: string;
   subRequestQuote: string;
   planQuote: string;
+  planPerMonth: string;
   cancelTitle: string;
   cancelIntro: string;
   cancelBullet1Pre: string;
@@ -623,6 +624,8 @@ export interface Translations {
   footerLegal: string;
   footerTerms: string;
   footerPrivacy: string;
+  footerDpa: string;
+  footerSecurity: string;
   aboutKicker: string;
   aboutTitle: string;
   aboutLead: string;
@@ -1647,6 +1650,8 @@ export const strings: Record<Lang, Translations> = {
     footerLegal: "Juridik",
     footerTerms: "Villkor",
     footerPrivacy: "Integritetspolicy",
+    footerDpa: "Biträdesavtal",
+    footerSecurity: "Säkerhet",
     aboutKicker: "Om Kvittino",
     aboutTitle: "Byggt i Sverige, för svenska regler.",
     aboutLead: "Kvittino gör kvittohantering och utlägg enkelt för svenska företag - med moms, BAS-konton och Skatteverket inbyggt från start, inte påklistrat i efterhand.",
@@ -1682,7 +1687,7 @@ export const strings: Record<Lang, Translations> = {
     contactMessage: "Meddelande",
     contactMessagePh: "Hur kan vi hjälpa till?",
     contactSend: "Skicka meddelande",
-    contactSubject: "Förfrågan via utlagg.se",
+    contactSubject: "Förfrågan via kvittino.se",
     invOrgNr: "Org.nr:",
     invVatNr: "Momsnr:",
     invInvoiceWord: "FAKTURA",
@@ -1950,6 +1955,7 @@ export const strings: Record<Lang, Translations> = {
     subSwitchTo: "Byt till",
     subRequestQuote: "Begär offert",
     planQuote: "Offert",
+    planPerMonth: "/mån",
     planFree: "Gratis",
     planStarter: "Starter",
     planPro: "Pro",
@@ -2966,7 +2972,7 @@ export const strings: Record<Lang, Translations> = {
     secStorageTitle: "Kvittolagring & integritet",
     secStorageBody: "Kvittobilder lagras i privat objektlagring och nås via tidsbegränsade signerade länkar. Varje bild får en SHA-256-summa vid uppladdning för att kunna upptäcka förändring (i linje med Bokföringslagens krav på oföränderlig digital kopia).",
     secReportTitle: "Rapportera sårbarhet",
-    secReportBody: "Hittar du ett säkerhetsproblem? Hör av dig till security@utlagg.se.",
+    secReportBody: "Hittar du ett säkerhetsproblem? Hör av dig till security@kvittino.se.",
     secDisclaimer: "Detta beskriver nuvarande tekniska rutiner och är inte en certifiering. Formella ramverk (t.ex. ISO 27001) kräver separat granskning.",
     spTitle: "Underbiträden",
     spIntroPre: "Tredjepartstjänster som kan behandla personuppgifter för Kvittinos räkning. Denna lista utgör Bilaga B till vårt",
@@ -3167,6 +3173,8 @@ export const strings: Record<Lang, Translations> = {
     footerLegal: "Legal",
     footerTerms: "Terms",
     footerPrivacy: "Privacy policy",
+    footerDpa: "Data processing agreement",
+    footerSecurity: "Security",
     aboutKicker: "About Kvittino",
     aboutTitle: "Built in Sweden, for Swedish rules.",
     aboutLead: "Kvittino makes receipts and expenses effortless for Swedish businesses - with VAT, BAS accounts and the Tax Agency built in from the start, not bolted on afterwards.",
@@ -3202,7 +3210,7 @@ export const strings: Record<Lang, Translations> = {
     contactMessage: "Message",
     contactMessagePh: "How can we help?",
     contactSend: "Send message",
-    contactSubject: "Enquiry via utlagg.se",
+    contactSubject: "Enquiry via kvittino.se",
     invOrgNr: "Reg. no:",
     invVatNr: "VAT no:",
     invInvoiceWord: "INVOICE",
@@ -3470,6 +3478,7 @@ export const strings: Record<Lang, Translations> = {
     subSwitchTo: "Switch to",
     subRequestQuote: "Request a quote",
     planQuote: "Quote",
+    planPerMonth: "/mo",
     planFree: "Free",
     planStarter: "Starter",
     planPro: "Pro",
@@ -4482,7 +4491,7 @@ export const strings: Record<Lang, Translations> = {
     secStorageTitle: "Receipt storage & integrity",
     secStorageBody: "Receipt images are stored in private object storage and accessed via time-limited signed links. Each image gets a SHA-256 checksum on upload so changes can be detected (in line with the Swedish Bookkeeping Act's requirement for an unalterable digital copy).",
     secReportTitle: "Report a vulnerability",
-    secReportBody: "Found a security issue? Contact security@utlagg.se.",
+    secReportBody: "Found a security issue? Contact security@kvittino.se.",
     secDisclaimer: "This describes current technical practices and is not a certification. Formal frameworks (e.g. ISO 27001) require a separate audit.",
     spTitle: "Subprocessors",
     spIntroPre: "Third-party services that may process personal data on Kvittino's behalf. This list constitutes Annex B to our",

@@ -1,6 +1,14 @@
+import { Navbar } from "@/components/landing/Navbar";
+import { Footer } from "@/components/landing/Footer";
+
+// Legal pages share the public-site chrome so readers can navigate back, and
+// stay light like every other public page (Navbar/Footer are light-only).
 export default function LegalLayout({ children }: { children: React.ReactNode }) {
-  // Legal pages render on the pinned-light body, so give them their own
-  // full-bleed surface that flips to near-black in dark mode (the body bg
-  // stays light for the always-light marketing pages).
-  return <div className="app-shell min-h-screen bg-paper dark:bg-[#0A0A0A]">{children}</div>;
+  return (
+    <div className="light-surface relative min-h-screen overflow-x-clip bg-paper">
+      <Navbar />
+      {children}
+      <Footer />
+    </div>
+  );
 }

@@ -94,7 +94,7 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
 
   return (
     <div className="flex h-full flex-col">
-      <div className={cn("flex h-16 shrink-0 items-center gap-1 pl-5 pr-3", "lg:[@media(max-height:800px)]:h-14")}>
+      <div className={cn("flex h-16 shrink-0 items-center gap-1 pl-5 pr-3", "lg:[@media(max-height:860px)]:h-12")}>
         <Link href="/dashboard" onClick={onNavigate} className="mr-auto rounded-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
           <Logo size={24} wordmarkClassName="text-[16px] text-gray-900 dark:text-white" />
         </Link>
@@ -107,11 +107,11 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
           </button>
         )}
       </div>
-      {/* lg:[@media(max-height:800px)] tightens rows on short laptop screens (1366×768) so every link fits */}
-      <nav className={cn("min-h-0 flex-1 space-y-5 overflow-y-auto px-3 pb-3 pt-1 lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden", "lg:[@media(max-height:800px)]:space-y-2.5")}>
+      {/* lg:[@media(max-height:860px)] tightens the rail on short laptop screens (1366×768) so every link fits */}
+      <nav className={cn("min-h-0 flex-1 space-y-4 overflow-y-auto px-3 pb-3 pt-1 [scrollbar-width:thin]", "lg:[@media(max-height:860px)]:space-y-2 lg:[@media(max-height:860px)]:pb-2")}>
         {navGroups.map((group) => (
           <div key={group.labelEn}>
-            <p className={cn("mb-1 px-3 text-xs font-medium text-gray-500 dark:text-gray-400", "lg:[@media(max-height:800px)]:mb-0.5")}>
+            <p className={cn("mb-1 px-3 text-xs font-medium text-gray-500 dark:text-gray-400", "lg:[@media(max-height:860px)]:mb-0.5")}>
               {lang === "sv" ? group.labelSv : group.labelEn}
             </p>
             <ul className="space-y-0.5">
@@ -125,7 +125,7 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
                       href={item.href}
                       onClick={onNavigate}
                       aria-current={active ? "page" : undefined}
-                      className={cn(navItemClass(active), "lg:[@media(max-height:800px)]:py-1")}
+                      className={navItemClass(active)}
                     >
                       <span className="relative shrink-0">
                         <Icon className={navIconClass(active)} strokeWidth={1.75} />
@@ -141,7 +141,7 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
           </div>
         ))}
       </nav>
-      <div className="flex shrink-0 items-center gap-1 border-t border-gray-900/[0.06] px-3 py-2.5 dark:border-white/[0.06]">
+      <div className="flex shrink-0 items-center gap-1 border-t border-gray-900/[0.06] px-3 py-2.5 dark:border-white/[0.06] lg:[@media(max-height:860px)]:py-1.5">
         <button
           onClick={() => { toggleLanguage(); router.refresh(); }}
           aria-label={lang === "sv" ? "Switch to English" : "Byt till svenska"}

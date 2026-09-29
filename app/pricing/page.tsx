@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { Check, Minus, Plus } from "lucide-react";
-import { SELECTABLE_PLANS } from "@/lib/plans";
+import { SELECTABLE_PLANS, planFeatures, planName, planPrice, type Tier } from "@/lib/plans";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { Navbar } from "@/components/landing/Navbar";
@@ -61,7 +61,7 @@ function PricingPageContent() {
       return;
     }
     if (tier === "enterprise") {
-      window.location.href = "mailto:sales@utlagg.se?subject=Enterprise";
+      window.location.href = "mailto:sales@kvittino.se?subject=Enterprise";
       return;
     }
     if (status !== "authenticated") {
@@ -83,15 +83,31 @@ function PricingPageContent() {
     }
   }
 
-  const getPlanName = (tier: string) =>
-    t[
-      `plan${tier.charAt(0).toUpperCase() + tier.slice(1)}` as keyof typeof t
-    ] as string;
+  const selfServe = SELECTABLE_PLANS.filter((p) => p.tier !== "enterprise");
+  const enterprise = SELECTABLE_PLANS.find((p) => p.tier === "enterprise");
 
-  const getFeatures = (tier: string) =>
-    t[
-      `plan${tier.charAt(0).toUpperCase() + tier.slice(1)}Features` as keyof typeof t
-    ] as string[];
+  const planButton = (tier: Tier, highlight: boolean | undefined, className?: string) => (
+    <button
+      onClick={() => handleSelect(tier)}
+      disabled={loading === tier}
+      className={cn(
+        "whitespace-nowrap rounded-full px-5 py-3 text-sm font-medium transition duration-500 ease-premium active:scale-[0.98]",
+        highlight
+          ? "bg-nordic-600 text-white hover:bg-nordic-700"
+          : "border border-ink/15 hover:border-ink/40",
+        loading === tier && "opacity-60",
+        className,
+      )}
+    >
+      {loading === tier
+        ? t.pricingLoading
+        : tier === "free"
+          ? t.startFree
+          : tier === "enterprise"
+            ? t.pricingContactUs
+            : `${t.pricingChoosePlan} ${planName(t, tier)}`}
+    </button>
+  );
 
   return (
     <div className="light-surface relative overflow-x-clip">
@@ -115,24 +131,20 @@ function PricingPageContent() {
           </motion.p>
         </section>
 
-        {/* Plan cards */}
+        {/* Plan cards: four self-serve plans in an even grid, Enterprise as a strip below */}
         <section className="mx-auto max-w-6xl px-6 pb-24 md:pb-32">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {SELECTABLE_PLANS.map((plan, i) => (
-              <motion.div
-                key={plan.tier}
-                {...reveal(i, rm)}
-                className={cn("bezel", plan.highlight && "xl:-my-3")}
-              >
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {selfServe.map((plan, i) => (
+              <motion.div key={plan.tier} {...reveal(i, rm)} className="bezel">
                 <div
                   className={cn(
-                    "bezel-core flex h-full flex-col p-6 xl:p-5",
+                    "bezel-core flex h-full flex-col p-6",
                     plan.highlight && "bg-ink text-paper",
                   )}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <h2 className="font-display text-xl font-semibold tracking-tight">
-                      {getPlanName(plan.tier)}
+                      {planName(t, plan.tier)}
                     </h2>
                     {plan.highlight && (
                       <span className="rounded-full bg-nordic-600 px-2.5 py-1 text-[11px] font-medium text-white">
@@ -140,14 +152,14 @@ function PricingPageContent() {
                       </span>
                     )}
                   </div>
-                  <p className="mt-3 whitespace-nowrap text-2xl font-semibold tracking-tight">{plan.priceLabel}</p>
+                  <p className="mt-3 whitespace-nowrap text-2xl font-semibold tracking-tight">{planPrice(t, plan)}</p>
                   <ul
                     className={cn(
                       "mt-6 flex-1 space-y-2.5 text-sm",
                       plan.highlight ? "text-paper/80" : "text-ink/75",
                     )}
                   >
-                    {getFeatures(plan.tier).map((f) => (
+                    {planFeatures(t, plan.tier).map((f) => (
                       <li key={f} className="flex gap-2.5">
                         <Check
                           className={cn(
@@ -160,29 +172,34 @@ function PricingPageContent() {
                       </li>
                     ))}
                   </ul>
-                  <button
-                    onClick={() => handleSelect(plan.tier)}
-                    disabled={loading === plan.tier}
-                    className={cn(
-                      "mt-8 rounded-full px-5 py-3 text-sm font-medium transition duration-500 ease-premium active:scale-[0.98]",
-                      plan.highlight
-                        ? "bg-nordic-600 text-white hover:bg-nordic-700"
-                        : "border border-ink/15 hover:border-ink/40",
-                      loading === plan.tier && "opacity-60",
-                    )}
-                  >
-                    {loading === plan.tier
-                      ? t.pricingLoading
-                      : plan.tier === "free"
-                        ? t.startFree
-                        : plan.tier === "enterprise"
-                          ? t.pricingContactUs
-                          : `${t.pricingChoosePlan} ${getPlanName(plan.tier)}`}
-                  </button>
+                  {planButton(plan.tier, plan.highlight, "mt-8")}
                 </div>
               </motion.div>
             ))}
           </div>
+          {enterprise && (
+            <motion.div {...reveal(selfServe.length, rm)} className="bezel mt-4">
+              <div className="bezel-core flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <h2 className="font-display text-xl font-semibold tracking-tight">
+                    {planName(t, enterprise.tier)}
+                  </h2>
+                  <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink/75">
+                    {planFeatures(t, enterprise.tier).map((f) => (
+                      <li key={f} className="flex gap-2.5">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-nordic-600" strokeWidth={1.75} />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex shrink-0 items-center justify-between gap-6 md:justify-end">
+                  <p className="whitespace-nowrap text-2xl font-semibold tracking-tight">{planPrice(t, enterprise)}</p>
+                  {planButton(enterprise.tier, false)}
+                </div>
+              </div>
+            </motion.div>
+          )}
         </section>
 
         {/* Feature comparison: shared features as chips, only differences in the matrix */}
@@ -212,7 +229,7 @@ function PricingPageContent() {
                     <th className="px-4 pb-4 pt-3 font-medium text-ink/50" />
                     {TIER_ORDER.map((tier) => (
                       <th key={tier} className="px-4 pb-4 pt-3 font-semibold text-ink">
-                        {getPlanName(tier)}
+                        {planName(t, tier)}
                       </th>
                     ))}
                   </tr>
@@ -296,7 +313,7 @@ function PricingPageContent() {
                   {t.startFree}
                 </CtaLink>
               </div>
-              <div className="flex md:justify-end">
+              <div className="flex px-2 pb-6 md:justify-end md:px-0 md:pb-0">
                 <TrialVisual />
               </div>
             </div>

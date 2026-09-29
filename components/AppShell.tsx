@@ -17,7 +17,7 @@ export const iconBtn =
 
 export function navItemClass(active: boolean) {
   return cn(
-    "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] transition duration-300 ease-premium active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 lg:py-2 lg:text-sm",
+    "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] transition duration-300 ease-premium active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 lg:py-1.5 lg:text-sm lg:[@media(max-height:860px)]:py-1",
     active
       ? "bg-nordic-600/[0.09] font-medium text-nordic-700 dark:bg-nordic-600/[0.16] dark:text-nordic-300"
       : "text-gray-600 hover:bg-gray-900/[0.04] hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white",
@@ -139,7 +139,7 @@ export function AppShell({
       </AnimatePresence>
 
       {/* No z-index here: page modals use fixed z-50 and must stack above the rail */}
-      <main className="min-h-screen p-4 pb-28 sm:p-6 sm:pb-28 md:pb-8 lg:ml-[16.5rem] lg:p-8 print:ml-0 print:min-h-0 print:p-0">
+      <main className="min-h-[calc(100dvh-4.25rem)] p-4 pb-28 sm:p-6 sm:pb-28 md:pb-8 lg:ml-[16.5rem] lg:min-h-screen lg:p-6 xl:p-8 print:ml-0 print:min-h-0 print:p-0">
         {children}
       </main>
 

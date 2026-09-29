@@ -5,7 +5,7 @@
  * Add a real AggregateRating only once you have genuine reviews.
  */
 export function StructuredData() {
-  const base = process.env.NEXTAUTH_URL ?? "https://utlagg.se";
+  const base = process.env.NEXTAUTH_URL ?? "https://kvittino.se";
   const data = {
     "@context": "https://schema.org",
     "@graph": [

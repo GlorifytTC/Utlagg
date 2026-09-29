@@ -90,7 +90,7 @@ function LoginForm() {
         <Link href="/">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
-        <h1 className="mt-8 font-display text-3xl">{t.login}</h1>
+        <h1 className="mt-8 font-display text-3xl font-semibold tracking-tight">{t.login}</h1>
         <div className="mt-6 space-y-4">
           <input
             type="email"
@@ -128,7 +128,7 @@ function LoginForm() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
+            className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
           >
             {loading ? t.authLoggingIn : t.login}
           </button>

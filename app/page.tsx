@@ -125,7 +125,7 @@ function HomeContent() {
 
           <div className="mt-14 grid grid-flow-dense gap-5 md:grid-cols-12">
             <motion.div {...reveal(0, rm)} className="bezel md:col-span-7 md:row-span-2">
-              <div className="bezel-core flex h-full flex-col overflow-hidden p-8 md:p-10">
+              <div className="bezel-core flex h-full flex-col overflow-hidden p-8 pb-14 md:p-10 md:pb-14">
                 <h3 className="font-display text-2xl font-semibold tracking-tight">
                   {t.feature9Title}
                 </h3>

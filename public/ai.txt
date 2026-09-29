@@ -1,4 +1,4 @@
-# Guidance for AI crawlers (https://utlagg.se)
+# Guidance for AI crawlers (https://kvittino.se)
 User-agent: GPTBot
 Allow: /
 User-agent: ChatGPT-User

@@ -111,7 +111,7 @@ export function HeroVisual() {
 
         <ExpenseCard
           step={step}
-          className="absolute bottom-4 right-0 w-[300px]"
+          className="absolute bottom-12 right-4 w-[300px]"
           style={{ transform: "translateZ(40px)" }}
         />
 
@@ -120,7 +120,7 @@ export function HeroVisual() {
           {step === 3 && (
             <motion.div
               key="ready"
-              initial={{ opacity: 0, y: 16, scale: 0.9 }}
+              initial={reduced ? false : { opacity: 0, y: 16, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, transition: { duration: 0.2 } }}
               transition={pop}

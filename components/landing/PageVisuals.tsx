@@ -70,7 +70,7 @@ export function VatSplitVisual() {
         initial={reduced ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...pop, delay: 0.85 }}
-        className="absolute bottom-0 right-0 w-64 rounded-2xl bg-white/95 p-4 text-sm shadow-[0_1px_2px_rgba(26,26,26,0.06),0_24px_60px_-16px_rgba(26,26,26,0.3)] ring-1 ring-ink/5"
+        className="absolute bottom-0 right-3 w-64 rounded-2xl bg-white/95 p-4 text-sm shadow-[0_1px_2px_rgba(26,26,26,0.06),0_24px_60px_-16px_rgba(26,26,26,0.3)] ring-1 ring-ink/5"
       >
         <Split label={`${t.heroVisualVat} 12 %`} value="135,54 kr" />
         <Split label={`${t.heroVisualVat} 25 %`} value="36,00 kr" />

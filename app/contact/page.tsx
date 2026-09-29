@@ -8,8 +8,8 @@ import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { ChatBox } from "@/components/ChatBox";
 
-const SUPPORT_EMAIL = "hej@utlagg.se";
-const SALES_EMAIL = "sales@utlagg.se";
+const SUPPORT_EMAIL = "hej@kvittino.se";
+const SALES_EMAIL = "sales@kvittino.se";
 
 function ContactContent() {
   const { t } = useLanguage();

@@ -66,7 +66,7 @@ function NavList({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: (
           </button>
         )}
       </div>
-      <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-3 pt-3">
+      <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-3 pt-3 [scrollbar-width:thin]">
         <ul className="space-y-0.5">
           {nav.map((item) => {
             const Icon = item.icon;

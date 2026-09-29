@@ -104,7 +104,7 @@ function RegisterForm() {
           <Link href="/">
             <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
           </Link>
-          <h1 className="mt-8 font-display text-3xl">{t.regCheckInbox}</h1>
+          <h1 className="mt-8 font-display text-3xl font-semibold tracking-tight">{t.regCheckInbox}</h1>
           {emailFailed ? (
             <>
               <p className="mt-4 text-sm text-red-600">
@@ -112,8 +112,8 @@ function RegisterForm() {
               </p>
               <p className="mt-4 text-sm text-ink/70">
                 {t.regEmailFailedHelpPre}{" "}
-                <a href="mailto:support@utlagg.se" className="text-nordic-600 underline">
-                  support@utlagg.se
+                <a href="mailto:support@kvittino.se" className="text-nordic-600 underline">
+                  support@kvittino.se
                 </a>{" "}
                 {t.regEmailFailedHelpPost}
               </p>
@@ -130,7 +130,7 @@ function RegisterForm() {
             <button
               onClick={resendVerification}
               disabled={cooldown > 0 || resendState === "sending"}
-              className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-nordic-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {resendState === "sending"
                 ? t.stSubmitting
@@ -167,7 +167,7 @@ function RegisterForm() {
         <Link href="/">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
-        <h1 className="mt-8 font-display text-3xl">{t.authCreateAccount}</h1>
+        <h1 className="mt-8 font-display text-3xl font-semibold tracking-tight">{t.authCreateAccount}</h1>
         <p className="mt-2 text-sm text-ink/60">
           {accountType === "accountant"
             ? t.regAccountantSubtitle
@@ -216,7 +216,7 @@ function RegisterForm() {
             className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button onClick={handleSubmit} disabled={loading}
-            className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.98] active:opacity-90 disabled:opacity-60">
+            className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.98] active:opacity-90 disabled:opacity-60">
             {loading ? t.regCreating : t.authCreateAccount}
           </button>
           <div className="flex items-center gap-3 text-xs text-ink/40">

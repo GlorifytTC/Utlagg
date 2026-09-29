@@ -29,7 +29,7 @@ export function StatGrid({ items, className }: { items: StatItem[]; className?: 
       )}
     >
       {items.map(({ label, value, icon: Icon, tone }) => (
-        <div key={label} className="panel-fill flex flex-col justify-between gap-4 p-5">
+        <div key={label} className="panel-fill flex min-w-0 flex-col justify-between gap-4 p-5">
           <div className="flex items-start justify-between gap-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
             {Icon && (
@@ -40,8 +40,9 @@ export function StatGrid({ items, className }: { items: StatItem[]; className?: 
             )}
           </div>
           <p
+            title={typeof value === "string" ? value : undefined}
             className={cn(
-              "font-display text-3xl font-semibold leading-none tracking-tight tabular-nums",
+              "truncate font-display text-2xl font-semibold leading-tight tracking-tight tabular-nums xl:text-3xl",
               tone === "warn" ? "text-amber-600 dark:text-amber-400" : "text-gray-900 dark:text-white",
             )}
           >

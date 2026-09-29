@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Logo } from "@/components/brand/Logo";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function ForgotPasswordPage() {
@@ -24,10 +25,10 @@ export default function ForgotPasswordPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-paper px-6">
       <div className="w-full max-w-sm">
-        <Link href="/" className="font-display text-xl font-semibold">
-          Kvittino
+        <Link href="/">
+          <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
-        <h1 className="mt-8 font-display text-3xl">{t.fpTitle}</h1>
+        <h1 className="mt-8 font-display text-3xl font-semibold tracking-tight">{t.fpTitle}</h1>
         {sent ? (
           <p className="mt-6 text-sm text-ink/70">
             {t.fpSent}
@@ -48,7 +49,7 @@ export default function ForgotPasswordPage() {
             <button
               onClick={submit}
               disabled={loading || !email}
-              className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper transition hover:bg-nordic-900 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
+              className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
             >
               {loading ? t.stSubmitting : t.fpSend}
             </button>

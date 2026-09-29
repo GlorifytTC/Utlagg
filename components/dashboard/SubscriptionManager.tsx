@@ -4,11 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { CreditCard, Loader2 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Check, CreditCard, Loader2 } from "lucide-react";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PLANS, SELECTABLE_PLANS } from "@/lib/plans";
+import { PLANS, SELECTABLE_PLANS, planFeatures, planName, planPrice } from "@/lib/plans";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -27,31 +27,8 @@ export function SubscriptionManager({
   const { t } = useLanguage();
   const router = useRouter();
 
-  const planName = (n: string) =>
-    ({
-      Gratis: t.planFree,
-      Pro: t.planPro,
-      "Företag": t.planBusiness,
-      Enterprise: t.planEnterprise,
-    } as Record<string, string>)[n] ?? n;
-
-  const priceLbl = (l: string) => (l === "Offert" ? t.planQuote : l);
-
-  const featLbl = (f: string) =>
-    (({
-      "Obegränsade skanningar": t.featUnlimitedScans,
-      "25 skanningar/mån": t.feat25Scans,
-      "Grundläggande OCR": t.featBasicOcr,
-      "CSV-export": t.featCsv,
-      "Fortnox-integration": t.featFortnox,
-      "Svensk moms (6/12/25 %)": t.featSwedishVat,
-      "7-årig revisionslogg": t.featAuditLog,
-      "Allt i Pro": t.featAllPro,
-      "Attestflöden": t.featApprovals,
-      "Milersättning": t.featMileage,
-      "Koldioxidavtryck": t.featCarbon,
-      "Allt i Företag": t.featAllBusiness,
-    } as Record<string, string>)[f] ?? f);
+  const selfServe = SELECTABLE_PLANS.filter((p) => p.tier !== "enterprise");
+  const enterprise = SELECTABLE_PLANS.find((p) => p.tier === "enterprise");
 
   async function upgrade(tier: "starter" | "pro" | "business" | "max") {
     setLoading(tier);
@@ -158,12 +135,12 @@ export function SubscriptionManager({
         <CardHeader>
           <CardTitle className="font-display text-lg text-gray-900 dark:text-white">{t.subCurrentPlan}</CardTitle>
           <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
-            {t.subYouAreOnPre}{planName(current?.name ?? currentTier)}{t.subYouAreOnPost}
+            {t.subYouAreOnPre}{current ? planName(t, current.tier) : currentTier}{t.subYouAreOnPost}
             {periodEnd ? ` · ${t.subRenews} ${new Date(periodEnd).toLocaleDateString()}` : ""}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{current ? priceLbl(current.priceLabel) : "-"}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">{current ? planPrice(t, current) : "-"}</p>
           <div className="flex flex-wrap items-center gap-2">
             {hasBilling && (
               <Button variant="outline" onClick={openPortal} disabled={loading !== null}>
@@ -186,94 +163,96 @@ export function SubscriptionManager({
         </CardContent>
       </motion.div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {SELECTABLE_PLANS.map((plan, index) => {
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {selfServe.map((plan, index) => {
           const isCurrent = plan.tier === currentTier;
-          const upgradable =
-            plan.tier === "starter" ||
-            plan.tier === "pro" ||
-            plan.tier === "business" ||
-            plan.tier === "max";
           return (
             <motion.div
               key={plan.tier}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              whileHover={{ scale: 1.02 }}
               className={cn(
-                "flex flex-col rounded-2xl border bg-white/60 backdrop-blur-sm transition-shadow hover:shadow-sm dark:bg-[#0D0D0D]",
-                isCurrent ? "ring-2 ring-nordic-600" : "border-gray-900/[0.07] dark:border-white/[0.07]",
+                "panel flex flex-col rounded-2xl p-6",
+                isCurrent && "ring-2 ring-nordic-600",
               )}
             >
-              <Card className="flex flex-1 flex-col border-0 bg-transparent shadow-none">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="font-display text-lg text-gray-900 dark:text-white">{planName(plan.name)}</CardTitle>
-                    {isCurrent && <Badge className="bg-nordic-600 text-white">{t.subCurrentBadge}</Badge>}
-                  </div>
-                  <CardDescription className="text-lg font-semibold text-gray-900 dark:text-white">{priceLbl(plan.priceLabel)}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-1 flex-col space-y-4">
-                  <ul className="space-y-2 text-sm">
-                    {plan.features.map((f, i) => (
-                      <motion.li
-                        key={f}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.03 }}
-                        className="flex items-start gap-2"
-                      >
-                        <motion.span
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: i * 0.03 + 0.1, type: "spring" }}
-                          className="text-green-500"
-                        >
-                          ✓
-                        </motion.span>
-                        <span>{featLbl(f)}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-                  {!isCurrent && upgradable && (
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full"
-                      onClick={() => upgrade(plan.tier as "starter" | "pro" | "business" | "max")}
-                      disabled={loading !== null}
-                    >
-                      <Button className="w-full" disabled={loading !== null}>
-                        {loading === plan.tier ? <Loader2 className="h-4 w-4 animate-spin" /> : `${t.subSwitchTo} ${planName(plan.name)}`}
-                      </Button>
-                    </motion.button>
-                  )}
-                  {plan.tier === "enterprise" && !isCurrent && (
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full"
-                      disabled={loading !== null}
-                      onClick={async () => {
-                        setLoading("enterprise");
-                        const r = await fetch("/api/billing/enterprise-inquiry", { method: "POST" });
-                        setLoading(null);
-                        if (r.ok) toast.success(t.toastQuoteThanks);
-                        else window.location.href = "mailto:sales@utlagg.se?subject=Enterprise";
-                      }}
-                    >
-                      <Button variant="outline" className="w-full" disabled={loading !== null}>
-                        {loading === "enterprise" ? <Loader2 className="h-4 w-4 animate-spin" /> : t.subRequestQuote}
-                      </Button>
-                    </motion.button>
-                  )}
-                </CardContent>
-              </Card>
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="font-display text-lg font-semibold text-gray-900 dark:text-white">{planName(t, plan.tier)}</h3>
+                {isCurrent && <Badge className="bg-nordic-600 text-white">{t.subCurrentBadge}</Badge>}
+              </div>
+              <p className="mt-2 whitespace-nowrap text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{planPrice(t, plan)}</p>
+              <ul className="mt-5 flex-1 space-y-2.5 text-sm text-gray-600 dark:text-gray-300">
+                {planFeatures(t, plan.tier).map((f) => (
+                  <li key={f} className="flex gap-2.5">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-nordic-600" strokeWidth={1.75} />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button
+                className="mt-6 w-full"
+                variant={isCurrent ? "outline" : "default"}
+                disabled={isCurrent || loading !== null}
+                onClick={() => upgrade(plan.tier as "starter" | "pro" | "business" | "max")}
+              >
+                {loading === plan.tier ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : isCurrent ? (
+                  t.subCurrentBadge
+                ) : (
+                  `${t.subSwitchTo} ${planName(t, plan.tier)}`
+                )}
+              </Button>
             </motion.div>
           );
         })}
       </div>
+
+      {enterprise && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: selfServe.length * 0.05 }}
+          className={cn(
+            "panel flex flex-col gap-5 rounded-2xl p-6 md:flex-row md:items-center md:justify-between",
+            currentTier === "enterprise" && "ring-2 ring-nordic-600",
+          )}
+        >
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-display text-lg font-semibold text-gray-900 dark:text-white">{planName(t, enterprise.tier)}</h3>
+              {currentTier === "enterprise" && <Badge className="bg-nordic-600 text-white">{t.subCurrentBadge}</Badge>}
+            </div>
+            <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600 dark:text-gray-300">
+              {planFeatures(t, enterprise.tier).map((f) => (
+                <li key={f} className="flex gap-2.5">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-nordic-600" strokeWidth={1.75} />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="flex shrink-0 items-center justify-between gap-6 md:justify-end">
+            <p className="whitespace-nowrap text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{planPrice(t, enterprise)}</p>
+            {currentTier !== "enterprise" && (
+              <Button
+                variant="outline"
+                disabled={loading !== null}
+                onClick={async () => {
+                  setLoading("enterprise");
+                  const r = await fetch("/api/billing/enterprise-inquiry", { method: "POST" });
+                  setLoading(null);
+                  if (r.ok) toast.success(t.toastQuoteThanks);
+                  else window.location.href = "mailto:sales@kvittino.se?subject=Enterprise";
+                }}
+              >
+                {loading === "enterprise" ? <Loader2 className="h-4 w-4 animate-spin" /> : t.subRequestQuote}
+              </Button>
+            )}
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
+import { Logo } from "@/components/brand/Logo";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -27,7 +28,7 @@ function AcceptInner() {
     <div className="mt-6 space-y-4">
       <p className="text-sm text-ink/70">{t.aiIntro}</p>
       <button onClick={accept} disabled={status === "loading"}
-        className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper hover:bg-nordic-900 disabled:opacity-60">
+        className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white hover:bg-nordic-700 disabled:opacity-60">
         {status === "loading" ? t.aiJoining : t.aiAccept}
       </button>
       {error && <p className="text-sm text-red-600">{error} - <Link href="/login" className="underline">{t.regNoMailLogin}</Link> {t.aiLoginFirst}</p>}
@@ -40,8 +41,10 @@ export default function AcceptInvitePage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-paper px-6">
       <div className="w-full max-w-sm">
-        <Link href="/" className="font-display text-xl font-semibold">Kvittino</Link>
-        <h1 className="mt-8 font-display text-3xl">{t.aiTitle}</h1>
+        <Link href="/">
+          <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
+        </Link>
+        <h1 className="mt-8 font-display text-3xl font-semibold tracking-tight">{t.aiTitle}</h1>
         <Suspense fallback={<p className="mt-6 text-sm text-ink/60">{t.loading}</p>}>
           <AcceptInner />
         </Suspense>

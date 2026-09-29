@@ -7,6 +7,7 @@
  * render from config and can never drift from what the metering code enforces.
  */
 import type { subscriptionTier } from "@/db/schema";
+import type { Translations } from "@/lib/translations";
 import {
   TIERS,
   TIER_ORDER,
@@ -106,4 +107,20 @@ export const SELECTABLE_PLANS: Plan[] = PLANS.filter(
 
 export function planForTier(tier: Tier): Plan {
   return PLANS.find((p) => p.tier === tier) ?? PLANS[0];
+}
+
+// Display copy in the viewer's language. FEATURES / priceLabel above stay
+// Swedish (Stripe, emails); UI renders plans through these instead.
+const tierKey = (tier: Tier) => tier.charAt(0).toUpperCase() + tier.slice(1);
+
+export function planName(t: Translations, tier: Tier): string {
+  return t[`plan${tierKey(tier)}` as keyof Translations] as string;
+}
+
+export function planFeatures(t: Translations, tier: Tier): string[] {
+  return t[`plan${tierKey(tier)}Features` as keyof Translations] as string[];
+}
+
+export function planPrice(t: Translations, plan: Plan): string {
+  return plan.priceLabel === "Offert" ? t.planQuote : plan.priceLabel.replace("/mån", t.planPerMonth);
 }

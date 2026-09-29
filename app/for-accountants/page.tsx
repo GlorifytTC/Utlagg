@@ -93,7 +93,7 @@ function ForAccountantsContent() {
             transition={{ type: "spring", bounce: 0, duration: 0.9, delay: 0.15 }}
             className="bezel"
           >
-            <div className="bezel-core light-surface overflow-hidden bg-[radial-gradient(120%_90%_at_80%_0%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] px-6 pt-14">
+            <div className="bezel-core light-surface overflow-hidden bg-[radial-gradient(120%_90%_at_80%_0%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] px-6 pb-12 pt-14">
               <WorkQueueVisual />
             </div>
           </motion.div>

@@ -29,6 +29,9 @@ export function Footer() {
       links: [
         { href: "/legal/terms", label: t.footerTerms },
         { href: "/legal/privacy", label: t.footerPrivacy },
+        { href: "/legal/dpa", label: t.footerDpa },
+        { href: "/legal/subprocessors", label: t.spTitle },
+        { href: "/security", label: t.footerSecurity },
       ],
     },
   ];

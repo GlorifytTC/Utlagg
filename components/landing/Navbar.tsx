@@ -92,7 +92,7 @@ export function Navbar() {
             {authResolved && (
               <Link
                 href={primary.href}
-                className="hidden whitespace-nowrap rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition duration-500 ease-premium hover:bg-nordic-700 active:scale-[0.98] sm:block"
+                className="hidden whitespace-nowrap rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white transition duration-500 ease-premium hover:bg-nordic-700 active:scale-[0.98] sm:block"
               >
                 {primary.label}
               </Link>

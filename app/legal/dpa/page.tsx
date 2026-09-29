@@ -4,9 +4,9 @@ export const metadata = { title: "Personuppgiftsbiträdesavtal - Kvittino" };
 
 export default function DpaPage() {
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16 text-ink dark:text-gray-100">
-      <h1 className="font-display text-3xl">Personuppgiftsbiträdesavtal (DPA)</h1>
-      <p className="mt-4 text-ink/70 dark:text-gray-300">
+    <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
+      <h1 className="font-display text-3xl font-semibold tracking-tight">Personuppgiftsbiträdesavtal (DPA)</h1>
+      <p className="mt-4 text-ink/70">
         Detta personuppgiftsbiträdesavtal (&ldquo;DPA&rdquo;) reglerar GlorifyTC:s
         behandling av personuppgifter för din räkning när du använder Kvittino som
         företagskund. DPA:t utgör en integrerad del av användarvillkoren och gäller i
@@ -14,7 +14,7 @@ export default function DpaPage() {
         personer än dig själv (t.ex. dina anställda, uppdragstagare, leverantörer eller
         fakturamottagare).
       </p>
-      <p className="mt-2 text-sm text-ink/50 dark:text-gray-500">Senast uppdaterad: 18 juli 2026</p>
+      <p className="mt-2 text-sm text-ink/50">Senast uppdaterad: 18 juli 2026</p>
 
       <div className="mt-10 space-y-8 text-sm leading-relaxed">
 
@@ -27,7 +27,7 @@ export default function DpaPage() {
         </p>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">1. Parter och roller</h2>
+          <h2 className="font-display text-lg font-semibold">1. Parter och roller</h2>
           <p>
             <strong>Personuppgiftsansvarig</strong> (&ldquo;du&rdquo; eller
             &ldquo;Kunden&rdquo;): den företagskund som ingått användarvillkoren.
@@ -50,7 +50,7 @@ export default function DpaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">2. Föremål, varaktighet, art och ändamål</h2>
+          <h2 className="font-display text-lg font-semibold">2. Föremål, varaktighet, art och ändamål</h2>
           <p>
             <strong>Föremål och art:</strong> lagring, strukturering, OCR-behandling,
             tillgängliggörande och radering av bokförings- och utläggsunderlag inom
@@ -67,7 +67,7 @@ export default function DpaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">3. Kategorier av registrerade och personuppgifter</h2>
+          <h2 className="font-display text-lg font-semibold">3. Kategorier av registrerade och personuppgifter</h2>
           <p>
             <strong>Kategorier av registrerade:</strong> Kundens anställda och
             uppdragstagare, samt fysiska personer som förekommer i uppladdade underlag
@@ -84,9 +84,9 @@ export default function DpaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">4. Kvittinos skyldigheter</h2>
+          <h2 className="font-display text-lg font-semibold">4. Kvittinos skyldigheter</h2>
           <p>Vi ska:</p>
-          <ul className="ml-4 list-[lower-alpha] space-y-2 text-ink/80 dark:text-gray-300">
+          <ul className="ml-4 list-[lower-alpha] space-y-2 text-ink/80">
             <li>
               behandla personuppgifter enbart enligt dina dokumenterade instruktioner,
               inklusive vad gäller överföring till tredjeland, om vi inte är skyldiga
@@ -129,7 +129,7 @@ export default function DpaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">5. Underbiträden</h2>
+          <h2 className="font-display text-lg font-semibold">5. Underbiträden</h2>
           <p>
             Du ger härmed ett allmänt skriftligt godkännande till att vi anlitar
             underbiträden. En aktuell lista finns på{" "}
@@ -153,7 +153,7 @@ export default function DpaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">6. Överföring till tredjeland</h2>
+          <h2 className="font-display text-lg font-semibold">6. Överföring till tredjeland</h2>
           <p>
             Överföring av personuppgifter till ett land utanför EU/EES sker endast om
             lämpliga skyddsåtgärder enligt kapitel V GDPR finns på plats, t.ex.
@@ -167,7 +167,7 @@ export default function DpaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">7. Granskning</h2>
+          <h2 className="font-display text-lg font-semibold">7. Granskning</h2>
           <p>
             Vi ska på din begäran tillhandahålla den information som rimligen krävs för
             att visa att vi uppfyller detta DPA. Sådan efterlevnad kan visas genom
@@ -181,7 +181,7 @@ export default function DpaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">8. Radering och återlämnande vid avtalets upphörande</h2>
+          <h2 className="font-display text-lg font-semibold">8. Radering och återlämnande vid avtalets upphörande</h2>
           <p>
             Vid tjänstens upphörande ska vi, enligt ditt val, radera eller återlämna
             samtliga personuppgifter. Din stående instruktion är följande, om du inte
@@ -199,7 +199,7 @@ export default function DpaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">9. Personuppgiftsincidenter</h2>
+          <h2 className="font-display text-lg font-semibold">9. Personuppgiftsincidenter</h2>
           <p>
             Vi ska underrätta dig utan onödigt dröjsmål efter att vi fått kännedom om en
             personuppgiftsincident som rör de uppgifter vi behandlar för din räkning,
@@ -209,7 +209,7 @@ export default function DpaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-lg">10. Tvistlösning, tillämplig lag och ändringar</h2>
+          <h2 className="font-display text-lg font-semibold">10. Tvistlösning, tillämplig lag och ändringar</h2>
           <p>
             Detta DPA regleras av svensk rätt. Tvister löses enligt vad som anges i
             användarvillkoren. Ändringar av detta DPA hanteras enligt användarvillkorens
@@ -219,7 +219,7 @@ export default function DpaPage() {
           </p>
         </section>
 
-        <div className="rounded-xl border border-ink/10 dark:border-white/10 p-4 space-y-2 text-ink/80 dark:text-gray-300">
+        <div className="rounded-xl border border-ink/10 p-4 space-y-2 text-ink/80">
           <p>
             <strong>Bilaga A - Tekniska och organisatoriska säkerhetsåtgärder:</strong>{" "}
             se{" "}
@@ -239,7 +239,7 @@ export default function DpaPage() {
 
       </div>
 
-      <p className="mt-10 text-xs text-ink/50 dark:text-gray-500">
+      <p className="mt-10 text-xs text-ink/50">
         Kontakt: legal@kvittino.se · GlorifyTC · Org.nr [xxxxxx-xxxx]
       </p>
     </main>
