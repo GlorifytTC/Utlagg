@@ -237,6 +237,20 @@ html.dark:has(.app-shell) {
     max-width: none !important;
     width: 100% !important;
     border: none !important;
+    /* Repeat the sheet padding on every printed page (page 2+ would otherwise
+       start at the paper edge, since @page margin is 0). */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  /* Keep a line, the totals or the payment box from splitting across pages */
+  .invoice-row {
+    break-inside: avoid;
+  }
+
+  /* App overlays never belong on a printed document */
+  [data-sonner-toaster] {
+    display: none !important;
   }
 
   /* Remove rounded corners and shadow from the invoice card */

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 import { AccountantClientStats } from "@/components/accountant/AccountantClientStats";
 import { AccountantReceipts } from "@/components/accountant/AccountantReceipts";
+import { AccountantInvoices } from "@/components/accountant/AccountantInvoices";
 import { AccountantExports } from "@/components/accountant/AccountantExports";
 import { AccountantAuditLog } from "@/components/accountant/AccountantAuditLog";
 import { useLanguage } from "@/context/LanguageContext";
@@ -21,14 +22,14 @@ interface Detail {
   clientId: string | null;
 }
 
-type Tab = "overview" | "receipts" | "exports" | "activity";
+type Tab = "overview" | "receipts" | "invoices" | "exports" | "activity";
 
-export function AccountantClientWorkspace({ companyId }: { companyId: string }) {
+export function AccountantClientWorkspace({ companyId, initialTab }: { companyId: string; initialTab?: string }) {
   const { lang } = useLanguage();
   const t = accountantStrings(lang);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "notfound" | "error">("loading");
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<Tab>(initialTab === "invoices" ? "invoices" : "overview");
 
   const load = useCallback(async () => {
     setStatus("loading");
@@ -78,6 +79,7 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
   const tabs: { key: Tab; label: string }[] = [
     { key: "overview", label: t.overviewTitle },
     { key: "receipts", label: t.colReceipts },
+    { key: "invoices", label: t.cwTabInvoices },
     { key: "exports", label: t.cwTabExport },
     { key: "activity", label: t.cwTabActivity },
   ];
@@ -153,6 +155,17 @@ export function AccountantClientWorkspace({ companyId }: { companyId: string }) 
             transition={{ duration: 0.15 }}
           >
             <AccountantReceipts companyId={companyId} />
+          </motion.div>
+        )}
+        {tab === "invoices" && (
+          <motion.div
+            key="invoices"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+          >
+            <AccountantInvoices companyId={companyId} />
           </motion.div>
         )}
         {tab === "exports" && (

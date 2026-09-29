@@ -7,7 +7,13 @@ import { accountantStrings } from "@/lib/accountant-i18n";
 export const metadata = { title: "Klient" };
 export const dynamic = "force-dynamic";
 
-export default function AccountantClientPage({ params }: { params: { id: string } }) {
+export default function AccountantClientPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { tab?: string };
+}) {
   const t = accountantStrings(getServerLang());
   return (
     <div className="space-y-6">
@@ -17,7 +23,7 @@ export default function AccountantClientPage({ params }: { params: { id: string 
       >
         <ArrowLeft size={16} /> {t.allClients}
       </Link>
-      <AccountantClientWorkspace companyId={params.id} />
+      <AccountantClientWorkspace companyId={params.id} initialTab={searchParams.tab} />
     </div>
   );
 }

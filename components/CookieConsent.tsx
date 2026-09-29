@@ -320,7 +320,7 @@ export function CookieConsent() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 32, opacity: 0 }}
           transition={{ type: "spring", stiffness: 280, damping: 28 }}
-          className="fixed bottom-0 left-0 right-0 z-[60] flex justify-center px-3 pb-3 sm:px-6 sm:pb-6"
+          className="fixed bottom-0 left-0 right-0 z-[60] flex justify-center px-3 pb-3 sm:px-6 sm:pb-6 print:hidden"
         >
           <div className="w-full max-w-2xl overflow-hidden rounded-3xl border hairline bg-paper/95 shadow-[0_32px_80px_-12px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
 

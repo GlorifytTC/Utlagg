@@ -20,6 +20,19 @@ const updateSchema = createSchema.partial().extend({
   address: z.string().max(500).optional(),
   city: z.string().max(100).optional(),
   postalCode: z.string().max(20).optional(),
+  // SellerDetails (lib/invoice.ts), printed on customer invoices.
+  invoiceDetails: z
+    .object({
+      bankgiro: z.string().trim().max(20).optional(),
+      plusgiro: z.string().trim().max(20).optional(),
+      iban: z.string().trim().max(40).optional(),
+      bic: z.string().trim().max(15).optional(),
+      fSkatt: z.boolean().optional(),
+      email: z.string().trim().max(255).optional(),
+      phone: z.string().trim().max(40).optional(),
+      website: z.string().trim().max(255).optional(),
+    })
+    .optional(),
 });
 
 /** GET current user's company (+ their role) or null. */

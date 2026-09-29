@@ -576,6 +576,30 @@ export interface Translations {
   invDueLabel: string;
   invBillTo: string;
   invViewDisclaimer: string;
+  invSheetNumber: string;
+  invSheetDate: string;
+  invSheetDue: string;
+  invSheetTerms: string;
+  invTermsDaysNet: string;
+  invVatOn: string;
+  invPaymentTitle: string;
+  invBankgiro: string;
+  invPlusgiro: string;
+  invIban: string;
+  invBic: string;
+  invReference: string;
+  invReferenceHint: string;
+  invFSkatt: string;
+  invFromTitle: string;
+  invFromEdit: string;
+  invFromMissing: string;
+  coInvoiceDetailsTitle: string;
+  coInvoiceDetailsDesc: string;
+  coDetailsSaved: string;
+  fldPostalCode: string;
+  fldCity: string;
+  fldPhone: string;
+  fldWebsite: string;
   apHistoryTitle: string;
   apHistoryDesc: string;
   apNoneYet: string;
@@ -1667,6 +1691,30 @@ export const strings: Record<Lang, Translations> = {
     invDueLabel: "Förfaller:",
     invBillTo: "Faktureras till",
     invViewDisclaimer: "Mallen tillhandahålls av Kvittino. Du ansvarar själv för fakturans innehåll och korrekthet.",
+    invSheetNumber: "Fakturanummer",
+    invSheetDate: "Fakturadatum",
+    invSheetDue: "Förfallodatum",
+    invSheetTerms: "Betalningsvillkor",
+    invTermsDaysNet: "dagar netto",
+    invVatOn: "på",
+    invPaymentTitle: "Betalningsinformation",
+    invBankgiro: "Bankgiro",
+    invPlusgiro: "Plusgiro",
+    invIban: "IBAN",
+    invBic: "BIC",
+    invReference: "Referens",
+    invReferenceHint: "Ange fakturanumret som referens vid betalning.",
+    invFSkatt: "Godkänd för F-skatt",
+    invFromTitle: "Från",
+    invFromEdit: "Ändra under Företag",
+    invFromMissing: "Adress eller betalningsuppgifter saknas. Lägg till dem under Företag så att kunden vet hur fakturan ska betalas.",
+    coInvoiceDetailsTitle: "Fakturauppgifter",
+    coInvoiceDetailsDesc: "Visas som avsändare på dina kundfakturor. Ändringar gäller nya fakturor.",
+    coDetailsSaved: "Fakturauppgifter sparade",
+    fldPostalCode: "Postnummer",
+    fldCity: "Ort",
+    fldPhone: "Telefon",
+    fldWebsite: "Webbplats",
     apHistoryTitle: "Attesthistorik",
     apHistoryDesc: "Dina skickade förfrågningar",
     apNoneYet: "Inga förfrågningar ännu.",
@@ -3163,6 +3211,30 @@ export const strings: Record<Lang, Translations> = {
     invDueLabel: "Due:",
     invBillTo: "Billed to",
     invViewDisclaimer: "The template is provided by Kvittino. You are responsible for the invoice's content and accuracy.",
+    invSheetNumber: "Invoice number",
+    invSheetDate: "Invoice date",
+    invSheetDue: "Due date",
+    invSheetTerms: "Payment terms",
+    invTermsDaysNet: "days net",
+    invVatOn: "on",
+    invPaymentTitle: "Payment details",
+    invBankgiro: "Bankgiro",
+    invPlusgiro: "Plusgiro",
+    invIban: "IBAN",
+    invBic: "BIC",
+    invReference: "Reference",
+    invReferenceHint: "Please quote the invoice number as payment reference.",
+    invFSkatt: "Approved for F-tax",
+    invFromTitle: "From",
+    invFromEdit: "Edit under Company",
+    invFromMissing: "Address or payment details are missing. Add them under Company so your customer knows how to pay.",
+    coInvoiceDetailsTitle: "Invoice details",
+    coInvoiceDetailsDesc: "Shown as the sender on your customer invoices. Changes apply to new invoices.",
+    coDetailsSaved: "Invoice details saved",
+    fldPostalCode: "Postal code",
+    fldCity: "City",
+    fldPhone: "Phone",
+    fldWebsite: "Website",
     apHistoryTitle: "Approval history",
     apHistoryDesc: "Your sent requests",
     apNoneYet: "No requests yet.",

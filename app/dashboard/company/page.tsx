@@ -9,8 +9,14 @@ import { Label } from "@/components/ui/label";
 import { CompanyAccountantAccess } from "@/components/dashboard/CompanyAccountantAccess";
 import { CompanyDiscoverySettings } from "@/components/dashboard/CompanyDiscoverySettings";
 import { useLanguage } from "@/context/LanguageContext";
+import type { SellerDetails } from "@/lib/invoice";
 
-interface Company { id: string; name: string; orgNumber?: string; vatNumber?: string; }
+interface Company {
+  id: string; name: string; orgNumber?: string; vatNumber?: string;
+  address?: string | null; postalCode?: string | null; city?: string | null;
+  invoiceDetails?: SellerDetails | null;
+}
+type DetailsForm = { address: string; postalCode: string; city: string } & Omit<Required<SellerDetails>, "fSkatt"> & { fSkatt: boolean };
 interface Member { id: string; userId: string; role: string; email: string | null; name: string | null; }
 
 export default function CompanyPage() {
@@ -21,6 +27,7 @@ export default function CompanyPage() {
   const [myUserId, setMyUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ name: "", orgNumber: "", vatNumber: "" });
+  const [details, setDetails] = useState<DetailsForm | null>(null);
   const [invite, setInvite] = useState({ firstName: "", lastName: "", email: "", role: "member" });
 
   const load = useCallback(async () => {
@@ -29,6 +36,13 @@ export default function CompanyPage() {
     setCompany(d.company);
     setRole(d.role);
     if (d.company) {
+      const c: Company = d.company;
+      const inv = c.invoiceDetails ?? {};
+      setDetails({
+        address: c.address ?? "", postalCode: c.postalCode ?? "", city: c.city ?? "",
+        bankgiro: inv.bankgiro ?? "", plusgiro: inv.plusgiro ?? "", iban: inv.iban ?? "", bic: inv.bic ?? "",
+        fSkatt: inv.fSkatt ?? false, email: inv.email ?? "", phone: inv.phone ?? "", website: inv.website ?? "",
+      });
       const m = await fetch("/api/company/members");
       if (m.ok) {
         const mj = await m.json();
@@ -53,6 +67,16 @@ export default function CompanyPage() {
     });
     if (r.ok) { toast.success(t.toastCompanyCreated); load(); }
     else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? t.toastCreateFail); }
+  }
+
+  async function saveDetails() {
+    if (!details) return;
+    const { address, postalCode, city, ...invoiceDetails } = details;
+    const r = await fetch("/api/company", {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address, postalCode, city, invoiceDetails }),
+    });
+    if (r.ok) toast.success(t.coDetailsSaved); else toast.error(t.toastUpdateFail);
   }
 
   async function sendInvite() {
@@ -144,6 +168,39 @@ export default function CompanyPage() {
           </ul>
         </CardContent>
       </Card>
+      )}
+
+      {canManage && details && (
+        <Card>
+          <CardHeader><CardTitle>{t.coInvoiceDetailsTitle}</CardTitle><CardDescription>{t.coInvoiceDetailsDesc}</CardDescription></CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2 sm:col-span-2"><Label>{t.fldAddress}</Label>
+              <Input value={details.address} onChange={(e) => setDetails({ ...details, address: e.target.value })} placeholder="Storgatan 1" /></div>
+            <div className="space-y-2"><Label>{t.fldPostalCode}</Label>
+              <Input value={details.postalCode} onChange={(e) => setDetails({ ...details, postalCode: e.target.value })} placeholder="123 45" /></div>
+            <div className="space-y-2"><Label>{t.fldCity}</Label>
+              <Input value={details.city} onChange={(e) => setDetails({ ...details, city: e.target.value })} placeholder="Stockholm" /></div>
+            <div className="space-y-2"><Label>{t.invBankgiro}</Label>
+              <Input value={details.bankgiro} onChange={(e) => setDetails({ ...details, bankgiro: e.target.value })} placeholder="123-4567" /></div>
+            <div className="space-y-2"><Label>{t.invPlusgiro}</Label>
+              <Input value={details.plusgiro} onChange={(e) => setDetails({ ...details, plusgiro: e.target.value })} placeholder="12 34 56-7" /></div>
+            <div className="space-y-2"><Label>{t.invIban}</Label>
+              <Input value={details.iban} onChange={(e) => setDetails({ ...details, iban: e.target.value })} placeholder="SE45 5000 0000 0583 9825 7466" /></div>
+            <div className="space-y-2"><Label>{t.invBic}</Label>
+              <Input value={details.bic} onChange={(e) => setDetails({ ...details, bic: e.target.value })} placeholder="ESSESESS" /></div>
+            <div className="space-y-2"><Label>{t.fldEmail}</Label>
+              <Input value={details.email} onChange={(e) => setDetails({ ...details, email: e.target.value })} placeholder="faktura@foretag.se" /></div>
+            <div className="space-y-2"><Label>{t.fldPhone}</Label>
+              <Input value={details.phone} onChange={(e) => setDetails({ ...details, phone: e.target.value })} placeholder="08-123 456 78" /></div>
+            <div className="space-y-2 sm:col-span-2"><Label>{t.fldWebsite}</Label>
+              <Input value={details.website} onChange={(e) => setDetails({ ...details, website: e.target.value })} placeholder="foretag.se" /></div>
+            <label className="flex items-center gap-2 text-sm sm:col-span-2">
+              <input type="checkbox" checked={details.fSkatt} onChange={(e) => setDetails({ ...details, fSkatt: e.target.checked })} />
+              {t.invFSkatt}
+            </label>
+            <div className="sm:col-span-2"><Button onClick={saveDetails}>{t.btnSave}</Button></div>
+          </CardContent>
+        </Card>
       )}
 
       {canManage && (

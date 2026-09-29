@@ -383,6 +383,9 @@ export const companies = pgTable("companies", {
   discoveryDescription: text("discovery_description"),
   // Optional company logo (base64 data URL), shown in discovery + settings.
   logoUrl: text("logo_url"),
+  // Payment + contact details printed on customer invoices (SellerDetails in
+  // lib/invoice.ts): bankgiro, plusgiro, IBAN/BIC, F-skatt, email, phone, web.
+  invoiceDetails: jsonb("invoice_details"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -748,6 +751,7 @@ export const customerInvoices = pgTable(
     sellerOrgNumber: varchar("seller_org_number", { length: 12 }),
     sellerVatNumber: varchar("seller_vat_number", { length: 50 }),
     sellerAddress: text("seller_address"),
+    sellerDetails: jsonb("seller_details"), // SellerDetails snapshot (payment + contact)
     // Buyer
     buyerName: varchar("buyer_name", { length: 255 }).notNull(),
     buyerOrgNumber: varchar("buyer_org_number", { length: 20 }),

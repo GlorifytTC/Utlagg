@@ -7,7 +7,7 @@ import { customerInvoices, companies } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { requireFeature } from "@/lib/entitlements";
 import { getUserCompany } from "@/lib/company";
-import { computeInvoiceTotals } from "@/lib/invoice";
+import { computeInvoiceTotals, formatSellerAddress } from "@/lib/invoice";
 import { logAudit, clientIp } from "@/lib/audit";
 
 export const runtime = "nodejs";
@@ -96,7 +96,8 @@ export async function POST(req: NextRequest) {
       sellerName: company.name,
       sellerOrgNumber: company.orgNumber,
       sellerVatNumber: company.vatNumber,
-      sellerAddress: [company.address, company.postalCode, company.city].filter(Boolean).join(", ") || null,
+      sellerAddress: formatSellerAddress(company),
+      sellerDetails: company.invoiceDetails,
       buyerName: d.buyerName,
       buyerOrgNumber: d.buyerOrgNumber,
       buyerVatNumber: d.buyerVatNumber,
@@ -115,7 +116,7 @@ export async function POST(req: NextRequest) {
   await logAudit({
     userId: gate.userId!,
     action: "invoice.create",
-    details: `${d.invoiceNumber} · ${totals.total} kr`,
+    details: `${invoiceNumber} · ${totals.total} kr`,
     ipAddress: clientIp(req),
   });
   return NextResponse.json({ invoice: created }, { status: 201 });
