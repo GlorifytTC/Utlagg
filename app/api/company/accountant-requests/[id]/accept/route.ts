@@ -40,6 +40,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     )
     .limit(1);
   if (!reqRow) return NextResponse.json({ error: "Hittades inte" }, { status: 404 });
+  // Only a request the ACCOUNTANT sent can be accepted here; one the company
+  // sent itself must be answered by the accountant.
+  if (reqRow.requestedBy !== reqRow.accountantId) {
+    return NextResponse.json({ error: "Du kan inte godkänna din egen förfrågan." }, { status: 403 });
+  }
   if (reqRow.status !== "pending") {
     return NextResponse.json({ error: "Förfrågan är redan besvarad." }, { status: 409 });
   }

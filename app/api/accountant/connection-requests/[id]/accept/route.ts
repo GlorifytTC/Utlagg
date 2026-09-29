@@ -44,6 +44,11 @@ export async function POST(
     )
     .limit(1);
   if (!reqRow) return NextResponse.json({ error: "Hittades inte" }, { status: 404 });
+  // Requests go both ways in one table. The accountant may only accept one the
+  // COMPANY sent - accepting their own would connect them without consent.
+  if (reqRow.requestedBy === acct.userId) {
+    return NextResponse.json({ error: "Du kan inte godkänna din egen förfrågan." }, { status: 403 });
+  }
 
   if (reqRow.status !== "pending") {
     return NextResponse.json({ error: "Förfrågan är redan besvarad." }, { status: 409 });

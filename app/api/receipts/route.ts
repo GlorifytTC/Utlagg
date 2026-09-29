@@ -7,6 +7,7 @@ import { receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { clientIp } from "@/lib/audit";
 import { createReceipt } from "@/lib/receipts/create";
+import { keyBelongsToUser } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
@@ -127,6 +128,12 @@ export async function POST(req: NextRequest) {
         { error: "Ogiltiga kvittouppgifter" },
         { status: 400 },
       );
+    }
+    // imageUrl is an inline data URL or one of the caller's own R2 keys - never
+    // another user's key (which the delete path would then act on).
+    const img = parsed.data.imageUrl;
+    if (img && !img.startsWith("data:") && !keyBelongsToUser(img, userId)) {
+      return NextResponse.json({ error: "Ogiltig bild" }, { status: 400 });
     }
 
     const result = await createReceipt(userId, parsed.data, clientIp(req));

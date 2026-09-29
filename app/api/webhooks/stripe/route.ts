@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import type Stripe from "stripe";
 import { stripe, tierFromPriceId } from "@/lib/stripe";
 import { db } from "@/db";
@@ -59,12 +59,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
+  // Idempotency keys claimed by this delivery. If handling fails they are
+  // released again, so Stripe's retry actually reprocesses the event instead of
+  // being acked as a duplicate (which would silently drop e.g. an upgrade).
+  const claimed: string[] = [];
+  const claim = async (id: string) => {
+    const [row] = await db
+      .insert(webhookEvents)
+      .values({ id, type: event.type })
+      .onConflictDoNothing()
+      .returning({ id: webhookEvents.id });
+    if (row) claimed.push(id);
+    return Boolean(row);
+  };
+
   try {
-    // Idempotency: skip events we've already processed (Stripe may resend).
-    try {
-      await db.insert(webhookEvents).values({ id: event.id, type: event.type });
-    } catch {
-      // Duplicate primary key -> already handled; ack and return.
+    // Skip events we've already processed (Stripe may resend).
+    if (!(await claim(event.id))) {
       return NextResponse.json({ received: true, duplicate: true });
     }
 
@@ -156,8 +167,12 @@ export async function POST(req: NextRequest) {
       }
       case "invoice.paid":
       case "invoice.payment_succeeded": {
+        // Stripe sends both events (different ids) for one invoice - handle
+        // each invoice once, or every renewal emails and books twice.
         const invoice = event.data.object as Stripe.Invoice;
-        await handleInvoicePaid(invoice, event.id);
+        if (await claim(`invoice_paid:${invoice.id}`)) {
+          await handleInvoicePaid(invoice, event.id);
+        }
         break;
       }
       case "invoice.payment_failed": {
@@ -194,6 +209,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (err) {
     console.error("stripe webhook handling error:", err);
+    if (claimed.length) {
+      await db
+        .delete(webhookEvents)
+        .where(inArray(webhookEvents.id, claimed))
+        .catch((e: unknown) => console.error("webhook claim release failed:", e));
+    }
     return NextResponse.json({ error: "Handler error" }, { status: 500 });
   }
 }
@@ -217,6 +238,18 @@ async function syncSubscription(sub: Stripe.Subscription) {
   const userId = await findUserByCustomer(customerId);
   if (!userId) {
     console.warn("No user mapped to Stripe customer", customerId);
+    return;
+  }
+
+  // First payment still pending (e.g. 3-D Secure): no change until it resolves
+  // to active or incomplete_expired.
+  if (sub.status === "incomplete") return;
+  // Anything that isn't paying (canceled, unpaid, incomplete_expired, paused)
+  // lapses the account exactly like a deleted subscription. Previously these
+  // kept the paid tier with status "canceled", which access checks treat as
+  // entitled.
+  if (sub.status !== "active" && sub.status !== "trialing" && sub.status !== "past_due") {
+    await downgradeToFree(sub);
     return;
   }
 
@@ -284,11 +317,7 @@ async function syncSubscription(sub: Stripe.Subscription) {
   }
 
   const tier = planTier;
-  const status = (sub.status === "active" || sub.status === "trialing"
-    ? "active"
-    : sub.status === "past_due"
-      ? "past_due"
-      : "canceled") as "active" | "past_due" | "canceled";
+  const status = sub.status === "past_due" ? "past_due" : "active";
 
   await db
     .update(subscriptions)
@@ -371,15 +400,20 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
   }
 
   // A paid invoice means the account is in good standing again (this also
-  // clears past_due after a successful retry).
-  await db
-    .update(subscriptions)
-    .set({ status: "active" })
-    .where(eq(subscriptions.stripeCustomerId, customerId));
-  await db
-    .update(users)
-    .set({ subscriptionStatus: "active" })
-    .where(eq(users.id, user.id));
+  // clears past_due after a successful retry). The 0 kr invoice Stripe issues
+  // when a trial starts is not a conversion - flipping to "active" there would
+  // lift the trial hard-stop and hide the account from trial expiry.
+  const trialStartInvoice = invoice.amount_paid === 0 && user.subscriptionStatus === "trialing";
+  if (!trialStartInvoice) {
+    await db
+      .update(subscriptions)
+      .set({ status: "active" })
+      .where(eq(subscriptions.stripeCustomerId, customerId));
+    await db
+      .update(users)
+      .set({ subscriptionStatus: "active" })
+      .where(eq(users.id, user.id));
+  }
 
   await logAudit({
     userId: user.id,
@@ -538,6 +572,14 @@ async function downgradeToFree(sub: Stripe.Subscription) {
     typeof sub.customer === "string" ? sub.customer : sub.customer.id;
   const userId = await findUserByCustomer(customerId);
   if (!userId) return;
+  // A stray second subscription on the same customer (e.g. an abandoned
+  // duplicate checkout) dying must not lapse the one we're actually tracking.
+  const [tracked] = await db
+    .select({ id: subscriptions.stripeSubscriptionId })
+    .from(subscriptions)
+    .where(eq(subscriptions.stripeCustomerId, customerId))
+    .limit(1);
+  if (tracked?.id && tracked.id !== sub.id) return;
 
   // Pricing V3 §C: a lapsed paid subscription drops to READ-ONLY, never to
   // reusable free scans, and DATA IS NEVER DELETED at lapse. The account keeps
