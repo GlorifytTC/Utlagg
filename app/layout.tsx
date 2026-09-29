@@ -65,7 +65,7 @@ export default function RootLayout({
         {/* Apply theme before first paint so dark pages don't flash light. Mirrors ThemeProvider. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}`,
+            __html: `try{var t=localStorage.getItem("theme");if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}`,
           }}
         />
       </head>
