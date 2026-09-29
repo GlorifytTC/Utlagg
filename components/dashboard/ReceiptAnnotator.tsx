@@ -198,7 +198,7 @@ export function ReceiptAnnotator({
       <div
         ref={stageRef}
         className={cn(
-          "relative mt-2 max-h-[62vh] overflow-auto rounded-lg border bg-white/60 transition dark:bg-[#0D0D0D]",
+          "relative mt-2 max-h-[62vh] overflow-auto rounded-xl border bg-white/60 transition dark:bg-[#0D0D0D]",
           armed ? "border-nordic-600 ring-2 ring-nordic-600/40" : "border-gray-900/[0.07] dark:border-white/[0.07]",
         )}
         style={{ touchAction: armed ? "none" : "auto" }}

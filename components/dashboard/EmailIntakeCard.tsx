@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 /**
  * Shows the user's personal receipt-forwarding address (fetched from
@@ -39,22 +41,19 @@ export function EmailIntakeCard() {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-900/[0.07] dark:border-white/[0.08]">
-      <div className="border-b border-gray-900/[0.07] bg-[#F5F4F0] px-6 py-4 dark:border-white/[0.08] dark:bg-[#0D0D0D]">
-        <p className="text-sm font-medium text-gray-900 dark:text-white">{t.setEmailIntakeTitle}</p>
-        <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{t.setEmailIntakeDesc}</p>
-      </div>
-      <div className="flex flex-wrap items-center gap-3 bg-[#F5F4F0] px-6 py-4 dark:bg-[#0D0D0D]">
-        <code className="flex-1 truncate rounded-xl border border-gray-900/[0.10] bg-white px-3 py-2 text-sm text-gray-800 dark:border-white/[0.10] dark:bg-black/40 dark:text-gray-200">
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">{t.setEmailIntakeTitle}</CardTitle>
+        <CardDescription>{t.setEmailIntakeDesc}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-wrap items-center gap-2">
+        <code className="min-w-0 flex-1 truncate rounded-xl border border-gray-900/15 bg-white px-3.5 py-2 text-sm text-gray-800 dark:border-white/[0.14] dark:bg-black/40 dark:text-gray-200">
           {address}
         </code>
-        <button
-          onClick={copy}
-          className="rounded-xl border border-gray-900/[0.10] px-4 py-2 text-sm font-medium text-gray-700 transition hover:border-gray-900/[0.20] hover:bg-gray-900/[0.04] active:scale-[0.98] active:opacity-80 dark:border-white/[0.10] dark:text-gray-300 dark:hover:bg-white/[0.06]"
-        >
+        <Button variant="outline" onClick={copy} aria-live="polite">
           {copied ? t.btnCopied : t.btnCopy}
-        </button>
-      </div>
-    </div>
+        </Button>
+      </CardContent>
+    </Card>
   );
 }

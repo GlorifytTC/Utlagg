@@ -38,6 +38,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Native checkboxes/radios take the brand accent instead of browser blue */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: rgb(var(--accent));
+}
+
 /* Subtle paper grain for the Nordic-minimal background */
 .bg-grain {
   background-image: radial-gradient(

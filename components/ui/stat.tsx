@@ -5,6 +5,8 @@ export type StatItem = {
   label: string;
   value: React.ReactNode;
   icon?: LucideIcon;
+  /** One short line under the number, e.g. what the figure excludes. */
+  hint?: React.ReactNode;
   /** "warn" highlights a number that needs attention. */
   tone?: "default" | "warn";
 };
@@ -28,7 +30,7 @@ export function StatGrid({ items, className }: { items: StatItem[]; className?: 
         className,
       )}
     >
-      {items.map(({ label, value, icon: Icon, tone }) => (
+      {items.map(({ label, value, hint, icon: Icon, tone }) => (
         <div key={label} className="panel-fill flex min-w-0 flex-col justify-between gap-4 p-5">
           <div className="flex items-start justify-between gap-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
@@ -48,6 +50,7 @@ export function StatGrid({ items, className }: { items: StatItem[]; className?: 
           >
             {value}
           </p>
+          {hint && <p className="-mt-3 text-xs text-gray-500 dark:text-gray-400">{hint}</p>}
         </div>
       ))}
     </div>

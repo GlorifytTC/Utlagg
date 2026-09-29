@@ -3,10 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Trash2 } from "lucide-react";
+import { Button, buttonClass } from "@/components/ui/button";
+import { Input, Select } from "@/components/ui/input";
+import { formatSek } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/context/LanguageContext";
+import { PageHeader } from "@/components/ui/page-header";
 
 interface Pass {
   id: string;
@@ -86,11 +89,8 @@ export default function TransportPage() {
   const providerLabel = (p: Pass) => (p.provider === "Other" ? p.providerOther || "-" : p.provider);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.trTitle}</h1>
-        <p className="text-gray-500 dark:text-gray-400">{t.trSubtitle}</p>
-      </div>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader title={t.trTitle} subtitle={t.trSubtitle} />
 
       {/* Quick add */}
       <Card>
@@ -113,22 +113,22 @@ export default function TransportPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label>{t.trType}</Label>
-              <select
-                className="mt-1 w-full rounded-md border border-gray-300 bg-transparent p-2 dark:border-white/[0.10] dark:bg-[#111] dark:text-white"
+            <div className="space-y-2">
+              <Label htmlFor="tr-type">{t.trType}</Label>
+              <Select
+                id="tr-type"
                 value={form.passType}
                 onChange={(e) => setForm({ ...form, passType: e.target.value })}
               >
                 <option value="monthly">{t.trTypeMonthly}</option>
                 <option value="yearly">{t.trTypeYearly}</option>
                 <option value="single">{t.trTypeSingle}</option>
-              </select>
+              </Select>
             </div>
-            <div>
-              <Label>{t.trProvider}</Label>
-              <select
-                className="mt-1 w-full rounded-md border border-gray-300 bg-transparent p-2 dark:border-white/[0.10] dark:bg-[#111] dark:text-white"
+            <div className="space-y-2">
+              <Label htmlFor="tr-provider">{t.trProvider}</Label>
+              <Select
+                id="tr-provider"
                 value={form.provider}
                 onChange={(e) => setForm({ ...form, provider: e.target.value })}
               >
@@ -137,23 +137,25 @@ export default function TransportPage() {
                     {p === "Other" ? t.trProviderOtherLabel : p}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
 
           {form.provider === "Other" && (
-            <div>
-              <Label>{t.trProviderOtherLabel}</Label>
+            <div className="space-y-2">
+              <Label htmlFor="tr-provider-other">{t.trProviderOtherLabel}</Label>
               <Input
+                id="tr-provider-other"
                 value={form.providerOther}
                 onChange={(e) => setForm({ ...form, providerOther: e.target.value })}
               />
             </div>
           )}
 
-          <div>
-            <Label>{t.trAmount}</Label>
+          <div className="space-y-2">
+            <Label htmlFor="tr-amount">{t.trAmount}</Label>
             <Input
+              id="tr-amount"
               type="number"
               inputMode="decimal"
               placeholder="970"
@@ -163,17 +165,19 @@ export default function TransportPage() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label>{t.trValidFrom}</Label>
+            <div className="space-y-2">
+              <Label htmlFor="tr-from">{t.trValidFrom}</Label>
               <Input
+                id="tr-from"
                 type="date"
                 value={form.validFrom}
                 onChange={(e) => setForm({ ...form, validFrom: e.target.value })}
               />
             </div>
-            <div>
-              <Label>{t.trValidTo}</Label>
+            <div className="space-y-2">
+              <Label htmlFor="tr-to">{t.trValidTo}</Label>
               <Input
+                id="tr-to"
                 type="date"
                 value={form.validTo}
                 onChange={(e) => setForm({ ...form, validTo: e.target.value })}
@@ -181,7 +185,7 @@ export default function TransportPage() {
             </div>
           </div>
 
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             <input
               type="checkbox"
               checked={form.isRecurring}
@@ -206,7 +210,7 @@ export default function TransportPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b text-left text-gray-500 dark:text-gray-400">
+                  <tr className="border-b border-gray-900/[0.07] text-left text-xs font-medium text-gray-500 dark:border-white/[0.08] dark:text-gray-400">
                     <th className="p-2">{t.trColPeriod}</th>
                     <th className="p-2">{t.trColProvider}</th>
                     <th className="p-2 text-right">{t.trColAmount}</th>
@@ -217,26 +221,29 @@ export default function TransportPage() {
                 </thead>
                 <tbody>
                   {passes.map((p) => (
-                    <tr key={p.id} className="border-b dark:border-white/[0.07] dark:text-gray-100">
+                    <tr key={p.id} className="border-b border-gray-900/[0.06] last:border-0 dark:border-white/[0.07] dark:text-gray-100">
                       <td className="p-2">
                         {new Date(p.validFrom).toLocaleDateString(locale)} -{" "}
                         {new Date(p.validTo).toLocaleDateString(locale)}
                       </td>
                       <td className="p-2">{providerLabel(p)}</td>
-                      <td className="p-2 text-right">{Number(p.amount).toFixed(2)} kr</td>
-                      <td className="p-2 text-right">
-                        {p.vatAmount ? `${Number(p.vatAmount).toFixed(2)} kr` : "-"}
+                      <td className="p-2 text-right tabular-nums">{formatSek(p.amount)}</td>
+                      <td className="p-2 text-right tabular-nums">
+                        {p.vatAmount ? formatSek(p.vatAmount) : "-"}
                       </td>
                       <td className="p-2 text-right">
                         {p.isRecurring ? t.trRecurringTag : t.trOnceTag}
                       </td>
                       <td className="p-2 text-right">
-                        <button
+                        <Button
+                          variant="ghost"
                           onClick={() => remove(p.id)}
-                          className="text-xs text-red-600 hover:underline"
+                          aria-label={t.btnDelete}
+                          title={t.btnDelete}
+                          className="h-8 w-8 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
-                          ✕
-                        </button>
+                          <Trash2 className="h-4 w-4" strokeWidth={1.75} />
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -254,8 +261,8 @@ export default function TransportPage() {
           <CardDescription>{t.trExportDesc}</CardDescription>
         </CardHeader>
         <CardContent>
-          <a href="/api/transport/export">
-            <Button variant="outline">{t.trExportBtn}</Button>
+          <a href="/api/transport/export" className={buttonClass("outline")}>
+            {t.trExportBtn}
           </a>
         </CardContent>
       </Card>

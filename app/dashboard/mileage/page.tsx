@@ -3,11 +3,14 @@
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Trash2 } from "lucide-react";
+import { formatSek } from "@/lib/utils";
+import { Button, buttonClass } from "@/components/ui/button";
+import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UpsellCard } from "@/components/UpsellCard";
 import { useLanguage } from "@/context/LanguageContext";
+import { PageHeader } from "@/components/ui/page-header";
 
 interface Entry {
   id: string;
@@ -245,8 +248,8 @@ export default function MileagePage() {
 
   if (allowed === false) {
     return (
-      <div className="space-y-6">
-        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navMileage}</h1>
+      <div className="max-w-3xl space-y-6">
+        <PageHeader title={t.navMileage} />
         <UpsellCard
           title={t.navMileage}
           requiredPlan={t.planPro}
@@ -257,13 +260,11 @@ export default function MileagePage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navMileage}</h1>
-        <p className="text-gray-500 dark:text-gray-400">
-          {t.milRatePre} {rate.toFixed(2).replace(".", ",")} kr/km {t.milRateNote}
-        </p>
-      </div>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader
+        title={t.navMileage}
+        subtitle={`${t.milRatePre} ${rate.toFixed(2).replace(".", ",")} kr/km ${t.milRateNote}`}
+      />
 
       <Card>
         <CardHeader>
@@ -290,18 +291,17 @@ export default function MileagePage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="purpose">{t.fldPurpose}</Label>
-              <select id="purpose" value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111] dark:text-white">
+              <Select id="purpose" value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })}>
                 <option value="business">{t.purposeBusiness}</option>
                 <option value="private">{t.purposePrivate}</option>
-              </select>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="vehicle">{t.milVehicle}</Label>
-              <select
+              <Select
                 id="vehicle"
                 value={vehicleId}
                 onChange={(e) => setVehicleId(e.target.value)}
-                className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111] dark:text-white"
               >
                 <option value="">{t.milPrivateCar} (2,50 kr/km)</option>
                 {vehicles.map((v) => (
@@ -312,11 +312,11 @@ export default function MileagePage() {
                     {(v.isElectric ? 0.95 : 1.2).toFixed(2).replace(".", ",")} kr/km)
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div className="space-y-2">
-              <Label>{t.fldAmount}</Label>
-              <p className="flex h-10 items-center text-lg font-semibold">{preview} kr</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t.fldAmount}</p>
+              <p className="flex h-10 items-center font-display text-lg font-semibold tabular-nums" aria-live="polite">{preview} kr</p>
             </div>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">{t.milVehicleNote}</p>
@@ -333,8 +333,9 @@ export default function MileagePage() {
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
             <div className="flex-1 space-y-2">
-              <Label>{t.milRouteLabel}</Label>
+              <Label htmlFor="route-label">{t.milRouteLabel}</Label>
               <Input
+                id="route-label"
                 value={routeLabel}
                 onChange={(e) => setRouteLabel(e.target.value)}
                 placeholder={t.milRouteLabelPh}
@@ -345,8 +346,8 @@ export default function MileagePage() {
 
           {routes.length === 0 ? (
             <div className="space-y-2">
-              <div className="relative rounded-lg border border-dashed border-gray-300 p-3 opacity-70 dark:border-white/[0.10]">
-                <span className="absolute right-2 top-2 rounded-full bg-ink/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-ink/50 dark:text-gray-500">
+              <div className="relative rounded-2xl border border-dashed border-gray-900/15 p-4 opacity-70 dark:border-white/[0.14]">
+                <span className="absolute right-3 top-3 rounded-full bg-gray-900/[0.06] px-2 py-0.5 text-xs text-gray-500 dark:bg-white/[0.08] dark:text-gray-400">
                   {t.milExample}
                 </span>
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -372,7 +373,7 @@ export default function MileagePage() {
                 const dowLabels = [t.milDowMon, t.milDowTue, t.milDowWed, t.milDowThu, t.milDowFri, t.milDowSat, t.milDowSun];
                 const count = periodFor === r.id ? datesInPeriod().length : 0;
                 return (
-                  <li key={r.id} className="rounded-lg border hairline p-3">
+                  <li key={r.id} className="rounded-2xl border border-gray-900/[0.07] p-4 dark:border-white/[0.08]">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="min-w-0">
                         <p className="font-medium">{r.label}</p>
@@ -389,38 +390,47 @@ export default function MileagePage() {
                         >
                           {t.milLogPeriod}
                         </Button>
-                        <button onClick={() => deleteRoute(r.id)} className="text-xs text-red-600 hover:underline">✕</button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => deleteRoute(r.id)}
+                          aria-label={t.btnDelete}
+                          title={t.btnDelete}
+                          className="h-8 w-8 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                        >
+                          <Trash2 className="h-4 w-4" strokeWidth={1.75} />
+                        </Button>
                       </div>
                     </div>
 
                     {periodFor === r.id && (
-                      <div className="mt-3 space-y-3 border-t hairline pt-3">
+                      <div className="mt-4 space-y-3 border-t border-gray-900/[0.07] pt-4 dark:border-white/[0.08]">
                         <div className="grid gap-3 sm:grid-cols-2">
                           <div className="space-y-1">
-                            <Label>{t.milPeriodFrom}</Label>
-                            <Input type="date" value={period.from} onChange={(e) => setPeriod({ ...period, from: e.target.value })} />
+                            <Label htmlFor={`pf-${r.id}`}>{t.milPeriodFrom}</Label>
+                            <Input id={`pf-${r.id}`} type="date" value={period.from} onChange={(e) => setPeriod({ ...period, from: e.target.value })} />
                           </div>
                           <div className="space-y-1">
-                            <Label>{t.milPeriodTo}</Label>
-                            <Input type="date" value={period.to} onChange={(e) => setPeriod({ ...period, to: e.target.value })} />
+                            <Label htmlFor={`pt-${r.id}`}>{t.milPeriodTo}</Label>
+                            <Input id={`pt-${r.id}`} type="date" value={period.to} onChange={(e) => setPeriod({ ...period, to: e.target.value })} />
                           </div>
                         </div>
-                        <div>
-                          <Label>{t.milWeekdays}</Label>
-                          <div className="mt-1 flex flex-wrap gap-1.5">
+                        <div role="group" aria-label={t.milWeekdays}>
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t.milWeekdays}</p>
+                          <div className="mt-2 flex flex-wrap gap-1.5">
                             {dowLabels.map((d, i) => (
                               <button
                                 key={i}
+                                aria-pressed={period.dows[i]}
                                 onClick={() => {
                                   const dows = [...period.dows];
                                   dows[i] = !dows[i];
                                   setPeriod({ ...period, dows });
                                 }}
                                 className={
-                                  "h-9 w-9 rounded-full border text-xs transition " +
+                                  "h-9 w-9 rounded-full border text-xs transition duration-300 ease-premium active:scale-95 " +
                                   (period.dows[i]
                                     ? "border-nordic-600 bg-nordic-600 text-white"
-                                    : "border-gray-300 text-gray-500 dark:border-white/[0.10] dark:text-gray-300")
+                                    : "border-gray-900/15 text-gray-500 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300")
                                 }
                               >
                                 {d}
@@ -449,7 +459,7 @@ export default function MileagePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {vehicles.length > 0 && (
-              <ul className="divide-y text-sm">
+              <ul className="divide-y divide-gray-900/[0.06] text-sm dark:divide-white/[0.07]">
                 {vehicles.map((v) => (
                   <li key={v.id} className="flex items-center justify-between py-2 dark:text-gray-100">
                     <span>
@@ -457,48 +467,53 @@ export default function MileagePage() {
                       {v.model ? ` · ${v.model}` : ""}
                       {v.isElectric ? ` · ${t.milElectricTag}` : ""}
                     </span>
-                    <button
+<Button
+                      variant="ghost"
                       onClick={async () => {
                         const r = await fetch(`/api/company/vehicles/${v.id}`, { method: "DELETE" });
                         if (r.ok) loadVehicles();
                       }}
-                      className="text-xs text-red-600 hover:underline"
+                      aria-label={t.btnDelete}
+                      title={t.btnDelete}
+                      className="h-8 w-8 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                     >
-                      ✕
-                    </button>
+                      <Trash2 className="h-4 w-4" strokeWidth={1.75} />
+                    </Button>
                   </li>
                 ))}
               </ul>
             )}
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-2">
-                <Label>{t.milRegNr}</Label>
+                <Label htmlFor="veh-reg">{t.milRegNr}</Label>
                 <Input
+                  id="veh-reg"
                   value={vForm.registrationNumber}
                   onChange={(e) => setVForm({ ...vForm, registrationNumber: e.target.value.toUpperCase().replace(/\s+/g, "") })}
                   placeholder="ABC123"
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t.milModel}</Label>
+                <Label htmlFor="veh-model">{t.milModel}</Label>
                 <Input
+                  id="veh-model"
                   value={vForm.model}
                   onChange={(e) => setVForm({ ...vForm, model: e.target.value })}
                   placeholder="Volvo V60"
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t.milFuel}</Label>
-                <select
+                <Label htmlFor="veh-fuel">{t.milFuel}</Label>
+                <Select
+                  id="veh-fuel"
                   value={vForm.fuelType}
                   onChange={(e) => setVForm({ ...vForm, fuelType: e.target.value })}
-                  className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111] dark:text-white"
                 >
                   <option value="petrol">{t.milFuelPetrol}</option>
                   <option value="diesel">{t.milFuelDiesel}</option>
                   <option value="hybrid">{t.milFuelHybrid}</option>
                   <option value="electric">{t.milFuelElectric}</option>
-                </select>
+                </Select>
               </div>
             </div>
             <Button variant="outline" onClick={addVehicle}>{t.milAddVehicle}</Button>
@@ -509,7 +524,7 @@ export default function MileagePage() {
       <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0">
           <CardTitle>{t.milLog}</CardTitle>
-          <a href="/api/mileage/export"><Button variant="outline">{t.btnExportCsv}</Button></a>
+          <a href="/api/mileage/export" className={buttonClass("outline")}>{t.btnExportCsv}</a>
         </CardHeader>
         <CardContent>
           {entries.length === 0 ? (
@@ -517,21 +532,29 @@ export default function MileagePage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
-                <thead className="text-left text-gray-500 dark:text-gray-400">
+                <thead className="border-b border-gray-900/[0.07] text-left text-xs font-medium text-gray-500 dark:border-white/[0.08] dark:text-gray-400">
                   <tr>
                     <th className="py-2">{t.fldDate}</th><th>{t.fldFrom}</th><th>{t.fldTo}</th><th>{t.milKm}</th><th>{t.fldAmount}</th><th>{t.fldPurpose}</th><th></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-white/[0.07]">
+                <tbody className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.07]">
                   {entries.map((e) => (
                     <tr key={e.id} className="dark:text-gray-100">
                       <td className="py-2">{new Date(e.date).toLocaleDateString("sv-SE")}</td>
                       <td className="max-w-[140px] truncate">{e.startAddress}</td>
                       <td className="max-w-[140px] truncate">{e.endAddress}</td>
                       <td>{Number(e.distanceKm).toFixed(0)}</td>
-                      <td>{Number(e.amount).toFixed(2).replace(".", ",")} kr</td>
+                      <td className="tabular-nums">{formatSek(e.amount)}</td>
                       <td>{e.purpose === "business" ? t.purposeBusinessShort : t.purposePrivate}</td>
-                      <td><button onClick={() => remove(e.id)} className="text-red-600 hover:underline">{t.btnDelete}</button></td>
+                      <td className="text-right"><Button
+                          variant="ghost"
+                          onClick={() => remove(e.id)}
+                          aria-label={t.btnDelete}
+                          title={t.btnDelete}
+                          className="h-8 w-8 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                        >
+                          <Trash2 className="h-4 w-4" strokeWidth={1.75} />
+                        </Button></td>
                     </tr>
                   ))}
                 </tbody>
@@ -541,7 +564,7 @@ export default function MileagePage() {
         </CardContent>
       </Card>
 
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-gray-500 dark:text-gray-400">
         {t.milManualNote}
       </p>
     </div>

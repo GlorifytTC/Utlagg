@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   computeInvoiceTotals,
@@ -18,6 +19,7 @@ import {
 } from "@/lib/invoice";
 import { useLanguage } from "@/context/LanguageContext";
 import { BuyerAutocomplete } from "@/components/BuyerAutocomplete";
+import { PageHeader } from "@/components/ui/page-header";
 
 const emptyLine = (): InvoiceLine => ({
   description: "",
@@ -123,10 +125,8 @@ export default function NewInvoicePage() {
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">
-        {t.btnNewInvoice}
-      </h1>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader title={t.btnNewInvoice} back={{ href: "/dashboard/invoices", label: t.navInvoices }} />
 
       {seller && (
         <Card>
@@ -145,7 +145,7 @@ export default function NewInvoicePage() {
             {seller.invoiceDetails?.plusgiro && <p>{t.invPlusgiro} {seller.invoiceDetails.plusgiro}</p>}
             {seller.invoiceDetails?.iban && <p>{t.invIban} {seller.invoiceDetails.iban}</p>}
             {sellerIncomplete && (
-              <p className="mt-2 rounded-lg bg-amber-50 p-3 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+              <p className="mt-2 rounded-xl bg-amber-50 p-3 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
                 {t.invFromMissing}
               </p>
             )}
@@ -159,8 +159,8 @@ export default function NewInvoicePage() {
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>{t.fldInvoiceNumber}</Label>
-            <Input
+            <Label htmlFor="inv-fldInvoiceNumber">{t.fldInvoiceNumber}</Label>
+            <Input id="inv-fldInvoiceNumber"
               value={form.invoiceNumber}
               onChange={(e) =>
                 setForm({ ...form, invoiceNumber: e.target.value })
@@ -169,15 +169,15 @@ export default function NewInvoicePage() {
             />
           </div>
           <div className="space-y-2">
-            <Label>{t.fldCustomerName}</Label>
-            <BuyerAutocomplete
+            <Label htmlFor="inv-fldCustomerName">{t.fldCustomerName}</Label>
+            <BuyerAutocomplete id="inv-fldCustomerName"
               onSelect={handleBuyerSelect}
               onInputChange={handleBuyerInputChange}
             />
           </div>
           <div className="space-y-2">
-            <Label>{t.fldOrgNumberShort}</Label>
-            <Input
+            <Label htmlFor="inv-fldOrgNumberShort">{t.fldOrgNumberShort}</Label>
+            <Input id="inv-fldOrgNumberShort"
               value={form.buyerOrgNumber}
               onChange={(e) =>
                 setForm({ ...form, buyerOrgNumber: e.target.value })
@@ -186,8 +186,8 @@ export default function NewInvoicePage() {
             />
           </div>
           <div className="space-y-2">
-            <Label>{t.fldVatNumberShort}</Label>
-            <Input
+            <Label htmlFor="inv-fldVatNumberShort">{t.fldVatNumberShort}</Label>
+            <Input id="inv-fldVatNumberShort"
               value={form.buyerVatNumber}
               onChange={(e) =>
                 setForm({ ...form, buyerVatNumber: e.target.value })
@@ -196,8 +196,8 @@ export default function NewInvoicePage() {
             />
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label>{t.fldAddress}</Label>
-            <Input
+            <Label htmlFor="inv-fldAddress">{t.fldAddress}</Label>
+            <Input id="inv-fldAddress"
               value={form.buyerAddress}
               onChange={(e) =>
                 setForm({ ...form, buyerAddress: e.target.value })
@@ -205,8 +205,8 @@ export default function NewInvoicePage() {
             />
           </div>
           <div className="space-y-2">
-            <Label>{t.fldIssueDate}</Label>
-            <Input
+            <Label htmlFor="inv-fldIssueDate">{t.fldIssueDate}</Label>
+            <Input id="inv-fldIssueDate"
               type="date"
               value={form.issueDate}
               onChange={(e) =>
@@ -215,8 +215,8 @@ export default function NewInvoicePage() {
             />
           </div>
           <div className="space-y-2">
-            <Label>{t.fldDueDate}</Label>
-            <Input
+            <Label htmlFor="inv-fldDueDate">{t.fldDueDate}</Label>
+            <Input id="inv-fldDueDate"
               type="date"
               value={form.dueDate}
               onChange={(e) =>
@@ -263,9 +263,10 @@ export default function NewInvoicePage() {
                 }
                 placeholder={t.phUnitPrice}
               />
-              <select
+              <Select
                 disabled={reverseCharge}
-                className="col-span-2 rounded-lg border border-gray-300 px-2 text-sm disabled:opacity-50 dark:border-white/[0.10] dark:bg-[#111]"
+                aria-label={t.invColVat}
+                className="col-span-2 px-2"
                 value={l.vatRate}
                 onChange={(e) =>
                   setLine(i, { vatRate: Number(e.target.value) })
@@ -275,18 +276,20 @@ export default function NewInvoicePage() {
                 <option value={12}>12%</option>
                 <option value={6}>6%</option>
                 <option value={0}>0%</option>
-              </select>
-              <button
-                className="col-span-1 text-red-600"
+              </Select>
+              <Button
+                variant="ghost"
+                className="col-span-1 h-10 w-10 justify-self-center !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 onClick={() =>
                   setLines((ls) =>
                     ls.length > 1 ? ls.filter((_, idx) => idx !== i) : ls
                   )
                 }
                 aria-label={t.ariaRemoveRow}
+                title={t.ariaRemoveRow}
               >
-                ×
-              </button>
+                <X className="h-4 w-4" strokeWidth={1.75} />
+              </Button>
             </div>
           ))}
           <Button

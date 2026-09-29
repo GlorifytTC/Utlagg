@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { buttonClass } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 
 /** Shown in place of a gated feature when the user's plan doesn't include it. */
@@ -18,19 +18,19 @@ export function UpsellCard({
 }) {
   const { t } = useLanguage();
   return (
-    <Card className="border-dashed">
+    <Card>
       <CardHeader>
-        <div className="flex items-center gap-2 text-gray-500">
-          <Lock className="h-5 w-5" />
-          <CardTitle>{title}</CardTitle>
-        </div>
+        <span className="mb-2 grid h-10 w-10 place-items-center rounded-full bg-nordic-600/10 text-nordic-700 dark:text-nordic-300">
+          <Lock className="h-[18px] w-[18px]" strokeWidth={1.75} />
+        </span>
+        <CardTitle>{title}</CardTitle>
         <CardDescription>
           {description ?? t.upsellIncludedIn.replace("{plan}", requiredPlan)}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Link href="/dashboard/subscription">
-          <Button>{t.upsellUpgradeTo.replace("{plan}", requiredPlan)}</Button>
+        <Link href="/dashboard/subscription" className={buttonClass()}>
+          {t.upsellUpgradeTo.replace("{plan}", requiredPlan)}
         </Link>
       </CardContent>
     </Card>

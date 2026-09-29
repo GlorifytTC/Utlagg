@@ -132,7 +132,7 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
                         {item.href === "/dashboard/chats" && <AnimatePresence><NotifBadge n={chat} /></AnimatePresence>}
                       </span>
                       <span className="flex-1 truncate">{t[item.key as keyof Translations]}</span>
-                      {tier && "feature" in item && !hasFeature(tier, (item as { feature: Feature }).feature) && <Lock className="h-3.5 w-3.5 text-gray-400" strokeWidth={1.75} />}
+                      {tier && "feature" in item && !hasFeature(tier, (item as { feature: Feature }).feature) && <Lock className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" strokeWidth={1.75} />}
                     </Link>
                   </li>
                 );

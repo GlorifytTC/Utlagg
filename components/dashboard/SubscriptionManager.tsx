@@ -101,7 +101,7 @@ export function SubscriptionManager({
               initial={{ y: 20 }}
               animate={{ y: 0 }}
               exit={{ y: 20 }}
-              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-[#111]"
+              className="panel w-full max-w-md rounded-[1.5rem] p-6"
             >
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.cancelTitle}</h2>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{t.cancelIntro}</p>

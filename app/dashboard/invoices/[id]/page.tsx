@@ -65,7 +65,7 @@ export default async function InvoiceView({ params }: { params: { id: string } }
         <p>{t.invIncomeNoteBody}</p>
       </div>
 
-      <p className="text-xs text-gray-400 print:hidden">
+      <p className="text-xs text-gray-500 dark:text-gray-400 print:hidden">
         {t.invViewDisclaimer}
       </p>
     </div>

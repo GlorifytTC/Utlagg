@@ -20,12 +20,12 @@ export function RecentReceipts({ receipts }: { receipts: Receipt[] }) {
   };
 
   return (
-    <Card className="rounded-2xl panel transition-shadow hover:shadow-sm">
+    <Card>
       <CardHeader className="pb-4">
-        <CardTitle className="font-display text-lg text-gray-900 dark:text-white">
+        <CardTitle className="font-display text-lg">
           {t.recentTitle}
         </CardTitle>
-        <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
+        <CardDescription>
           {t.recentDesc}
         </CardDescription>
       </CardHeader>
@@ -35,14 +35,14 @@ export function RecentReceipts({ receipts }: { receipts: Receipt[] }) {
             {t.noReceiptsYet}{" "}
             <Link
               href="/dashboard/receipts"
-              className="text-nordic-600 underline transition hover:text-nordic-700 dark:text-nordic-600 dark:hover:text-nordic-700"
+              className="font-medium text-nordic-600 transition hover:text-nordic-700 dark:text-nordic-300"
             >
               {t.uploadFirst}
             </Link>
             .
           </p>
         ) : (
-          <ul className="divide-y divide-gray-100 dark:divide-white/[0.06]">
+          <ul className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.06]">
             {receipts.map((r, i) => (
               <li
                 key={r.id}

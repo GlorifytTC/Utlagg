@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UpsellCard } from "@/components/UpsellCard";
-import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
+import { PageHeader } from "@/components/ui/page-header";
 
 interface Receipt { id: string; vendorName: string | null; totalAmount: string | null; }
 
@@ -52,11 +52,8 @@ export default function SubmitApprovalPage() {
 
   if (allowed === false) {
     return (
-      <div className="max-w-xl space-y-6">
-        <Link href="/dashboard/approvals" className="mb-2 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-          ← {t.navApprovals}
-        </Link>
-        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
+      <div className="max-w-3xl space-y-6">
+        <PageHeader title={t.btnSubmitApproval} back={{ href: "/dashboard/approvals", label: t.navApprovals }} />
         <UpsellCard
           title={t.apUpsellTitle}
           requiredPlan={t.planBusiness}
@@ -67,11 +64,8 @@ export default function SubmitApprovalPage() {
   }
 
   return (
-    <div className="max-w-xl space-y-6">
-      <Link href="/dashboard/approvals" className="mb-2 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-        ← {t.navApprovals}
-      </Link>
-      <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.btnSubmitApproval}</h1>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader title={t.btnSubmitApproval} back={{ href: "/dashboard/approvals", label: t.navApprovals }} />
       <Card>
         <CardHeader>
           <CardTitle>{t.apRequest}</CardTitle>
@@ -80,14 +74,14 @@ export default function SubmitApprovalPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="receipt">{t.fldReceipt}</Label>
-            <select id="receipt" value={receiptId} onChange={(e) => setReceiptId(e.target.value)} className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-white/[0.10] dark:bg-[#111]">
+            <Select id="receipt" value={receiptId} onChange={(e) => setReceiptId(e.target.value)}>
               <option value="">{t.phSelectReceipt}</option>
               {receipts.map((r) => (
                 <option key={r.id} value={r.id}>
                   {(r.vendorName ?? t.unknownShort)} - {Number(r.totalAmount ?? 0).toFixed(2).replace(".", ",")} kr
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="approver">{t.fldApproverEmail}</Label>
@@ -100,7 +94,7 @@ export default function SubmitApprovalPage() {
           <Button onClick={submit} disabled={loading}>{loading ? t.stSubmitting : t.btnSubmitApproval}</Button>
         </CardContent>
       </Card>
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-gray-500 dark:text-gray-400">
         {t.apSubmitNote}
       </p>
     </div>

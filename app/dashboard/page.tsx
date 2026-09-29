@@ -148,7 +148,7 @@ export default async function DashboardPage() {
               <span className="block text-sm font-semibold text-gray-900 dark:text-white">{t.navExport}</span>
               <span className="mt-0.5 block text-sm text-gray-500 dark:text-gray-400">{t.dashExportHint}</span>
             </span>
-            <ArrowUpRight className="h-4 w-4 shrink-0 text-gray-400 transition duration-300 ease-premium group-hover:-translate-y-px group-hover:translate-x-0.5 group-hover:text-nordic-600" strokeWidth={1.75} />
+            <ArrowUpRight className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400 transition duration-300 ease-premium group-hover:-translate-y-px group-hover:translate-x-0.5 group-hover:text-nordic-600" strokeWidth={1.75} />
           </Link>
 
           <DashboardAccountantAccess />

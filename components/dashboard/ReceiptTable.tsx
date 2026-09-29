@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatSek, formatDate, cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
+import { fieldClass } from "@/components/ui/input";
 
 const STATUS_STYLE: Record<string, string> = {
   pending: "bg-amber-100/50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
@@ -216,16 +217,16 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t.receiptSearch}
-            className="min-w-[200px] flex-1 rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
+            className={`${fieldClass} h-10 min-w-[200px] flex-1 py-2`}
           />
           <div className="flex items-end gap-2">
             <label className="text-xs text-gray-500 dark:text-gray-400">
               {t.receiptFrom}
-              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="mt-0.5 block rounded-lg border border-gray-900/[0.12] bg-white px-2 py-1.5 text-sm dark:border-white/[0.12] dark:bg-[#111] dark:text-white" />
+              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={`${fieldClass} mt-1 block h-10 !w-auto py-2`} />
             </label>
             <label className="text-xs text-gray-500 dark:text-gray-400">
               {t.receiptTo}
-              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="mt-0.5 block rounded-lg border border-gray-900/[0.12] bg-white px-2 py-1.5 text-sm dark:border-white/[0.12] dark:bg-[#111] dark:text-white" />
+              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={`${fieldClass} mt-1 block h-10 !w-auto py-2`} />
             </label>
             <div ref={exportRef} className="relative">
               <motion.button
@@ -252,7 +253,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.12 }}
-                    className="absolute right-0 z-20 mt-1 min-w-[140px] overflow-hidden rounded-xl border border-gray-900/[0.12] bg-white py-1 shadow-lg dark:border-white/[0.12] dark:bg-[#111]"
+                    className="panel absolute right-0 z-20 mt-1 min-w-[140px] overflow-hidden rounded-2xl py-1"
                   >
                     {EXPORT_FORMATS.map((f) => (
                       <button

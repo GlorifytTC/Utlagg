@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClass } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatSek, cn } from "@/lib/utils";
 
@@ -89,18 +89,9 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
 
   if (!connected) {
     return (
-      <motion.a
-        href="/api/integrations/fortnox/auth"
-        initial={{ opacity: 0, y: 5 }}
-        animate={{ opacity: 1, y: 0 }}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="inline-block"
-      >
-        <Button className="rounded-full bg-gray-900 px-5 py-2 text-sm text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
-          {t.fortnoxConnect}
-        </Button>
-      </motion.a>
+      <a href="/api/integrations/fortnox/auth" className={buttonClass()}>
+        {t.fortnoxConnect}
+      </a>
     );
   }
 
@@ -154,9 +145,9 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
 
         <div className="max-h-72 overflow-y-auto">
           {pending === null ? (
-            <div className="flex items-center justify-center py-8 text-sm text-gray-400">…</div>
+            <div className="flex items-center justify-center py-8 text-sm text-gray-500 dark:text-gray-400">…</div>
           ) : pending.length === 0 ? (
-            <div className="flex items-center justify-center py-8 text-sm text-gray-400">{t.fortnoxNonePending}</div>
+            <div className="flex items-center justify-center py-8 text-sm text-gray-500 dark:text-gray-400">{t.fortnoxNonePending}</div>
           ) : (
             <ul className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.06]">
               {pending.map((r) => (
@@ -171,7 +162,7 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
                     <span className="flex-1 truncate text-sm text-gray-900 dark:text-white">
                       {r.vendorName || "-"}
                     </span>
-                    <span className="shrink-0 text-xs text-gray-400">
+                    <span className="shrink-0 text-xs text-gray-500 dark:text-gray-400">
                       {r.date ? new Date(r.date).toLocaleDateString("sv-SE") : "-"}
                     </span>
                     <span className="shrink-0 truncate text-xs text-gray-500 dark:text-gray-400" style={{ maxWidth: 140 }}>
@@ -195,14 +186,11 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
             <Button
               onClick={syncSelected}
               disabled={busy !== null || selected.size === 0}
-              className={cn(
-                "rounded-full bg-gray-900 px-5 py-2 text-sm text-white transition hover:bg-gray-800 disabled:opacity-50 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100",
-                busy === "sync" && "cursor-wait",
-              )}
+              className={cn(busy === "sync" && "cursor-wait")}
             >
               {busy === "sync" ? (
                 <span className="inline-flex items-center gap-2">
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent dark:border-gray-900 dark:border-t-transparent" />
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   {t.fortnoxSyncing}
                 </span>
               ) : (

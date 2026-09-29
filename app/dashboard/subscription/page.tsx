@@ -9,6 +9,7 @@ import { SubscriptionManager } from "@/components/dashboard/SubscriptionManager"
 import { InvoiceHistory } from "@/components/dashboard/InvoiceHistory";
 import { getT } from "@/lib/i18n-server";
 import { currentTier } from "@/lib/entitlements";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Prenumeration" };
 export const dynamic = "force-dynamic";
@@ -61,18 +62,15 @@ export default async function SubscriptionPage() {
       : null;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navSubscription}</h1>
-        <p className="text-gray-500 dark:text-gray-400">{t.subManageDesc}</p>
-      </div>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader title={t.navSubscription} subtitle={t.subManageDesc} />
       {justExpired && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+        <div className="rounded-2xl border border-amber-300/40 bg-amber-50/80 p-5 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
           {t.subGrantExpiredNotice}
         </div>
       )}
       {!justExpired && before.subscriptionPaused && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+        <div className="rounded-2xl border border-amber-300/40 bg-amber-50/80 p-5 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
           {t.subPausedNotice}
         </div>
       )}

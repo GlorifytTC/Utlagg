@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
+import { formatDate, formatSek } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
+import { PageHeader } from "@/components/ui/page-header";
 
 interface Req { id: string; amount: string; status: string; approverEmail?: string; approverComment: string | null; createdAt: string; }
 
@@ -23,24 +24,21 @@ export default function ApprovalHistoryPage() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <Link href="/dashboard/approvals" className="mb-2 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-        ← {t.navApprovals}
-      </Link>
-      <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.apHistoryTitle}</h1>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader title={t.apHistoryTitle} back={{ href: "/dashboard/approvals", label: t.navApprovals }} />
       <Card>
         <CardHeader><CardTitle>{t.apHistoryDesc}</CardTitle></CardHeader>
         <CardContent>
           {reqs.length === 0 ? (
-            <p className="text-sm text-gray-500">{t.apNoneYet}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t.apNoneYet}</p>
           ) : (
-            <ul className="divide-y divide-gray-100 dark:divide-white/[0.07]">
+            <ul className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.07]">
               {reqs.map((r) => (
                 <li key={r.id} className="flex items-center justify-between py-3">
                   <div>
-                    <p className="font-medium">{Number(r.amount).toFixed(2).replace(".", ",")} kr</p>
-                    {r.approverComment && <p className="text-sm text-gray-500">{r.approverComment}</p>}
-                    <p className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString("sv-SE")}</p>
+                    <p className="font-medium tabular-nums">{formatSek(r.amount)}</p>
+                    {r.approverComment && <p className="text-sm text-gray-500 dark:text-gray-400">{r.approverComment}</p>}
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(r.createdAt)}</p>
                   </div>
                   <span className={"text-sm font-medium " + (badge[r.status] ?? "")}>
                     {r.status === "pending" ? t.statusPending : r.status === "approved" ? t.statusApproved : t.statusRejected}

@@ -14,9 +14,11 @@ export interface Buyer {
 interface Props {
   onSelect: (buyer: Buyer) => void;
   onInputChange?: (value: string) => void;
+  /** Lets a <Label htmlFor> point at the text field. */
+  id?: string;
 }
 
-export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
+export function BuyerAutocomplete({ onSelect, onInputChange, id }: Props) {
   const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Buyer[]>([]);
@@ -96,6 +98,7 @@ export function BuyerAutocomplete({ onSelect, onInputChange }: Props) {
   return (
     <div ref={ref} className="relative">
       <Input
+        id={id}
         ref={inputRef}
         value={query}
         onChange={(e) => {

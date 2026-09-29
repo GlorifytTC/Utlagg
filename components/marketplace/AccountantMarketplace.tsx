@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { Search, MapPin, X, Users, Star, CalendarDays } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { fieldClass } from "@/components/ui/input";
+import { buttonClass } from "@/components/ui/button";
 
 interface AccountantRow {
   id: string;
@@ -83,7 +85,7 @@ function RatingBadge({ rating, count }: { rating: number; count: number }) {
       <span className="text-[11px] leading-none text-nordic-600">
         {"★".repeat(Math.round(rating))}{"☆".repeat(5 - Math.round(rating))}
       </span>
-      <span className="text-[10px] text-gray-400">({count})</span>
+      <span className="text-[10px] text-gray-500 dark:text-gray-400">({count})</span>
     </div>
   );
 }
@@ -180,7 +182,7 @@ export function AccountantMarketplace({
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative min-w-0 flex-1">
             <Search
-              className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+              className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400"
               strokeWidth={2}
             />
             <input
@@ -188,13 +190,13 @@ export function AccountantMarketplace({
               onChange={(e) => setQ(e.target.value)}
               placeholder={t.mktSearchPlaceholder}
               aria-label={t.mktSearchLabel}
-              className="w-full rounded-xl border border-gray-900/[0.12] bg-white py-2.5 pl-10 pr-9 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
+              className={`${fieldClass} h-11 py-2.5 pl-10 pr-9`}
             />
             {q && (
               <button
                 onClick={() => setQ("")}
                 aria-label={t.mktClearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-600"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -202,7 +204,7 @@ export function AccountantMarketplace({
           </div>
           <div className="relative w-40">
             <MapPin
-              className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500 dark:text-gray-400"
               strokeWidth={2}
             />
             <input
@@ -210,13 +212,13 @@ export function AccountantMarketplace({
               onChange={(e) => setCity(e.target.value)}
               placeholder={t.mktCityPlaceholder}
               aria-label={t.mktCityLabel}
-              className="w-full rounded-xl border border-gray-900/[0.10] bg-white py-2.5 pl-8 pr-8 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.10] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600"
+              className={`${fieldClass} h-11 py-2.5 pl-8 pr-8`}
             />
             {city && (
               <button
                 onClick={() => setCity("")}
                 aria-label={t.mktClearCity}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-600"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -225,7 +227,7 @@ export function AccountantMarketplace({
           {hasFilters && (
             <button
               onClick={() => { setQ(""); setCity(""); }}
-              className="shrink-0 rounded-xl border border-gray-900/[0.10] px-3 py-2.5 text-sm text-gray-500 transition hover:bg-gray-50 dark:border-white/[0.10] dark:hover:bg-white/[0.06]"
+              className={buttonClass("outline", "h-11 shrink-0 text-gray-600 dark:text-gray-300")}
             >
               {t.mktClear}
             </button>
@@ -235,7 +237,7 @@ export function AccountantMarketplace({
 
       {/* Result count */}
       {!compact && loadState === "ok" && rows.length > 0 && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-500 dark:text-gray-400">
           {(rows.length === 1 ? t.mktResultsOne : t.mktResultsMany).replace("{n}", String(rows.length))}
         </p>
       )}
@@ -277,7 +279,7 @@ export function AccountantMarketplace({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.97 }}
                   transition={{ delay: i * 0.04, duration: 0.2 }}
-                  className="group relative flex flex-col rounded-2xl border border-gray-900/[0.07] bg-white transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,0.09)] dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+                  className="panel group relative flex flex-col rounded-2xl transition-[box-shadow,transform,border-color] duration-300 ease-premium hover:-translate-y-0.5 hover:border-nordic-600/30 hover:shadow-[0_20px_40px_-24px_rgba(60,40,25,0.28)] dark:hover:shadow-[0_20px_40px_-24px_rgba(0,0,0,0.6)]"
                 >
                   {/* Full-card link underneath */}
                   <Link
@@ -321,7 +323,7 @@ export function AccountantMarketplace({
                           </span>
                         )}
                         {a.city && (
-                          <span className="mt-0.5 flex items-center gap-1 text-xs text-gray-400">
+                          <span className="mt-0.5 flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                             <MapPin className="h-3 w-3 shrink-0" strokeWidth={2} />
                             {a.city}
                           </span>
@@ -358,7 +360,7 @@ export function AccountantMarketplace({
                           </span>
                         ))}
                         {a.specializations.length > 4 && (
-                          <span className="rounded-full bg-gray-100/80 px-2.5 py-0.5 text-[11px] text-gray-400 dark:bg-white/[0.05]">
+                          <span className="rounded-full bg-gray-100/80 px-2.5 py-0.5 text-[11px] text-gray-500 dark:text-gray-400 dark:bg-white/[0.05]">
                             +{a.specializations.length - 4}
                           </span>
                         )}
@@ -368,13 +370,13 @@ export function AccountantMarketplace({
                     {/* Stats row */}
                     <div className="mt-auto flex items-center gap-4 border-t border-gray-900/[0.05] pt-3 dark:border-white/[0.05]">
                       {a.activeClientCount > 0 && (
-                        <span className="flex items-center gap-1 text-[11px] text-gray-400">
+                        <span className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400">
                           <Users className="h-3 w-3 shrink-0" strokeWidth={2} />
                           {(a.activeClientCount === 1 ? t.mktClientsOne : t.mktClientsMany).replace("{n}", String(a.activeClientCount))}
                         </span>
                       )}
                       {a.joinedYear && (
-                        <span className="flex items-center gap-1 text-[11px] text-gray-400">
+                        <span className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400">
                           <CalendarDays className="h-3 w-3 shrink-0" strokeWidth={2} />
                           {t.mktSince.replace("{year}", String(a.joinedYear))}
                         </span>

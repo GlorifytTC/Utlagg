@@ -9,6 +9,7 @@ import { AccountantChat } from "@/components/AccountantChat";
 import { LogoUploader } from "@/components/dashboard/LogoUploader";
 import { useLanguage } from "@/context/LanguageContext";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { fieldClass } from "@/components/ui/input";
 
 interface Review {
   id: string;
@@ -102,13 +103,13 @@ function FirmSidebar({ firm }: { firm: Firm }) {
             </div>
           )}
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-400">{t.profFirm}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{t.profFirm}</p>
             <p className="font-semibold text-gray-900 dark:text-white">{firm.name}</p>
           </div>
         </div>
 
         {/* Members list */}
-        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">
+        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
           {t.profMembers.replace("{n}", String(firm.members.length))}
         </p>
         <ul className="space-y-2">
@@ -275,8 +276,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
     }
   }
 
-  const inputClass =
-    "w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white dark:placeholder:text-gray-600";
+  const inputClass = `${fieldClass} py-2`;
 
   if (loadState === "loading") {
     return (
@@ -378,7 +378,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
           </div>
 
           {accountant.city && (
-            <p className="flex items-center gap-1 text-sm text-gray-400">
+            <p className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
               <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
               {accountant.city}
             </p>
@@ -390,7 +390,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               <span className="flex items-center gap-1">
                 <Stars rating={accountant.avgRating} />
                 <span>{accountant.avgRating.toFixed(1)}</span>
-                <span className="text-gray-400">({accountant.reviewCount})</span>
+                <span className="text-gray-500 dark:text-gray-400">({accountant.reviewCount})</span>
               </span>
             )}
             {accountant.activeClientCount > 0 && (
@@ -548,7 +548,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         <h2 className="flex items-baseline gap-2 text-base font-semibold text-gray-900 dark:text-white">
           {t.profReviews}
           {accountant.reviewCount > 0 && (
-            <span className="text-sm font-normal text-gray-400">({accountant.reviewCount})</span>
+            <span className="text-sm font-normal text-gray-500 dark:text-gray-400">({accountant.reviewCount})</span>
           )}
         </h2>
 
@@ -613,7 +613,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <span className="w-6 shrink-0 text-right text-xs tabular-nums text-gray-400">{count}</span>
+                    <span className="w-6 shrink-0 text-right text-xs tabular-nums text-gray-500 dark:text-gray-400">{count}</span>
                   </button>
                 );
               })}
@@ -653,7 +653,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                     </p>
                     <Stars rating={r.rating} />
                   </div>
-                  <p className="shrink-0 text-xs text-gray-400">
+                  <p className="shrink-0 text-xs text-gray-500 dark:text-gray-400">
                     {new Date(r.createdAt).toLocaleDateString(lang === "en" ? "en-GB" : "sv-SE")}
                   </p>
                 </div>

@@ -2,9 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { buttonClass } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { Download, FileSpreadsheet, FileText, Car, Bus } from "lucide-react";
+import { fieldClass } from "@/components/ui/input";
 
 type PresetKey = "thisMonth" | "lastMonth" | "thisQuarter" | "lastQuarter" | "thisYear" | "allTime" | "custom";
 
@@ -95,10 +96,11 @@ export function ExportPanel() {
             <button
               key={p.key}
               onClick={() => choosePreset(p.key)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              aria-pressed={preset === p.key}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-300 ease-premium active:scale-[0.98] ${
                 preset === p.key
                   ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                  : "border border-gray-200 text-gray-600 hover:border-gray-300 dark:border-white/[0.10] dark:text-gray-300"
+                  : "border border-gray-900/15 text-gray-600 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300 dark:hover:border-white/30"
               }`}
             >
               {p.label}
@@ -108,61 +110,53 @@ export function ExportPanel() {
 
         <div className="flex flex-wrap items-end gap-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.expFrom}</label>
+            <label htmlFor="exp-from" className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.expFrom}</label>
             <input
+              id="exp-from"
               type="date"
               value={from}
               onChange={(e) => {
                 setFrom(e.target.value);
                 setPreset("custom");
               }}
-              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-white/[0.10] dark:bg-[#111]"
+              className={`${fieldClass} h-10 !w-auto py-2`}
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.expTo}</label>
+            <label htmlFor="exp-to" className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.expTo}</label>
             <input
+              id="exp-to"
               type="date"
               value={to}
               onChange={(e) => {
                 setTo(e.target.value);
                 setPreset("custom");
               }}
-              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-white/[0.10] dark:bg-[#111]"
+              className={`${fieldClass} h-10 !w-auto py-2`}
             />
           </div>
         </div>
 
         <div className="flex flex-wrap gap-3 pt-2">
-          <a href={`/api/export/csv${qs}`}>
-            <Button variant="outline" className="gap-2">
-              <FileSpreadsheet className="h-4 w-4" />
-              {t.btnExportCsv}
-            </Button>
+          <a href={`/api/export/csv${qs}`} className={buttonClass("outline")}>
+            <FileSpreadsheet className="h-4 w-4" strokeWidth={1.75} />
+            {t.btnExportCsv}
           </a>
-          <a href={`/api/export/sie${qs}`}>
-            <Button variant="outline" className="gap-2">
-              <FileText className="h-4 w-4" />
-              {t.btnExportSie}
-            </Button>
+          <a href={`/api/export/sie${qs}`} className={buttonClass("outline")}>
+            <FileText className="h-4 w-4" strokeWidth={1.75} />
+            {t.btnExportSie}
           </a>
-          <a href={`/api/export/pdf${qs}`}>
-            <Button variant="outline" className="gap-2">
-              <Download className="h-4 w-4" />
-              {t.btnExportPdf}
-            </Button>
+          <a href={`/api/export/pdf${qs}`} className={buttonClass("outline")}>
+            <Download className="h-4 w-4" strokeWidth={1.75} />
+            {t.btnExportPdf}
           </a>
-          <a href={`/api/mileage/export${qs}`}>
-            <Button variant="outline" className="gap-2">
-              <Car className="h-4 w-4" />
-              {t.expDownloadMileage}
-            </Button>
+          <a href={`/api/mileage/export${qs}`} className={buttonClass("outline")}>
+            <Car className="h-4 w-4" strokeWidth={1.75} />
+            {t.expDownloadMileage}
           </a>
-          <a href={`/api/transport/export${qs}`}>
-            <Button variant="outline" className="gap-2">
-              <Bus className="h-4 w-4" />
-              {t.expDownloadTransport}
-            </Button>
+          <a href={`/api/transport/export${qs}`} className={buttonClass("outline")}>
+            <Bus className="h-4 w-4" strokeWidth={1.75} />
+            {t.expDownloadTransport}
           </a>
         </div>
       </CardContent>

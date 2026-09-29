@@ -10,6 +10,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useNotifications } from "@/context/NotificationContext";
 import { formatListDate } from "@/lib/chat-format";
 import { cn } from "@/lib/utils";
+import { PageHeader } from "@/components/ui/page-header";
 
 interface Conversation {
   clientId: string;
@@ -70,12 +71,10 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.chatsTitle}</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {role === "accountant" ? t.chatsSubtitleAccountant : t.chatsSubtitle}
-        </p>
-      </div>
+      <PageHeader
+        title={t.chatsTitle}
+        subtitle={role === "accountant" ? t.chatsSubtitleAccountant : t.chatsSubtitle}
+      />
       {body()}
     </div>
   );
@@ -121,7 +120,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
           <div className="p-3">
             <label className="relative block">
               <span className="sr-only">{t.chatsSearch}</span>
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400" />
               <input
                 type="search"
                 value={query}
@@ -132,7 +131,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
             </label>
           </div>
           <ul className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
-            {visible.length === 0 && <li className="px-3 py-6 text-center text-sm text-gray-400">{t.chatsNoMatch}</li>}
+            {visible.length === 0 && <li className="px-3 py-6 text-center text-sm text-gray-500 dark:text-gray-400">{t.chatsNoMatch}</li>}
             {visible.map((c) => {
               const active = c.clientId === selected?.clientId;
               return (
@@ -187,7 +186,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
                 <button
                   onClick={() => select(null)}
                   aria-label={t.chatsBack}
-                  className="-ml-1 rounded-lg p-1.5 text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] lg:hidden"
+                  className="-ml-1 rounded-full p-1.5 text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] lg:hidden"
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </button>

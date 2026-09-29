@@ -75,7 +75,7 @@ export function InvoiceHistory() {
           <p className="text-sm text-gray-500 dark:text-gray-400">{t.invLoadFail}</p>
         ) : invoices === null ? (
           <div className="flex items-center justify-center py-6">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-gray-500 dark:text-gray-400" />
           </div>
         ) : invoices.length === 0 ? (
           <p className="py-2 text-sm text-gray-500 dark:text-gray-400">{t.invEmpty}</p>

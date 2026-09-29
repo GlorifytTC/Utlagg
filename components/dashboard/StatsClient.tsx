@@ -18,6 +18,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { formatSek } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { Palette } from "lucide-react";
+import { Select } from "@/components/ui/input";
+import { buttonClass } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatGrid } from "@/components/ui/stat";
 
 type Range = "month" | "year";
 type Bucket = "food" | "travel" | "office" | "it" | "marketing" | "professional" | "other";
@@ -148,20 +152,20 @@ export function StatsClient() {
   const totalCategoryAmount = pieData.reduce((sum, p) => sum + p.value, 0);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navStats}</h1>
-          <p className="text-gray-500 dark:text-gray-400">{t.stSubtitle}</p>
-        </div>
+    <div className="max-w-6xl space-y-6">
+      <PageHeader
+        title={t.navStats}
+        subtitle={t.stSubtitle}
+        actions={
         <div className="flex flex-wrap items-center gap-2">
           {/* Month / Year mode toggle */}
-          <div className="flex rounded-full border border-gray-200 bg-white p-1 dark:border-white/[0.08] dark:bg-[#111]">
+          <div className="flex rounded-full border border-gray-900/15 bg-white p-1 dark:border-white/[0.14] dark:bg-[#0d0d0d]">
             {(["month", "year"] as Range[]).map((r) => (
               <button
                 key={r}
                 onClick={() => setMode(r)}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                aria-pressed={mode === r}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-300 ease-premium ${
                   mode === r
                     ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
                     : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -174,49 +178,52 @@ export function StatsClient() {
 
           {/* Month-name picker (only in month mode) */}
           {mode === "month" && (
-            <select
+            <Select
+              aria-label={t.stRangeMonth}
               value={selMonth}
               onChange={(e) => setSelMonth(Number(e.target.value))}
-              className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-900 dark:border-white/[0.08] dark:bg-[#111] dark:text-white"
+              className="!w-auto rounded-full pr-8"
             >
               {monthNames.map((name, i) => (
                 <option key={i} value={i}>
                   {name}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
 
           {/* Year picker */}
-          <select
+          <Select
+            aria-label={t.stRangeYear}
             value={selYear}
             onChange={(e) => setSelYear(Number(e.target.value))}
-            className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-900 dark:border-white/[0.08] dark:bg-[#111] dark:text-white"
+            className="!w-auto rounded-full pr-8"
           >
             {Array.from({ length: 6 }, (_, i) => now.getFullYear() - i).map((y) => (
               <option key={y} value={y}>
                 {y}
               </option>
             ))}
-          </select>
-          {/* Theme picker */}
+          </Select>
+          {/* Chart palette picker */}
           <div className="relative">
             <button
               onClick={() => setPickerOpen((o) => !o)}
-              className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-700 hover:border-gray-300 dark:border-white/[0.08] dark:bg-[#111] dark:text-gray-200"
+              aria-expanded={pickerOpen}
+              className={buttonClass("outline", "h-10")}
             >
-              <Palette className="h-4 w-4" />
+              <Palette className="h-4 w-4" strokeWidth={1.75} />
               {theme.name}
             </button>
             {pickerOpen && (
-              <div className="absolute right-0 z-10 mt-2 w-44 rounded-xl border border-gray-200 bg-white p-2 shadow-lg dark:border-white/[0.08] dark:bg-[#111]">
-                <p className="px-2 pb-1 pt-1 text-xs font-medium text-gray-400">{t.stTheme}</p>
+              <div className="panel absolute right-0 z-10 mt-2 w-44 rounded-2xl p-2">
+                <p className="px-2 pb-1 pt-1 text-xs font-medium text-gray-500 dark:text-gray-400">{t.stTheme}</p>
                 {Object.entries(THEMES).map(([key, th]) => (
                   <button
                     key={key}
                     onClick={() => chooseTheme(key as keyof typeof THEMES)}
-                    className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 ${
-                      key === themeKey ? "bg-gray-50 dark:bg-white/[0.08]" : ""
+                    className={`flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-sm hover:bg-gray-900/[0.04] dark:hover:bg-white/[0.06] ${
+                      key === themeKey ? "bg-gray-900/[0.05] dark:bg-white/[0.08]" : ""
                     }`}
                   >
                     <span className="flex gap-0.5">
@@ -231,37 +238,20 @@ export function StatsClient() {
             )}
           </div>
         </div>
-      </div>
+        }
+      />
 
-      {/* KPI cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="flex flex-col overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[0]}, ${theme.colors[0]}cc)` }}>
-          <CardContent className="flex flex-1 flex-col justify-center p-5 pt-5 text-white">
-            <p className="text-sm opacity-90">{t.statTotalAmount}</p>
-            <p className="mt-1 text-3xl font-bold">{formatSek(data?.kpi.totalAmount ?? 0)}</p>
-          </CardContent>
-        </Card>
-        <Card className="flex flex-col overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[1]}, ${theme.colors[1]}cc)` }}>
-          <CardContent className="flex flex-1 flex-col justify-center p-5 pt-5 text-white">
-            <p className="text-sm opacity-90">{t.statTotalReceipts}</p>
-            <p className="mt-1 text-3xl font-bold">{data?.kpi.count ?? 0}</p>
-          </CardContent>
-        </Card>
-        <Card className="flex flex-col overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[2]}, ${theme.colors[2]}cc)` }}>
-          <CardContent className="flex flex-1 flex-col justify-center p-5 pt-5 text-white">
-            <p className="text-sm opacity-90">{t.stAvgPerReceipt}</p>
-            <p className="mt-1 text-3xl font-bold">{formatSek(data?.kpi.avgPerReceipt ?? 0)}</p>
-          </CardContent>
-        </Card>
-        <Card className="flex flex-col overflow-hidden border-0" style={{ background: `linear-gradient(135deg, ${theme.colors[3]}, ${theme.colors[3]}cc)` }}>
-          <CardContent className="flex flex-1 flex-col justify-center p-5 pt-5 text-white">
-            <p className="text-sm opacity-90">{t.stTopCategory}</p>
-            <p className="mt-1 truncate text-2xl font-bold">
-              {data?.kpi.topCategory ? (t[BUCKET_KEYS[data.kpi.topCategory.bucket] as keyof typeof t] as string) : "-"}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <StatGrid
+        items={[
+          { label: t.statTotalAmount, value: formatSek(data?.kpi.totalAmount ?? 0) },
+          { label: t.statTotalReceipts, value: String(data?.kpi.count ?? 0) },
+          { label: t.stAvgPerReceipt, value: formatSek(data?.kpi.avgPerReceipt ?? 0) },
+          {
+            label: t.stTopCategory,
+            value: data?.kpi.topCategory ? (t[BUCKET_KEYS[data.kpi.topCategory.bucket] as keyof typeof t] as string) : "-",
+          },
+        ]}
+      />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
         {/* Trend chart */}
@@ -274,9 +264,9 @@ export function StatsClient() {
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="flex h-72 items-center justify-center text-sm text-gray-400">…</div>
+              <div className="skeleton h-72 rounded-xl" aria-busy="true" />
             ) : !data || data.trend.length === 0 ? (
-              <div className="flex h-72 items-center justify-center text-sm text-gray-400">{t.stNoData}</div>
+              <div className="flex h-72 items-center justify-center text-sm text-gray-500 dark:text-gray-400">{t.stNoData}</div>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data.trend}>
@@ -301,9 +291,9 @@ export function StatsClient() {
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="flex h-72 items-center justify-center text-sm text-gray-400">…</div>
+              <div className="skeleton h-72 rounded-xl" aria-busy="true" />
             ) : pieData.length === 0 ? (
-              <div className="flex h-72 items-center justify-center text-sm text-gray-400">{t.stNoCategoryData}</div>
+              <div className="flex h-72 items-center justify-center text-sm text-gray-500 dark:text-gray-400">{t.stNoCategoryData}</div>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>

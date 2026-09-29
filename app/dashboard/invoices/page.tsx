@@ -11,10 +11,12 @@ import { getUserCompany, canManageCompany } from "@/lib/company";
 import { getT } from "@/lib/i18n-server";
 import { summarizeInvoiceIncome, type InvoiceLike } from "@/lib/invoice-income";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { buttonClass } from "@/components/ui/button";
 import { UpsellCard } from "@/components/UpsellCard";
 import { DeleteInvoiceButton } from "@/components/dashboard/DeleteInvoiceButton";
 import { InvoicePaidToggle } from "@/components/dashboard/InvoicePaidToggle";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatGrid } from "@/components/ui/stat";
 
 export const metadata = { title: "Fakturor" };
 export const dynamic = "force-dynamic";
@@ -27,8 +29,8 @@ export default async function InvoicesPage() {
   const ctx = await currentTier();
   if (!ctx || !hasFeature(ctx.tier, "invoicing")) {
     return (
-      <div className="max-w-2xl space-y-6">
-        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navInvoices}</h1>
+      <div className="max-w-3xl space-y-6">
+        <PageHeader title={t.navInvoices} />
         <UpsellCard
           title={t.invUpsellTitle}
           requiredPlan="Pro"
@@ -41,15 +43,15 @@ export default async function InvoicesPage() {
   const membership = await getUserCompany(session.user.id);
   if (!membership) {
     return (
-      <div className="max-w-2xl space-y-6">
-        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navInvoices}</h1>
+      <div className="max-w-3xl space-y-6">
+        <PageHeader title={t.navInvoices} />
         <Card>
           <CardHeader>
             <CardTitle>{t.invNeedCompanyTitle}</CardTitle>
             <CardDescription>{t.invNeedCompanyDesc}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/dashboard/company"><Button>{t.btnToCompanies}</Button></Link>
+            <Link href="/dashboard/company" className={buttonClass()}>{t.btnToCompanies}</Link>
           </CardContent>
         </Card>
       </div>
@@ -69,30 +71,25 @@ export default async function InvoicesPage() {
   const money = (n: number) => n.toLocaleString("sv-SE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navInvoices}</h1>
-        <Link href="/dashboard/invoices/new"><Button>{t.btnNewInvoice}</Button></Link>
-      </div>
+    <div className="max-w-6xl space-y-6">
+      <PageHeader
+        title={t.navInvoices}
+        actions={<Link href="/dashboard/invoices/new" className={buttonClass()}>{t.btnNewInvoice}</Link>}
+      />
 
       {rows.length > 0 && (
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-gray-900/[0.07] bg-white/70 p-4 dark:border-white/[0.08] dark:bg-white/[0.03]">
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{t.invSumIncomeLabel}</p>
-            <p className="mt-1 text-xl font-semibold text-emerald-700 dark:text-emerald-400">{money(summary.incomeNet)} kr</p>
-            <p className="mt-0.5 text-xs text-gray-400">{t.invSumIncomeHint}</p>
-          </div>
-          <div className="rounded-2xl border border-gray-900/[0.07] bg-white/70 p-4 dark:border-white/[0.08] dark:bg-white/[0.03]">
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{t.invSumVatLabel}</p>
-            <p className="mt-1 text-xl font-semibold text-gray-900 dark:text-white">{money(summary.vatToRemit)} kr</p>
-            <p className="mt-0.5 text-xs text-gray-400">{t.invSumVatHint}</p>
-          </div>
-          <div className="rounded-2xl border border-gray-900/[0.07] bg-white/70 p-4 dark:border-white/[0.08] dark:bg-white/[0.03]">
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{t.invSumOutstandingLabel}</p>
-            <p className="mt-1 text-xl font-semibold text-gray-900 dark:text-white">{money(summary.outstandingGross)} kr</p>
-            <p className="mt-0.5 text-xs text-gray-400">{t.invSumOutstandingHint.replace("{count}", String(summary.outstandingCount))}</p>
-          </div>
-        </div>
+        <StatGrid
+          items={[
+            { label: t.invSumIncomeLabel, value: `${money(summary.incomeNet)} kr`, hint: t.invSumIncomeHint },
+            { label: t.invSumVatLabel, value: `${money(summary.vatToRemit)} kr`, hint: t.invSumVatHint },
+            {
+              label: t.invSumOutstandingLabel,
+              value: `${money(summary.outstandingGross)} kr`,
+              hint: t.invSumOutstandingHint.replace("{count}", String(summary.outstandingCount)),
+              tone: summary.outstandingCount > 0 ? "warn" : "default",
+            },
+          ]}
+        />
       )}
       <Card>
         <CardContent className="p-0">
@@ -101,10 +98,10 @@ export default async function InvoicesPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[560px] text-sm">
-                <thead className="bg-gray-50 text-left text-gray-500 dark:bg-[#111] dark:text-gray-400">
+                <thead className="border-b border-gray-900/[0.07] text-left text-xs font-medium text-gray-500 dark:border-white/[0.08] dark:text-gray-400">
                   <tr><th className="px-4 py-3">{t.invColNr}</th><th>{t.invColCustomer}</th><th>{t.invColDate}</th><th>{t.invColAmount}</th><th>{t.invColVat}</th><th>{t.invColStatus}</th><th></th></tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-white/[0.07]">
+                <tbody className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.07]">
                   {rows.map((r: Record<string, unknown>) => (
                     <tr key={r.id as string} className="dark:text-gray-100">
                       <td className="px-4 py-3 font-medium">{r.invoiceNumber as string}</td>
@@ -124,7 +121,7 @@ export default async function InvoicesPage() {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Link href={`/dashboard/invoices/${r.id}`} className="text-nordic-600 underline text-sm dark:text-nordic-300">{t.btnView}</Link>
+                          <Link href={`/dashboard/invoices/${r.id}`} className="text-sm font-medium text-nordic-600 transition hover:text-nordic-700 dark:text-nordic-300">{t.btnView}</Link>
                           <DeleteInvoiceButton
                             id={r.id as string}
                             confirmText={t.invDeleteConfirm}
@@ -140,7 +137,7 @@ export default async function InvoicesPage() {
           )}
         </CardContent>
       </Card>
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-gray-500 dark:text-gray-400">
         {t.invDisclaimer}
       </p>
     </div>

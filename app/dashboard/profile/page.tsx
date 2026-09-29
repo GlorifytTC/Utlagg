@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/context/LanguageContext";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function ProfilePage() {
   const { t, lang, toggleLanguage } = useLanguage();
@@ -74,8 +75,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.prTitle}</h1>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader title={t.prTitle} />
 
       <Card>
         <CardHeader>

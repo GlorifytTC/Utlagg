@@ -1,20 +1,33 @@
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/** Title row for app pages: heading, optional one-line subtitle, actions on the right. */
+/** Title row for app pages: optional back link, heading, one-line subtitle, actions on the right. */
 export function PageHeader({
   title,
   subtitle,
   actions,
+  back,
   className,
 }: {
   title: React.ReactNode;
   subtitle?: React.ReactNode;
   actions?: React.ReactNode;
+  back?: { href: string; label: React.ReactNode };
   className?: string;
 }) {
   return (
     <div className={cn("flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between", className)}>
       <div className="min-w-0">
+        {back && (
+          <Link
+            href={back.href}
+            className="mb-3 inline-flex items-center gap-1.5 rounded-full text-sm text-gray-500 transition duration-300 ease-premium hover:text-gray-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-gray-400 dark:hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
+            {back.label}
+          </Link>
+        )}
         <h1 className="font-display text-3xl font-semibold tracking-tight text-gray-900 dark:text-white md:text-[2rem]">
           {title}
         </h1>

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { AccountantMarketplace } from "@/components/marketplace/AccountantMarketplace";
 import { getT } from "@/lib/i18n-server";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Hitta revisor" };
 export const dynamic = "force-dynamic";
@@ -13,13 +14,8 @@ export default async function MarketplacePage() {
   const t = getT();
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.navMarketplace}</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {t.mktPageDesc}
-        </p>
-      </div>
+    <div className="max-w-6xl space-y-6">
+      <PageHeader title={t.navMarketplace} subtitle={t.mktPageDesc} />
       <AccountantMarketplace />
     </div>
   );

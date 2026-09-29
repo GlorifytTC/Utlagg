@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { ReceiptsManager } from "@/components/dashboard/ReceiptsManager";
 import { getT } from "@/lib/i18n-server";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Kvitton" };
 export const dynamic = "force-dynamic";
@@ -23,11 +24,8 @@ export default async function ReceiptsPage() {
   if (!user) redirect("/login");
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">{t.navReceipts}</h1>
-        <p className="text-nordic-600 dark:text-nordic-600">{t.receiptsSubtitle}</p>
-      </div>
+    <div className="max-w-6xl space-y-6">
+      <PageHeader title={t.navReceipts} subtitle={t.receiptsSubtitle} />
       <ReceiptsManager
         used={user.scansUsedThisMonth}
         limit={user.scanLimit}

@@ -19,13 +19,13 @@ export function UsageMeter({
   const { t } = useLanguage();
 
   return (
-    <div className="panel rounded-2xl p-5 transition-shadow hover:shadow-sm">
+    <div className="panel rounded-2xl p-5">
       <div className="flex items-baseline justify-between">
         <p className="text-sm text-gray-500 dark:text-gray-400">{t.scansThisMonth}</p>
         <motion.span
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="rounded-full bg-nordic-600/10 px-2.5 py-0.5 text-xs font-medium text-nordic-600 capitalize dark:bg-nordic-600/20 dark:text-nordic-600"
+          className="rounded-full bg-nordic-600/10 px-2.5 py-0.5 text-xs font-medium text-nordic-700 capitalize dark:bg-nordic-600/20 dark:text-nordic-300"
         >
           {tier}
         </motion.span>
@@ -34,13 +34,13 @@ export function UsageMeter({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="mt-2 font-display text-2xl text-gray-900 dark:text-white"
+        className="mt-2 font-display text-2xl font-semibold tabular-nums text-gray-900 dark:text-white"
       >
         {used}
         {unlimited ? (
-          <span className="text-base text-gray-400"> / {t.unlimited}</span>
+          <span className="text-base text-gray-500 dark:text-gray-400"> / {t.unlimited}</span>
         ) : (
-          <span className="text-base text-gray-400"> / {limit}</span>
+          <span className="text-base text-gray-500 dark:text-gray-400"> / {limit}</span>
         )}
       </motion.p>
       {!unlimited && (

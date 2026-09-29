@@ -12,6 +12,7 @@ import { parseReceiptText } from "@/lib/ocr";
 import { useLanguage } from "@/context/LanguageContext";
 import { ReceiptAnnotator } from "@/components/dashboard/ReceiptAnnotator";
 import { cn } from "@/lib/utils";
+import { fieldClass } from "@/components/ui/input";
 
 interface Draft {
   vendorName: string;
@@ -577,7 +578,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 <input
                   value={draft.vendorName}
                   onChange={(e) => setDraft({ ...draft, vendorName: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className={`${fieldClass} h-10 py-2`}
                 />
               </div>
               <div>
@@ -585,7 +586,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 <input
                   value={draft.receiptNumber}
                   onChange={(e) => setDraft({ ...draft, receiptNumber: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className={`${fieldClass} h-10 py-2`}
                   placeholder={t.phOptional}
                 />
               </div>
@@ -595,7 +596,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                   type="date"
                   value={draft.date}
                   onChange={(e) => setDraft({ ...draft, date: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className={`${fieldClass} h-10 py-2`}
                 />
               </div>
               <div>
@@ -611,7 +612,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                       vatAmount: recalcVat(total, d.vatRate),
                     }));
                   }}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className={`${fieldClass} h-10 py-2`}
                 />
               </div>
               <div>
@@ -626,7 +627,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                       vatAmount: recalcVat(d.totalAmount, rate),
                     }));
                   }}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className={`${fieldClass} h-10 py-2`}
                 >
                   <option value={6}>6 %</option>
                   <option value={12}>12 %</option>
@@ -639,7 +640,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                   inputMode="decimal"
                   value={draft.vatAmount}
                   onChange={(e) => setDraft({ ...draft, vatAmount: e.target.value })}
-                  className="w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white"
+                  className={`${fieldClass} h-10 py-2`}
                 />
               </div>
             </div>

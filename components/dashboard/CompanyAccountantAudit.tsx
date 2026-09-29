@@ -42,7 +42,7 @@ export function CompanyAccountantAudit() {
       <div className="flex items-center justify-between border-b border-gray-900/[0.07] px-6 py-5 dark:border-white/[0.07]">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-gray-900/[0.07] bg-white/70 dark:border-white/[0.08] dark:bg-white/[0.05]">
-            <ShieldCheck className="h-4 w-4 text-gray-400" strokeWidth={1.75} />
+            <ShieldCheck className="h-4 w-4 text-gray-500 dark:text-gray-400" strokeWidth={1.75} />
           </div>
           <div>
             <h2 className="font-display text-sm font-semibold text-gray-900 dark:text-white">
@@ -53,7 +53,7 @@ export function CompanyAccountantAudit() {
             </p>
           </div>
         </div>
-        <span className="rounded-full border border-gray-900/[0.07] px-2.5 py-0.5 text-[10px] font-medium text-gray-400 dark:border-white/[0.07]">
+        <span className="rounded-full border border-gray-900/[0.07] px-2.5 py-0.5 text-[10px] font-medium text-gray-500 dark:text-gray-400 dark:border-white/[0.07]">
           {t.cau30Days}
         </span>
       </div>

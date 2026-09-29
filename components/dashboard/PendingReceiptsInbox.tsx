@@ -109,7 +109,7 @@ export function PendingReceiptsInbox() {
                   </div>
 
                   {open && (
-                    <div className="mt-3 grid gap-4 rounded-lg bg-gray-50 p-4 dark:bg-white/[0.03] sm:grid-cols-[1fr_auto]">
+                    <div className="mt-3 grid gap-4 rounded-xl bg-gray-900/[0.03] p-4 dark:bg-white/[0.03] sm:grid-cols-[1fr_auto]">
                       <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                         <dt className="text-gray-500">{t.apDetailVendor}</dt>
                         <dd>{r.vendorName || "-"}</dd>
@@ -132,7 +132,7 @@ export function PendingReceiptsInbox() {
                         <img
                           src={r.imageUrl}
                           alt={r.vendorName || "kvitto"}
-                          className="max-h-56 rounded-lg border border-gray-200 object-contain dark:border-white/10"
+                          className="max-h-56 rounded-xl border border-gray-900/[0.07] object-contain dark:border-white/10"
                         />
                       )}
                     </div>

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect, notFound } from "next/navigation";
 import { and, eq } from "drizzle-orm";
@@ -10,6 +9,7 @@ import { formatSek, formatDate } from "@/lib/utils";
 import { resolveReceiptImageSrc } from "@/lib/storage";
 import { getBasAccount } from "@/lib/bas";
 import { ReceiptDetailActions } from "@/components/dashboard/ReceiptDetailActions";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Kvitto" };
 export const dynamic = "force-dynamic";
@@ -73,38 +73,27 @@ export default async function ReceiptDetailPage({
   ];
 
   return (
-    <div className="space-y-6">
-      <Link
-        href="/dashboard/receipts"
-        className="inline-flex items-center gap-1.5 text-sm text-nordic-600 hover:underline"
-      >
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4">
-          <path d="M12 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        {t.receiptBack}
-      </Link>
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-semibold text-gray-900 dark:text-white">
-            {receipt.vendorName ?? t.receiptDetails}
-          </h1>
-          <p className="text-nordic-600 dark:text-nordic-600">{t.receiptDetails}</p>
-        </div>
-        <span className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLE[receipt.status] ?? ""}`}>
-          {statusLabel[receipt.status] ?? receipt.status}
-        </span>
-      </div>
+    <div className="max-w-6xl space-y-6">
+      <PageHeader
+        title={receipt.vendorName ?? t.receiptDetails}
+        subtitle={t.receiptDetails}
+        back={{ href: "/dashboard/receipts", label: t.receiptBack }}
+        actions={
+          <span className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLE[receipt.status] ?? ""}`}>
+            {statusLabel[receipt.status] ?? receipt.status}
+          </span>
+        }
+      />
 
       <div className="grid gap-6 md:grid-cols-[1fr_360px]">
-        <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-gray-900/[0.07] bg-gray-900/[0.03] sm:grid-cols-2 dark:border-white/[0.08] dark:bg-white/[0.04]">
+        <dl className="panel grid grid-cols-1 gap-px self-start overflow-hidden rounded-2xl bg-gray-900/[0.06] sm:grid-cols-2 dark:bg-white/[0.06]">
           {fields.map((f) => (
-            <div key={f.label} className="bg-white p-4 dark:bg-[#0D0D0D]">
-              <dt className="text-xs uppercase tracking-wide text-gray-400">{f.label}</dt>
+            <div key={f.label} className="panel-fill p-4">
+              <dt className="text-xs text-gray-500 dark:text-gray-400">{f.label}</dt>
               <dd className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{f.value}</dd>
             </div>
           ))}
-          <div className="bg-white p-4 sm:col-span-2 dark:bg-[#0D0D0D]">
+          <div className="panel-fill p-4 sm:col-span-2">
             <ReceiptDetailActions id={receipt.id} status={receipt.status} />
           </div>
         </dl>
@@ -116,11 +105,11 @@ export default async function ReceiptDetailPage({
               <img
                 src={imageSrc}
                 alt={receipt.vendorName ?? ""}
-                className="w-full rounded-lg object-contain"
+                className="w-full rounded-xl object-contain"
               />
             </a>
           ) : (
-            <div className="flex aspect-[3/4] items-center justify-center rounded-lg bg-gray-900/[0.03] p-6 text-center text-sm text-gray-400 dark:bg-white/[0.03]">
+            <div className="flex aspect-[3/4] items-center justify-center rounded-xl bg-gray-900/[0.03] p-6 text-center text-sm text-gray-500 dark:bg-white/[0.03]">
               {t.receiptNoImage}
             </div>
           )}
