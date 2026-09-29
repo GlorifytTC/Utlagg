@@ -11,6 +11,7 @@ const nav = [
   { name: "Systemhälsa", href: "/admin/health" },
   { name: "Efterlevnad", href: "/admin/compliance" },
   { name: "Chatrapporter", href: "/admin/chat-reports" },
+  { name: "Verifieringar", href: "/admin/verifications" },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

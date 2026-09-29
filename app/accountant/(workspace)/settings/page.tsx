@@ -12,10 +12,24 @@ export default async function AccountantSettingsPage() {
   const acct = await requireAccountant();
   if (!acct) redirect("/dashboard");
   const [u] = await db
-    .select({ name: users.name, email: users.email, logoUrl: users.logoUrl })
+    .select({
+      name: users.name,
+      email: users.email,
+      logoUrl: users.logoUrl,
+      verificationStatus: users.verificationStatus,
+      verificationNote: users.verificationNote,
+    })
     .from(users)
     .where(eq(users.id, acct.userId))
     .limit(1);
 
-  return <AccountantSettings name={u?.name ?? ""} email={u?.email ?? ""} logoUrl={u?.logoUrl ?? null} />;
+  return (
+    <AccountantSettings
+      name={u?.name ?? ""}
+      email={u?.email ?? ""}
+      logoUrl={u?.logoUrl ?? null}
+      verificationStatus={u?.verificationStatus ?? null}
+      verificationNote={u?.verificationNote ?? null}
+    />
+  );
 }

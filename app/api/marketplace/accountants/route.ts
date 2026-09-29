@@ -35,6 +35,7 @@ type AccountantRow = {
   accountantCity: string | null;
   accountantBio: string | null;
   accountantSpecializations: string[] | null;
+  verificationStatus: string | null;
   createdAt: Date | null;
 };
 
@@ -90,6 +91,7 @@ export async function GET(req: NextRequest) {
       accountantCity: users.accountantCity,
       accountantBio: users.accountantBio,
       accountantSpecializations: users.accountantSpecializations,
+      verificationStatus: users.verificationStatus,
       createdAt: users.createdAt,
     })
     .from(users)
@@ -267,6 +269,7 @@ export async function GET(req: NextRequest) {
         specializations: a.accountantSpecializations,
         activeClientCount: a.activeClientCount,
         isBoosted: boostedIds.has(a.id),
+        isVerified: a.verificationStatus === "approved",
         avgRating: a.avgRating,
         reviewCount: a.reviewCount,
         myStatus: statusMap.get(a.id) ?? null,

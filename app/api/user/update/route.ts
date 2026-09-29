@@ -23,7 +23,23 @@ export async function PATCH(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Ogiltiga fält" }, { status: 400 });
   }
-  await db.update(users).set(parsed.data).where(eq(users.id, session.user.id));
+  // The Verified badge vouches for the name an admin checked against the
+  // credential document, so a rename sends an approved accountant back to
+  // review. Bumping verificationUpdatedAt also when pending makes an admin's
+  // in-flight decision fail (409) instead of approving a name they never saw.
+  const [current] = await db
+    .select({ name: users.name, verificationStatus: users.verificationStatus })
+    .from(users)
+    .where(eq(users.id, session.user.id))
+    .limit(1);
+  const reverify =
+    parsed.data.name !== undefined &&
+    parsed.data.name !== current?.name &&
+    (current?.verificationStatus === "approved" || current?.verificationStatus === "pending");
+  await db
+    .update(users)
+    .set(reverify ? { ...parsed.data, verificationStatus: "pending", verificationUpdatedAt: new Date() } : parsed.data)
+    .where(eq(users.id, session.user.id));
   await logAudit({
     userId: session.user.id,
     action: "user.update",

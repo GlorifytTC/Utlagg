@@ -8,6 +8,7 @@ import { MapPin, MessageSquare } from "lucide-react";
 import { AccountantChat } from "@/components/AccountantChat";
 import { LogoUploader } from "@/components/dashboard/LogoUploader";
 import { useLanguage } from "@/context/LanguageContext";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 interface Review {
   id: string;
@@ -43,6 +44,7 @@ interface ProfileData {
     specializations: string[] | null;
     activeClientCount: number;
     isBoosted: boolean;
+    isVerified: boolean;
     avgRating: number | null;
     reviewCount: number;
   };
@@ -336,6 +338,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-white">
                 {accountant.name ?? accountant.email}
               </h1>
+              {accountant.isVerified && <VerifiedBadge />}
               {accountant.isBoosted && (
                 <span className="rounded-full bg-nordic-600/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-widest text-nordic-600 dark:bg-nordic-600/20">
                   {t.mktBoosted}

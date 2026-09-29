@@ -1203,6 +1203,8 @@ export interface Translations {
   mktClearFilters: string;
   mktViewProfile: string;
   mktBoosted: string;
+  verifiedBadge: string;
+  verifiedBadgeTitle: string;
   mktYou: string;
   mktNew: string;
   mktClientsOne: string;
@@ -2728,6 +2730,8 @@ export const strings: Record<Lang, Translations> = {
     mktClearFilters: "Rensa filter",
     mktViewProfile: "Visa profil för {name}",
     mktBoosted: "Boostad",
+    verifiedBadge: "Verifierad",
+    verifiedBadgeTitle: "Kvittino har granskat revisorns behörighetsdokument",
     mktYou: "Du",
     mktNew: "Ny",
     mktClientsOne: "{n} klient",
@@ -4247,6 +4251,8 @@ export const strings: Record<Lang, Translations> = {
     mktClearFilters: "Clear filters",
     mktViewProfile: "View profile for {name}",
     mktBoosted: "Boosted",
+    verifiedBadge: "Verified",
+    verifiedBadgeTitle: "Kvittino has reviewed this accountant's credentials",
     mktYou: "You",
     mktNew: "New",
     mktClientsOne: "{n} client",

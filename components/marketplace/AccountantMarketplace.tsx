@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Search, MapPin, X, Users, Star, CalendarDays } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 interface AccountantRow {
   id: string;
@@ -17,6 +18,7 @@ interface AccountantRow {
   specializations: string[] | null;
   activeClientCount: number;
   isBoosted: boolean;
+  isVerified: boolean;
   avgRating: number | null;
   reviewCount: number;
   joinedYear: number | null;
@@ -301,6 +303,7 @@ export function AccountantMarketplace({
                           <span className="font-display text-[15px] font-semibold text-gray-900 dark:text-white">
                             {a.name ?? a.email}
                           </span>
+                          {a.isVerified && <VerifiedBadge />}
                           {a.isBoosted && (
                             <span className="rounded-full bg-nordic-600/10 px-1.5 py-px text-[10px] font-bold uppercase tracking-widest text-nordic-600 dark:bg-nordic-600/20">
                               {t.mktBoosted}

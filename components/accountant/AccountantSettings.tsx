@@ -1,20 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
-import { accountantStrings } from "@/lib/accountant-i18n";
+import { accountantStrings, type AccountantStrings } from "@/lib/accountant-i18n";
+import { CREDENTIAL_ACCEPT, MAX_CREDENTIAL_BYTES } from "@/lib/verification";
 import { LogoUploader } from "@/components/dashboard/LogoUploader";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 const card = "rounded-2xl panel p-6";
 const label = "mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500";
 const input = "w-full rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm outline-none transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111] dark:text-white";
 
-/** The accountant's personal details: profile picture and name. Email is read-only. */
-export function AccountantSettings({ name: initialName, email, logoUrl }: { name: string; email: string; logoUrl: string | null }) {
+type VerificationStatus = "pending" | "approved" | "rejected" | null;
+
+/** The accountant's personal details: profile picture, name and credential verification. Email is read-only. */
+export function AccountantSettings({
+  name: initialName,
+  email,
+  logoUrl,
+  verificationStatus,
+  verificationNote,
+}: {
+  name: string;
+  email: string;
+  logoUrl: string | null;
+  verificationStatus: VerificationStatus;
+  verificationNote: string | null;
+}) {
   const { lang } = useLanguage();
   const at = accountantStrings(lang);
+  const router = useRouter();
   const { update } = useSession();
   const [name, setName] = useState(initialName);
   const [saving, setSaving] = useState(false);
@@ -45,6 +63,8 @@ export function AccountantSettings({ name: initialName, email, logoUrl }: { name
       if (!res.ok) throw new Error();
       await update({ name });
       toast.success(at.settingsSaved);
+      // A rename sends an approved verification back to review.
+      router.refresh();
     } catch {
       toast.error(at.error);
     } finally {
@@ -81,6 +101,88 @@ export function AccountantSettings({ name: initialName, email, logoUrl }: { name
           {saving ? at.settingsSaving : at.settingsSave}
         </button>
       </form>
+
+      <VerificationCard at={at} status={verificationStatus} note={verificationNote} onSubmitted={() => router.refresh()} />
     </div>
+  );
+}
+
+function VerificationCard({
+  at,
+  status,
+  note,
+  onSubmitted,
+}: {
+  at: AccountantStrings;
+  status: VerificationStatus;
+  note: string | null;
+  onSubmitted: () => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+
+  async function upload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (file.size > MAX_CREDENTIAL_BYTES) {
+      toast.error(at.verifyTooLarge);
+      return;
+    }
+    setUploading(true);
+    try {
+      const document = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const res = await fetch("/api/accountant/verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ document }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        toast.error(d.error ?? at.error);
+        return;
+      }
+      toast.success(at.verifySubmitted);
+      onSubmitted();
+    } catch {
+      toast.error(at.error);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  const statusText =
+    status === "approved" ? at.verifyApproved
+      : status === "pending" ? at.verifyPending
+      : status === "rejected" ? at.verifyRejected
+      : at.verifyNone;
+
+  return (
+    <section className={`${card} space-y-3`}>
+      <div className="flex items-center gap-2">
+        <p className={`${label} mb-0`}>{at.verifyTitle}</p>
+        {status === "approved" && <VerifiedBadge />}
+      </div>
+      {status !== "approved" && <p className="text-sm text-gray-600 dark:text-gray-300">{at.verifyIntro}</p>}
+      <p className="text-sm font-medium text-gray-900 dark:text-white" role="status">{statusText}</p>
+      {status === "rejected" && note && (
+        <p className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700 dark:bg-white/[0.04] dark:text-gray-300">
+          {at.verifyNote}: {note}
+        </p>
+      )}
+      {status !== "approved" && (
+        <div>
+          <label className="inline-flex cursor-pointer items-center rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-[background-color,transform] focus-within:ring-2 focus-within:ring-nordic-600/40 hover:bg-nordic-700 active:scale-[0.98]">
+            {uploading ? at.verifyUploading : status ? at.verifyReplace : at.verifyUpload}
+            <input type="file" accept={CREDENTIAL_ACCEPT} onChange={upload} disabled={uploading} className="sr-only" />
+          </label>
+          <p className="mt-2 text-xs text-gray-500">{at.verifyHint}</p>
+        </div>
+      )}
+    </section>
   );
 }

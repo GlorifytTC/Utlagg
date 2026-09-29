@@ -42,6 +42,7 @@ export async function GET(
       accountantCity: users.accountantCity,
       accountantBio: users.accountantBio,
       accountantSpecializations: users.accountantSpecializations,
+      verificationStatus: users.verificationStatus,
       isAccountant: users.isAccountant,
     })
     .from(users)
@@ -185,6 +186,7 @@ export async function GET(
       specializations: acct.accountantSpecializations,
       activeClientCount: clientCountRow[0]?.count ?? 0,
       isBoosted: boostRow.length > 0,
+      isVerified: acct.verificationStatus === "approved",
       avgRating,
       reviewCount: reviewStats[0]?.reviewCount ?? 0,
     },
