@@ -86,7 +86,11 @@ export async function POST(req: NextRequest) {
   // who set it) - they should just log in and accept via the session flow.
   if (!user.hashedPassword) {
     const hashed = await bcrypt.hash(parsed.data.password, 12);
-    await db.update(users).set({ hashedPassword: hashed, isAccountant: true }).where(eq(users.id, user.id));
+    // The invite token proves the inbox; login (lib/auth.ts) needs emailVerified.
+    await db
+      .update(users)
+      .set({ hashedPassword: hashed, isAccountant: true, emailVerified: new Date() })
+      .where(eq(users.id, user.id));
   } else {
     await db.update(users).set({ isAccountant: true }).where(eq(users.id, user.id));
   }

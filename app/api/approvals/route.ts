@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray, ne, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { approvalRequests, receipts, mileageEntries, users } from "@/db/schema";
+import { approvalRequests, receipts, mileageEntries, users, companyMembers } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
 import { requireFeature } from "@/lib/entitlements";
@@ -83,6 +83,30 @@ export async function POST(req: NextRequest) {
   // create a pending request for a manager.
   const membership = await getUserCompany(userId);
   const autoApprove = !membership || membership.role !== "member";
+
+  // A member's approver must be a manager in their own company - otherwise a
+  // member could name their own (or a second) address and approve themselves.
+  if (!autoApprove) {
+    const [approver] = await db
+      .select({ id: users.id })
+      .from(users)
+      .innerJoin(companyMembers, eq(companyMembers.userId, users.id))
+      .where(
+        and(
+          eq(sql`lower(${users.email})`, parsed.data.approverEmail.toLowerCase()),
+          eq(companyMembers.companyId, membership.companyId),
+          inArray(companyMembers.role, ["owner", "admin", "approver"]),
+          ne(users.id, userId),
+        ),
+      )
+      .limit(1);
+    if (!approver) {
+      return NextResponse.json(
+        { error: "Attestanten måste vara ägare, admin eller attestant i ditt företag." },
+        { status: 400 },
+      );
+    }
+  }
 
   const [created] = await db
     .insert(approvalRequests)

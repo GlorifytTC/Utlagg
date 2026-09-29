@@ -77,7 +77,12 @@ export async function POST(req: NextRequest) {
 
   if (!user.hashedPassword) {
     const hashed = await bcrypt.hash(parsed.data.password, 12);
-    await db.update(users).set({ hashedPassword: hashed }).where(eq(users.id, user.id));
+    // The invite token was mailed to this address, so it proves the inbox -
+    // without emailVerified the login (lib/auth.ts) rejects them.
+    await db
+      .update(users)
+      .set({ hashedPassword: hashed, emailVerified: new Date() })
+      .where(eq(users.id, user.id));
   }
 
   // Add company membership if the user isn't already in a company.

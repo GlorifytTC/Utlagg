@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     .update(users)
     .set({ verificationStatus: "pending", verificationDocKey: key, verificationNote: null, verificationUpdatedAt: new Date() })
     .where(eq(users.id, acct.userId));
-  await deleteReceiptImageIfR2(u?.docKey);
+  await deleteReceiptImageIfR2(u?.docKey, acct.userId);
 
   await logAuditEvent({
     userId: acct.userId,
