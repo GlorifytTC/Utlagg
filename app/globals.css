@@ -186,6 +186,16 @@ html.dark:has(.app-shell) {
   background-size: 2000px 100%;
   animation: shimmer 2s infinite;
 }
+/* Recharts tooltips hard-code a white inline background; text inherits white in dark mode. */
+.dark .recharts-default-tooltip {
+  background-color: #1a1a1a !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #f5f5f5;
+}
+.dark .recharts-default-tooltip .recharts-tooltip-item {
+  color: #f5f5f5 !important;
+}
+
 .dark .skeleton {
   background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
   background-size: 2000px 100%;
