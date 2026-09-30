@@ -119,7 +119,7 @@ function PricingPageContent() {
         <section className="mx-auto max-w-6xl px-6 pb-16 pt-12 md:pt-20">
           <motion.h1
             {...enter(0, rm)}
-            className="max-w-3xl font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl"
+            className="max-w-3xl font-display text-4xl sm:text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl break-words hyphens-auto"
           >
             {t.pricingTitle}
           </motion.h1>
@@ -204,7 +204,7 @@ function PricingPageContent() {
 
         {/* Feature comparison: shared features as chips, only differences in the matrix */}
         <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
-          <h2 className="max-w-xl font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+          <h2 className="max-w-xl font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.pricingComparisonTitle}
           </h2>
 
@@ -226,7 +226,7 @@ function PricingPageContent() {
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead>
                   <tr>
-                    <th className="px-4 pb-4 pt-3 font-medium text-ink/50" />
+                    <th className="sticky left-0 z-10 bg-[#fffdf8] px-4 pb-4 pt-3 font-medium text-ink/50" />
                     {TIER_ORDER.map((tier) => (
                       <th key={tier} className="px-4 pb-4 pt-3 font-semibold text-ink">
                         {planName(t, tier)}
@@ -237,7 +237,7 @@ function PricingPageContent() {
                 <tbody>
                   {MATRIX_ROWS.map((row) => (
                     <tr key={row.labelKey} className="odd:bg-ink/[0.025]">
-                      <td className="rounded-l-xl px-4 py-3.5 text-ink/75">
+                      <td className="sticky left-0 z-10 rounded-l-xl bg-[#fffdf8] px-4 py-3.5 text-ink/75">
                         {t[row.labelKey as keyof typeof t] as string}
                       </td>
                       {TIER_ORDER.map((tier, ti) => (
@@ -275,7 +275,7 @@ function PricingPageContent() {
 
         {/* FAQ: native disclosure */}
         <section className="mx-auto grid max-w-6xl gap-12 px-6 py-24 md:grid-cols-[1fr_1.6fr] md:gap-20 md:py-32">
-          <h2 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+          <h2 className="font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.pricingFaqTitle}
           </h2>
           <div className="border-t hairline">
@@ -301,9 +301,9 @@ function PricingPageContent() {
         {/* Bottom CTA with the trial visual */}
         <section className="mx-auto max-w-6xl px-6 pb-24 md:pb-32">
           <motion.div {...reveal(0, rm)} className="bezel">
-            <div className="bezel-core light-surface grid items-center gap-12 overflow-hidden bg-[radial-gradient(120%_100%_at_100%_100%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] p-8 md:grid-cols-2 md:p-14">
+            <div className="bezel-core light-surface grid items-center gap-12 overflow-hidden bg-[radial-gradient(120%_100%_at_100%_100%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] p-6 sm:p-8 md:grid-cols-2 md:p-14">
               <div>
-                <h2 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight">
+                <h2 className="font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight">
                   {t.pricingBottomTitle}
                 </h2>
                 <p className="mt-4 max-w-md text-base leading-relaxed text-ink/65">

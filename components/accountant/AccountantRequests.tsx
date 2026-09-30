@@ -101,22 +101,22 @@ export function AccountantRequests() {
               key={r.id}
               className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-900/[0.07] p-5 first:border-0 dark:border-white/[0.07]"
             >
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">{r.companyName}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">{r.createdAt?.slice(0, 10)}</p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
                 <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${s.cls}`}>
                   {t[s.label]}
                 </span>
                 {r.status === "pending" && (
-                  <div className="flex gap-2">
+                  <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       disabled={busy === r.id}
                       onClick={() => respond(r.id, "accept")}
-                      className="rounded-full border border-green-600/30 bg-green-50/60 px-3 py-1 text-xs font-medium text-green-700 transition-colors hover:bg-green-100/60 disabled:opacity-50 dark:border-green-400/20 dark:bg-green-900/20 dark:text-green-300"
+                      className="rounded-full border border-green-600/30 bg-green-50/60 min-h-11 px-4 text-sm font-medium text-green-700 transition-colors hover:bg-green-100/60 disabled:opacity-50 dark:border-green-400/20 dark:bg-green-900/20 dark:text-green-300"
                     >
                       {t.reqAccept}
                     </motion.button>
@@ -125,7 +125,7 @@ export function AccountantRequests() {
                       whileTap={{ scale: 0.98 }}
                       disabled={busy === r.id}
                       onClick={() => respond(r.id, "decline")}
-                      className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:border-gray-900/30 disabled:opacity-50 dark:border-white/[0.15] dark:text-gray-400"
+                      className="rounded-full border border-gray-900/[0.15] min-h-11 px-4 text-sm font-medium text-gray-600 transition-colors hover:border-gray-900/30 disabled:opacity-50 dark:border-white/[0.15] dark:text-gray-400"
                     >
                       {t.reqDecline}
                     </motion.button>

@@ -76,7 +76,9 @@ export function AccountantChatPage({
           </span>
         }
       />
-      <AccountantChat clientId={detail.clientId} currentUserId={currentUserId} />
+      <div className="panel h-[calc(100dvh-14rem)] min-h-[420px] overflow-hidden rounded-2xl">
+        <AccountantChat fill clientId={detail.clientId} currentUserId={currentUserId} />
+      </div>
     </div>
   );
 }

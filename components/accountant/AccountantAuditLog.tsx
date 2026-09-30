@@ -38,7 +38,7 @@ export function AccountantAuditLog({ companyId }: { companyId: string }) {
       animate={{ opacity: 1, y: 0 }}
       className="overflow-hidden rounded-2xl panel"
     >
-      <div className="flex items-center justify-between border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-900/[0.07] px-5 py-4 dark:border-white/[0.07]">
         <div className="flex items-center gap-2.5">
           <ShieldCheck className="h-4 w-4 text-gray-500 dark:text-gray-400" strokeWidth={1.75} />
           <p className="font-display text-sm font-semibold text-gray-900 dark:text-white">

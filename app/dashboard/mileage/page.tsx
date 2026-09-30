@@ -395,7 +395,7 @@ export default function MileagePage() {
                           onClick={() => deleteRoute(r.id)}
                           aria-label={t.btnDelete}
                           title={t.btnDelete}
-                          className="h-8 w-8 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                          className="h-10 w-10 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
                           <Trash2 className="h-4 w-4" strokeWidth={1.75} />
                         </Button>
@@ -416,7 +416,7 @@ export default function MileagePage() {
                         </div>
                         <div role="group" aria-label={t.milWeekdays}>
                           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t.milWeekdays}</p>
-                          <div className="mt-2 flex flex-wrap gap-1.5">
+                          <div className="mt-2 flex flex-wrap gap-2">
                             {dowLabels.map((d, i) => (
                               <button
                                 key={i}
@@ -427,7 +427,7 @@ export default function MileagePage() {
                                   setPeriod({ ...period, dows });
                                 }}
                                 className={
-                                  "h-9 w-9 rounded-full border text-xs transition duration-300 ease-premium active:scale-95 " +
+                                  "h-10 w-10 rounded-full border text-xs transition duration-300 ease-premium active:scale-95 " +
                                   (period.dows[i]
                                     ? "border-nordic-600 bg-nordic-600 text-white"
                                     : "border-gray-900/15 text-gray-500 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300")
@@ -475,7 +475,7 @@ export default function MileagePage() {
                       }}
                       aria-label={t.btnDelete}
                       title={t.btnDelete}
-                      className="h-8 w-8 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                      className="h-10 w-10 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                     >
                       <Trash2 className="h-4 w-4" strokeWidth={1.75} />
                     </Button>
@@ -522,7 +522,7 @@ export default function MileagePage() {
       )}
 
       <Card>
-        <CardHeader className="flex-row items-center justify-between space-y-0">
+        <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 space-y-0">
           <CardTitle>{t.milLog}</CardTitle>
           <a href="/api/mileage/export" className={buttonClass("outline")}>{t.btnExportCsv}</a>
         </CardHeader>
@@ -531,27 +531,29 @@ export default function MileagePage() {
             <p className="text-sm text-gray-500 dark:text-gray-400">{t.milNoneYet}</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-sm">
+              <table className="w-full min-w-[720px] text-sm">
                 <thead className="border-b border-gray-900/[0.07] text-left text-xs font-medium text-gray-500 dark:border-white/[0.08] dark:text-gray-400">
                   <tr>
-                    <th className="py-2">{t.fldDate}</th><th>{t.fldFrom}</th><th>{t.fldTo}</th><th>{t.milKm}</th><th>{t.fldAmount}</th><th>{t.fldPurpose}</th><th></th>
+                    {[t.fldDate, t.fldFrom, t.fldTo, t.milKm, t.fldAmount, t.fldPurpose, ""].map((h, i) => (
+                      <th key={i} className="px-3 py-3 font-medium">{h}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.07]">
                   {entries.map((e) => (
                     <tr key={e.id} className="dark:text-gray-100">
-                      <td className="py-2">{new Date(e.date).toLocaleDateString("sv-SE")}</td>
-                      <td className="max-w-[140px] truncate">{e.startAddress}</td>
-                      <td className="max-w-[140px] truncate">{e.endAddress}</td>
-                      <td>{Number(e.distanceKm).toFixed(0)}</td>
-                      <td className="tabular-nums">{formatSek(e.amount)}</td>
-                      <td>{e.purpose === "business" ? t.purposeBusinessShort : t.purposePrivate}</td>
-                      <td className="text-right"><Button
+                      <td className="whitespace-nowrap px-3 py-3">{new Date(e.date).toLocaleDateString("sv-SE")}</td>
+                      <td className="max-w-[140px] truncate px-3 py-3">{e.startAddress}</td>
+                      <td className="max-w-[140px] truncate px-3 py-3">{e.endAddress}</td>
+                      <td className="px-3 py-3">{Number(e.distanceKm).toFixed(0)}</td>
+                      <td className="whitespace-nowrap px-3 py-3 tabular-nums">{formatSek(e.amount)}</td>
+                      <td className="px-3 py-3">{e.purpose === "business" ? t.purposeBusinessShort : t.purposePrivate}</td>
+                      <td className="px-3 py-3 text-right"><Button
                           variant="ghost"
                           onClick={() => remove(e.id)}
                           aria-label={t.btnDelete}
                           title={t.btnDelete}
-                          className="h-8 w-8 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                          className="h-10 w-10 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
                           <Trash2 className="h-4 w-4" strokeWidth={1.75} />
                         </Button></td>

@@ -114,7 +114,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
     }
 
     return (
-      <div className="grid h-[calc(100dvh-16rem)] min-h-[420px] overflow-hidden rounded-2xl panel md:h-[calc(100dvh-13rem)] lg:h-[calc(100dvh-10.5rem)] lg:grid-cols-[320px_1fr] xl:grid-cols-[360px_1fr]">
+      <div className="grid h-[calc(100dvh-21rem-env(safe-area-inset-bottom))] overflow-hidden rounded-2xl panel md:h-[calc(100dvh-13rem)] md:min-h-[420px] lg:h-[calc(100dvh-10.5rem)] lg:grid-cols-[320px_1fr] xl:grid-cols-[360px_1fr]">
         {/* Conversation list */}
         <aside className={cn("min-h-0 flex-col border-gray-900/[0.07] dark:border-white/[0.08] lg:flex lg:border-r", selected ? "hidden" : "flex")}>
           <div className="p-3">
@@ -186,7 +186,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
                 <button
                   onClick={() => select(null)}
                   aria-label={t.chatsBack}
-                  className="-ml-1 rounded-full p-1.5 text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] lg:hidden"
+                  className="-ml-1 flex h-11 w-11 items-center justify-center rounded-full text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] lg:hidden"
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </button>
@@ -200,7 +200,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
                 {role === "accountant" && (
                   <Link
                     href={`/accountant/clients/${selected.companyId}`}
-                    className="inline-flex shrink-0 items-center gap-1 rounded-full border border-gray-900/[0.10] px-3 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:border-gray-900/20 hover:text-gray-800 dark:border-white/[0.10] dark:text-gray-400 dark:hover:text-white"
+                    className="inline-flex shrink-0 items-center gap-1 rounded-full border border-gray-900/[0.10] px-3 py-2.5 text-xs font-medium text-gray-500 transition-colors hover:border-gray-900/20 md:py-1.5 hover:text-gray-800 dark:border-white/[0.10] dark:text-gray-400 dark:hover:text-white"
                   >
                     {t.chatsOpenClient}
                     <ArrowUpRight className="h-3.5 w-3.5" />

@@ -180,7 +180,7 @@ export function AccountantMarketplace({
       {/* Search + filters */}
       {!compact && (
         <div className="flex flex-wrap items-center gap-2">
-          <div className="relative min-w-0 flex-1">
+          <div className="relative min-w-[12rem] flex-1 basis-full sm:basis-0">
             <Search
               className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400"
               strokeWidth={2}
@@ -196,13 +196,13 @@ export function AccountantMarketplace({
               <button
                 onClick={() => setQ("")}
                 aria-label={t.mktClearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-600"
+                className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-gray-500 dark:text-gray-400 hover:text-gray-600"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
-          <div className="relative w-40">
+          <div className="relative w-full sm:w-40">
             <MapPin
               className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500 dark:text-gray-400"
               strokeWidth={2}
@@ -218,7 +218,7 @@ export function AccountantMarketplace({
               <button
                 onClick={() => setCity("")}
                 aria-label={t.mktClearCity}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-600"
+                className="absolute right-0.5 top-1/2 -translate-y-1/2 p-2 text-gray-500 dark:text-gray-400 hover:text-gray-600"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -302,7 +302,7 @@ export function AccountantMarketplace({
 
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-1.5">
-                          <span className="font-display text-[15px] font-semibold text-gray-900 dark:text-white">
+                          <span className="break-words font-display text-[15px] font-semibold text-gray-900 dark:text-white">
                             {a.name ?? a.email}
                           </span>
                           {a.isVerified && <VerifiedBadge />}
@@ -368,7 +368,7 @@ export function AccountantMarketplace({
                     )}
 
                     {/* Stats row */}
-                    <div className="mt-auto flex items-center gap-4 border-t border-gray-900/[0.05] pt-3 dark:border-white/[0.05]">
+                    <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-gray-900/[0.05] pt-3 dark:border-white/[0.05]">
                       {a.activeClientCount > 0 && (
                         <span className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400">
                           <Users className="h-3 w-3 shrink-0" strokeWidth={2} />

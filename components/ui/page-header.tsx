@@ -22,18 +22,18 @@ export function PageHeader({
         {back && (
           <Link
             href={back.href}
-            className="mb-3 inline-flex items-center gap-1.5 rounded-full text-sm text-gray-500 transition duration-300 ease-premium hover:text-gray-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-gray-400 dark:hover:text-white"
+            className="mb-3 -my-2 inline-flex min-h-11 items-center gap-1.5 rounded-full text-sm text-gray-500 transition duration-300 ease-premium hover:text-gray-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-gray-400 dark:hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
             {back.label}
           </Link>
         )}
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-gray-900 dark:text-white md:text-[2rem]">
+        <h1 className="break-words font-display text-2xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-3xl md:text-[2rem]">
           {title}
         </h1>
         {subtitle && <p className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>}
       </div>
-      {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
+      {actions && <div className="flex shrink-0 flex-wrap items-center gap-2 max-sm:[&>*]:flex-1">{actions}</div>}
     </div>
   );
 }

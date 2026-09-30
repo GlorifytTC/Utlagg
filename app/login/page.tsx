@@ -85,7 +85,7 @@ function LoginForm() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-paper px-6">
+    <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
       <div className="w-full max-w-sm">
         <Link href="/">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
@@ -97,7 +97,7 @@ function LoginForm() {
             placeholder={t.fldEmail}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
           />
           <input
             type="password"
@@ -105,7 +105,7 @@ function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
           />
           {notice && !error && <p className="text-sm text-nordic-700">{notice}</p>}
           {error && <p className="text-sm text-red-600">{error}</p>}
@@ -135,12 +135,12 @@ function LoginForm() {
         </div>
         <p className="mt-6 text-sm text-ink/60">
           {t.authNoAccount}{" "}
-          <Link href="/register" className="text-nordic-600 underline">
+          <Link href="/register" className="inline-block py-2 text-nordic-600 underline">
             {t.authCreateAccount}
           </Link>
         </p>
-        <p className="mt-2 text-sm text-ink/60">
-          <Link href="/forgot-password" className="text-nordic-600 underline">
+        <p className="text-sm text-ink/60">
+          <Link href="/forgot-password" className="inline-block py-2 text-nordic-600 underline">
             {t.authForgotPassword}
           </Link>
         </p>

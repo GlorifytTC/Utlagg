@@ -133,7 +133,7 @@ export function AccountantBoostCard() {
           </span>{" "}
           {t.boostPriceTerms}
         </p>
-        <Button onClick={buy} disabled={busy} className="h-10 !px-5">
+        <Button onClick={buy} disabled={busy} className="h-11 w-full !px-5 sm:w-auto md:h-10">
           {busy ? t.boostOpening : t.boostCta}
         </Button>
       </div>

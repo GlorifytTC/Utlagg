@@ -172,7 +172,7 @@ function VerificationCard({
       )}
       {status !== "approved" && (
         <div>
-          <label className={buttonClass("default", "cursor-pointer focus-within:ring-4 focus-within:ring-nordic-600/20")}>
+          <label className={buttonClass("default", "w-full cursor-pointer sm:w-auto focus-within:ring-4 focus-within:ring-nordic-600/20")}>
             {uploading ? at.verifyUploading : status ? at.verifyReplace : at.verifyUpload}
             <input type="file" accept={CREDENTIAL_ACCEPT} onChange={upload} disabled={uploading} className="sr-only" />
           </label>

@@ -145,7 +145,7 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
         ref={scrollRef}
         role="log"
         aria-live="polite"
-        className={cn("flex flex-col overflow-y-auto px-4 py-5 sm:px-6", fill ? "flex-1 min-h-0" : "h-80")}
+        className={cn("flex flex-col overflow-y-auto px-4 py-5 sm:px-6", fill ? "flex-1 min-h-0" : "h-[50dvh] min-h-[320px]")}
       >
         {messages.length === 0 && (
           <p className="m-auto text-sm text-gray-400 dark:text-gray-500">{t.chatEmptyThread}</p>
@@ -175,7 +175,7 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
                 </div>
               )}
               <div className={cn("group flex items-end gap-1.5", isMine ? "flex-row-reverse" : "flex-row", joinsPrev ? "mt-0.5" : "mt-3")}>
-                <div className={cn("flex max-w-[78%] flex-col sm:max-w-[65%]", isMine ? "items-end" : "items-start")}>
+                <div className={cn("flex min-w-0 max-w-[85%] flex-col sm:max-w-[65%]", isMine ? "items-end" : "items-start")}>
                   {!isMine && !joinsPrev && (
                     <p className="mb-1 px-1 text-[11px] font-medium text-gray-500 dark:text-gray-400">
                       {m.senderName ?? (m.senderRole === "accountant" ? t.chatRoleAccountant : t.chatRoleClient)}
@@ -204,8 +204,8 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
                   <button
                     onClick={() => setReportTarget({ userId: m.senderId, messageId: m.id })}
                     className={cn(
-                      "rounded-full p-1.5 text-gray-400 opacity-0 transition-opacity hover:text-red-500 focus-visible:opacity-100 group-hover:opacity-100",
-                      !joinsNext && "mb-5",
+                      "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-gray-400 opacity-100 transition-opacity hover:text-red-500 focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100",
+                      !joinsNext && "mb-2",
                     )}
                     title={t.chatReport}
                     aria-label={t.chatReport}
@@ -229,7 +229,7 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
             rows={2}
             autoFocus
             placeholder={t.chatReportPlaceholder}
-            className="mb-2 w-full resize-none rounded-lg border border-amber-200 bg-white px-3 py-2 text-sm outline-none dark:border-amber-800 dark:bg-black/20 dark:text-white"
+            className="mb-2 w-full resize-none rounded-lg border border-amber-200 bg-white px-3 py-2 text-base outline-none sm:text-sm dark:border-amber-800 dark:bg-black/20 dark:text-white"
           />
           <div className="flex gap-2">
             <button
@@ -263,13 +263,13 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
               maxLength={2000}
               aria-label={t.chatPlaceholder}
               placeholder={t.chatPlaceholder}
-              className="max-h-36 flex-1 resize-none bg-transparent py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
+              className="max-h-36 flex-1 resize-none bg-transparent py-2.5 text-base text-gray-900 outline-none sm:text-sm placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
             />
             <button
               onClick={send}
               disabled={sending || !text.trim()}
               aria-label={t.chatSend}
-              className="my-1.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-nordic-600 text-white transition hover:bg-nordic-700 disabled:bg-gray-900/10 disabled:text-gray-400 dark:disabled:bg-white/10"
+              className="my-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-nordic-600 text-white transition hover:bg-nordic-700 disabled:bg-gray-900/10 disabled:text-gray-400 dark:disabled:bg-white/10"
             >
               <ArrowUp size={16} strokeWidth={2.25} />
             </button>
@@ -278,7 +278,7 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
           {myRole && otherMsg && (
             <button
               onClick={() => setReportTarget({ userId: otherMsg.senderId })}
-              className="mb-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-gray-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-gray-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30"
               title={t.chatReportUser}
               aria-label={t.chatReportUser}
             >

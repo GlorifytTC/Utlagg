@@ -38,7 +38,7 @@ function ContactContent() {
       <main className="mx-auto grid max-w-6xl items-start gap-12 px-6 pb-24 pt-12 md:grid-cols-[1fr_1.15fr] md:gap-20 md:pb-32 md:pt-20">
         <div>
           <p className="text-sm font-medium text-nordic-600">{t.contactKicker}</p>
-          <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+          <h1 className="mt-5 font-display text-4xl sm:text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl break-words hyphens-auto">
             {t.contactTitle}
           </h1>
           <p className="mt-6 max-w-lg text-lg leading-relaxed text-ink/65">{t.contactLead}</p>
@@ -73,7 +73,7 @@ function ContactContent() {
 
         {/* Form */}
         <div className="bezel">
-          <div className="bezel-core p-8 md:p-10">
+          <div className="bezel-core p-6 sm:p-8 md:p-10">
             <h2 className="font-display text-2xl font-semibold tracking-tight">{t.contactFormTitle}</h2>
             <p className="mt-2 text-sm text-ink/60">{t.contactFormDesc}</p>
             <div className="mt-6 space-y-4">
@@ -85,7 +85,7 @@ function ContactContent() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1.5 w-full rounded-2xl border border-ink/20 bg-paper px-4 py-3 text-sm outline-none transition placeholder:text-ink/45 focus:border-nordic-600 focus-visible:ring-4 focus-visible:ring-nordic-600/15"
+                  className="mt-1.5 w-full rounded-2xl border border-ink/20 bg-paper px-4 py-3 text-base outline-none sm:text-sm transition placeholder:text-ink/45 focus:border-nordic-600 focus-visible:ring-4 focus-visible:ring-nordic-600/15"
                 />
               </div>
               <div>
@@ -97,7 +97,7 @@ function ContactContent() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1.5 w-full rounded-2xl border border-ink/20 bg-paper px-4 py-3 text-sm outline-none transition placeholder:text-ink/45 focus:border-nordic-600 focus-visible:ring-4 focus-visible:ring-nordic-600/15"
+                  className="mt-1.5 w-full rounded-2xl border border-ink/20 bg-paper px-4 py-3 text-base outline-none sm:text-sm transition placeholder:text-ink/45 focus:border-nordic-600 focus-visible:ring-4 focus-visible:ring-nordic-600/15"
                 />
               </div>
               <div>
@@ -109,7 +109,7 @@ function ContactContent() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder={t.contactMessagePh}
-                  className="mt-1.5 w-full resize-none rounded-2xl border border-ink/20 bg-paper px-4 py-3 text-sm outline-none transition placeholder:text-ink/45 focus:border-nordic-600 focus-visible:ring-4 focus-visible:ring-nordic-600/15"
+                  className="mt-1.5 w-full resize-none rounded-2xl border border-ink/20 bg-paper px-4 py-3 text-base outline-none sm:text-sm transition placeholder:text-ink/45 focus:border-nordic-600 focus-visible:ring-4 focus-visible:ring-nordic-600/15"
                 />
               </div>
               <button

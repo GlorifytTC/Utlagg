@@ -33,7 +33,7 @@ export function VatSplitVisual() {
 
       {/* drop-shadow on the wrapper: box-shadow would be clipped by the zigzag mask */}
       <div className="relative -rotate-2 [filter:drop-shadow(0_18px_22px_rgba(26,26,26,0.16))]">
-        <div className="receipt-edge bg-[#FFFDF8] px-6 pb-10 pt-6 font-mono text-[11px] leading-5 text-ink/70">
+        <div className="receipt-edge bg-[#FFFDF8] px-4 pb-10 sm:px-6 pt-6 font-mono text-[11px] leading-5 text-ink/70">
           <p className="text-center font-sans text-sm font-bold tracking-wide text-ink">
             HOTELL NORRSKEN
           </p>
@@ -50,7 +50,7 @@ export function VatSplitVisual() {
                 </motion.span>
                 <motion.span
                   {...chip(i)}
-                  className="rounded-full bg-ink/5 px-2 py-0.5 font-sans text-[10px] font-semibold text-ink/70"
+                  className="hidden rounded-full bg-ink/5 px-2 py-0.5 font-sans text-[10px] font-semibold text-ink/70 sm:inline-flex"
                 >
                   BAS {l.bas}
                 </motion.span>
@@ -70,7 +70,7 @@ export function VatSplitVisual() {
         initial={reduced ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...pop, delay: 0.85 }}
-        className="absolute bottom-0 right-3 w-64 rounded-2xl bg-white/95 p-4 text-sm shadow-[0_1px_2px_rgba(26,26,26,0.06),0_24px_60px_-16px_rgba(26,26,26,0.3)] ring-1 ring-ink/5"
+        className="absolute bottom-0 right-3 w-[calc(100%-1rem)] max-w-64 rounded-2xl bg-white/95 p-4 text-sm shadow-[0_1px_2px_rgba(26,26,26,0.06),0_24px_60px_-16px_rgba(26,26,26,0.3)] ring-1 ring-ink/5"
       >
         <Split label={`${t.heroVisualVat} 12 %`} value="135,54 kr" />
         <Split label={`${t.heroVisualVat} 25 %`} value="36,00 kr" />
@@ -252,7 +252,7 @@ export function WorkQueueVisual() {
             animate={{ opacity: 1, y: 0, rotate: -2 }}
             exit={{ opacity: 0, y: -8 }}
             transition={pop}
-            className="absolute bottom-0 right-2 w-56 rounded-xl bg-[#FFFDF8] p-3.5 font-mono text-[11px] text-ink/70 shadow-[0_18px_40px_-14px_rgba(26,26,26,0.35)] ring-1 ring-ink/5"
+            className="absolute bottom-0 right-2 w-[calc(100%-1rem)] max-w-56 rounded-xl bg-[#FFFDF8] p-3.5 font-mono text-[11px] text-ink/70 shadow-[0_18px_40px_-14px_rgba(26,26,26,0.35)] ring-1 ring-ink/5"
           >
             <p className="truncate font-sans text-xs font-semibold text-ink">
               {QUEUE_CLIENTS[q.last].name}

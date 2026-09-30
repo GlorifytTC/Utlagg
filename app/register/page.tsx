@@ -99,7 +99,7 @@ function RegisterForm() {
 
   if (sentTo) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-paper px-6 py-12">
+      <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
         <div className="w-full max-w-sm text-center">
           <Link href="/">
             <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
@@ -130,7 +130,7 @@ function RegisterForm() {
             <button
               onClick={resendVerification}
               disabled={cooldown > 0 || resendState === "sending"}
-              className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-nordic-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {resendState === "sending"
                 ? t.stSubmitting
@@ -162,7 +162,7 @@ function RegisterForm() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-paper px-6 py-12">
+    <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
       <div className="w-full max-w-sm">
         <Link href="/">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
@@ -175,12 +175,12 @@ function RegisterForm() {
         </p>
 
         {/* Account type. The server derives isAccountant from this choice. */}
-        <div className="mt-5 grid grid-cols-2 gap-2">
+        <div className="mt-5 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
           <button
             type="button"
             onClick={() => setAccountType("user")}
             className={
-              "rounded-lg border px-4 py-3 text-left text-sm transition-colors " +
+              "break-words rounded-lg border px-3 py-3 text-left text-sm transition-colors " +
               (accountType === "user"
                 ? "border-ink bg-ink/[0.03]"
                 : "hairline hover:border-ink/40")
@@ -193,7 +193,7 @@ function RegisterForm() {
             type="button"
             onClick={() => setAccountType("accountant")}
             className={
-              "rounded-lg border px-4 py-3 text-left text-sm transition-colors " +
+              "break-words rounded-lg border px-3 py-3 text-left text-sm transition-colors " +
               (accountType === "accountant"
                 ? "border-ink bg-ink/[0.03]"
                 : "hairline hover:border-ink/40")
@@ -206,22 +206,19 @@ function RegisterForm() {
 
         <div className="mt-6 space-y-4">
           <input placeholder={t.regName} value={form.name} onChange={update("name")}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
           <input placeholder={accountType === "accountant" ? t.regFirmOptional : t.regCompanyOptional} value={form.companyName} onChange={update("companyName")}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
           <input type="email" placeholder={t.fldEmail} value={form.email} onChange={update("email")}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
           <input type="password" placeholder={t.regPasswordHint} value={form.password} onChange={update("password")}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button onClick={handleSubmit} disabled={loading}
             className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.98] active:opacity-90 disabled:opacity-60">
             {loading ? t.regCreating : t.authCreateAccount}
           </button>
-          <div className="flex items-center gap-3 text-xs text-ink/40">
-            <span className="h-px flex-1 bg-ink/10" /> {t.regOr} <span className="h-px flex-1 bg-ink/10" />
-          </div>
         </div>
         <p className="mt-6 text-sm text-ink/60">
           {t.regHaveAccount}{" "}

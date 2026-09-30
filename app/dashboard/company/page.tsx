@@ -154,20 +154,20 @@ export default function CompanyPage() {
               const canRemove = canManage && m.role !== "owner" && !isSelf;
               return (
               <li key={m.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
-                <div>
+                <div className="min-w-0 break-words">
                   <p className="font-medium">{m.name ?? m.email}{isSelf && <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">({t.coYou})</span>}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">{m.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   {canChangeRole ? (
                     <Select value={m.role} onChange={(e) => changeRole(m.id, e.target.value)} aria-label={t.fldRole}
-                      className="h-9 !w-auto">
+                      className="h-10 !w-auto">
                       <option value="member">{t.roleMember}</option>
                       <option value="admin">{t.roleAdmin}</option>
                     </Select>
                   ) : (<span className="text-sm text-gray-500">{m.role}</span>)}
                   {canRemove && (
-                    <Button variant="ghost" onClick={() => removeMember(m.id)} className="h-9 text-red-600 hover:bg-red-50/70 dark:text-red-400 dark:hover:bg-red-950/25">{t.btnDelete}</Button>
+                    <Button variant="ghost" onClick={() => removeMember(m.id)} className="h-10 text-red-600 hover:bg-red-50/70 dark:text-red-400 dark:hover:bg-red-950/25">{t.btnDelete}</Button>
                   )}
                 </div>
               </li>
@@ -214,7 +214,7 @@ export default function CompanyPage() {
       {canManage && (
         <Card>
           <CardHeader><CardTitle>{t.btnInviteColleague}</CardTitle><CardDescription>{t.coInviteDesc}</CardDescription></CardHeader>
-          <CardContent className="flex flex-wrap items-end gap-2">
+          <CardContent className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2"><Label htmlFor="ci-fldFirstName">{t.fldFirstName}</Label>
               <Input id="ci-fldFirstName" value={invite.firstName} onChange={(e) => setInvite({ ...invite, firstName: e.target.value })} placeholder={t.fldFirstName} /></div>
             <div className="space-y-2"><Label htmlFor="ci-fldLastName">{t.fldLastName}</Label>
@@ -226,7 +226,7 @@ export default function CompanyPage() {
                 <option value="member">{t.roleMember}</option>
                 <option value="admin">{t.roleAdmin}</option>
               </Select></div>
-            <Button onClick={sendInvite}>{t.btnSendInvite}</Button>
+            <Button onClick={sendInvite} className="sm:col-span-2 sm:w-fit">{t.btnSendInvite}</Button>
           </CardContent>
         </Card>
       )}

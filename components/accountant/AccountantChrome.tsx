@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { Home, Inbox, User, LogOut, Moon, Sun, X, Users, MessageSquare, ArrowUpRight, Settings } from "lucide-react";
+import { Home, Inbox, Store, LogOut, Moon, Sun, X, Users, MessageSquare, ArrowUpRight, Settings } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
@@ -22,7 +22,7 @@ const nav = [
   { key: "navOverview" as const, href: "/accountant", icon: Home, badge: null as "chat" | "requests" | null },
   { key: "navRequests" as const, href: "/accountant/requests", icon: Inbox, badge: "requests" as const },
   { key: "navChats" as const, href: "/accountant/chats", icon: MessageSquare, badge: "chat" as const },
-  { key: "navMarketplace" as const, href: "/accountant/marketplace", icon: User, badge: null },
+  { key: "navMarketplace" as const, href: "/accountant/marketplace", icon: Store, badge: null },
   { key: "navTeam" as const, href: "/accountant/team", icon: Users, badge: null },
   { key: "navSettings" as const, href: "/accountant/settings", icon: Settings, badge: null },
 ];
@@ -91,7 +91,7 @@ function NavList({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: (
           })}
         </ul>
       </nav>
-      <div className="flex shrink-0 items-center justify-between border-t border-gray-900/[0.06] px-3 py-2.5 dark:border-white/[0.06]">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-y-2 border-t border-gray-900/[0.06] px-3 py-2.5 dark:border-white/[0.06]">
         <div className="flex items-center gap-1">
           <button
             onClick={() => { toggleLanguage(); router.refresh(); }}

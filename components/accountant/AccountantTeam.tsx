@@ -26,7 +26,7 @@ interface Client {
 }
 
 const CARD = "rounded-2xl panel p-5";
-const INPUT = `${fieldClass} h-10 py-2`;
+const INPUT = `${fieldClass} h-11 py-2 md:h-10`;
 const SECTION_LABEL = "mb-2 text-sm font-medium text-gray-500 dark:text-gray-400";
 
 function RoleBadge({ role, t }: { role: string; t: ReturnType<typeof accountantStrings> }) {
@@ -141,17 +141,17 @@ export function AccountantTeam() {
               <ul className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.06]">
                 {members.map((m) => (
                   <li key={m.userId} className="flex flex-wrap items-center justify-between gap-2 py-3">
-                    <div>
+                    <div className="min-w-0 basis-full sm:basis-auto">
                       <p className="font-medium text-gray-900 dark:text-white">{m.name ?? m.email}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{m.email}</p>
+                      <p className="break-all text-xs text-gray-500 dark:text-gray-400">{m.email}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <RoleBadge role={m.role} t={t} />
                       {canManage && m.role !== "owner" && (
                         confirmRemove === m.userId ? (
-                          <span className="flex items-center gap-1">
+                          <span className="flex flex-wrap items-center gap-1">
                             <span className="mr-1 text-xs text-gray-500 dark:text-gray-400">{t.teamRemoveConfirm}</span>
-                            <Button variant="destructive" onClick={() => remove(m.userId)} className="h-8 !px-3 !text-xs">
+                            <Button variant="destructive" onClick={() => remove(m.userId)} className="!h-11 !px-3 !text-xs lg:!h-8">
                               {t.teamRemove}
                             </Button>
                             <Button
@@ -159,7 +159,7 @@ export function AccountantTeam() {
                               onClick={() => setConfirmRemove(null)}
                               aria-label={t.teamRemoveCancel}
                               title={t.teamRemoveCancel}
-                              className="h-8 w-8 !p-0 text-gray-500 dark:text-gray-400"
+                              className="!h-11 !w-11 !p-0 text-gray-500 dark:text-gray-400 lg:!h-8 lg:!w-8"
                             >
                               <X className="h-4 w-4" strokeWidth={1.75} />
                             </Button>
@@ -168,7 +168,7 @@ export function AccountantTeam() {
                           <Button
                             variant="ghost"
                             onClick={() => setConfirmRemove(m.userId)}
-                            className="h-8 !px-3 !text-xs text-red-600 hover:bg-red-50/70 dark:text-red-400 dark:hover:bg-red-950/25"
+                            className="!h-11 !px-3 !text-xs text-red-600 hover:bg-red-50/70 dark:text-red-400 dark:hover:bg-red-950/25 lg:!h-8"
                           >
                             {t.teamRemove}
                           </Button>
@@ -187,16 +187,16 @@ export function AccountantTeam() {
               <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
                 <UserPlus className="h-4 w-4" strokeWidth={1.75} /> {t.teamInvite}
               </h2>
-              <div className="flex flex-wrap items-end gap-3">
-                <div className="min-w-[140px] flex-1">
+              <div className="grid items-end gap-3 sm:grid-cols-2">
+                <div>
                   <label htmlFor="inv-first" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t.teamFirstName}</label>
                   <input id="inv-first" value={inviteFirst} onChange={(e) => setInviteFirst(e.target.value)} placeholder={t.teamFirstName} className={INPUT} />
                 </div>
-                <div className="min-w-[140px] flex-1">
+                <div>
                   <label htmlFor="inv-last" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t.teamLastName}</label>
                   <input id="inv-last" value={inviteLast} onChange={(e) => setInviteLast(e.target.value)} placeholder={t.teamLastName} className={INPUT} />
                 </div>
-                <div className="min-w-[220px] flex-1">
+                <div className="sm:col-span-2">
                   <label htmlFor="inv-email" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t.teamInviteEmail}</label>
                   <input id="inv-email" type="email" autoComplete="off" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="namn@byra.se" className={INPUT} />
                 </div>
@@ -207,7 +207,7 @@ export function AccountantTeam() {
                     <option value="admin">{t.teamRoleAdmin}</option>
                   </Select>
                 </div>
-                <Button onClick={invite} disabled={inviting || !inviteEmail.trim() || !inviteFirst.trim() || !inviteLast.trim()} className="h-10">
+                <Button onClick={invite} disabled={inviting || !inviteEmail.trim() || !inviteFirst.trim() || !inviteLast.trim()} className="w-full sm:w-auto sm:justify-self-start">
                   {inviting ? t.loading : t.teamSend}
                 </Button>
               </div>
@@ -217,9 +217,9 @@ export function AccountantTeam() {
                   <p className={SECTION_LABEL}>{t.teamPending}</p>
                   <ul className="space-y-2">
                     {pending.map((p) => (
-                      <li key={p.id} className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-300">{p.email}</span>
-                        <RoleBadge role={p.role} t={t} />
+                      <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
+                        <span className="min-w-0 break-all text-gray-600 dark:text-gray-300">{p.email}</span>
+                        <span className="shrink-0"><RoleBadge role={p.role} t={t} /></span>
                       </li>
                     ))}
                   </ul>
@@ -340,14 +340,14 @@ function AssignmentsPanel({ t }: { t: ReturnType<typeof accountantStrings> }) {
                 <ul className="space-y-1.5">
                   {assigned.map((a) => (
                     <li key={a.workerId} className="flex items-center justify-between rounded-xl bg-gray-900/[0.03] py-1.5 pl-3 pr-1.5 text-sm dark:bg-white/[0.04]">
-                      <span className="text-gray-700 dark:text-gray-200">{a.name ?? a.email}</span>
+                      <span className="min-w-0 break-all text-gray-700 dark:text-gray-200">{a.name ?? a.email}</span>
                       <Button
                         variant="ghost"
                         onClick={() => unassign(a.workerId)}
                         disabled={busy}
                         aria-label={t.teamUnassign}
                         title={t.teamUnassign}
-                        className="h-8 w-8 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                        className="!h-11 !w-11 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 lg:!h-8 lg:!w-8"
                       >
                         <X className="h-4 w-4" strokeWidth={1.75} />
                       </Button>
@@ -365,7 +365,7 @@ function AssignmentsPanel({ t }: { t: ReturnType<typeof accountantStrings> }) {
                   {assignableWorkers.map((w) => (
                     <li key={w.userId} className="flex items-center justify-between rounded-xl py-1.5 pl-3 pr-1.5 text-sm">
                       <span className="text-gray-700 dark:text-gray-200">{w.name ?? w.email}</span>
-                      <Button variant="outline" onClick={() => assign(w.userId)} disabled={busy} className="h-8 !px-3 !text-xs">
+                      <Button variant="outline" onClick={() => assign(w.userId)} disabled={busy} className="!h-11 !px-3 !text-xs lg:!h-8">
                         {t.teamAssign}
                       </Button>
                     </li>

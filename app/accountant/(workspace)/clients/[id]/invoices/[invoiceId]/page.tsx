@@ -64,7 +64,7 @@ export default async function AccountantInvoicePage({ params }: Params) {
       <div className="flex items-center justify-between gap-3 print:hidden">
         <Link
           href={`/accountant/clients/${access.companyId}?tab=invoices`}
-          className="inline-flex items-center gap-1 text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+          className="inline-flex min-h-11 items-center gap-1 text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
         >
           <ArrowLeft size={16} /> {t.ivBack}
         </Link>

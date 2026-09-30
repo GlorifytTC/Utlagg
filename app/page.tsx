@@ -81,7 +81,7 @@ function HomeContent() {
               <Link
                 href={a.href}
                 className={cn(
-                  "bezel-core group flex h-full flex-col p-8 md:p-10",
+                  "bezel-core group flex h-full flex-col p-6 sm:p-8 md:p-10",
                   a.tint && "light-surface bg-nordic-50",
                 )}
               >
@@ -90,7 +90,7 @@ function HomeContent() {
                     {a.tag}
                   </span>
                 )}
-                <h2 className="max-w-md font-display text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
+                <h2 className="max-w-md font-display text-2xl font-semibold leading-tight tracking-tight sm:text-3xl md:text-4xl">
                   {a.title}
                 </h2>
                 <p className="mt-4 max-w-md flex-1 text-base leading-relaxed text-ink/65">
@@ -112,12 +112,12 @@ function HomeContent() {
         {/* Feature teaser: 3-cell bento, one tall cell with a live visual */}
         <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <h2 className="max-w-xl font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+            <h2 className="max-w-xl font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
               {t.featuresHeadline}
             </h2>
             <Link
               href="/features"
-              className="shrink-0 text-sm font-medium text-nordic-600 transition hover:text-nordic-700"
+              className="inline-block shrink-0 py-3 text-sm font-medium text-nordic-600 transition hover:text-nordic-700"
             >
               {t.features} →
             </Link>
@@ -125,7 +125,7 @@ function HomeContent() {
 
           <div className="mt-14 grid grid-flow-dense gap-5 md:grid-cols-12">
             <motion.div {...reveal(0, rm)} className="bezel md:col-span-7 md:row-span-2">
-              <div className="bezel-core flex h-full flex-col overflow-hidden p-8 pb-14 md:p-10 md:pb-14">
+              <div className="bezel-core flex h-full flex-col overflow-hidden p-6 pb-14 sm:p-8 sm:pb-14 md:p-10 md:pb-14">
                 <h3 className="font-display text-2xl font-semibold tracking-tight">
                   {t.feature9Title}
                 </h3>
@@ -138,7 +138,7 @@ function HomeContent() {
               </div>
             </motion.div>
             <motion.div {...reveal(1, rm)} className="bezel md:col-span-5">
-              <div className="bezel-core light-surface h-full bg-nordic-50 p-8 md:p-10">
+              <div className="bezel-core light-surface h-full bg-nordic-50 p-6 sm:p-8 md:p-10">
                 <h3 className="font-display text-2xl font-semibold tracking-tight">
                   {t.feature7Title}
                 </h3>
@@ -146,7 +146,7 @@ function HomeContent() {
               </div>
             </motion.div>
             <motion.div {...reveal(2, rm)} className="bezel md:col-span-5">
-              <div className="bezel-core h-full p-8 md:p-10">
+              <div className="bezel-core h-full p-6 sm:p-8 md:p-10">
                 <h3 className="font-display text-2xl font-semibold tracking-tight">
                   {t.feature8Title}
                 </h3>

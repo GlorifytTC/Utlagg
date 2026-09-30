@@ -46,7 +46,7 @@ export function InvoiceSheet({
   ].filter(Boolean);
 
   return (
-    <div className="invoice-sheet flex flex-col rounded-2xl border border-gray-200 bg-white p-6 text-[13px] sm:p-10 leading-relaxed text-gray-800 print:min-h-[290mm]">
+    <div className="invoice-sheet flex flex-col rounded-2xl border border-gray-200 bg-white p-4 text-[13px] sm:p-10 leading-relaxed text-gray-800 print:min-h-[290mm]">
       {/* Header: seller identity left, document title + meta right */}
       <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
         <div className="min-w-0">
@@ -91,7 +91,8 @@ export function InvoiceSheet({
       </div>
 
       {/* Lines */}
-      <table className="mt-8 w-full border-collapse">
+      <div className="mt-8 overflow-x-auto print:overflow-visible">
+      <table className="w-full min-w-[480px] border-collapse print:min-w-0">
         <thead>
           <tr className="border-b-2 border-gray-900 text-left text-[11px] uppercase tracking-wider text-gray-500">
             <th className="py-2 font-semibold">{t.phDescription}</th>
@@ -113,6 +114,7 @@ export function InvoiceSheet({
           ))}
         </tbody>
       </table>
+      </div>
 
       {/* Totals */}
       <div className="invoice-row mt-4 ml-auto w-full max-w-72 space-y-1 tabular-nums">

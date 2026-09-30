@@ -47,7 +47,7 @@ function ResetForm() {
         placeholder={t.rpNewPassword}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600"
+        className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm focus:border-nordic-600"
       />
       <input
         type="password"
@@ -55,7 +55,7 @@ function ResetForm() {
         value={confirm}
         onChange={(e) => setConfirm(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && submit()}
-        className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600"
+        className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm focus:border-nordic-600"
       />
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button
@@ -72,7 +72,7 @@ function ResetForm() {
 export default function ResetPasswordPage() {
   const { t } = useLanguage();
   return (
-    <main className="flex min-h-screen items-center justify-center bg-paper px-6">
+    <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
       <div className="w-full max-w-sm">
         <Link href="/">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />

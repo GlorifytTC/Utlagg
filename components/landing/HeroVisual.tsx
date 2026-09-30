@@ -62,7 +62,7 @@ export function HeroVisual() {
       aria-hidden
       onPointerMove={onMove}
       onPointerLeave={onLeave}
-      className="relative hidden h-[520px] select-none md:block [perspective:1200px]"
+      className="relative hidden h-[520px] select-none lg:block [perspective:1200px]"
     >
       <motion.div
         style={{ rotateX, rotateY }}
@@ -141,7 +141,7 @@ export function HeroVisual() {
 // Mobile gets the finished card only - no receipt, tilt or loop.
 export function HeroVisualMobile() {
   return (
-    <div aria-hidden className="mt-10 select-none md:hidden">
+    <div aria-hidden className="mt-10 select-none lg:hidden">
       <ExpenseCard step={3} className="max-w-sm" />
     </div>
   );
@@ -206,12 +206,12 @@ function ExpenseCard({
         {fields.map(([label, value], i) => (
           <div key={label} className="flex items-center justify-between gap-4">
             <dt className="text-ink/50">{label}</dt>
-            <dd className="relative h-5 min-w-[96px] text-right font-medium text-ink">
+            <dd className="grid min-h-5 min-w-[96px] justify-items-end text-right font-medium text-ink">
               <AnimatePresence initial={false}>
                 {step >= 1 ? (
                   <motion.span
                     key="v"
-                    className="absolute right-0 top-0 whitespace-nowrap"
+                    className="col-start-1 row-start-1"
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
@@ -222,7 +222,7 @@ function ExpenseCard({
                 ) : (
                   <motion.span
                     key="s"
-                    className="absolute right-0 top-1.5 h-2 w-20 rounded-full bg-ink/10"
+                    className="col-start-1 row-start-1 mt-1.5 h-2 w-20 rounded-full bg-ink/10"
                     exit={{ opacity: 0 }}
                   />
                 )}

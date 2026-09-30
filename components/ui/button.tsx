@@ -12,7 +12,7 @@ const variants: Record<Variant, string> = {
 };
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition duration-300 ease-premium active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 min-h-11 rounded-full px-4 py-2 md:min-h-0 text-sm font-medium transition duration-300 ease-premium active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 disabled:pointer-events-none disabled:opacity-50";
 
 /** Button look for links, so a download/nav link never has to wrap a <button>. */
 export function buttonClass(variant: Variant = "default", className?: string) {

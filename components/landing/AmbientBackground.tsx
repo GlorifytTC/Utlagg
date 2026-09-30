@@ -4,7 +4,7 @@
 // Faint paper receipts drifting behind the content - plain DOM, so crisp at any DPR.
 const BG_RECEIPTS: { pos: React.CSSProperties; w: number; r: number; dur: number; mdOnly?: boolean }[] = [
   { pos: { top: "62%", left: "3%" }, w: 96, r: -12, dur: 9, mdOnly: true },
-  { pos: { top: "20%", right: "3%" }, w: 80, r: 14, dur: 11 },
+  { pos: { top: "20%", right: "3%" }, w: 80, r: 14, dur: 11, mdOnly: true },
   { pos: { top: "80%", right: "9%" }, w: 84, r: -9, dur: 10, mdOnly: true },
 ];
 
@@ -15,7 +15,7 @@ export function AmbientBackground() {
           gradient falloff instead of filter: blur() - Firefox re-rasterises large
           blurred surfaces far too often for animated elements. */}
       <div
-        className="amb-blob"
+        className="amb-blob hidden md:block"
         style={{
           position: "absolute", top: "-18%", left: "-10%", width: "55vw", height: "55vw",
           background: "radial-gradient(circle at center, rgba(196,82,47,0.10) 0%, rgba(196,82,47,0.05) 40%, transparent 78%)",
@@ -24,7 +24,7 @@ export function AmbientBackground() {
         }}
       />
       <div
-        className="amb-blob"
+        className="amb-blob hidden md:block"
         style={{
           position: "absolute", top: "12%", right: "-14%", width: "48vw", height: "48vw",
           background: "radial-gradient(circle at center, rgba(217,138,55,0.09) 0%, rgba(217,138,55,0.055) 40%, transparent 78%)",
@@ -33,7 +33,7 @@ export function AmbientBackground() {
         }}
       />
       <div
-        className="amb-blob"
+        className="amb-blob hidden md:block"
         style={{
           position: "absolute", bottom: "-22%", left: "22%", width: "52vw", height: "52vw",
           background: "radial-gradient(circle at center, rgba(120,90,60,0.08) 0%, rgba(120,90,60,0.04) 40%, transparent 78%)",

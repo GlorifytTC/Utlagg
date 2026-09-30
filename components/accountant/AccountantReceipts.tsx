@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AccountantReceiptEditor } from "@/components/accountant/AccountantReceiptEditor";
 import { useLanguage } from "@/context/LanguageContext";
@@ -41,6 +41,15 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
   const [dir, setDir] = useState<"asc" | "desc">("desc");
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [openId, setOpenId] = useState<string | null>(null);
+  // table and card list both render; mount the editor in only the visible one
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const sync = () => setIsDesktop(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
   const [refreshKey, setRefreshKey] = useState(0);
   // ponytail: in-memory page cache; cleared on save so stale pages aren't served after edits
   const cache = useRef<Map<string, { rows: ReceiptRow[]; total: number }>>(new Map());
@@ -116,14 +125,14 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
-  const inputCls = `${fieldClass} h-10 py-2`;
-  const dateCls = `${fieldClass} h-10 !w-auto py-2`;
+  const inputCls = `${fieldClass} h-11 py-2 md:h-10`;
+  const dateCls = `${fieldClass} h-11 py-2 md:h-10 sm:!w-auto`;
 
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="min-w-[180px] flex-1">
+      <div className="grid grid-cols-2 items-end gap-3 sm:flex sm:flex-wrap">
+        <div className="col-span-2 min-w-[180px] flex-1">
           <label htmlFor="rc-q" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
             {t.rcSearch}
           </label>
@@ -211,7 +220,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
             animate={{ opacity: 1, y: 0 }}
             className="overflow-hidden rounded-2xl panel"
           >
-            <div className="overflow-x-auto">
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full">
                 <thead>
                   <tr className="text-left">
@@ -225,12 +234,12 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                       <th
                         key={k}
                         aria-sort={sort === k ? (dir === "asc" ? "ascending" : "descending") : "none"}
-                        className="px-5 py-3"
+                        className="px-5 py-1"
                       >
                         <button
                           type="button"
                           onClick={() => toggleSort(k)}
-                          className={`inline-flex items-center gap-1 rounded-full text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 ${sort === k ? "text-nordic-700 dark:text-nordic-300" : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"}`}
+                          className={`inline-flex items-center gap-1 rounded-full py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 ${sort === k ? "text-nordic-700 dark:text-nordic-300" : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"}`}
                         >
                           {label}
                           {sort === k && <span aria-hidden>{dir === "asc" ? "↑" : "↓"}</span>}
@@ -245,9 +254,8 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                 </thead>
                 <tbody>
                   {rows.map((r) => (
-                    <>
+                    <Fragment key={r.id}>
                       <tr
-                        key={r.id}
                         className="cursor-pointer border-t border-gray-900/[0.07] transition-colors hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
                         onClick={() => setOpenId(openId === r.id ? null : r.id)}
                       >
@@ -277,7 +285,7 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                           {openId === r.id ? t.rcClose : t.rcReview}
                         </td>
                       </tr>
-                      {openId === r.id && (
+                      {openId === r.id && isDesktop && (
                         <tr key={`${r.id}-editor`}>
                           <td
                             colSpan={7}
@@ -291,11 +299,43 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                           </td>
                         </tr>
                       )}
-                    </>
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
             </div>
+
+            <ul className="divide-y divide-gray-900/[0.07] dark:divide-white/[0.07] md:hidden">
+              {rows.map((r) => (
+                <li key={r.id}>
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{r.vendorName || "-"}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {r.date ? r.date.slice(0, 10) : "-"} · {r.totalAmount ?? "-"}
+                      </p>
+                    </div>
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${statusBadge[r.status] ?? "bg-gray-100/80 text-gray-600 dark:bg-white/[0.06] dark:text-gray-400"}`}
+                    >
+                      {statusLabel[r.status] ?? r.status}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setOpenId(openId === r.id ? null : r.id)}
+                      className="min-h-11 shrink-0 px-2 text-sm font-medium text-nordic-600"
+                    >
+                      {openId === r.id ? t.rcClose : t.rcReview}
+                    </button>
+                  </div>
+                  {openId === r.id && !isDesktop && (
+                    <div className="border-t border-gray-900/[0.07] bg-gray-900/[0.02] px-4 py-4 dark:border-white/[0.07] dark:bg-white/[0.02]">
+                      <AccountantReceiptEditor companyId={companyId} receiptId={r.id} onSaved={handleSaved} />
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
 
             {totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 dark:border-white/[0.07]">
@@ -306,14 +346,14 @@ export function AccountantReceipts({ companyId }: { companyId: string }) {
                   <button
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
-                    className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
+                    className="min-h-11 rounded-full border border-gray-900/[0.15] px-4 text-sm transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
                   >
                     {t.pagePrev}
                   </button>
                   <button
                     disabled={page >= totalPages}
                     onClick={() => setPage((p) => p + 1)}
-                    className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
+                    className="min-h-11 rounded-full border border-gray-900/[0.15] px-4 text-sm transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
                   >
                     {t.pageNext}
                   </button>

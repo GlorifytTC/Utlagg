@@ -50,9 +50,9 @@ export default async function InvoiceView({ params }: { params: { id: string } }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 print:max-w-none">
-      <div className="flex items-center justify-between gap-3 print:hidden">
-        <Link href="/dashboard/invoices" className="text-sm text-nordic-600 underline">← {t.navInvoices}</Link>
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
+        <Link href="/dashboard/invoices" className="inline-flex min-h-11 items-center text-sm text-nordic-600 underline">← {t.navInvoices}</Link>
+        <div className="flex flex-wrap items-center gap-2">
           {canManage && <InvoicePaidToggle id={inv.id} paid={isPaid} />}
           <PrintButton />
         </div>

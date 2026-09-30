@@ -70,7 +70,7 @@ function ForAccountantsContent() {
             </motion.p>
             <motion.h1
               {...enter(1, rm)}
-              className="mt-5 max-w-xl font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl"
+              className="mt-5 max-w-xl font-display text-4xl sm:text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl break-words hyphens-auto"
             >
               {t.fbTitle}
             </motion.h1>
@@ -93,7 +93,7 @@ function ForAccountantsContent() {
             transition={{ type: "spring", bounce: 0, duration: 0.9, delay: 0.15 }}
             className="bezel"
           >
-            <div className="bezel-core light-surface overflow-hidden bg-[radial-gradient(120%_90%_at_80%_0%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] px-6 pb-12 pt-14">
+            <div className="bezel-core light-surface overflow-hidden bg-[radial-gradient(120%_90%_at_80%_0%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] px-3 pb-12 sm:px-6 pt-14">
               <WorkQueueVisual />
             </div>
           </motion.div>
@@ -102,7 +102,7 @@ function ForAccountantsContent() {
         {/* What the queue catches: pinned heading, list scrolls past */}
         <section className="mx-auto grid max-w-6xl gap-12 px-6 py-24 md:grid-cols-[1fr_1.3fr] md:gap-20 md:py-32">
           <div className="md:sticky md:top-32 md:self-start">
-            <h2 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+            <h2 className="font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
               {t.fbQueueTitle}
             </h2>
             <p className="mt-5 max-w-sm text-base leading-relaxed text-ink/65">{t.fbQueueBody}</p>
@@ -124,7 +124,7 @@ function ForAccountantsContent() {
 
         {/* Workspace */}
         <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
-          <h2 className="max-w-xl font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+          <h2 className="max-w-xl font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.fbWorkTitle}
           </h2>
           <div className="mt-14 grid grid-flow-dense gap-5 md:grid-cols-6">
@@ -134,7 +134,7 @@ function ForAccountantsContent() {
                 {...reveal(i % 3, rm)}
                 className={cn("bezel", WORK_CELLS[i].span)}
               >
-                <div className={cn("bezel-core h-full p-8", WORK_CELLS[i].bg)}>
+                <div className={cn("bezel-core h-full p-6 sm:p-8", WORK_CELLS[i].bg)}>
                   <h3 className="font-display text-xl font-semibold tracking-tight">{w.title}</h3>
                   <p className="mt-3 max-w-lg text-sm leading-relaxed text-ink/65">{w.body}</p>
                 </div>
@@ -147,7 +147,7 @@ function ForAccountantsContent() {
 
         {/* Getting clients: plain columns, no cards */}
         <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
-          <h2 className="max-w-xl font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+          <h2 className="max-w-xl font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.fbGrowTitle}
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-ink/65">{t.fbGrowBody}</p>

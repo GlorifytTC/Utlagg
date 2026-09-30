@@ -215,7 +215,7 @@ export function ChatBox() {
   const overflowCount = remaining.length - 3;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+    <div className="fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-6 z-50 flex flex-col items-end gap-4">
       {/* ── Panel ── */}
       <AnimatePresence>
         {open && (
@@ -226,7 +226,7 @@ export function ChatBox() {
             exit={{ opacity: 0, scale: 0.92, y: 12 }}
             transition={{ type: "spring", stiffness: 360, damping: 28 }}
             style={{ originX: 1, originY: 1 }}
-            className="flex h-[540px] w-[340px] flex-col overflow-hidden rounded-3xl border hairline bg-paper/80 shadow-[0_24px_80px_-16px_rgba(0,0,0,0.22)] backdrop-blur-2xl"
+            className="flex h-[min(540px,calc(100dvh-7rem))] w-[calc(100vw-3rem)] max-w-[340px] flex-col overflow-hidden rounded-3xl border hairline bg-paper/80 shadow-[0_24px_80px_-16px_rgba(0,0,0,0.22)] backdrop-blur-2xl"
           >
             {/* Header */}
             <div className="flex shrink-0 items-center gap-3 border-b hairline bg-ink px-5 py-4">
@@ -274,7 +274,7 @@ export function ChatBox() {
                     transition={{ type: "spring", stiffness: 500, damping: 28 }}
                     onClick={handleReset}
                     aria-label={t.cbRestart}
-                    className="rounded-full p-1.5 text-paper/40 transition hover:bg-paper/10 hover:text-paper/80"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-paper/40 transition hover:bg-paper/10 hover:text-paper/80"
                   >
                     <IconReset />
                   </motion.button>
@@ -284,7 +284,7 @@ export function ChatBox() {
               <button
                 onClick={() => setOpen(false)}
                 aria-label={t.cbClose}
-                className="rounded-full p-1.5 text-paper/40 transition hover:bg-paper/10 hover:text-paper/80"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-paper/40 transition hover:bg-paper/10 hover:text-paper/80"
               >
                 <IconX />
               </button>

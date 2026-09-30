@@ -88,7 +88,7 @@ export default async function DashboardPage() {
           </div>
           <Link
             href="/dashboard/subscription"
-            className="inline-flex shrink-0 items-center justify-center rounded-full bg-amber-900 px-5 py-2.5 text-sm font-medium text-amber-50 transition duration-300 ease-premium hover:bg-amber-800 active:scale-[0.98] dark:bg-amber-600 dark:text-white dark:hover:bg-amber-500"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-amber-900 px-5 py-2.5 text-sm font-medium text-amber-50 transition duration-300 ease-premium hover:bg-amber-800 active:scale-[0.98] dark:bg-amber-600 dark:text-white dark:hover:bg-amber-500"
           >
             {t.dashChoosePlan}
           </Link>

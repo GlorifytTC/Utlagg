@@ -110,21 +110,21 @@ export function AccountantFirmStats() {
           ) : (
             <ul className="divide-y divide-gray-900/[0.05] dark:divide-white/[0.05]">
               {stats.clientsWithPending.map((c) => (
-                <li key={c.companyId} className="flex items-center justify-between px-5 py-3">
-                  <span className="truncate pr-3 text-sm font-medium text-gray-900 dark:text-white">
-                    {c.companyName}
-                  </span>
-                  <div className="flex shrink-0 items-center gap-3">
-                    <span className="rounded-full bg-amber-100/70 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                      {c.pendingCount} {t.firmStatsPendingLabel}
+                <li key={c.companyId}>
+                  <Link
+                    href={`/accountant/clients/${c.companyId}`}
+                    className="flex min-h-11 flex-wrap items-center justify-between gap-y-1 px-5 py-3"
+                  >
+                    <span className="min-w-0 truncate pr-3 text-sm font-medium text-gray-900 dark:text-white">
+                      {c.companyName}
                     </span>
-                    <Link
-                      href={`/accountant/clients/${c.companyId}`}
-                      className="text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70"
-                    >
-                      {t.openClient} →
-                    </Link>
-                  </div>
+                    <span className="flex shrink-0 items-center gap-3">
+                      <span className="rounded-full bg-amber-100/70 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                        {c.pendingCount} {t.firmStatsPendingLabel}
+                      </span>
+                      <span className="hidden text-sm font-medium text-nordic-600 sm:inline">{t.openClient} →</span>
+                    </span>
+                  </Link>
                 </li>
               ))}
             </ul>

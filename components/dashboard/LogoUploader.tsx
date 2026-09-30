@@ -56,7 +56,7 @@ export function LogoUploader({
   }
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-wrap items-center gap-4">
       <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-white/[0.03]">
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -67,7 +67,7 @@ export function LogoUploader({
       </div>
       <div className="flex flex-col gap-2">
         <span className="text-xs text-gray-500 dark:text-gray-400">{label}</span>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" disabled={busy} onClick={() => inputRef.current?.click()}>
             {busy ? t.loading : preview ? t.logoChange : t.logoUpload}
           </Button>

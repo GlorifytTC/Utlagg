@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Select } from "@/components/ui/input";
+import { buttonClass } from "@/components/ui/button";
+import { useLanguage } from "@/context/LanguageContext";
 
 const MONTHS = [
   "Januari", "Februari", "Mars", "April", "Maj", "Juni",
@@ -20,6 +23,7 @@ export function SkatteverketExport({
 }: {
   endpoint?: string;
 }) {
+  const { t } = useLanguage();
   const now = new Date();
   const years = Array.from({ length: 7 }, (_, i) => now.getFullYear() - i);
 
@@ -36,42 +40,36 @@ export function SkatteverketExport({
     window.location.href = `${endpoint}?from=${from}&to=${to}`;
   }
 
-  const sel =
-    "rounded-lg border border-gray-300 px-2 py-2 text-sm dark:border-white/[0.10] dark:bg-[#111]";
-
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-end gap-2">
+      <div className="grid gap-3 sm:flex sm:flex-wrap sm:items-end sm:gap-2">
         <div>
-          <p className="mb-1 text-xs text-gray-500">Från</p>
+          <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">{t.receiptFrom}</p>
           <div className="flex gap-2">
-            <select value={fromMonth} onChange={(e) => setFromMonth(Number(e.target.value))} className={sel}>
+            <Select value={fromMonth} onChange={(e) => setFromMonth(Number(e.target.value))} className="!w-auto">
               {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
-            </select>
-            <select value={fromYear} onChange={(e) => setFromYear(Number(e.target.value))} className={sel}>
+            </Select>
+            <Select value={fromYear} onChange={(e) => setFromYear(Number(e.target.value))} className="!w-auto">
               {years.map((y) => <option key={y} value={y}>{y}</option>)}
-            </select>
+            </Select>
           </div>
         </div>
         <div>
-          <p className="mb-1 text-xs text-gray-500">Till</p>
+          <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">{t.receiptTo}</p>
           <div className="flex gap-2">
-            <select value={toMonth} onChange={(e) => setToMonth(Number(e.target.value))} className={sel}>
+            <Select value={toMonth} onChange={(e) => setToMonth(Number(e.target.value))} className="!w-auto">
               {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
-            </select>
-            <select value={toYear} onChange={(e) => setToYear(Number(e.target.value))} className={sel}>
+            </Select>
+            <Select value={toYear} onChange={(e) => setToYear(Number(e.target.value))} className="!w-auto">
               {years.map((y) => <option key={y} value={y}>{y}</option>)}
-            </select>
+            </Select>
           </div>
         </div>
-        <button
-          onClick={download}
-          className="rounded-lg bg-nordic-600 px-4 py-2 text-sm font-medium text-white hover:bg-nordic-900"
-        >
+        <button onClick={download} className={buttonClass("default", "w-full sm:w-auto")}>
           Ladda ner CSV
         </button>
       </div>
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-gray-500 dark:text-gray-400">
         Svenskt format: SEK med kommatecken, semikolon-avgränsat, UTF-8 (öppnas i Excel).
         Kolumner: datum, leverantör, belopp, moms, momssats, BAS-konto, kategori, beskrivning, bildreferens.
       </p>

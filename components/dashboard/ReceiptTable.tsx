@@ -191,7 +191,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
           onClick={() => toggleSort(column)}
           aria-sort={active ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
           className={cn(
-            "group inline-flex items-center gap-1 uppercase tracking-wide transition-colors",
+            "group inline-flex items-center gap-1 py-2 uppercase tracking-wide transition-colors",
             active
               ? "text-nordic-600 [text-shadow:0_0_10px_rgb(var(--accent)/0.55)]"
               : "hover:text-gray-700 dark:hover:text-gray-200",
@@ -219,21 +219,21 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
             placeholder={t.receiptSearch}
             className={`${fieldClass} h-10 min-w-[200px] flex-1 py-2`}
           />
-          <div className="flex items-end gap-2">
+          <div className="grid w-full grid-cols-2 items-end gap-2 sm:flex sm:w-auto">
             <label className="text-xs text-gray-500 dark:text-gray-400">
               {t.receiptFrom}
-              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={`${fieldClass} mt-1 block h-10 !w-auto py-2`} />
+              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={`${fieldClass} mt-1 block h-11 !w-full py-2 sm:h-10 sm:!w-auto`} />
             </label>
             <label className="text-xs text-gray-500 dark:text-gray-400">
               {t.receiptTo}
-              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={`${fieldClass} mt-1 block h-10 !w-auto py-2`} />
+              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={`${fieldClass} mt-1 block h-11 !w-full py-2 sm:h-10 sm:!w-auto`} />
             </label>
-            <div ref={exportRef} className="relative">
+            <div ref={exportRef} className="relative col-span-2 sm:col-span-1">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setExportOpen((o) => !o)}
-                className="flex items-center gap-1.5 rounded-full border border-gray-900/[0.15] px-4 py-2 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40"
+                className="flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border border-gray-900/[0.15] px-4 py-2 text-sm sm:min-h-0 sm:w-auto hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40"
               >
                 {t.receiptExport}
                 <svg
@@ -253,13 +253,13 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.12 }}
-                    className="panel absolute right-0 z-20 mt-1 min-w-[140px] overflow-hidden rounded-2xl py-1"
+                    className="panel absolute right-0 z-20 mt-1 min-w-[140px] max-sm:w-full overflow-hidden rounded-2xl py-1"
                   >
                     {EXPORT_FORMATS.map((f) => (
                       <button
                         key={f.key}
                         onClick={() => exportAs(f.path)}
-                        className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-900/[0.05] dark:text-gray-200 dark:hover:bg-white/[0.06]"
+                        className="block w-full px-4 py-3 text-left md:py-2 text-sm text-gray-700 hover:bg-gray-900/[0.05] dark:text-gray-200 dark:hover:bg-white/[0.06]"
                       >
                         {f.label}
                       </button>
@@ -300,8 +300,8 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="overflow-x-auto"
           >
+            <div className="hidden overflow-x-auto md:block">
             <table className="w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="text-left text-xs uppercase tracking-wide text-gray-400 dark:text-gray-400">
@@ -390,6 +390,54 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                 ))}
               </tbody>
             </table>
+            </div>
+
+            <ul className="divide-y divide-gray-900/[0.07] dark:divide-white/[0.07] md:hidden">
+              {receipts.map((r) => (
+                <li
+                  key={r.id}
+                  onClick={() => router.push(`/dashboard/receipts/${r.id}`)}
+                  className="cursor-pointer space-y-3 px-4 py-3 active:bg-gray-900/[0.03] dark:active:bg-white/[0.03]"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="break-words font-medium">{r.vendorName ?? "-"}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(r.date)}</p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="font-medium tabular-nums">{formatSek(r.totalAmount)}</p>
+                      <span className={cn("mt-1 inline-block rounded-full px-2.5 py-1 text-xs font-medium", STATUS_STYLE[r.status])}>
+                        {statusLabel[r.status] ?? r.status}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    {r.status === "pending" && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); approve(r.id); }}
+                        className="min-h-10 rounded-full border border-gray-900/[0.15] px-4 text-sm hover:border-emerald-400 hover:text-emerald-700 dark:border-white/[0.15]"
+                      >
+                        {t.receiptApprove}
+                      </button>
+                    )}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); remove(r.id); }}
+                      disabled={removingId === r.id}
+                      className={cn(
+                        "min-h-10 rounded-full border border-gray-900/[0.15] px-4 text-sm text-red-600 hover:border-red-400 dark:border-white/[0.15]",
+                        removingId === r.id && "opacity-50 cursor-not-allowed",
+                      )}
+                    >
+                      {removingId === r.id ? (
+                        <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
+                      ) : (
+                        t.receiptDelete
+                      )}
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-900/[0.07] px-5 py-3 text-sm text-gray-500 dark:border-white/[0.07] dark:text-gray-400">
               <span>{showingLabel}</span>
@@ -398,7 +446,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
                   className={cn(
-                    "rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs dark:border-white/[0.15]",
+                    "min-h-10 rounded-full border border-gray-900/[0.15] px-4 text-xs dark:border-white/[0.15] md:min-h-0 md:px-3 md:py-1",
                     page <= 1 ? "cursor-not-allowed opacity-40" : "hover:border-gray-900/40 dark:hover:border-white/40",
                   )}
                 >
@@ -409,7 +457,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
                   className={cn(
-                    "rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs dark:border-white/[0.15]",
+                    "min-h-10 rounded-full border border-gray-900/[0.15] px-4 text-xs dark:border-white/[0.15] md:min-h-0 md:px-3 md:py-1",
                     page >= totalPages ? "cursor-not-allowed opacity-40" : "hover:border-gray-900/40 dark:hover:border-white/40",
                   )}
                 >

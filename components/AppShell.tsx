@@ -13,11 +13,11 @@ import { LogoMark } from "@/components/brand/Logo";
 // workspace differ only in their nav contents, so both render through this.
 
 export const iconBtn =
-  "grid h-10 w-10 place-items-center rounded-full text-gray-500 transition duration-300 ease-premium hover:bg-gray-900/[0.05] hover:text-gray-900 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-white lg:h-8 lg:w-8";
+  "grid h-11 w-11 place-items-center rounded-full text-gray-500 transition duration-300 ease-premium hover:bg-gray-900/[0.05] hover:text-gray-900 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-white lg:h-8 lg:w-8";
 
 export function navItemClass(active: boolean) {
   return cn(
-    "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] transition duration-300 ease-premium active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 lg:py-1.5 lg:text-sm lg:[@media(max-height:860px)]:py-1",
+    "group flex items-center gap-3 rounded-xl px-3 py-3 text-[15px] transition duration-300 ease-premium active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 lg:py-1.5 lg:text-sm lg:[@media(max-height:860px)]:py-1",
     active
       ? "bg-nordic-600/[0.09] font-medium text-nordic-700 dark:bg-nordic-600/[0.16] dark:text-nordic-300"
       : "text-gray-600 hover:bg-gray-900/[0.04] hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-white",
@@ -40,7 +40,7 @@ export function NotifBadge({ n }: { n: number }) {
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0, opacity: 0 }}
       transition={{ type: "spring", stiffness: 500, damping: 24 }}
-      className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-nordic-600 px-1 text-[9px] font-bold leading-none text-white ring-2 ring-[#fffefb] dark:ring-[#0d0d0d]"
+      className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-nordic-600 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-[#fffefb] dark:ring-[#0d0d0d]"
     >
       {n > 9 ? "9+" : n}
     </motion.span>
@@ -100,7 +100,7 @@ export function AppShell({
       </aside>
 
       {/* Mobile top bar: floating pill */}
-      <header className="pointer-events-none sticky top-0 z-30 px-3 pt-3 lg:hidden print:hidden">
+      <header className="pointer-events-none sticky top-0 z-30 bg-[#F5F4F0]/80 px-3 pb-2 pt-3 backdrop-blur dark:bg-black/80 lg:hidden print:hidden">
         <div className="panel pointer-events-auto flex h-14 items-center justify-between rounded-full py-2 pl-2 pr-2">
           <div className="flex items-center gap-1">
             <button onClick={() => setOpen(true)} aria-label={t.openMenu} aria-expanded={open} className={iconBtn}>
@@ -139,7 +139,7 @@ export function AppShell({
       </AnimatePresence>
 
       {/* No z-index here: page modals use fixed z-50 and must stack above the rail */}
-      <main className="min-h-[calc(100dvh-4.25rem)] p-4 pb-28 sm:p-6 sm:pb-28 md:pb-8 lg:ml-[16.5rem] lg:min-h-screen lg:p-6 xl:p-8 print:ml-0 print:min-h-0 print:p-0">
+      <main className="min-h-[calc(100dvh-4.25rem)] p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-8 lg:ml-[16.5rem] lg:min-h-screen lg:p-6 xl:p-8 print:ml-0 print:min-h-0 print:p-0">
         {children}
       </main>
 
@@ -151,7 +151,7 @@ export function AppShell({
             href={href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex flex-col items-center gap-1 rounded-2xl py-2 text-[10px] font-medium transition duration-300 ease-premium active:scale-95",
+              "flex flex-col items-center gap-1 rounded-2xl px-0.5 py-2 text-[11px] font-medium leading-tight transition duration-300 ease-premium active:scale-95",
               active ? "bg-nordic-600/[0.09] text-nordic-700 dark:text-nordic-300" : "text-gray-500 dark:text-gray-400",
             )}
           >
@@ -159,7 +159,7 @@ export function AppShell({
               <Icon className="h-5 w-5" strokeWidth={1.75} />
               <AnimatePresence>{badge ? <NotifBadge n={badge} /> : null}</AnimatePresence>
             </span>
-            <span className="max-w-full truncate px-1">{label}</span>
+            <span className="max-w-full break-words text-center">{label}</span>
           </Link>
         ))}
       </nav>

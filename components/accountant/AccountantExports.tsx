@@ -74,7 +74,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
     }
   }
 
-  const inputCls = `${fieldClass} h-10 !w-auto py-2`;
+  const inputCls = `${fieldClass} h-11 py-2 sm:h-10 sm:!w-auto`;
 
   return (
     <div className="space-y-6">
@@ -84,7 +84,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
         animate={{ opacity: 1, y: 0 }}
         className="rounded-2xl panel p-6"
       >
-        <div className="flex flex-wrap items-end gap-3">
+        <div className="grid grid-cols-2 items-end gap-3 sm:flex sm:flex-wrap">
           <div>
             <label htmlFor="ex-from" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
               {t.rcFrom}
@@ -97,11 +97,11 @@ export function AccountantExports({ companyId }: { companyId: string }) {
             </label>
             <input id="ex-to" type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputCls} />
           </div>
-          <div className="flex gap-2">
-            <Button onClick={() => doExport("csv")} disabled={busy !== null} className="h-10">
+          <div className="col-span-2 grid grid-cols-2 gap-2 sm:flex">
+            <Button onClick={() => doExport("csv")} disabled={busy !== null} className="h-11 sm:h-10">
               {busy === "csv" ? t.exExporting : t.exCsv}
             </Button>
-            <Button variant="outline" onClick={() => doExport("sie")} disabled={busy !== null} className="h-10">
+            <Button variant="outline" onClick={() => doExport("sie")} disabled={busy !== null} className="h-11 sm:h-10">
               {busy === "sie" ? t.exExporting : t.exSie}
             </Button>
           </div>
@@ -135,7 +135,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
                     {[t.rcColDate, t.exColPeriod, t.exColFormat, t.colReceipts].map((h) => (
                       <th
                         key={h}
-                        className="px-5 py-3 text-xs font-medium text-gray-500 dark:text-gray-400"
+                        className="px-3 py-3 text-xs font-medium sm:px-5 text-gray-500 dark:text-gray-400"
                       >
                         {h}
                       </th>
@@ -148,16 +148,16 @@ export function AccountantExports({ companyId }: { companyId: string }) {
                       key={h.id}
                       className="border-t border-gray-900/[0.07] transition-colors hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
                     >
-                      <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
+                      <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500 dark:text-gray-400 sm:px-5">
                         {h.createdAt?.slice(0, 10)}
                       </td>
-                      <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
+                      <td className="px-3 py-3 text-sm sm:px-5 text-gray-500 dark:text-gray-400">
                         {h.fromDate || h.toDate ? `${h.fromDate ?? "…"} - ${h.toDate ?? "…"}` : t.exAll}
                       </td>
-                      <td className="px-5 py-3 text-sm uppercase text-gray-500 dark:text-gray-400">
+                      <td className="px-3 py-3 text-sm sm:px-5 uppercase text-gray-500 dark:text-gray-400">
                         {h.format}
                       </td>
-                      <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
+                      <td className="px-3 py-3 text-sm sm:px-5 text-gray-500 dark:text-gray-400">
                         {h.receiptCount}
                       </td>
                     </tr>

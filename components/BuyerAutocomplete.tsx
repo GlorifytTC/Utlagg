@@ -118,14 +118,14 @@ export function BuyerAutocomplete({ onSelect, onInputChange, id }: Props) {
         <ul
           id="buyer-listbox"
           role="listbox"
-          className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-md border border-gray-200 bg-white shadow-lg dark:border-white/[0.10] dark:bg-[#111]"
+          className="panel absolute z-50 mt-1 max-h-[40dvh] w-full overflow-auto rounded-xl py-1 dark:border-white/[0.07] dark:bg-[#0A0A0A]"
         >
           {suggestions.map((buyer, idx) => (
             <li
               key={`${buyer.name}-${buyer.orgNumber ?? ""}`}
               role="option"
               aria-selected={idx === highlightIndex}
-              className={`cursor-pointer px-3 py-2 text-sm ${
+              className={`cursor-pointer px-3 py-3 text-sm md:py-2 ${
                 idx === highlightIndex
                   ? "bg-gray-100 dark:bg-white/[0.08]"
                   : "hover:bg-gray-50 dark:hover:bg-gray-800"

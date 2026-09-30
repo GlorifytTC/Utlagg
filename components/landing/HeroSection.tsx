@@ -13,7 +13,7 @@ export function HeroSection() {
 
   return (
     <section className="relative">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-16 pt-12 md:grid-cols-[1fr_1.05fr] md:pb-24 md:pt-20">
+      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-16 pt-12 lg:grid-cols-[1fr_1.05fr] md:pb-24 md:pt-20">
         <div>
           <motion.p
             {...enter(0, rm)}
@@ -35,7 +35,7 @@ export function HeroSection() {
           >
             {t.heroDescription}
           </motion.p>
-          <motion.div {...enter(3, rm)} className="mt-10 flex flex-wrap items-center gap-3">
+          <motion.div {...enter(3, rm)} className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <CtaLink href="/register">{t.heroCtaPrimary}</CtaLink>
             <CtaLink href="/pricing" variant="ghost">
               {t.heroCtaSecondary}
@@ -49,7 +49,7 @@ export function HeroSection() {
           initial={{ opacity: 0, scale: rm ? 1 : 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", bounce: 0, duration: 0.9, delay: 0.15 }}
-          className="bezel hidden md:block"
+          className="bezel hidden lg:block"
         >
           <div className="bezel-core light-surface relative overflow-hidden bg-[radial-gradient(120%_90%_at_80%_10%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] px-6">
             <HeroVisual />

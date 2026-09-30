@@ -58,7 +58,7 @@ const navGroups = [
 // Flat list for the mobile bottom bar, which picks items by href
 const nav = navGroups.flatMap((g) => g.items);
 
-const bottomNav = nav.filter((n) => ["/dashboard", "/dashboard/receipts", "/dashboard/stats", "/dashboard/subscription", "/dashboard/profile"].includes(n.href));
+const bottomNav = nav.filter((n) => ["/dashboard", "/dashboard/receipts", "/dashboard/chats", "/dashboard/stats", "/dashboard/profile"].includes(n.href));
 
 function isActive(pathname: string, href: string) {
   return href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
@@ -168,26 +168,19 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
 export function DashboardChrome({ children, tier }: { children: React.ReactNode; tier?: Tier }) {
   const { t } = useLanguage();
   const pathname = usePathname();
+  const { chat } = useNotifications();
 
   return (
     <AppShell
       homeHref="/dashboard"
       renderNav={(p) => <NavList {...p} tier={tier} />}
-      headerEnd={
-        <button
-          onClick={() => signOut({ callbackUrl: "/" })}
-          aria-label={t.navLogout}
-          className="flex h-10 items-center gap-1.5 rounded-full px-3 text-sm text-red-600 transition hover:bg-red-50/70 active:scale-95 dark:text-red-400 dark:hover:bg-red-950/25"
-        >
-          <LogOut className="h-[18px] w-[18px]" strokeWidth={1.75} />
-          <span className="hidden sm:inline">{t.navLogout}</span>
-        </button>
-      }
+      headerEnd={null}
       bottomNav={bottomNav.map((item) => ({
         href: item.href,
         label: t[item.key as keyof Translations] as string,
         icon: item.icon,
         active: isActive(pathname, item.href),
+        badge: item.href === "/dashboard/chats" ? chat : undefined,
       }))}
     >
       <IdleLogout />

@@ -114,13 +114,13 @@ export function InvoiceHistory() {
                     </td>
                     <td className="py-3 pr-4">{statusBadge(inv.status)}</td>
                     <td className="py-3 text-right">
-                      <div className="flex items-center justify-end gap-3">
+                      <div className="flex items-center justify-end gap-2 md:gap-3">
                         {inv.status === "open" && inv.hostedUrl && (
                           <a
                             href={inv.hostedUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-nordic-600 hover:underline"
+                            className="inline-flex min-h-10 items-center gap-1 px-1 text-nordic-600 hover:underline md:min-h-0"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
                             {t.invPay}
@@ -129,7 +129,8 @@ export function InvoiceHistory() {
                         {inv.pdfUrl && (
                           <a
                             href={inv.pdfUrl}
-                            className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                            aria-label={t.invDownload}
+                            className="inline-flex min-h-10 min-w-10 items-center justify-center gap-1 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white md:min-h-0 md:min-w-0"
                           >
                             <Download className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">{t.invDownload}</span>

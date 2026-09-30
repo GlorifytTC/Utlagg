@@ -37,7 +37,7 @@ function AboutContent() {
           </motion.p>
           <motion.h1
             {...enter(1, rm)}
-            className="mt-5 max-w-4xl font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl"
+            className="mt-5 max-w-4xl font-display text-4xl sm:text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl break-words hyphens-auto"
           >
             {t.aboutTitle}
           </motion.h1>
@@ -79,7 +79,7 @@ function AboutContent() {
 
         {/* Values: asymmetric trio */}
         <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
-          <h2 className="max-w-md font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+          <h2 className="max-w-md font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.aboutValuesTitle}
           </h2>
           <div className="mt-14 grid grid-flow-dense gap-5 md:grid-cols-2">
@@ -91,7 +91,7 @@ function AboutContent() {
               >
                 <div
                   className={cn(
-                    "bezel-core flex h-full flex-col p-8 md:p-10",
+                    "bezel-core flex h-full flex-col p-6 sm:p-8 md:p-10",
                     i === 0 &&
                       "light-surface justify-end bg-[radial-gradient(130%_100%_at_0%_0%,rgb(var(--accent-tint))_0%,#fffdf8_70%)] md:min-h-[22rem]",
                   )}

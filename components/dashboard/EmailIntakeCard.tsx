@@ -47,7 +47,7 @@ export function EmailIntakeCard() {
         <CardDescription>{t.setEmailIntakeDesc}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-wrap items-center gap-2">
-        <code className="min-w-0 flex-1 truncate rounded-xl border border-gray-900/15 bg-white px-3.5 py-2 text-sm text-gray-800 dark:border-white/[0.14] dark:bg-black/40 dark:text-gray-200">
+        <code className="min-w-0 flex-1 break-all rounded-xl border border-gray-900/15 bg-white px-3.5 py-2 text-sm text-gray-800 dark:border-white/[0.14] dark:bg-black/40 dark:text-gray-200">
           {address}
         </code>
         <Button variant="outline" onClick={copy} aria-live="polite">

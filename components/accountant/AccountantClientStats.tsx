@@ -165,7 +165,7 @@ export function AccountantClientStats({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.06, duration: 0.25 }}
-            className="overflow-hidden rounded-2xl panel p-5 transition-transform active:scale-[0.98]"
+            className="min-w-0 overflow-hidden rounded-2xl panel p-4 transition-transform sm:p-5 active:scale-[0.98]"
           >
             <card.icon
               className={`mb-3 h-4 w-4 ${card.accent ? "text-amber-500" : "text-gray-500 dark:text-gray-400"}`}
@@ -175,7 +175,7 @@ export function AccountantClientStats({
               {card.label}
             </p>
             <p
-              className={`mt-1 font-display text-[22px] font-semibold leading-none tracking-tight ${
+              className={`mt-1 min-w-0 break-words font-display text-xl font-semibold sm:text-[22px] leading-none tracking-tight ${
                 card.accent
                   ? "text-amber-600 dark:text-amber-400"
                   : "text-gray-900 dark:text-white"
@@ -306,7 +306,7 @@ export function AccountantClientStats({
           </div>
           <ul className="divide-y divide-gray-900/[0.05] dark:divide-white/[0.05]">
             {recentReceipts.map((r) => (
-              <li key={r.id} className="flex items-center justify-between px-5 py-3">
+              <li key={r.id} className="flex items-center justify-between gap-3 px-5 py-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
                     {r.vendorName || "-"}
@@ -315,7 +315,7 @@ export function AccountantClientStats({
                     {formatDate(r.date ?? r.createdAt)}
                   </p>
                 </div>
-                <div className="ml-4 flex shrink-0 items-center gap-3">
+                <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-3">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {formatSek(Number(r.totalAmount))}
                   </span>

@@ -208,39 +208,39 @@ export default function TransportPage() {
             <p className="text-sm text-gray-500 dark:text-gray-400">{t.trEmpty}</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="border-b border-gray-900/[0.07] text-left text-xs font-medium text-gray-500 dark:border-white/[0.08] dark:text-gray-400">
-                    <th className="p-2">{t.trColPeriod}</th>
-                    <th className="p-2">{t.trColProvider}</th>
-                    <th className="p-2 text-right">{t.trColAmount}</th>
-                    <th className="p-2 text-right">{t.trColVat}</th>
-                    <th className="p-2 text-right">{t.trColStatus}</th>
-                    <th className="p-2"></th>
+                    <th className="px-3 py-3 font-medium">{t.trColPeriod}</th>
+                    <th className="px-3 py-3 font-medium">{t.trColProvider}</th>
+                    <th className="px-3 py-3 text-right">{t.trColAmount}</th>
+                    <th className="px-3 py-3 text-right">{t.trColVat}</th>
+                    <th className="px-3 py-3 text-right">{t.trColStatus}</th>
+                    <th className="px-3 py-3 font-medium"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {passes.map((p) => (
                     <tr key={p.id} className="border-b border-gray-900/[0.06] last:border-0 dark:border-white/[0.07] dark:text-gray-100">
-                      <td className="p-2">
+                      <td className="px-3 py-3">
                         {new Date(p.validFrom).toLocaleDateString(locale)} -{" "}
                         {new Date(p.validTo).toLocaleDateString(locale)}
                       </td>
-                      <td className="p-2">{providerLabel(p)}</td>
-                      <td className="p-2 text-right tabular-nums">{formatSek(p.amount)}</td>
-                      <td className="p-2 text-right tabular-nums">
+                      <td className="px-3 py-3">{providerLabel(p)}</td>
+                      <td className="px-3 py-3 text-right tabular-nums">{formatSek(p.amount)}</td>
+                      <td className="px-3 py-3 text-right tabular-nums">
                         {p.vatAmount ? formatSek(p.vatAmount) : "-"}
                       </td>
-                      <td className="p-2 text-right">
+                      <td className="px-3 py-3 text-right">
                         {p.isRecurring ? t.trRecurringTag : t.trOnceTag}
                       </td>
-                      <td className="p-2 text-right">
+                      <td className="px-3 py-3 text-right">
                         <Button
                           variant="ghost"
                           onClick={() => remove(p.id)}
                           aria-label={t.btnDelete}
                           title={t.btnDelete}
-                          className="h-8 w-8 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                          className="h-10 w-10 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
                           <Trash2 className="h-4 w-4" strokeWidth={1.75} />
                         </Button>

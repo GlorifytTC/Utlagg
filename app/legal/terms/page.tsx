@@ -8,7 +8,7 @@ export default function TermsPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">{t.termsTitle}</h1>
+      <h1 className="break-words font-display text-2xl font-semibold tracking-tight hyphens-auto sm:text-3xl">{t.termsTitle}</h1>
       <p className="mt-4 text-ink/70">{t.termsIntro}</p>
       <p className="mt-2 text-sm text-ink/50">{t.termsUpdated}</p>
 

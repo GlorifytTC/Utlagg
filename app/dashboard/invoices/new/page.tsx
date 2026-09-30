@@ -234,16 +234,17 @@ export default function NewInvoicePage() {
         </CardHeader>
         <CardContent className="space-y-3">
           {lines.map((l, i) => (
-            <div key={i} className="grid grid-cols-12 gap-2">
+            <div key={i} className="grid grid-cols-2 gap-2 rounded-xl border border-gray-900/[0.07] p-3 dark:border-white/[0.07] sm:grid-cols-12 sm:rounded-none sm:border-0 sm:p-0">
               <Input
-                className="col-span-5"
+                className="col-span-2 sm:col-span-5"
                 placeholder={t.phDescription}
                 value={l.description}
                 onChange={(e) => setLine(i, { description: e.target.value })}
               />
               <Input
-                className="col-span-2"
+                className="col-span-1 sm:col-span-2"
                 type="number"
+                inputMode="decimal"
                 min="0"
                 step="0.5"
                 value={l.quantity}
@@ -253,8 +254,9 @@ export default function NewInvoicePage() {
                 placeholder={t.phQuantity}
               />
               <Input
-                className="col-span-2"
+                className="col-span-1 sm:col-span-2"
                 type="number"
+                inputMode="decimal"
                 min="0"
                 step="0.01"
                 value={l.unitPrice}
@@ -266,7 +268,7 @@ export default function NewInvoicePage() {
               <Select
                 disabled={reverseCharge}
                 aria-label={t.invColVat}
-                className="col-span-2 px-2"
+                className="col-span-1 px-2 sm:col-span-2"
                 value={l.vatRate}
                 onChange={(e) =>
                   setLine(i, { vatRate: Number(e.target.value) })
@@ -279,7 +281,7 @@ export default function NewInvoicePage() {
               </Select>
               <Button
                 variant="ghost"
-                className="col-span-1 h-10 w-10 justify-self-center !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                className="col-span-2 h-10 w-10 justify-self-end sm:col-span-1 !p-0 sm:justify-self-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 onClick={() =>
                   setLines((ls) =>
                     ls.length > 1 ? ls.filter((_, idx) => idx !== i) : ls
@@ -315,7 +317,7 @@ export default function NewInvoicePage() {
               {t.invReversePost}
             </span>
           </label>
-          <div className="text-sm">
+          <div className="text-sm tabular-nums">
             <div className="flex justify-between">
               <span>{t.invSubtotal}</span>
               <span>{kr(totals.subtotal)} kr</span>

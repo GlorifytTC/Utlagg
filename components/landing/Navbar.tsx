@@ -92,7 +92,7 @@ export function Navbar() {
             {authResolved && (
               <Link
                 href={primary.href}
-                className="hidden whitespace-nowrap rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white transition duration-500 ease-premium hover:bg-nordic-700 active:scale-[0.98] sm:block"
+                className="hidden whitespace-nowrap rounded-full bg-nordic-600 px-3.5 py-2.5 text-xs font-medium text-white transition duration-500 ease-premium hover:bg-nordic-700 active:scale-[0.98] min-[380px]:block sm:px-5 sm:text-sm"
               >
                 {primary.label}
               </Link>
@@ -103,7 +103,7 @@ export function Navbar() {
               onClick={() => setOpen((v) => !v)}
               aria-label={open ? t.navClose : t.navMenu}
               aria-expanded={open}
-              className="relative grid h-10 w-10 place-items-center rounded-full transition hover:bg-ink/5 lg:hidden"
+              className="relative grid h-11 w-11 place-items-center rounded-full transition hover:bg-ink/5 lg:hidden"
             >
               <span
                 className={cn(
@@ -130,7 +130,7 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed inset-0 z-40 overflow-y-auto bg-paper/90 px-6 pb-10 pt-28 backdrop-blur-2xl lg:hidden"
+            className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-paper/90 px-6 pb-10 pt-28 backdrop-blur-2xl lg:hidden"
           >
             <nav className="mx-auto flex max-w-md flex-col">
               {links.map((l, i) => (

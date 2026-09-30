@@ -440,8 +440,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               return !v;
             });
           }}
-          className="fixed right-6 z-50 flex items-center gap-2 rounded-full bg-nordic-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-nordic-600/30 transition-colors hover:bg-nordic-700"
-          style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
+          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-50 md:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] md:right-6 flex items-center gap-2 rounded-full bg-nordic-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-nordic-600/30 transition-colors hover:bg-nordic-700"
         >
           <MessageSquare size={16} />
           {chatOpen ? t.profCloseChat : t.profMessage}

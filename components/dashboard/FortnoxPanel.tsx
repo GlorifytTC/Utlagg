@@ -128,7 +128,7 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
       </div>
 
       <div className="rounded-xl border border-gray-900/[0.08] dark:border-white/[0.08]">
-        <div className="flex items-center justify-between border-b border-gray-900/[0.08] px-4 py-3 dark:border-white/[0.08]">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-900/[0.08] px-4 py-3 dark:border-white/[0.08]">
           <div>
             <p className="text-sm font-medium text-gray-900 dark:text-white">{t.fortnoxReviewTitle}</p>
             <p className="text-xs text-gray-500 dark:text-gray-400">{t.fortnoxReviewDesc}</p>
@@ -136,7 +136,7 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
           {pending && pending.length > 0 && (
             <button
               onClick={toggleAll}
-              className="shrink-0 text-xs font-medium text-nordic-700 hover:underline dark:text-nordic-300"
+              className="shrink-0 py-2 text-xs font-medium text-nordic-700 hover:underline dark:text-nordic-300"
             >
               {selected.size === pending.length ? t.fortnoxDeselectAll : t.fortnoxSelectAll}
             </button>
@@ -152,20 +152,20 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
             <ul className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.06]">
               {pending.map((r) => (
                 <li key={r.id}>
-                  <label className="flex cursor-pointer items-center gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-900/40">
+                  <label className="flex min-h-11 cursor-pointer flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-900/40">
                     <input
                       type="checkbox"
                       checked={selected.has(r.id)}
                       onChange={() => toggle(r.id)}
-                      className="h-4 w-4 rounded border-gray-300 text-nordic-600 focus:ring-nordic-500"
+                      className="h-5 w-5 shrink-0 rounded border-gray-300 text-nordic-600 focus:ring-nordic-500"
                     />
-                    <span className="flex-1 truncate text-sm text-gray-900 dark:text-white">
+                    <span className="min-w-0 flex-1 basis-32 truncate text-sm text-gray-900 dark:text-white">
                       {r.vendorName || "-"}
                     </span>
                     <span className="shrink-0 text-xs text-gray-500 dark:text-gray-400">
                       {r.date ? new Date(r.date).toLocaleDateString("sv-SE") : "-"}
                     </span>
-                    <span className="shrink-0 truncate text-xs text-gray-500 dark:text-gray-400" style={{ maxWidth: 140 }}>
+                    <span className="hidden max-w-[140px] shrink-0 truncate text-xs text-gray-500 dark:text-gray-400 sm:inline">
                       {r.category || "-"}
                     </span>
                     <span className="shrink-0 text-sm font-medium text-gray-900 dark:text-white">
@@ -179,7 +179,7 @@ export function FortnoxPanel({ connected }: { connected: boolean }) {
         </div>
 
         {pending && pending.length > 0 && (
-          <div className="flex items-center justify-between border-t border-gray-900/[0.08] px-4 py-3 dark:border-white/[0.08]">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-900/[0.08] px-4 py-3 dark:border-white/[0.08]">
             <span className="text-xs text-gray-500 dark:text-gray-400">
               {selected.size} {t.fortnoxSelectedCount}
             </span>

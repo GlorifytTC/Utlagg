@@ -57,7 +57,7 @@ export function RecentReceipts({ receipts }: { receipts: Receipt[] }) {
                     {r.date ? formatDate(r.date) : "-"}
                   </p>
                 </div>
-                <div className="ml-4 text-right">
+                <div className="ml-4 shrink-0 text-right">
                   <p className="font-medium text-gray-900 dark:text-white">
                     {formatSek(Number(r.totalAmount ?? 0))}
                   </p>

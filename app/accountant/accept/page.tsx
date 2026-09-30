@@ -2,6 +2,8 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { Logo } from "@/components/brand/Logo";
 import { useLanguage } from "@/context/LanguageContext";
 
 /**
@@ -10,6 +12,19 @@ import { useLanguage } from "@/context/LanguageContext";
  * (client must create a company first, then we retry), and error. This is the
  * only UI in scope for the invitation flow - no dashboard beyond this.
  */
+function Shell({ children }: { children: React.ReactNode }) {
+  return (
+    <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
+      <div className="w-full max-w-sm">
+        <Link href="/">
+          <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
+        </Link>
+        <div className="panel mt-8 space-y-3 rounded-2xl p-6">{children}</div>
+      </div>
+    </main>
+  );
+}
+
 function AccountantAcceptInner() {
   const params = useSearchParams();
   const router = useRouter();
@@ -83,7 +98,7 @@ function AccountantAcceptInner() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
+    <Shell>
       {state === "working" && <p className="text-ink/70">{t.accAcceptWorking}</p>}
 
       {state === "notoken" && (
@@ -92,7 +107,7 @@ function AccountantAcceptInner() {
 
       {state === "done" && (
         <div className="space-y-3">
-          <h1 className="text-xl font-semibold">{t.accAcceptDoneTitle}</h1>
+          <h1 className="font-display text-2xl font-semibold tracking-tight">{t.accAcceptDoneTitle}</h1>
           <p className="text-ink/70">
             {t.accAcceptDoneBody}
           </p>
@@ -101,7 +116,7 @@ function AccountantAcceptInner() {
 
       {state === "needsCompany" && (
         <div className="space-y-3">
-          <h1 className="text-xl font-semibold">{t.accAcceptNeedsCompanyTitle}</h1>
+          <h1 className="font-display text-2xl font-semibold tracking-tight">{t.accAcceptNeedsCompanyTitle}</h1>
           <p className="text-ink/70">
             {t.accAcceptNeedsCompanyBody}
           </p>
@@ -109,12 +124,12 @@ function AccountantAcceptInner() {
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
             placeholder={t.fldCompanyName}
-            className="w-full rounded-lg border border-ink/15 px-3 py-2"
+            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30 sm:text-sm"
           />
           <button
             onClick={createCompanyThenRetry}
             disabled={busy || !companyName.trim()}
-            className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper disabled:opacity-50"
+            className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.98] disabled:opacity-50"
           >
             {busy ? t.accAcceptCreating : t.accAcceptCreateAndAccept}
           </button>
@@ -123,18 +138,18 @@ function AccountantAcceptInner() {
 
       {state === "error" && (
         <div className="space-y-3">
-          <h1 className="text-xl font-semibold">{t.accAcceptErrorTitle}</h1>
+          <h1 className="font-display text-2xl font-semibold tracking-tight">{t.accAcceptErrorTitle}</h1>
           <p className="text-ink/70">{message}</p>
         </div>
       )}
-    </div>
+    </Shell>
   );
 }
 
 export default function AccountantAcceptPage() {
   const { t } = useLanguage();
   return (
-    <Suspense fallback={<div className="mx-auto max-w-md px-4 py-16 text-ink/70">{t.loading}</div>}>
+    <Suspense fallback={<Shell><p className="text-ink/70">{t.loading}</p></Shell>}>
       <AccountantAcceptInner />
     </Suspense>
   );

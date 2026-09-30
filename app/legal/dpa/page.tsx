@@ -5,7 +5,7 @@ export const metadata = { title: "Personuppgiftsbiträdesavtal - Kvittino" };
 export default function DpaPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">Personuppgiftsbiträdesavtal (DPA)</h1>
+      <h1 className="break-words font-display text-2xl font-semibold tracking-tight hyphens-auto sm:text-3xl">Personuppgiftsbiträdesavtal (DPA)</h1>
       <p className="mt-4 text-ink/70">
         Detta personuppgiftsbiträdesavtal (&ldquo;DPA&rdquo;) reglerar GlorifyTC:s
         behandling av personuppgifter för din räkning när du använder Kvittino som

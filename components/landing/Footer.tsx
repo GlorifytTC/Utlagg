@@ -39,8 +39,8 @@ export function Footer() {
   return (
     <footer className="border-t hairline">
       <div className="mx-auto max-w-6xl px-6 pb-12 pt-20">
-        <div className="grid gap-12 md:grid-cols-[2fr_1fr_1fr_1fr]">
-          <div>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-[2fr_1fr_1fr_1fr]">
+          <div className="col-span-2 md:col-span-1">
             <p className="font-display text-2xl font-semibold tracking-tight">{t.footerTitle}</p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink/60">
               {t.footerDescription}
@@ -54,10 +54,10 @@ export function Footer() {
           {cols.map((c) => (
             <div key={c.title}>
               <p className="text-sm font-semibold text-ink">{c.title}</p>
-              <ul className="mt-4 space-y-2.5 text-sm">
+              <ul className="mt-4 space-y-0.5 text-sm md:space-y-2.5">
                 {c.links.map((l) => (
                   <li key={l.href}>
-                    <Link href={l.href} className="text-ink/60 transition duration-300 ease-premium hover:text-ink">
+                    <Link href={l.href} className="inline-block py-2 text-ink/60 transition duration-300 ease-premium hover:text-ink">
                       {l.label}
                     </Link>
                   </li>

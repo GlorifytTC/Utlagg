@@ -51,38 +51,38 @@ export function CsvRangeExport() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-wrap gap-2">
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button variant="outline" onClick={presetThisMonth} className="rounded-full border border-gray-900/[0.15] px-4 py-2 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40">
+        <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="sm:w-auto">
+            <Button variant="outline" onClick={presetThisMonth} className="rounded-full">
               {t.csvThisMonth}
             </Button>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button variant="outline" onClick={presetThisYear} className="rounded-full border border-gray-900/[0.15] px-4 py-2 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40">
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="sm:w-auto">
+            <Button variant="outline" onClick={presetThisYear} className="rounded-full">
               {t.csvThisYear}
             </Button>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button variant="outline" onClick={presetLast12} className="rounded-full border border-gray-900/[0.15] px-4 py-2 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40">
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="sm:w-auto">
+            <Button variant="outline" onClick={presetLast12} className="rounded-full">
               {t.csvLast12}
             </Button>
           </motion.div>
         </div>
-        <div className="flex flex-wrap items-end gap-3">
+        <div className="grid gap-3 sm:flex sm:flex-wrap sm:items-end">
           <div className="space-y-1">
             <Label className="text-xs text-gray-500 dark:text-gray-400">{t.csvFrom}</Label>
-            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111]" />
+            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="sm:!w-auto" />
           </div>
           <div className="space-y-1">
             <Label className="text-xs text-gray-500 dark:text-gray-400">{t.csvTo}</Label>
-            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="rounded-lg border border-gray-900/[0.12] bg-white px-3 py-2 text-sm transition focus:border-nordic-600 focus:ring-2 focus:ring-nordic-600/20 dark:border-white/[0.12] dark:bg-[#111]" />
+            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="sm:!w-auto" />
           </div>
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button 
-              onClick={download} 
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="sm:w-auto">
+            <Button
+              onClick={download}
               disabled={isDownloading}
               className={cn(
-                "rounded-full bg-gray-900 px-5 py-2 text-sm text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100",
+                "w-full rounded-full bg-gray-900 px-5 text-sm text-white sm:w-auto transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100",
                 isDownloading && "opacity-70 cursor-not-allowed",
               )}
             >

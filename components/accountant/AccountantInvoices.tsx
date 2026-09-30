@@ -74,7 +74,7 @@ export function AccountantInvoices({ companyId }: { companyId: string }) {
       )}
 
       <div className="overflow-hidden rounded-2xl panel">
-        <div className="overflow-x-auto">
+        <div className="hidden overflow-x-auto md:block">
           <table className="w-full">
             <thead>
               <tr className="text-left">
@@ -117,6 +117,30 @@ export function AccountantInvoices({ companyId }: { companyId: string }) {
             </tbody>
           </table>
         </div>
+
+        <ul className="divide-y divide-gray-900/[0.07] dark:divide-white/[0.07] md:hidden">
+          {rows.map((r) => (
+            <li key={r.id}>
+              <Link href={`/accountant/clients/${companyId}/invoices/${r.id}`} className="flex min-h-[56px] items-center gap-3 p-4">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
+                    #{r.invoiceNumber} · {r.buyerName}
+                  </p>
+                  <p className="text-xs tabular-nums text-gray-500 dark:text-gray-400">{kr(r.total)}</p>
+                </div>
+                <span
+                  className={
+                    r.status === "paid"
+                      ? "shrink-0 rounded-full bg-green-100/50 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900/20 dark:text-green-300"
+                      : "shrink-0 rounded-full bg-amber-100/50 px-2 py-0.5 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-300"
+                  }
+                >
+                  {r.status === "paid" ? t.ivPaid : t.ivUnpaid}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

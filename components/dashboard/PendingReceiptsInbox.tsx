@@ -94,11 +94,12 @@ export function PendingReceiptsInbox() {
                         {r.date ? ` · ${new Date(r.date).toLocaleDateString("sv-SE")}` : ""}
                       </p>
                     </button>
-                    <div className="flex gap-2">
-                      <Button disabled={busy === r.id} onClick={() => decide(r.id, "approve")}>
+                    <div className="flex w-full gap-2 sm:w-auto">
+                      <Button className="flex-1 sm:flex-none" disabled={busy === r.id} onClick={() => decide(r.id, "approve")}>
                         {t.btnApprove}
                       </Button>
                       <Button
+                        className="flex-1 sm:flex-none"
                         variant="destructive"
                         disabled={busy === r.id}
                         onClick={() => decide(r.id, "remove")}
@@ -110,22 +111,22 @@ export function PendingReceiptsInbox() {
 
                   {open && (
                     <div className="mt-3 grid gap-4 rounded-xl bg-gray-900/[0.03] p-4 dark:bg-white/[0.03] sm:grid-cols-[1fr_auto]">
-                      <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                      <dl className="grid grid-cols-1 gap-x-4 sm:grid-cols-2 gap-y-2 text-sm">
                         <dt className="text-gray-500">{t.apDetailVendor}</dt>
-                        <dd>{r.vendorName || "-"}</dd>
+                        <dd className="break-words">{r.vendorName || "-"}</dd>
                         <dt className="text-gray-500">{t.apDetailTotal}</dt>
-                        <dd>{money(r.totalAmount)}</dd>
+                        <dd className="break-words">{money(r.totalAmount)}</dd>
                         <dt className="text-gray-500">{t.apDetailVat}</dt>
-                        <dd>
+                        <dd className="break-words">
                           {money(r.vatAmount)}
                           {r.vatRate ? ` (${r.vatRate}%)` : ""}
                         </dd>
                         <dt className="text-gray-500">{t.apDetailDate}</dt>
-                        <dd>{r.date ? new Date(r.date).toLocaleDateString("sv-SE") : "-"}</dd>
+                        <dd className="break-words">{r.date ? new Date(r.date).toLocaleDateString("sv-SE") : "-"}</dd>
                         <dt className="text-gray-500">{t.apDetailCategory}</dt>
-                        <dd>{r.category || "-"}</dd>
+                        <dd className="break-words">{r.category || "-"}</dd>
                         <dt className="text-gray-500">{t.apDetailNumber}</dt>
-                        <dd>{r.receiptNumber || "-"}</dd>
+                        <dd className="break-words">{r.receiptNumber || "-"}</dd>
                       </dl>
                       {r.imageUrl && (
                         // eslint-disable-next-line @next/next/no-img-element

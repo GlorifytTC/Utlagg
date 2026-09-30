@@ -15,7 +15,7 @@ export type StatItem = {
 const COLS: Record<number, string> = {
   1: "grid-cols-1",
   2: "grid-cols-2",
-  3: "grid-cols-1 sm:grid-cols-3",
+  3: "grid-cols-1 min-[420px]:grid-cols-3",
   4: "grid-cols-2 lg:grid-cols-4",
 };
 
@@ -31,7 +31,7 @@ export function StatGrid({ items, className }: { items: StatItem[]; className?: 
       )}
     >
       {items.map(({ label, value, hint, icon: Icon, tone }) => (
-        <div key={label} className="panel-fill flex min-w-0 flex-col justify-between gap-4 p-5">
+        <div key={label} className="panel-fill flex min-w-0 flex-col justify-between gap-4 p-4 sm:p-5">
           <div className="flex items-start justify-between gap-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
             {Icon && (
@@ -44,7 +44,7 @@ export function StatGrid({ items, className }: { items: StatItem[]; className?: 
           <p
             title={typeof value === "string" ? value : undefined}
             className={cn(
-              "truncate font-display text-2xl font-semibold leading-tight tracking-tight tabular-nums xl:text-3xl",
+              "break-words font-display text-xl font-semibold leading-tight tracking-tight tabular-nums sm:text-2xl xl:text-3xl",
               tone === "warn" ? "text-amber-600 dark:text-amber-400" : "text-gray-900 dark:text-white",
             )}
           >

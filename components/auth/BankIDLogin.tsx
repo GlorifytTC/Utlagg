@@ -105,7 +105,7 @@ export function BankIDLogin({ callbackUrl = "/dashboard" }: { callbackUrl?: stri
       {status === "pending" && qr && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={qr} alt={t.bidQrAlt} width={220} height={220} />
+          <img src={qr} alt={t.bidQrAlt} width={220} height={220} className="h-auto w-full max-w-[220px]" />
           {autoStart && (
             <a
               className="text-sm underline"

@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { Logo } from "@/components/brand/Logo";
 import { useLanguage } from "@/context/LanguageContext";
 
 /**
@@ -88,10 +89,10 @@ function FirmJoinInner() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-paper px-6">
+    <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
       <div className="w-full max-w-sm">
-        <Link href="/" className="font-display text-xl font-semibold">
-          Kvittino
+        <Link href="/">
+          <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
 
         {state === "checking" && <p className="mt-6 text-sm text-ink/60">{t.loading}</p>}
@@ -129,7 +130,7 @@ function FirmJoinInner() {
               <input
                 value={email}
                 disabled
-                className="w-full rounded-lg border hairline bg-ink/[0.03] px-4 py-3 text-sm text-ink/60"
+                className="w-full rounded-lg border hairline bg-ink/[0.03] px-4 py-3 text-base text-ink/60 sm:text-sm"
               />
             </div>
             <div>
@@ -139,7 +140,7 @@ function FirmJoinInner() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t.joinPwPlaceholder}
-                className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600"
+                className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm focus:border-nordic-600"
               />
             </div>
             <div>
@@ -148,14 +149,14 @@ function FirmJoinInner() {
                 type="password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
-                className="w-full rounded-lg border hairline bg-white px-4 py-3 text-sm outline-none focus:border-nordic-600"
+                className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm focus:border-nordic-600"
               />
             </div>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <button
               onClick={submit}
               disabled={state === "working"}
-              className="w-full rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper hover:bg-nordic-900 disabled:opacity-60"
+              className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
             >
               {state === "working" ? t.accAcceptCreating : t.joinSubmit}
             </button>
@@ -169,7 +170,7 @@ function FirmJoinInner() {
 export default function FirmJoinPage() {
   const { t } = useLanguage();
   return (
-    <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-paper px-6"><p className="text-sm text-ink/60">{t.loading}</p></main>}>
+    <Suspense fallback={<main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12"><p className="text-sm text-ink/60">{t.loading}</p></main>}>
       <FirmJoinInner />
     </Suspense>
   );

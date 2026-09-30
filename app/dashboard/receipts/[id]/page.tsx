@@ -85,12 +85,12 @@ export default async function ReceiptDetailPage({
         }
       />
 
-      <div className="grid gap-6 md:grid-cols-[1fr_360px]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <dl className="panel grid grid-cols-1 gap-px self-start overflow-hidden rounded-2xl bg-gray-900/[0.06] sm:grid-cols-2 dark:bg-white/[0.06]">
           {fields.map((f) => (
             <div key={f.label} className="panel-fill p-4">
               <dt className="text-xs text-gray-500 dark:text-gray-400">{f.label}</dt>
-              <dd className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{f.value}</dd>
+              <dd className="mt-1 break-words text-sm font-medium text-gray-900 dark:text-white">{f.value}</dd>
             </div>
           ))}
           <div className="panel-fill p-4 sm:col-span-2">

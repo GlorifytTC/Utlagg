@@ -97,7 +97,7 @@ export function ExportPanel() {
               key={p.key}
               onClick={() => choosePreset(p.key)}
               aria-pressed={preset === p.key}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-300 ease-premium active:scale-[0.98] ${
+              className={`min-h-10 rounded-full px-4 py-1.5 text-sm font-medium transition duration-300 ease-premium active:scale-[0.98] ${
                 preset === p.key
                   ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
                   : "border border-gray-900/15 text-gray-600 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300 dark:hover:border-white/30"
@@ -108,7 +108,7 @@ export function ExportPanel() {
           ))}
         </div>
 
-        <div className="flex flex-wrap items-end gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end">
           <div>
             <label htmlFor="exp-from" className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.expFrom}</label>
             <input
@@ -119,7 +119,7 @@ export function ExportPanel() {
                 setFrom(e.target.value);
                 setPreset("custom");
               }}
-              className={`${fieldClass} h-10 !w-auto py-2`}
+              className={`${fieldClass} h-11 py-2 sm:!w-auto md:h-10`}
             />
           </div>
           <div>
@@ -132,29 +132,29 @@ export function ExportPanel() {
                 setTo(e.target.value);
                 setPreset("custom");
               }}
-              className={`${fieldClass} h-10 !w-auto py-2`}
+              className={`${fieldClass} h-11 py-2 sm:!w-auto md:h-10`}
             />
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-3 pt-2">
-          <a href={`/api/export/csv${qs}`} className={buttonClass("outline")}>
+        <div className="grid grid-cols-1 gap-3 pt-2 sm:flex sm:flex-wrap">
+          <a href={`/api/export/csv${qs}`} className={buttonClass("outline", "w-full sm:w-auto")}>
             <FileSpreadsheet className="h-4 w-4" strokeWidth={1.75} />
             {t.btnExportCsv}
           </a>
-          <a href={`/api/export/sie${qs}`} className={buttonClass("outline")}>
+          <a href={`/api/export/sie${qs}`} className={buttonClass("outline", "w-full sm:w-auto")}>
             <FileText className="h-4 w-4" strokeWidth={1.75} />
             {t.btnExportSie}
           </a>
-          <a href={`/api/export/pdf${qs}`} className={buttonClass("outline")}>
+          <a href={`/api/export/pdf${qs}`} className={buttonClass("outline", "w-full sm:w-auto")}>
             <Download className="h-4 w-4" strokeWidth={1.75} />
             {t.btnExportPdf}
           </a>
-          <a href={`/api/mileage/export${qs}`} className={buttonClass("outline")}>
+          <a href={`/api/mileage/export${qs}`} className={buttonClass("outline", "w-full sm:w-auto")}>
             <Car className="h-4 w-4" strokeWidth={1.75} />
             {t.expDownloadMileage}
           </a>
-          <a href={`/api/transport/export${qs}`} className={buttonClass("outline")}>
+          <a href={`/api/transport/export${qs}`} className={buttonClass("outline", "w-full sm:w-auto")}>
             <Bus className="h-4 w-4" strokeWidth={1.75} />
             {t.expDownloadTransport}
           </a>

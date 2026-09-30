@@ -322,19 +322,19 @@ export function CookieConsent() {
           transition={{ type: "spring", stiffness: 280, damping: 28 }}
           className="fixed bottom-0 left-0 right-0 z-[60] flex justify-center px-3 pb-3 sm:px-6 sm:pb-6 print:hidden"
         >
-          <div className="w-full max-w-2xl overflow-hidden rounded-3xl border hairline bg-paper/95 shadow-[0_32px_80px_-12px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+          <div className="max-h-[calc(100dvh-1.5rem)] w-full max-w-2xl overflow-y-auto overscroll-contain rounded-3xl border hairline bg-paper/95 shadow-[0_32px_80px_-12px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
 
             {/* Top bar */}
             <div className="flex items-center gap-3 border-b hairline bg-grain px-5 py-3.5">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-paper">
                 <IconShield />
               </span>
-              <div className="flex-1">
+              <div className="min-w-0 flex-1">
                 <p className="font-display text-sm font-semibold leading-tight text-ink">
                   {t.cookieTitle}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="hidden items-center gap-2 sm:flex">
                 <span className="rounded-full border hairline px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink/40">
                   GDPR
                 </span>
@@ -415,11 +415,11 @@ export function CookieConsent() {
             </div>
 
             {/* Action row */}
-            <div className="flex flex-wrap items-center gap-2 border-t hairline bg-grain px-5 py-4 mt-4">
+            <div className="mt-4 grid grid-cols-2 items-center gap-2 border-t hairline bg-grain px-5 py-4 sm:flex sm:flex-wrap">
               {/* Primary */}
               <button
                 onClick={() => commit({ functional: true, analytics: true })}
-                className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition hover:bg-nordic-900"
+                className="rounded-full bg-ink px-5 py-3 sm:py-2.5 text-sm font-medium text-paper transition hover:bg-nordic-900"
               >
                 {t.cookieAcceptAll}
               </button>
@@ -427,7 +427,7 @@ export function CookieConsent() {
               {/* Equal-prominence reject - required by IMY guidance */}
               <button
                 onClick={() => commit({ functional: false, analytics: false })}
-                className="rounded-full border hairline px-5 py-2.5 text-sm font-medium text-ink/75 transition hover:border-ink/30 hover:text-ink"
+                className="rounded-full border hairline px-5 py-3 sm:py-2.5 text-sm font-medium text-ink/75 transition hover:border-ink/30 hover:text-ink"
               >
                 {t.cookieRejectAll}
               </button>
@@ -442,7 +442,7 @@ export function CookieConsent() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.12 }}
                     onClick={() => setManaging(true)}
-                    className="ml-auto text-sm text-ink/45 underline decoration-dotted transition hover:text-ink hover:decoration-solid"
+                    className="col-span-2 px-2 py-3 text-sm text-ink/45 sm:ml-auto sm:py-0 underline decoration-dotted transition hover:text-ink hover:decoration-solid"
                   >
                     {t.cookieManage}
                   </motion.button>
@@ -454,7 +454,7 @@ export function CookieConsent() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.12 }}
                     onClick={() => commit({})}
-                    className="ml-auto rounded-full border border-nordic-600/40 px-5 py-2.5 text-sm font-medium text-nordic-600 transition hover:border-nordic-600 hover:bg-nordic-600/5"
+                    className="col-span-2 rounded-full border border-nordic-600/40 px-5 py-3 sm:ml-auto sm:py-2.5 text-sm font-medium text-nordic-600 transition hover:border-nordic-600 hover:bg-nordic-600/5"
                   >
                     {t.cookieSave}
                   </motion.button>

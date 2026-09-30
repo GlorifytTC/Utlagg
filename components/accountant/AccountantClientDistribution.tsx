@@ -158,7 +158,7 @@ export function AccountantClientDistribution() {
       </div>
 
       {clients === null ? (
-        <div className="grid grid-cols-2 divide-x divide-gray-900/[0.05] dark:divide-white/[0.05]">
+        <div className="grid grid-cols-1 divide-y sm:grid-cols-2 sm:divide-x sm:divide-y-0 divide-gray-900/[0.05] dark:divide-white/[0.05]">
           <div className="skeleton h-[238px]" />
           <div className="skeleton h-[238px]" />
         </div>

@@ -160,18 +160,18 @@ export default function ProfilePage() {
 
       {confirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <Card className="w-full max-w-md">
+          <Card role="dialog" aria-modal="true" aria-labelledby="delete-title" className="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto">
             <CardHeader>
-              <CardTitle>{t.prSureTitle}</CardTitle>
+              <CardTitle id="delete-title">{t.prSureTitle}</CardTitle>
               <CardDescription>
                 {t.prSureDesc}
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setConfirmOpen(false)} disabled={loading}>
+            <CardContent className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <Button className="w-full sm:w-auto" variant="outline" onClick={() => setConfirmOpen(false)} disabled={loading}>
                 {t.btnCancel}
               </Button>
-              <Button variant="destructive" onClick={deleteAccount} disabled={loading}>
+              <Button className="w-full sm:w-auto" variant="destructive" onClick={deleteAccount} disabled={loading}>
                 {t.prConfirmDelete}
               </Button>
             </CardContent>

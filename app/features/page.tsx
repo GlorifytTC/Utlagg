@@ -88,7 +88,7 @@ function FeaturesPageContent() {
           <div>
             <motion.h1
               {...enter(0, rm)}
-              className="max-w-xl font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl"
+              className="max-w-xl font-display text-4xl sm:text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl break-words hyphens-auto"
             >
               {t.featuresHeadline}
             </motion.h1>
@@ -108,7 +108,7 @@ function FeaturesPageContent() {
             transition={{ type: "spring", bounce: 0, duration: 0.9, delay: 0.15 }}
             className="bezel"
           >
-            <div className="bezel-core light-surface overflow-hidden bg-[radial-gradient(120%_90%_at_20%_0%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] px-6 pb-12 pt-12">
+            <div className="bezel-core light-surface overflow-hidden bg-[radial-gradient(120%_90%_at_20%_0%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] px-3 pb-12 sm:px-6 pt-12">
               <VatSplitVisual />
             </div>
           </motion.div>
@@ -135,7 +135,7 @@ function FeaturesPageContent() {
 
         {/* Comparison: two panels instead of a hairline table */}
         <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
-          <h2 className="max-w-xl font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+          <h2 className="max-w-xl font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.featuresCompareTitle}
           </h2>
           <div className="mt-14 grid gap-5 md:grid-cols-[1.15fr_1fr]">
@@ -143,7 +143,7 @@ function FeaturesPageContent() {
               <motion.div key={col.key} {...reveal(ci, rm)} className="bezel">
                 <div
                   className={cn(
-                    "bezel-core h-full p-8 md:p-10",
+                    "bezel-core h-full p-6 sm:p-8 md:p-10",
                     col.ours ? "light-surface bg-nordic-50" : "bg-transparent shadow-none",
                   )}
                 >
@@ -178,7 +178,7 @@ function FeaturesPageContent() {
           </div>
           <Link
             href="/for-accountants"
-            className="mt-10 inline-block text-sm font-medium text-nordic-600 transition hover:text-nordic-700"
+            className="mt-7 inline-block py-3 text-sm font-medium text-nordic-600 transition hover:text-nordic-700"
           >
             {t.featuresFirmLink} →
           </Link>

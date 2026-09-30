@@ -20,7 +20,7 @@ export default function PrivacyPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">{t.privTitle}</h1>
+      <h1 className="break-words font-display text-2xl font-semibold tracking-tight hyphens-auto sm:text-3xl">{t.privTitle}</h1>
       <p className="mt-4 text-ink/70">{t.privIntro}</p>
       <p className="mt-2 text-sm text-ink/50">{t.privUpdated}</p>
 
@@ -78,12 +78,12 @@ export default function PrivacyPage() {
           <h2 className="font-display text-lg font-semibold">{t.priv3Title}</h2>
 
           <div className="rounded-xl border border-ink/10 divide-y divide-ink/10 overflow-hidden">
-            <div className="grid grid-cols-[1fr_1fr] gap-4 p-4 text-xs font-medium text-ink/50 uppercase tracking-wide">
+            <div className="hidden break-words p-4 sm:grid sm:grid-cols-2 sm:gap-4 text-xs font-medium text-ink/50 uppercase tracking-wide">
               <span>{t.priv3Col1}</span>
               <span>{t.priv3Col2}</span>
             </div>
             {tableRows.map(([purpose, basis]) => (
-              <div key={purpose} className="grid grid-cols-[1fr_1fr] gap-4 p-4 text-ink/80">
+              <div key={purpose} className="grid grid-cols-1 gap-2 break-words p-4 sm:grid-cols-2 sm:gap-4 text-ink/80">
                 <span>{purpose}</span>
                 <span className="text-ink/60">{basis}</span>
               </div>

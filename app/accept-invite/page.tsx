@@ -39,7 +39,7 @@ function AcceptInner() {
 export default function AcceptInvitePage() {
   const { t } = useLanguage();
   return (
-    <main className="flex min-h-screen items-center justify-center bg-paper px-6">
+    <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
       <div className="w-full max-w-sm">
         <Link href="/">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />

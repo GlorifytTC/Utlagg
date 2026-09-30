@@ -17,7 +17,7 @@ export default function SubprocessorsPage() {
   const t = getT();
   return (
     <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">{t.spTitle}</h1>
+      <h1 className="break-words font-display text-2xl font-semibold tracking-tight hyphens-auto sm:text-3xl">{t.spTitle}</h1>
       <p className="mt-4 text-ink/70">
         {t.spIntroPre}{" "}
         <Link className="underline underline-offset-2" href="/legal/dpa">
@@ -27,26 +27,28 @@ export default function SubprocessorsPage() {
       </p>
       <p className="mt-2 text-sm text-ink/50">{t.spUpdated}</p>
 
-      <table className="mt-8 w-full text-sm">
+      <div className="mt-8 overflow-x-auto">
+      <table className="w-full min-w-[34rem] text-sm">
         <thead className="text-left text-ink/50">
           <tr>
-            <th className="py-2">{t.spColVendor}</th>
-            <th>{t.spColPurpose}</th>
-            <th>{t.spColRegion}</th>
-            <th>{t.spColSafeguard}</th>
+            <th className="py-2 pr-4">{t.spColVendor}</th>
+            <th className="pr-4">{t.spColPurpose}</th>
+            <th className="pr-4">{t.spColRegion}</th>
+            <th className="pr-4">{t.spColSafeguard}</th>
           </tr>
         </thead>
         <tbody>
           {rows(t).map(([n, p, r, s]) => (
             <tr key={n} className="border-t border-ink/10 align-top">
-              <td className="py-2 font-medium">{n}</td>
-              <td>{p}</td>
-              <td className="text-ink/60">{r}</td>
+              <td className="py-2 pr-4 font-medium">{n}</td>
+              <td className="pr-4">{p}</td>
+              <td className="pr-4 text-ink/60">{r}</td>
               <td className="text-ink/60">{s}</td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
 
       <p className="mt-6 text-sm text-ink/70">
         {t.spNoticePre}{" "}

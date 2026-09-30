@@ -101,9 +101,12 @@ export function SubscriptionManager({
               initial={{ y: 20 }}
               animate={{ y: 0 }}
               exit={{ y: 20 }}
-              className="panel w-full max-w-md rounded-[1.5rem] p-6"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="cancel-title"
+              className="panel max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-[1.5rem] p-6"
             >
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t.cancelTitle}</h2>
+              <h2 id="cancel-title" className="text-lg font-semibold text-gray-900 dark:text-white">{t.cancelTitle}</h2>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{t.cancelIntro}</p>
               <ul className="mt-3 space-y-2 text-sm text-gray-600 dark:text-gray-300">
                 <li>• {t.cancelBullet1Pre}<strong>{t.cancelBullet1Strong}</strong>{t.cancelBullet1Post}</li>
@@ -111,14 +114,14 @@ export function SubscriptionManager({
                 <li>• {t.cancelBullet3Pre}<strong>{t.cancelBullet3Strong}</strong>{t.cancelBullet3Post}</li>
               </ul>
               <label className="mt-4 flex items-start gap-2 text-sm text-gray-700 dark:text-gray-200">
-                <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5" />
+                <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5 h-5 w-5 shrink-0" />
                 <span>{t.cancelAccept}</span>
               </label>
-              <div className="mt-5 flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setShowCancel(false)} disabled={loading !== null}>
+              <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <Button className="w-full sm:w-auto" variant="outline" onClick={() => setShowCancel(false)} disabled={loading !== null}>
                   {t.cancelAbort}
                 </Button>
-                <Button variant="destructive" onClick={cancel} disabled={!accepted || loading !== null}>
+                <Button className="w-full sm:w-auto" variant="destructive" onClick={cancel} disabled={!accepted || loading !== null}>
                   {loading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : t.cancelConfirm}
                 </Button>
               </div>

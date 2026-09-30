@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
@@ -24,6 +24,8 @@ export function AccountantAvatarMenu() {
   const [open, setOpen] = useState(false);
   const [logo, setLogo] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const { data: session } = useSession();
+  const initial = (session?.user?.name ?? session?.user?.email ?? "?").trim().charAt(0).toUpperCase();
 
   useEffect(() => {
     fetch("/api/accountant/logo")
@@ -36,8 +38,17 @@ export function AccountantAvatarMenu() {
     function onClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     }
-    if (open) document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    if (open) {
+      document.addEventListener("mousedown", onClick);
+      document.addEventListener("keydown", onKey);
+    }
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
   }, [open]);
 
   async function saveLogo(dataUrl: string | null) {
@@ -60,18 +71,18 @@ export function AccountantAvatarMenu() {
         onClick={() => setOpen((v) => !v)}
         aria-label={t.menuProfileLabel}
         aria-expanded={open}
-        className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-gray-900/10 bg-white transition duration-300 ease-premium hover:border-nordic-600/50 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:border-white/[0.15] dark:bg-white/[0.06] dark:hover:border-nordic-600/60"
+        className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-gray-900/10 bg-white transition duration-300 ease-premium hover:border-nordic-600/50 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:border-white/[0.15] dark:bg-white/[0.06] dark:hover:border-nordic-600/60"
       >
         {logo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={logo} alt={t.menuProfileLabel} className="h-full w-full object-cover" />
         ) : (
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">R</span>
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">{initial}</span>
         )}
       </button>
 
       {open && (
-        <div className="panel absolute right-0 z-20 mt-2 w-72 overflow-hidden rounded-2xl py-1">
+        <div className="panel absolute right-0 z-20 mt-2 max-h-[calc(100dvh-6rem)] w-72 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl py-1">
           <div className="px-4 py-3">
             <p className="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
               {t.menuProfile}
@@ -84,14 +95,14 @@ export function AccountantAvatarMenu() {
               <button
                 onClick={() => setLanguage("sv")}
                 aria-pressed={lang === "sv"}
-                className={`rounded-full border px-3 py-1 text-xs transition duration-300 ease-premium ${lang === "sv" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/15 text-gray-500 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-400 dark:hover:border-white/30"}`}
+                className={`min-h-10 rounded-full border px-4 text-sm transition duration-300 ease-premium ${lang === "sv" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/15 text-gray-500 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-400 dark:hover:border-white/30"}`}
               >
                 Svenska
               </button>
               <button
                 onClick={() => setLanguage("en")}
                 aria-pressed={lang === "en"}
-                className={`rounded-full border px-3 py-1 text-xs transition duration-300 ease-premium ${lang === "en" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/15 text-gray-500 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-400 dark:hover:border-white/30"}`}
+                className={`min-h-10 rounded-full border px-4 text-sm transition duration-300 ease-premium ${lang === "en" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/15 text-gray-500 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-400 dark:hover:border-white/30"}`}
               >
                 English
               </button>
@@ -100,21 +111,22 @@ export function AccountantAvatarMenu() {
             <Link
               href="/accountant/settings"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-900/[0.04] dark:text-gray-300 dark:hover:bg-white/[0.04]"
+              className="flex items-center gap-2.5 min-h-11 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-900/[0.04] dark:text-gray-300 dark:hover:bg-white/[0.04]"
             >
               {t.navSettings}
             </Link>
 
             <Link
               href="/dashboard"
-              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-900/[0.04] dark:text-gray-300 dark:hover:bg-white/[0.04]"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 min-h-11 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-900/[0.04] dark:text-gray-300 dark:hover:bg-white/[0.04]"
             >
               {t.menuAccount}
             </Link>
 
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-red-600 transition-colors hover:bg-red-50/70 dark:hover:bg-red-950/25"
+              className="flex w-full items-center gap-2.5 min-h-11 px-4 py-3 text-left text-sm text-red-600 transition-colors hover:bg-red-50/70 dark:hover:bg-red-950/25"
             >
               {t.menuLogout}
             </button>

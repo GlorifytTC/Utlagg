@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -53,6 +53,13 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
     load();
   }, [load]);
 
+  const tabListRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    tabListRef.current
+      ?.querySelector('[aria-selected="true"]')
+      ?.scrollIntoView({ inline: "center", block: "nearest" });
+  }, [tab, status]);
+
   const back = { href: "/accountant", label: t.allClients };
 
   if (status === "loading") {
@@ -61,7 +68,7 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
         <div className="skeleton h-5 w-28 rounded-full" />
         <div className="flex items-center gap-4">
           <div className="skeleton h-14 w-14 rounded-full" />
-          <div className="skeleton h-9 w-64 rounded-xl" />
+          <div className="skeleton h-9 w-64 max-w-full rounded-xl" />
         </div>
         <div className="skeleton h-11 w-96 max-w-full rounded-full" />
         <div className="skeleton h-72 rounded-2xl" />
@@ -98,7 +105,7 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
 
   const tabCls = (active: boolean) =>
     cn(
-      "whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition duration-300 ease-premium",
+      "whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-medium transition duration-300 ease-premium",
       active
         ? "bg-nordic-600 text-white"
         : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white",
@@ -109,9 +116,12 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
       <PageHeader
         back={back}
         title={
-          <span className="flex items-center gap-4">
-            <span aria-hidden>
+          <span className="flex min-w-0 items-center gap-3 sm:gap-4">
+            <span aria-hidden className="hidden sm:block">
               <ClientAvatar name={detail.companyName} logoUrl={detail.logoUrl} size="lg" />
+            </span>
+            <span aria-hidden className="sm:hidden">
+              <ClientAvatar name={detail.companyName} logoUrl={detail.logoUrl} size="md" />
             </span>
             <span className="min-w-0 truncate">{detail.companyName}</span>
           </span>
@@ -119,7 +129,7 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
         subtitle={`${detail.receiptCount} ${t.distReceiptUnit}`}
         actions={
           detail.clientId && (
-            <Link href={`/accountant/clients/${companyId}/chat`} className={buttonClass("outline")}>
+            <Link href={`/accountant/clients/${companyId}/chat`} className={buttonClass("outline", "w-full sm:w-auto")}>
               <MessageSquare className="h-4 w-4" strokeWidth={1.75} />
               {t.chatTitle}
             </Link>
@@ -129,7 +139,7 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
 
       {/* Scrolls sideways on phones instead of wrapping five tabs onto two rows */}
       <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <div role="tablist" className="panel inline-flex gap-1 rounded-full p-1">
+        <div ref={tabListRef} role="tablist" className="panel inline-flex gap-1 rounded-full p-1">
           {tabs.map((tb) => (
             <button
               key={tb.key}

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { ChevronRight } from "lucide-react";
 import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
@@ -61,7 +62,7 @@ export function AccountantClientsList() {
         <p className="text-sm text-red-600">{t.clientsLoadError}</p>
         <button
           onClick={() => load(page)}
-          className="mt-3 rounded-full border border-gray-900/[0.15] px-4 py-1.5 text-xs transition-colors hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40"
+          className="mt-3 min-h-11 rounded-full border border-gray-900/[0.15] px-4 text-sm transition-colors hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40"
         >
           {t.retry}
         </button>
@@ -91,7 +92,7 @@ export function AccountantClientsList() {
         animate={{ opacity: 1, y: 0 }}
         className="overflow-hidden rounded-2xl panel"
       >
-        <div className="overflow-x-auto">
+        <div className="hidden overflow-x-auto md:block">
           <table className="w-full">
             <thead>
               <tr className="text-left">
@@ -147,6 +148,27 @@ export function AccountantClientsList() {
           </table>
         </div>
 
+        <ul className="divide-y divide-gray-900/[0.07] dark:divide-white/[0.07] md:hidden">
+          {rows.map((c) => (
+            <li key={c.companyId}>
+              <Link
+                href={`/accountant/clients/${c.companyId}`}
+                className="flex min-h-[56px] items-center gap-3 p-4"
+              >
+                <ClientAvatar name={c.companyName} logoUrl={c.logoUrl} size="sm" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{c.companyName}</p>
+                  <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+                    {c.city ? `${c.city} · ` : ""}
+                    {c.receiptCount} {t.colReceipts.toLowerCase()}
+                  </p>
+                </div>
+                <ChevronRight className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+              </Link>
+            </li>
+          ))}
+        </ul>
+
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 dark:border-white/[0.07]">
             <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -156,14 +178,14 @@ export function AccountantClientsList() {
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => p - 1)}
-                className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
+                className="min-h-11 rounded-full border border-gray-900/[0.15] px-4 text-sm transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
               >
                 {t.pagePrev}
               </button>
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => p + 1)}
-                className="rounded-full border border-gray-900/[0.15] px-3 py-1 text-xs transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
+                className="min-h-11 rounded-full border border-gray-900/[0.15] px-4 text-sm transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
               >
                 {t.pageNext}
               </button>

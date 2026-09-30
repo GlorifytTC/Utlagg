@@ -37,7 +37,7 @@ export function CtaLink({
     <Link
       href={href}
       className={cn(
-        "group inline-flex items-center gap-3 whitespace-nowrap rounded-full text-sm font-medium transition duration-500 ease-premium active:scale-[0.98]",
+        "group inline-flex max-w-full items-center gap-3 whitespace-normal rounded-full text-sm font-medium transition duration-500 ease-premium active:scale-[0.98]",
         arrow ? "py-1.5 pl-6 pr-1.5" : "px-6 py-3.5",
         shell[variant],
         className,
@@ -77,7 +77,7 @@ export function CtaPanel({
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <motion.div
         {...reveal(0, rm)}
-        className="relative overflow-hidden rounded-[2rem] bg-ink px-8 py-14 text-paper md:px-16 md:py-20"
+        className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-14 text-paper sm:px-8 md:px-16 md:py-20"
       >
         <div
           aria-hidden
@@ -85,7 +85,7 @@ export function CtaPanel({
         />
         <div className="relative grid gap-10 md:grid-cols-[1.4fr_1fr] md:items-end">
           <div>
-            <h2 className="max-w-xl font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+            <h2 className="max-w-xl break-words font-display text-3xl font-semibold leading-[1.1] tracking-tight hyphens-auto sm:text-4xl md:text-5xl">
               {title}
             </h2>
             <p className="mt-5 max-w-md text-base leading-relaxed text-paper/65">{body}</p>
