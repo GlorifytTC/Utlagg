@@ -176,6 +176,13 @@
       "when": 1796000300000,
       "tag": "0025_accountant_verification",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1796000400000,
+      "tag": "0026_receipt_reviews",
+      "breakpoints": true
     }
   ]
 }

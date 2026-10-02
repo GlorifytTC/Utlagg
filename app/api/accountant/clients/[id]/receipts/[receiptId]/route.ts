@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { receipts } from "@/db/schema";
+import { receipts, receiptReviews } from "@/db/schema";
 import { requireAccountant, requireCompanyAccess } from "@/lib/accountant";
 import { logAuditEvent, clientIp } from "@/lib/audit";
 import { resolveReceiptImageSrc } from "@/lib/storage";
@@ -153,12 +153,32 @@ export async function PATCH(
   if ("basCode" in d) updates.basCode = d.basCode ?? null;
   if ("vendorName" in d) updates.vendorName = d.vendorName ?? null;
   if ("note" in d) updates.note = d.note ?? null;
+  // Several accountants can review one receipt: receipt_reviews holds one row
+  // each, receipts.reviewedBy/At mirror the latest. Unreviewing removes only
+  // the caller's own row.
   if (d.reviewed === true) {
-    updates.reviewedAt = new Date();
+    const now = new Date();
+    await db
+      .insert(receiptReviews)
+      .values({ receiptId: params.receiptId, accountantId: acct.userId, reviewedAt: now })
+      .onConflictDoUpdate({
+        target: [receiptReviews.receiptId, receiptReviews.accountantId],
+        set: { reviewedAt: now },
+      });
+    updates.reviewedAt = now;
     updates.reviewedBy = acct.userId; // server-derived reviewer - never from input
   } else if (d.reviewed === false) {
-    updates.reviewedAt = null;
-    updates.reviewedBy = null;
+    await db
+      .delete(receiptReviews)
+      .where(and(eq(receiptReviews.receiptId, params.receiptId), eq(receiptReviews.accountantId, acct.userId)));
+    const [latest] = await db
+      .select({ at: receiptReviews.reviewedAt, by: receiptReviews.accountantId })
+      .from(receiptReviews)
+      .where(eq(receiptReviews.receiptId, params.receiptId))
+      .orderBy(desc(receiptReviews.reviewedAt))
+      .limit(1);
+    updates.reviewedAt = latest?.at ?? null;
+    updates.reviewedBy = latest?.by ?? null;
   }
 
   // Diff old→new for audit; skip no-op updates so no misleading event is written.

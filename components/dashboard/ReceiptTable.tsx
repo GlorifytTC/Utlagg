@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatSek, formatDate, cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
+import { ReviewerStack } from "@/components/dashboard/ReviewerStack";
 import { fieldClass } from "@/components/ui/input";
 
 const STATUS_STYLE: Record<string, string> = {
@@ -28,6 +29,7 @@ type ReceiptRow = {
   status: string;
   createdAt: string;
   hasImage: boolean;
+  reviewers: { name: string; logoUrl: string | null }[];
 };
 
 const PAGE_SIZE = 25;
@@ -353,6 +355,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                       <span className={cn("rounded-full px-2.5 py-1 text-xs font-medium", STATUS_STYLE[r.status])}>
                         {statusLabel[r.status] ?? r.status}
                       </span>
+                      <ReviewerStack reviewers={r.reviewers} className="mt-1" />
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex justify-end gap-2">
@@ -409,6 +412,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                       <span className={cn("mt-1 inline-block rounded-full px-2.5 py-1 text-xs font-medium", STATUS_STYLE[r.status])}>
                         {statusLabel[r.status] ?? r.status}
                       </span>
+                      <ReviewerStack reviewers={r.reviewers} className="mt-1 justify-end" />
                     </div>
                   </div>
                   <div className="flex justify-end gap-2">

@@ -1,14 +1,16 @@
 import { getServerSession } from "next-auth";
 import { redirect, notFound } from "next/navigation";
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
-import { receipts } from "@/db/schema";
+import { receipts, receiptReviews, users } from "@/db/schema";
 import { getT } from "@/lib/i18n-server";
 import { formatSek, formatDate } from "@/lib/utils";
 import { resolveReceiptImageSrc } from "@/lib/storage";
 import { getBasAccount } from "@/lib/bas";
 import { ReceiptDetailActions } from "@/components/dashboard/ReceiptDetailActions";
+import { ClientAvatar } from "@/components/accountant/ClientAvatar";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Kvitto" };
@@ -36,6 +38,19 @@ export default async function ReceiptDetailPage({
     .where(and(eq(receipts.id, params.id), eq(receipts.userId, session.user.id)))
     .limit(1);
   if (!receipt) notFound();
+
+  const reviewers = await db
+    .select({
+      name: users.name,
+      email: users.email,
+      logoUrl: users.logoUrl,
+      verified: users.verificationStatus,
+      reviewedAt: receiptReviews.reviewedAt,
+    })
+    .from(receiptReviews)
+    .innerJoin(users, eq(users.id, receiptReviews.accountantId))
+    .where(eq(receiptReviews.receiptId, receipt.id))
+    .orderBy(asc(receiptReviews.reviewedAt));
 
   // The image (base64 data URL or private R2 key) is resolved here, on demand,
   // rather than being shipped with the whole list.
@@ -93,6 +108,34 @@ export default async function ReceiptDetailPage({
               <dd className="mt-1 break-words text-sm font-medium text-gray-900 dark:text-white">{f.value}</dd>
             </div>
           ))}
+          {reviewers.length > 0 && (
+            <div className="panel-fill p-4 sm:col-span-2">
+              <dt className="text-xs text-gray-500 dark:text-gray-400">{t.reviewedBy}</dt>
+              <dd className="mt-2 space-y-3">
+                {reviewers.map((v: (typeof reviewers)[number], i: number) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <ClientAvatar name={v.name ?? v.email} logoUrl={v.logoUrl} size="md" />
+                    <div className="min-w-0">
+                      <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {v.name ?? v.email}
+                        {v.verified === "approved" && <VerifiedBadge />}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {v.name ? `${v.email} · ` : ""}
+                        {t.reviewedOn} {formatDate(v.reviewedAt)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {receipt.note && (
+                  <div className="rounded-xl bg-gray-900/[0.03] p-3 text-sm dark:bg-white/[0.04]">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t.accountantNote}</p>
+                    <p className="mt-1 whitespace-pre-wrap break-words">{receipt.note}</p>
+                  </div>
+                )}
+              </dd>
+            </div>
+          )}
           <div className="panel-fill p-4 sm:col-span-2">
             <ReceiptDetailActions id={receipt.id} status={receipt.status} />
           </div>

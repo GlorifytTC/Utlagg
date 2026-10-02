@@ -134,6 +134,9 @@ export interface Translations {
   unlimited: string;
   receiptCancel: string;
   receiptApprove: string;
+  reviewedBy: string;
+  reviewedOn: string;
+  accountantNote: string;
   receiptDelete: string;
   receiptDeleteConfirm: string;
   colActions: string;
@@ -2044,6 +2047,9 @@ export const strings: Record<Lang, Translations> = {
     idleStay: "Stanna inloggad",
     idleLogout: "Logga ut nu",
     receiptApprove: "Godkänn",
+    reviewedBy: "Granskad av",
+    reviewedOn: "Granskad",
+    accountantNote: "Notering från revisor",
     receiptDelete: "Ta bort",
     receiptDeleteConfirm: "Ta bort detta kvitto? Detta går inte att ångra.",
     colActions: "Åtgärder",
@@ -3578,6 +3584,9 @@ export const strings: Record<Lang, Translations> = {
     idleStay: "Stay logged in",
     idleLogout: "Log out now",
     receiptApprove: "Approve",
+    reviewedBy: "Reviewed by",
+    reviewedOn: "Reviewed",
+    accountantNote: "Accountant note",
     receiptDelete: "Delete",
     receiptDeleteConfirm: "Delete this receipt? This cannot be undone.",
     colActions: "Actions",

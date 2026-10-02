@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { and, count, desc, eq, gte, ilike, lte, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, ilike, inArray, lte, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { receipts } from "@/db/schema";
+import { receipts, receiptReviews, users } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { clientIp } from "@/lib/audit";
 import { createReceipt } from "@/lib/receipts/create";
@@ -92,8 +92,30 @@ export async function GET(req: NextRequest) {
     db.select({ total: count() }).from(receipts).where(where),
   ]);
 
+  // Every accountant who reviewed these receipts, oldest first (avatar stack).
+  const ids = rows.map((r: { id: string }) => r.id);
+  const reviewRows = ids.length
+    ? await db
+        .select({
+          receiptId: receiptReviews.receiptId,
+          name: users.name,
+          email: users.email,
+          logoUrl: users.logoUrl,
+        })
+        .from(receiptReviews)
+        .innerJoin(users, eq(users.id, receiptReviews.accountantId))
+        .where(inArray(receiptReviews.receiptId, ids))
+        .orderBy(asc(receiptReviews.reviewedAt))
+    : [];
+  const reviewers = new Map<string, { name: string; logoUrl: string | null }[]>();
+  for (const v of reviewRows) {
+    const list = reviewers.get(v.receiptId) ?? [];
+    list.push({ name: v.name ?? v.email, logoUrl: v.logoUrl });
+    reviewers.set(v.receiptId, list);
+  }
+
   return NextResponse.json({
-    receipts: rows,
+    receipts: rows.map((r: { id: string }) => ({ ...r, reviewers: reviewers.get(r.id) ?? [] })),
     total: totals[0]?.total ?? 0,
     page,
     pageSize,

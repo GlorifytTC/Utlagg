@@ -255,6 +255,27 @@ export const receipts = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
+/* receipt_reviews: one row per accountant who marked a receipt       */
+/* reviewed. receipts.reviewedBy/At mirror the latest row.            */
+/* ------------------------------------------------------------------ */
+
+export const receiptReviews = pgTable(
+  "receipt_reviews",
+  {
+    receiptId: uuid("receipt_id")
+      .notNull()
+      .references(() => receipts.id, { onDelete: "cascade" }),
+    accountantId: uuid("accountant_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    pk: uniqueIndex("receipt_reviews_pk").on(t.receiptId, t.accountantId),
+  }),
+);
+
+/* ------------------------------------------------------------------ */
 /* expenses                                                           */
 /* ------------------------------------------------------------------ */
 
