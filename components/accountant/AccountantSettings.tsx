@@ -6,11 +6,10 @@ import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings, type AccountantStrings } from "@/lib/accountant-i18n";
 import { CREDENTIAL_ACCEPT, MAX_CREDENTIAL_BYTES } from "@/lib/verification";
-import { LogoUploader } from "@/components/dashboard/LogoUploader";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { buttonClass } from "@/components/ui/button";
 import { SectionHeader } from "@/components/settings/SettingsShell";
-import { NameForm } from "@/components/settings/NameForm";
+import { ProfileCard } from "@/components/settings/ProfileCard";
 import { PasswordCard } from "@/components/settings/PasswordCard";
 import { DeleteAccountCard } from "@/components/settings/DeleteAccountCard";
 
@@ -20,11 +19,9 @@ type VerificationStatus = "pending" | "approved" | "rejected" | null;
 
 /** The accountant's personal account: picture, name, credential verification, password, delete. Email is read-only. */
 export function AccountantSettings({
-  logoUrl,
   verificationStatus,
   verificationNote,
 }: {
-  logoUrl: string | null;
   verificationStatus: VerificationStatus;
   verificationNote: string | null;
 }) {
@@ -32,31 +29,12 @@ export function AccountantSettings({
   const at = accountantStrings(lang);
   const router = useRouter();
 
-  async function saveLogo(dataUrl: string | null) {
-    const res = await fetch("/api/accountant/logo", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ logoUrl: dataUrl }),
-    });
-    if (!res.ok) {
-      const d = await res.json().catch(() => ({}));
-      toast.error(d.error ?? at.error);
-      throw new Error();
-    }
-    window.dispatchEvent(new CustomEvent("accountant-logo-updated", { detail: dataUrl }));
-  }
-
   return (
     <div className="space-y-6">
       <SectionHeader title={at.settingsAccount} />
 
-      <section className={card}>
-        <h2 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">{at.menuProfilePic}</h2>
-        <LogoUploader value={logoUrl} label={at.menuProfilePic} onSave={saveLogo} />
-      </section>
-
       {/* A rename sends an approved verification back to review, so refresh the status card. */}
-      <NameForm onSaved={() => router.refresh()} />
+      <ProfileCard logoEndpoint="/api/accountant/logo" onSaved={() => router.refresh()} />
 
       <VerificationCard at={at} status={verificationStatus} note={verificationNote} onSubmitted={() => router.refresh()} />
 

@@ -13,7 +13,6 @@ export default async function AccountantSettingsPage() {
   if (!acct) redirect("/dashboard");
   const [u] = await db
     .select({
-      logoUrl: users.logoUrl,
       verificationStatus: users.verificationStatus,
       verificationNote: users.verificationNote,
     })
@@ -23,7 +22,6 @@ export default async function AccountantSettingsPage() {
 
   return (
     <AccountantSettings
-      logoUrl={u?.logoUrl ?? null}
       verificationStatus={u?.verificationStatus ?? null}
       verificationNote={u?.verificationNote ?? null}
     />

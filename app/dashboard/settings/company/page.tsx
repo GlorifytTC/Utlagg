@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CompanyLogoCard } from "@/components/dashboard/CompanyLogoCard";
 import { useLanguage } from "@/context/LanguageContext";
 import type { SellerDetails } from "@/lib/invoice";
 import { SectionHeader } from "@/components/settings/SettingsShell";
@@ -137,7 +138,7 @@ export default function CompanyPage() {
 
   return (
     <div className="space-y-6">
-      <SectionHeader title={company.name} />
+      <CompanyLogoCard name={company.name} isOwner={role === "owner"} />
 
       {canManage && (
       <Card>

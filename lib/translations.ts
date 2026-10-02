@@ -398,6 +398,9 @@ export interface Translations {
   setAccount: string;
   setPreferences: string;
   setAccountants: string;
+  setProfile: string;
+  setProfilePicture: string;
+  setFindAccountants: string;
   setSwitchToLight: string;
   setSwitchToDark: string;
   setCompanyDesc: string;
@@ -1824,6 +1827,9 @@ export const strings: Record<Lang, Translations> = {
     setAccount: "Konto",
     setPreferences: "Preferenser",
     setAccountants: "Redovisningsbyråer",
+    setProfile: "Profil",
+    setProfilePicture: "Profilbild",
+    setFindAccountants: "Hitta en redovisningsbyrå och skicka en förfrågan om åtkomst till ert företag.",
     setSwitchToLight: "Byt till ljust läge",
     setSwitchToDark: "Byt till mörkt läge",
     setCompanyDesc: "Visas på exporter och underlag",
@@ -3355,6 +3361,9 @@ export const strings: Record<Lang, Translations> = {
     setAccount: "Account",
     setPreferences: "Preferences",
     setAccountants: "Accountants",
+    setProfile: "Profile",
+    setProfilePicture: "Profile picture",
+    setFindAccountants: "Find an accounting firm and send a request for access to your company.",
     setSwitchToLight: "Switch to light mode",
     setSwitchToDark: "Switch to dark mode",
     setCompanyDesc: "Shown on exports and records",
