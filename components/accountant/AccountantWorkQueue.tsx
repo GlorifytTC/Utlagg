@@ -36,9 +36,9 @@ export function AccountantWorkQueue() {
 
   const totals = data?.totals ?? { toReview: 0, missingInfo: 0, lowConfidence: 0, pending: 0 };
   const items: StatItem[] = [
-    { label: t.todoToReview, value: totals.toReview, icon: ClipboardCheck },
+    { label: t.todoToReview, value: totals.toReview, icon: ClipboardCheck, href: "/accountant/receipts?filter=review" },
     { label: t.todoMissingInfo, value: totals.missingInfo, icon: FileWarning, tone: "warn" as const },
-    { label: t.todoLowConfidence, value: totals.lowConfidence, icon: ScanLine },
+    { label: t.todoLowConfidence, value: totals.lowConfidence, icon: ScanLine, href: "/accountant/receipts?filter=uncertain" },
     { label: t.todoPending, value: totals.pending, icon: Clock },
   ].filter((r) => r.value > 0);
 

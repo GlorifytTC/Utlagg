@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +10,8 @@ export type StatItem = {
   hint?: React.ReactNode;
   /** "warn" highlights a number that needs attention. */
   tone?: "default" | "warn";
+  /** Makes the whole cell a link. */
+  href?: string;
 };
 
 // Column count follows the number of items, so a grid never shows empty cells.
@@ -30,8 +33,13 @@ export function StatGrid({ items, className }: { items: StatItem[]; className?: 
         className,
       )}
     >
-      {items.map(({ label, value, hint, icon: Icon, tone }) => (
-        <div key={label} className="panel-fill flex min-w-0 flex-col justify-between gap-4 p-4 sm:p-5">
+      {items.map(({ label, value, hint, icon: Icon, tone, href }) => {
+        const cellClass = cn(
+          "panel-fill flex min-w-0 flex-col justify-between gap-4 p-4 sm:p-5",
+          href && "transition-colors hover:bg-gray-900/[0.03] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-nordic-600/20 dark:hover:bg-white/[0.04]",
+        );
+        const body = (
+          <>
           <div className="flex items-start justify-between gap-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
             {Icon && (
@@ -51,8 +59,14 @@ export function StatGrid({ items, className }: { items: StatItem[]; className?: 
             {value}
           </p>
           {hint && <p className="-mt-3 text-xs text-gray-500 dark:text-gray-400">{hint}</p>}
-        </div>
-      ))}
+          </>
+        );
+        return href ? (
+          <Link key={label} href={href} className={cellClass}>{body}</Link>
+        ) : (
+          <div key={label} className={cellClass}>{body}</div>
+        );
+      })}
     </div>
   );
 }

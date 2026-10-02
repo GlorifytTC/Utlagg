@@ -1,6 +1,6 @@
 import "server-only";
 import { getServerSession } from "next-auth";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import {
@@ -181,4 +181,31 @@ export async function requireCompanyAccess(
   const memberIds = members.map((m: { userId: string }) => m.userId);
 
   return { companyId, companyName: rel.companyName, logoUrl: rel.logoUrl ?? null, firmId: firm.firmId, role: firm.role, memberIds };
+}
+
+/**
+ * Active client companies of this accountant + each company's CURRENT member
+ * userIds. Single scope source for the dashboard counts and the work-queue
+ * receipt lists, so tile numbers equal list totals.
+ */
+export async function getClientScope(accountantId: string) {
+  const clients: Array<{ companyId: string; companyName: string }> = await db
+    .select({ companyId: accountantClients.companyId, companyName: companies.name })
+    .from(accountantClients)
+    .innerJoin(companies, eq(companies.id, accountantClients.companyId))
+    .where(and(eq(accountantClients.accountantId, accountantId), eq(accountantClients.status, "active")));
+
+  const membersByCompany = new Map<string, string[]>();
+  if (clients.length > 0) {
+    const members = await db
+      .select({ companyId: companyMembers.companyId, userId: companyMembers.userId })
+      .from(companyMembers)
+      .where(inArray(companyMembers.companyId, clients.map((c) => c.companyId)));
+    for (const m of members) {
+      const list = membersByCompany.get(m.companyId) ?? [];
+      list.push(m.userId);
+      membersByCompany.set(m.companyId, list);
+    }
+  }
+  return { clients, membersByCompany };
 }

@@ -18,8 +18,8 @@ const sectionTitle = "text-lg font-semibold text-gray-900 dark:text-white";
 /**
  * Work-focused accountant dashboard. Information architecture, in priority of
  * the accountant's daily need:
- *   1. Key numbers - data-first: totals before the task queue.
- *   2. Work queue ("Att göra") - what needs attention now.
+ *   1. Work queue ("Att göra") - what needs attention now; tiles link to lists.
+ *   2. Key numbers - firm totals.
  *   3. Clients - the working list, most-needing-attention first.
  *   4. Activity - real throughput/momentum.
  *   5. Growth ("Väx din byrå") - discovery + boost, demoted secondary.
@@ -33,13 +33,13 @@ export function AccountantDashboard() {
     <div className="max-w-6xl animate-fade-up space-y-10">
       <PageHeader title={t.overviewTitle} subtitle={t.overviewSubtitle} />
 
+      <AccountantWorkQueue />
+
       <section className="space-y-3">
         <h2 className={sectionTitle}>{t.firmStatsTitle}</h2>
         <AccountantFirmStats />
         <AccountantClientDistribution />
       </section>
-
-      <AccountantWorkQueue />
 
       <section className="space-y-3">
         <h2 className={sectionTitle}>{t.clientsTitle}</h2>
