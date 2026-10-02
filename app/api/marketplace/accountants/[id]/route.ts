@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { verifiedFirmIds } from "@/lib/firm-verified";
 import { getServerSession } from "next-auth";
 import { and, avg, count, eq, desc, sql } from "drizzle-orm";
 import { db } from "@/db";
@@ -98,7 +99,7 @@ export async function GET(
       .limit(1),
   ]);
 
-  let firm: { id: string; name: string; logoUrl: string | null; members: { id: string; name: string | null; email: string; logoUrl: string | null; role: string }[] } | null = null;
+  let firm: { id: string; name: string; logoUrl: string | null; verified: boolean; members: { id: string; name: string | null; email: string; logoUrl: string | null; role: string }[] } | null = null;
   if (membershipRows[0]) {
     const { firmId, firmName, firmLogoUrl } = membershipRows[0];
     const members = await db
@@ -112,7 +113,7 @@ export async function GET(
       .from(firmMembers)
       .innerJoin(users, eq(users.id, firmMembers.userId))
       .where(eq(firmMembers.firmId, firmId));
-    firm = { id: firmId, name: firmName, logoUrl: firmLogoUrl, members };
+    firm = { id: firmId, name: firmName, logoUrl: firmLogoUrl, verified: (await verifiedFirmIds([firmId])).has(firmId), members };
   }
 
   // Viewer state

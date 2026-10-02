@@ -16,6 +16,7 @@ import {
 import { authOptions } from "@/lib/auth";
 import { getUserCompany, canManageCompany } from "@/lib/company";
 import { requireAccountant } from "@/lib/accountant";
+import { verifiedFirmIds } from "@/lib/firm-verified";
 
 export const runtime = "nodejs";
 
@@ -117,6 +118,8 @@ export async function GET(req: NextRequest) {
   const firmMap = new Map<string, FirmRowItem>(
     (firmRows as FirmRowItem[]).map((f) => [f.userId, f]),
   );
+
+  const verifiedFirms = await verifiedFirmIds([...new Set((firmRows as { firmId: string }[]).map((f) => f.firmId))]);
 
   const [clientCounts, activeBoosts, reviewStats, viewerCompany] = await Promise.all([
     db
@@ -277,6 +280,7 @@ export async function GET(req: NextRequest) {
         firmId: firm?.firmId ?? null,
         firmName: firm?.firmName ?? null,
         firmLogoUrl: firm?.firmLogoUrl ?? null,
+        firmVerified: firm ? verifiedFirms.has(firm.firmId) : false,
       };
     }),
     page,

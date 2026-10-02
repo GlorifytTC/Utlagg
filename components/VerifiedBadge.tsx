@@ -3,9 +3,20 @@
 import { BadgeCheck } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
-/** Shown next to an accountant's name once an admin has approved their credentials. */
-export function VerifiedBadge() {
+/**
+ * Accountant: pill next to the name once an admin approved their credentials.
+ * Firm: compact check beside the firm name, shown when every member is verified.
+ */
+export function VerifiedBadge({ firm = false }: { firm?: boolean }) {
   const { t } = useLanguage();
+  if (firm) {
+    return (
+      <span title={t.verifiedFirmBadgeTitle} className="inline-flex align-middle text-emerald-600 dark:text-emerald-400">
+        <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />
+        <span className="sr-only">{t.verifiedFirmBadgeTitle}</span>
+      </span>
+    );
+  }
   return (
     <span
       title={t.verifiedBadgeTitle}

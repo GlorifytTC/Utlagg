@@ -31,6 +31,7 @@ interface Firm {
   id: string;
   name: string;
   logoUrl: string | null;
+  verified: boolean;
   members: FirmMember[];
 }
 
@@ -104,7 +105,7 @@ function FirmSidebar({ firm }: { firm: Firm }) {
           )}
           <div>
             <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{t.profFirm}</p>
-            <p className="font-semibold text-gray-900 dark:text-white">{firm.name}</p>
+            <p className="font-semibold text-gray-900 dark:text-white">{firm.name} {firm.verified && <VerifiedBadge firm />}</p>
           </div>
         </div>
 

@@ -1217,6 +1217,7 @@ export interface Translations {
   mktBoosted: string;
   verifiedBadge: string;
   verifiedBadgeTitle: string;
+  verifiedFirmBadgeTitle: string;
   mktYou: string;
   mktNew: string;
   mktClientsOne: string;
@@ -2756,6 +2757,7 @@ export const strings: Record<Lang, Translations> = {
     mktBoosted: "Boostad",
     verifiedBadge: "Verifierad",
     verifiedBadgeTitle: "Kvittino har granskat revisorns behörighetsdokument",
+    verifiedFirmBadgeTitle: "Verifierad byrå: alla medarbetare är verifierade",
     mktYou: "Du",
     mktNew: "Ny",
     mktClientsOne: "{n} klient",
@@ -4289,6 +4291,7 @@ export const strings: Record<Lang, Translations> = {
     mktBoosted: "Boosted",
     verifiedBadge: "Verified",
     verifiedBadgeTitle: "Kvittino has reviewed this accountant's credentials",
+    verifiedFirmBadgeTitle: "Verified firm: every member is verified",
     mktYou: "You",
     mktNew: "New",
     mktClientsOne: "{n} client",

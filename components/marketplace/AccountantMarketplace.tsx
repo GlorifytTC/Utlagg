@@ -28,6 +28,7 @@ interface AccountantRow {
   firmId: string | null;
   firmName: string | null;
   firmLogoUrl: string | null;
+  firmVerified: boolean;
 }
 
 interface Props {
@@ -319,7 +320,7 @@ export function AccountantMarketplace({
                         </div>
                         {a.firmName && (
                           <span className="mt-0.5 block text-xs font-medium text-nordic-600/80 dark:text-nordic-400/80">
-                            {a.firmName}
+                            {a.firmName} {a.firmVerified && <VerifiedBadge firm />}
                           </span>
                         )}
                         {a.city && (
