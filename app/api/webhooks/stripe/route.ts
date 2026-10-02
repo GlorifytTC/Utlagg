@@ -306,7 +306,7 @@ async function syncSubscription(sub: Stripe.Subscription) {
         firstChargeDate: trialEndsAt
           ? trialEndsAt.toLocaleDateString("sv-SE")
           : "",
-        actionUrl: `${baseUrl}/dashboard/subscription`,
+        actionUrl: `${baseUrl}/dashboard/settings/billing`,
       }).catch((e) => console.error("trial-start email failed (non-blocking):", e));
     }
 
@@ -483,7 +483,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
       planName: plan.name,
       amount: `${(invoice.amount_paid / 100).toLocaleString("sv-SE")} kr`,
       billingDate: new Date(invoice.created * 1000).toLocaleDateString("sv-SE"),
-      actionUrl: invoice.hosted_invoice_url ?? `${baseUrl}/dashboard/subscription`,
+      actionUrl: invoice.hosted_invoice_url ?? `${baseUrl}/dashboard/settings/billing`,
     });
   }
 }
@@ -511,7 +511,7 @@ async function handleTrialWillEnd(sub: Stripe.Subscription) {
     planName: planForTier(planTier).name,
     priceLabel,
     firstChargeDate,
-    actionUrl: `${baseUrl}/dashboard/subscription`,
+    actionUrl: `${baseUrl}/dashboard/settings/billing`,
   });
 
   await logAudit({
@@ -562,7 +562,7 @@ async function handleInvoiceFailed(invoice: Stripe.Invoice) {
     await sendPaymentFailed(user.email, {
       userName: user.name ?? "där",
       planName: plan.name,
-      actionUrl: invoice.hosted_invoice_url ?? `${baseUrl}/dashboard/subscription`,
+      actionUrl: invoice.hosted_invoice_url ?? `${baseUrl}/dashboard/settings/billing`,
     });
   }
 }

@@ -11,6 +11,16 @@ const nextConfig = {
     // letting anyone feed the optimizer files (Next <15.5.24 has an AVIF RCE).
     unoptimized: true,
   },
+  // Old settings URLs now live under one settings area per role.
+  async redirects() {
+    return [
+      { source: "/dashboard/profile", destination: "/dashboard/settings/account", permanent: true },
+      { source: "/dashboard/company", destination: "/dashboard/settings/company", permanent: true },
+      { source: "/dashboard/subscription", destination: "/dashboard/settings/billing", permanent: true },
+      { source: "/dashboard/integrations", destination: "/dashboard/settings/integrations", permanent: true },
+      { source: "/accountant/team", destination: "/accountant/settings/team", permanent: true },
+    ];
+  },
   // three.js ships untranspiled ESM that Next needs to transpile
   transpilePackages: ["three"],
   // Keep heavy/native-ish server deps out of the server bundle.

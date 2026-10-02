@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
-  Home, Receipt, CreditCard, BarChart3, Settings, User, LogOut, Moon, Sun, X, Car, CheckSquare, Plug, Lock, Building2, FileText, TrainFront, Download, Store, MessageSquare, ArrowUpRight,
+  Home, Receipt, BarChart3, Settings, LogOut, Moon, Sun, X, Car, CheckSquare, Lock, FileText, TrainFront, Download, Store, MessageSquare, ArrowUpRight,
 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
@@ -37,20 +37,16 @@ const navGroups = [
       { key: "navApprovals", href: "/dashboard/approvals", icon: CheckSquare, feature: "approvals" as Feature },
       { key: "navChats", href: "/dashboard/chats", icon: MessageSquare },
       { key: "navExport", href: "/dashboard/export", icon: Download },
-      { key: "navIntegrations", href: "/dashboard/integrations", icon: Plug, feature: "fortnox" as Feature },
       { key: "navStats", href: "/dashboard/stats", icon: BarChart3 },
       { key: "navInvoices", href: "/dashboard/invoices", icon: FileText, feature: "invoicing" as Feature },
+      { key: "navMarketplace", href: "/dashboard/marketplace", icon: Store },
     ],
   },
   {
     labelSv: "Konto",
     labelEn: "Account",
     items: [
-      { key: "navMarketplace", href: "/dashboard/marketplace", icon: Store },
-      { key: "navCompany", href: "/dashboard/company", icon: Building2 },
-      { key: "navSubscription", href: "/dashboard/subscription", icon: CreditCard },
       { key: "navSettings", href: "/dashboard/settings", icon: Settings },
-      { key: "navProfile", href: "/dashboard/profile", icon: User },
     ],
   },
 ];
@@ -58,7 +54,7 @@ const navGroups = [
 // Flat list for the mobile bottom bar, which picks items by href
 const nav = navGroups.flatMap((g) => g.items);
 
-const bottomNav = nav.filter((n) => ["/dashboard", "/dashboard/receipts", "/dashboard/chats", "/dashboard/stats", "/dashboard/profile"].includes(n.href));
+const bottomNav = nav.filter((n) => ["/dashboard", "/dashboard/receipts", "/dashboard/chats", "/dashboard/stats", "/dashboard/settings"].includes(n.href));
 
 function isActive(pathname: string, href: string) {
   return href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
@@ -71,22 +67,6 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
   const { t, lang, toggleLanguage } = useLanguage();
   const dark = theme === "dark";
   const { chat, clear } = useNotifications();
-
-  // Subscription is owner-only: hide it for admins/members of a company.
-  const [companyRole, setCompanyRole] = useState<string | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/company")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (!cancelled) setCompanyRole(d?.role ?? null);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-  const hideSubscription = companyRole !== null && companyRole !== "owner";
 
   useEffect(() => {
     if (pathname.startsWith("/dashboard/chats")) clear("chat");
@@ -116,7 +96,6 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
             </p>
             <ul className="space-y-0.5">
               {group.items.map((item) => {
-                if (item.href === "/dashboard/subscription" && hideSubscription) return null;
                 const Icon = item.icon;
                 const active = isActive(pathname, item.href);
                 return (

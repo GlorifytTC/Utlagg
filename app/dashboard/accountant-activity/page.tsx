@@ -12,7 +12,7 @@ export default function AccountantActivityPage() {
       <PageHeader
         title={t.cauTitle}
         subtitle={t.cauPageDesc}
-        back={{ href: "/dashboard/company", label: t.companySettings }}
+        back={{ href: "/dashboard/settings/accountants", label: t.companySettings }}
       />
 
       <CompanyAccountantAudit />

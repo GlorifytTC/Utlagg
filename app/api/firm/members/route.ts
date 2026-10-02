@@ -20,7 +20,7 @@ export async function GET() {
   if (!m) return NextResponse.json({ error: "Saknar behörighet" }, { status: 403 });
 
   const [firm] = await db
-    .select({ id: accountingFirms.id, name: accountingFirms.name, ownerId: accountingFirms.ownerId })
+    .select({ id: accountingFirms.id, name: accountingFirms.name, ownerId: accountingFirms.ownerId, logoUrl: accountingFirms.logoUrl })
     .from(accountingFirms)
     .where(eq(accountingFirms.id, m.firmId))
     .limit(1);

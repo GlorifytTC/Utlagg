@@ -94,8 +94,8 @@ export async function POST(_req: NextRequest) {
         priceOre: String(BOOST_PRICE_ORE),
         currency: BOOST_CURRENCY,
       },
-      success_url: `${baseUrl}/accountant?boost=processing`,
-      cancel_url: `${baseUrl}/accountant?boost=cancelled`,
+      success_url: `${baseUrl}/accountant/settings/visibility?boost=processing`,
+      cancel_url: `${baseUrl}/accountant/settings/visibility?boost=cancelled`,
     });
 
     return NextResponse.json({ url: checkout.url });

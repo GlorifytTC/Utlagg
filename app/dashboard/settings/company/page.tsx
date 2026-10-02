@@ -6,11 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CompanyAccountantAccess } from "@/components/dashboard/CompanyAccountantAccess";
-import { CompanyDiscoverySettings } from "@/components/dashboard/CompanyDiscoverySettings";
 import { useLanguage } from "@/context/LanguageContext";
 import type { SellerDetails } from "@/lib/invoice";
-import { PageHeader } from "@/components/ui/page-header";
+import { SectionHeader } from "@/components/settings/SettingsShell";
 
 interface Company {
   id: string; name: string; orgNumber?: string; vatNumber?: string;
@@ -107,7 +105,7 @@ export default function CompanyPage() {
 
   if (loading) {
     return (
-      <div className="max-w-3xl space-y-6" aria-busy="true" aria-label={t.loading}>
+      <div className="space-y-6" aria-busy="true" aria-label={t.loading}>
         <div className="skeleton h-9 w-56 rounded-xl" />
         <div className="skeleton h-64 rounded-2xl" />
       </div>
@@ -116,8 +114,8 @@ export default function CompanyPage() {
 
   if (!company) {
     return (
-      <div className="max-w-3xl space-y-6">
-        <PageHeader title={t.navCompany} />
+      <div className="space-y-6">
+        <SectionHeader title={t.navCompany} />
         <Card>
           <CardHeader>
             <CardTitle>{t.btnCreateCompany}</CardTitle>
@@ -138,8 +136,8 @@ export default function CompanyPage() {
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
-      <PageHeader title={company.name} />
+    <div className="space-y-6">
+      <SectionHeader title={company.name} />
 
       {canManage && (
       <Card>
@@ -230,9 +228,6 @@ export default function CompanyPage() {
           </CardContent>
         </Card>
       )}
-
-      {canManage && <CompanyAccountantAccess />}
-      {canManage && <CompanyDiscoverySettings />}
     </div>
   );
 }

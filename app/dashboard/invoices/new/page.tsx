@@ -132,7 +132,7 @@ export default function NewInvoicePage() {
         <Card>
           <CardHeader className="flex-row items-start justify-between gap-3 space-y-0">
             <CardTitle>{t.invFromTitle}</CardTitle>
-            <Link href="/dashboard/company" className="text-sm text-nordic-600 underline">
+            <Link href="/dashboard/settings/company" className="text-sm text-nordic-600 underline">
               {t.invFromEdit}
             </Link>
           </CardHeader>

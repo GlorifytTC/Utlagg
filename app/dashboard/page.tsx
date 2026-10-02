@@ -69,7 +69,7 @@ export default async function DashboardPage() {
 
   const gettingStarted = [
     { href: "/dashboard/receipts", icon: Upload, title: t.dashGsReceipt, sub: t.dashGsSub1 },
-    { href: "/dashboard/company", icon: Building2, title: t.dashGsCompany, sub: t.dashGsSub2 },
+    { href: "/dashboard/settings/company", icon: Building2, title: t.dashGsCompany, sub: t.dashGsSub2 },
     { href: "/dashboard/marketplace", icon: Store, title: t.dashGsMarketplace, sub: t.dashGsSub3 },
   ];
 
@@ -87,7 +87,7 @@ export default async function DashboardPage() {
             </p>
           </div>
           <Link
-            href="/dashboard/subscription"
+            href="/dashboard/settings/billing"
             className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-amber-900 px-5 py-2.5 text-sm font-medium text-amber-50 transition duration-300 ease-premium hover:bg-amber-800 active:scale-[0.98] dark:bg-amber-600 dark:text-white dark:hover:bg-amber-500"
           >
             {t.dashChoosePlan}

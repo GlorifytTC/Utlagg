@@ -29,7 +29,7 @@ export function UpsellCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Link href="/dashboard/subscription" className={buttonClass()}>
+        <Link href="/dashboard/settings/billing" className={buttonClass()}>
           {t.upsellUpgradeTo.replace("{plan}", requiredPlan)}
         </Link>
       </CardContent>

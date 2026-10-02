@@ -51,7 +51,7 @@ export default async function InvoicesPage() {
             <CardDescription>{t.invNeedCompanyDesc}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/dashboard/company" className={buttonClass()}>{t.btnToCompanies}</Link>
+            <Link href="/dashboard/settings/company" className={buttonClass()}>{t.btnToCompanies}</Link>
           </CardContent>
         </Card>
       </div>

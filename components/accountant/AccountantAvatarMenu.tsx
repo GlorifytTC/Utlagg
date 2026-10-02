@@ -3,23 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
-import { LogoUploader } from "@/components/dashboard/LogoUploader";
 
 /**
  * Avatar menu in the accountant header (replaces the "Till mitt konto" button).
- * Click the avatar → a panel to set the profile picture and firm logo, a link
- * to the full account, a language toggle, and Sign out at the bottom.
- *
- * Profile pic and firm logo are the accountant's own `logoUrl` split by intent;
- * both use GET/PATCH /api/accountant/logo (own record, server-authorized).
- * (Profile picture reuses the same field for now - a dedicated avatar field is
- * part of the firm-accounts plan.)
+ * Click the avatar → links to settings and the user's account, and Sign out.
+ * Picture, firm logo and language live in Settings now.
  */
 export function AccountantAvatarMenu() {
-  const { lang, setLanguage } = useLanguage();
+  const { lang } = useLanguage();
   const t = accountantStrings(lang);
   const [open, setOpen] = useState(false);
   const [logo, setLogo] = useState<string | null>(null);
@@ -32,6 +25,10 @@ export function AccountantAvatarMenu() {
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => d && setLogo(d.logoUrl ?? null))
       .catch(() => {});
+    // Settings announces a new picture so the header avatar doesn't go stale
+    const onUpdate = (e: Event) => setLogo((e as CustomEvent<string | null>).detail);
+    window.addEventListener("accountant-logo-updated", onUpdate);
+    return () => window.removeEventListener("accountant-logo-updated", onUpdate);
   }, []);
 
   useEffect(() => {
@@ -51,20 +48,6 @@ export function AccountantAvatarMenu() {
     };
   }, [open]);
 
-  async function saveLogo(dataUrl: string | null) {
-    const res = await fetch("/api/accountant/logo", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ logoUrl: dataUrl }),
-    });
-    if (res.ok) setLogo(dataUrl);
-    else {
-      const d = await res.json().catch(() => ({}));
-      toast.error(d.error ?? t.error);
-      throw new Error();
-    }
-  }
-
   return (
     <div ref={ref} className="relative">
       <button
@@ -83,31 +66,7 @@ export function AccountantAvatarMenu() {
 
       {open && (
         <div className="panel absolute right-0 z-20 mt-2 max-h-[calc(100dvh-6rem)] w-72 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl py-1">
-          <div className="px-4 py-3">
-            <p className="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
-              {t.menuProfile}
-            </p>
-            <LogoUploader value={logo} label={t.menuProfilePic} onSave={saveLogo} />
-          </div>
-
-          <div className="border-t border-gray-900/[0.07] pt-1 dark:border-white/[0.07]">
-            <div className="flex gap-1.5 px-4 py-2">
-              <button
-                onClick={() => setLanguage("sv")}
-                aria-pressed={lang === "sv"}
-                className={`min-h-10 rounded-full border px-4 text-sm transition duration-300 ease-premium ${lang === "sv" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/15 text-gray-500 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-400 dark:hover:border-white/30"}`}
-              >
-                Svenska
-              </button>
-              <button
-                onClick={() => setLanguage("en")}
-                aria-pressed={lang === "en"}
-                className={`min-h-10 rounded-full border px-4 text-sm transition duration-300 ease-premium ${lang === "en" ? "border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900" : "border-gray-900/15 text-gray-500 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-400 dark:hover:border-white/30"}`}
-              >
-                English
-              </button>
-            </div>
-
+          <div className="pt-1">
             <Link
               href="/accountant/settings"
               onClick={() => setOpen(false)}

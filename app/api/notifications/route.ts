@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
           gt(accountantConnectionRequests.respondedAt, cutoff),
         ),
       );
-    for (const a of accepted) if (a.at) events.push({ type: "accepted", actorName: a.actorName ?? "", at: a.at, href: "/dashboard/company" });
+    for (const a of accepted) if (a.at) events.push({ type: "accepted", actorName: a.actorName ?? "", at: a.at, href: "/dashboard/settings/accountants" });
   }
 
   // Chat messages sent to me (either role), across every relationship I'm party to.

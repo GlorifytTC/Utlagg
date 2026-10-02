@@ -169,8 +169,8 @@ export async function POST(req: NextRequest) {
         },
         ...(wantTrial ? { trial_period_days: TRIAL_DAYS } : {}),
       },
-      success_url: `${baseUrl}/dashboard/subscription?checkout=success`,
-      cancel_url: `${baseUrl}/dashboard/subscription?checkout=cancelled`,
+      success_url: `${baseUrl}/dashboard/settings/billing?checkout=success`,
+      cancel_url: `${baseUrl}/dashboard/settings/billing?checkout=cancelled`,
       metadata: { userId: session.user.id, tier, trial: wantTrial ? "1" : "0" },
     });
 

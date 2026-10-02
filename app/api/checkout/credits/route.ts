@@ -60,8 +60,8 @@ export async function POST(req: NextRequest) {
         scans: String(CREDIT_PACK.scans),
         priceOre: String(CREDIT_PACK.priceOre),
       },
-      success_url: `${baseUrl}/dashboard/subscription?credits=success`,
-      cancel_url: `${baseUrl}/dashboard/subscription?credits=cancelled`,
+      success_url: `${baseUrl}/dashboard/settings/billing?credits=success`,
+      cancel_url: `${baseUrl}/dashboard/settings/billing?credits=cancelled`,
     });
 
     return NextResponse.json({ url: checkout.url });

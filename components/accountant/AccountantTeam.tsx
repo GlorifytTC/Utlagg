@@ -7,7 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import { Button } from "@/components/ui/button";
 import { fieldClass, Select } from "@/components/ui/input";
-import { PageHeader } from "@/components/ui/page-header";
+import { SectionHeader } from "@/components/settings/SettingsShell";
 
 interface Member {
   userId: string;
@@ -124,7 +124,7 @@ export function AccountantTeam() {
 
   return (
     <div className="max-w-3xl space-y-6">
-      <PageHeader title={t.teamTitle} subtitle={t.teamSubtitle} />
+      <SectionHeader title={t.teamTitle} subtitle={t.teamSubtitle} />
 
       {status === "loading" ? (
         <div className="skeleton h-48 rounded-2xl" aria-busy="true" aria-label={t.loading} />

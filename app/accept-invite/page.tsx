@@ -18,7 +18,7 @@ function AcceptInner() {
     const r = await fetch("/api/company/accept", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }),
     });
-    if (r.ok) router.push("/dashboard/company");
+    if (r.ok) router.push("/dashboard/settings/company");
     else { const e = await r.json().catch(() => ({})); setError(e.error ?? t.aiAcceptError); setStatus("error"); }
   }
 

@@ -9,7 +9,7 @@ import { SubscriptionManager } from "@/components/dashboard/SubscriptionManager"
 import { InvoiceHistory } from "@/components/dashboard/InvoiceHistory";
 import { getT } from "@/lib/i18n-server";
 import { currentTier } from "@/lib/entitlements";
-import { PageHeader } from "@/components/ui/page-header";
+import { SectionHeader } from "@/components/settings/SettingsShell";
 
 export const metadata = { title: "Prenumeration" };
 export const dynamic = "force-dynamic";
@@ -22,7 +22,7 @@ export default async function SubscriptionPage() {
   // member is redirected away; a user with no company (solo) still manages
   // their own subscription.
   const membership = await getUserCompany(session.user.id);
-  if (membership && membership.role !== "owner") redirect("/dashboard");
+  if (membership && membership.role !== "owner") redirect("/dashboard/settings/account");
 
   // Read the raw row FIRST (to see if a grant just lapsed), then resolve the
   // effective tier - currentTier() also persists an expired grant, so after
@@ -62,8 +62,8 @@ export default async function SubscriptionPage() {
       : null;
 
   return (
-    <div className="max-w-3xl space-y-6">
-      <PageHeader title={t.navSubscription} subtitle={t.subManageDesc} />
+    <div className="space-y-6">
+      <SectionHeader title={t.navSubscription} subtitle={t.subManageDesc} />
       {justExpired && (
         <div className="rounded-2xl border border-amber-300/40 bg-amber-50/80 p-5 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
           {t.subGrantExpiredNotice}

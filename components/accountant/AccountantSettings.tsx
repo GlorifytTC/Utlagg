@@ -2,33 +2,28 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings, type AccountantStrings } from "@/lib/accountant-i18n";
 import { CREDENTIAL_ACCEPT, MAX_CREDENTIAL_BYTES } from "@/lib/verification";
 import { LogoUploader } from "@/components/dashboard/LogoUploader";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
-import { Button, buttonClass } from "@/components/ui/button";
-import { fieldClass } from "@/components/ui/input";
-import { PageHeader } from "@/components/ui/page-header";
+import { buttonClass } from "@/components/ui/button";
+import { SectionHeader } from "@/components/settings/SettingsShell";
+import { NameForm } from "@/components/settings/NameForm";
+import { PasswordCard } from "@/components/settings/PasswordCard";
+import { DeleteAccountCard } from "@/components/settings/DeleteAccountCard";
 
 const card = "rounded-2xl panel p-6";
-const label = "mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300";
-const input = `${fieldClass} h-10 py-2`;
 
 type VerificationStatus = "pending" | "approved" | "rejected" | null;
 
-/** The accountant's personal details: profile picture, name and credential verification. Email is read-only. */
+/** The accountant's personal account: picture, name, credential verification, password, delete. Email is read-only. */
 export function AccountantSettings({
-  name: initialName,
-  email,
   logoUrl,
   verificationStatus,
   verificationNote,
 }: {
-  name: string;
-  email: string;
   logoUrl: string | null;
   verificationStatus: VerificationStatus;
   verificationNote: string | null;
@@ -36,9 +31,6 @@ export function AccountantSettings({
   const { lang } = useLanguage();
   const at = accountantStrings(lang);
   const router = useRouter();
-  const { update } = useSession();
-  const [name, setName] = useState(initialName);
-  const [saving, setSaving] = useState(false);
 
   async function saveLogo(dataUrl: string | null) {
     const res = await fetch("/api/accountant/logo", {
@@ -54,51 +46,22 @@ export function AccountantSettings({
     window.dispatchEvent(new CustomEvent("accountant-logo-updated", { detail: dataUrl }));
   }
 
-  async function saveName(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      const res = await fetch("/api/user/update", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
-      });
-      if (!res.ok) throw new Error();
-      await update({ name });
-      toast.success(at.settingsSaved);
-      // A rename sends an approved verification back to review.
-      router.refresh();
-    } catch {
-      toast.error(at.error);
-    } finally {
-      setSaving(false);
-    }
-  }
-
   return (
-    <div className="max-w-3xl space-y-6">
-      <PageHeader title={at.settingsTitle} subtitle={at.settingsSubtitle} />
+    <div className="space-y-6">
+      <SectionHeader title={at.settingsAccount} />
 
       <section className={card}>
         <h2 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">{at.menuProfilePic}</h2>
         <LogoUploader value={logoUrl} label={at.menuProfilePic} onSave={saveLogo} />
       </section>
 
-      <form onSubmit={saveName} className={`${card} space-y-4`}>
-        <div>
-          <label htmlFor="acct-name" className={label}>{at.settingsName}</label>
-          <input id="acct-name" value={name} onChange={(e) => setName(e.target.value)} required maxLength={200} autoComplete="name" className={input} />
-        </div>
-        <div>
-          <label htmlFor="acct-email" className={label}>{at.settingsEmail}</label>
-          <input id="acct-email" value={email} readOnly className={`${input} cursor-not-allowed text-gray-500 dark:text-gray-400`} />
-        </div>
-        <Button type="submit" disabled={saving || !name.trim() || name.trim() === initialName}>
-          {saving ? at.settingsSaving : at.settingsSave}
-        </Button>
-      </form>
+      {/* A rename sends an approved verification back to review, so refresh the status card. */}
+      <NameForm onSaved={() => router.refresh()} />
 
       <VerificationCard at={at} status={verificationStatus} note={verificationNote} onSubmitted={() => router.refresh()} />
+
+      <PasswordCard />
+      <DeleteAccountCard />
     </div>
   );
 }

@@ -392,6 +392,12 @@ export interface Translations {
   stSubmitting: string;
   setAppearance: string;
   setAppearanceDesc: string;
+  setSubtitle: string;
+  setGroupPersonal: string;
+  setGroupCompany: string;
+  setAccount: string;
+  setPreferences: string;
+  setAccountants: string;
   setSwitchToLight: string;
   setSwitchToDark: string;
   setCompanyDesc: string;
@@ -1812,6 +1818,12 @@ export const strings: Record<Lang, Translations> = {
     apSubmitNote: "Attestanten ser förfrågan när hen loggar in med ett konto som har den e-postadressen.",
     setAppearance: "Utseende",
     setAppearanceDesc: "Välj ljust eller mörkt läge",
+    setSubtitle: "Dina personliga inställningar är åtskilda från företagets.",
+    setGroupPersonal: "Personligt",
+    setGroupCompany: "Företag",
+    setAccount: "Konto",
+    setPreferences: "Preferenser",
+    setAccountants: "Redovisningsbyråer",
     setSwitchToLight: "Byt till ljust läge",
     setSwitchToDark: "Byt till mörkt läge",
     setCompanyDesc: "Visas på exporter och underlag",
@@ -3337,6 +3349,12 @@ export const strings: Record<Lang, Translations> = {
     apSubmitNote: "The approver sees the request when they log in with an account that has that email address.",
     setAppearance: "Appearance",
     setAppearanceDesc: "Choose light or dark mode",
+    setSubtitle: "Your personal settings are kept separate from your company's.",
+    setGroupPersonal: "Personal",
+    setGroupCompany: "Company",
+    setAccount: "Account",
+    setPreferences: "Preferences",
+    setAccountants: "Accountants",
     setSwitchToLight: "Switch to light mode",
     setSwitchToDark: "Switch to dark mode",
     setCompanyDesc: "Shown on exports and records",

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { Home, Inbox, Store, LogOut, Moon, Sun, X, Users, MessageSquare, ArrowUpRight, Settings } from "lucide-react";
+import { Home, Inbox, Store, LogOut, Moon, Sun, X, MessageSquare, ArrowUpRight, Settings } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
@@ -23,11 +23,10 @@ const nav = [
   { key: "navRequests" as const, href: "/accountant/requests", icon: Inbox, badge: "requests" as const },
   { key: "navChats" as const, href: "/accountant/chats", icon: MessageSquare, badge: "chat" as const },
   { key: "navMarketplace" as const, href: "/accountant/marketplace", icon: Store, badge: null },
-  { key: "navTeam" as const, href: "/accountant/team", icon: Users, badge: null },
   { key: "navSettings" as const, href: "/accountant/settings", icon: Settings, badge: null },
 ];
 
-// Mobile bottom bar has 5 slots; settings stays reachable via the drawer and the avatar menu
+// Mobile bottom bar has 5 slots; Settings is the 5th
 const bottomNav = nav.slice(0, 5);
 
 function isActive(pathname: string, href: string) {

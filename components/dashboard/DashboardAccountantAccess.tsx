@@ -40,7 +40,7 @@ export function DashboardAccountantAccess() {
 
   return (
     <Link
-      href="/dashboard/company"
+      href="/dashboard/settings/accountants"
       className="group flex items-center justify-between rounded-2xl border border-gray-900/[0.07] bg-[#F5F4F0] px-6 py-4 transition-colors hover:border-nordic-600/30 hover:bg-nordic-50/40 dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:hover:bg-white/[0.04]"
     >
       <div className="flex items-center gap-3">
