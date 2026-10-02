@@ -29,7 +29,7 @@ const statusBadge: Record<string, string> = {
 };
 
 /** One client's receipts (companyId), or a cross-client work-queue list (filter). */
-export function AccountantReceipts({ companyId, filter }: { companyId?: string; filter?: "review" | "uncertain" }) {
+export function AccountantReceipts({ companyId, filter }: { companyId?: string; filter?: "review" | "uncertain" | "missing" }) {
   const endpoint = companyId ? `/api/accountant/clients/${companyId}/receipts` : "/api/accountant/receipts";
   const { lang } = useLanguage();
   const t = accountantStrings(lang);

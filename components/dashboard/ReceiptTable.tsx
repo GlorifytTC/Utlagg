@@ -74,6 +74,19 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
     rejected: t.statusRejected,
   };
 
+  // Approved + reviewed by accountants: the avatar stack replaces the pill.
+  const statusCell = (r: ReceiptRow) =>
+    r.status === "approved" && r.reviewers.length > 0 ? (
+      <ReviewerStack reviewers={r.reviewers} />
+    ) : (
+      <span className="inline-flex items-center gap-2">
+        <span className={cn("rounded-full px-2.5 py-1 text-xs font-medium", STATUS_STYLE[r.status])}>
+          {statusLabel[r.status] ?? r.status}
+        </span>
+        <ReviewerStack reviewers={r.reviewers} />
+      </span>
+    );
+
   // Debounce the search box so typing doesn't fire a query per keystroke.
   useEffect(() => {
     const id = setTimeout(() => setDebouncedQuery(query.trim()), 300);
@@ -352,10 +365,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                     </td>
                     <td className="px-5 py-3">{formatSek(r.totalAmount)}</td>
                     <td className="px-5 py-3">
-                      <span className={cn("rounded-full px-2.5 py-1 text-xs font-medium", STATUS_STYLE[r.status])}>
-                        {statusLabel[r.status] ?? r.status}
-                      </span>
-                      <ReviewerStack reviewers={r.reviewers} className="mt-1" />
+                      {statusCell(r)}
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex justify-end gap-2">
@@ -409,10 +419,7 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
                     </div>
                     <div className="shrink-0 text-right">
                       <p className="font-medium tabular-nums">{formatSek(r.totalAmount)}</p>
-                      <span className={cn("mt-1 inline-block rounded-full px-2.5 py-1 text-xs font-medium", STATUS_STYLE[r.status])}>
-                        {statusLabel[r.status] ?? r.status}
-                      </span>
-                      <ReviewerStack reviewers={r.reviewers} className="mt-1 justify-end" />
+                      <div className="mt-1 flex justify-end">{statusCell(r)}</div>
                     </div>
                   </div>
                   <div className="flex justify-end gap-2">

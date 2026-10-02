@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { and, count, desc, inArray, isNull, lt, sql } from "drizzle-orm";
+import { and, count, desc, inArray, isNull, lt, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { receipts } from "@/db/schema";
 import { getClientScope, requireAccountant } from "@/lib/accountant";
@@ -12,6 +12,7 @@ export const runtime = "nodejs";
  * drill-down behind the dashboard tiles (counts in /api/accountant/attention).
  *   filter=review    → reviewed_at IS NULL
  *   filter=uncertain → reviewed_at IS NULL AND ai_confidence < 0.6
+ *   filter=missing   → vat_amount / bas_code / category NULL
  * Same scope (getClientScope → current members) as the counts, so numbers match.
  * Each row carries the client it is shown under; the editor re-checks access
  * per company via requireCompanyAccess.
@@ -22,7 +23,7 @@ export async function GET(req: NextRequest) {
 
   const sp = req.nextUrl.searchParams;
   const filter = sp.get("filter");
-  if (filter !== "review" && filter !== "uncertain") {
+  if (filter !== "review" && filter !== "uncertain" && filter !== "missing") {
     return NextResponse.json({ error: "Ogiltigt filter" }, { status: 400 });
   }
   const { conditions, page, pageSize, sortCol, dir } = parseListParams(sp);
@@ -33,7 +34,10 @@ export async function GET(req: NextRequest) {
 
   const where = and(
     inArray(receipts.userId, memberIds), // THE security boundary
-    isNull(receipts.reviewedAt),
+    // "missing" mirrors the attention count: any receipt (reviewed or not) lacking VAT/BAS/category
+    filter === "missing"
+      ? or(isNull(receipts.vatAmount), isNull(receipts.basCode), isNull(receipts.category))
+      : isNull(receipts.reviewedAt),
     filter === "uncertain" ? lt(receipts.aiConfidence, LOW_CONFIDENCE) : undefined,
     ...conditions,
   );

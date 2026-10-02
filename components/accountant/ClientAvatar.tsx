@@ -3,10 +3,11 @@ import { cn } from "@/lib/utils";
 interface Props {
   name: string;
   logoUrl?: string | null;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
 }
 
 const sizes = {
+  xs: "h-6 w-6 text-[10px]",
   sm: "h-8 w-8 text-xs",
   md: "h-11 w-11 text-sm",
   lg: "h-14 w-14 text-base",
