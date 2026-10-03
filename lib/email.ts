@@ -951,6 +951,17 @@ Du har blivit inbjuden att gå med i ett byråkonto på ${APP_NAME}. Logga in me
   return send(to, `Inbjudan att gå med i en byrå på ${APP_NAME}`, html);
 }
 
+/** Public contact-form message to the support inbox. All user input is HTML-escaped. */
+export function sendContactMessage(name: string, fromEmail: string, message: string) {
+  const to = clean(process.env.CONTACT_TO_EMAIL || "hej@kvittino.se");
+  const html = layout(
+    `<h2 style="margin:0 0 16px">Nytt meddelande via kontaktformuläret</h2>
+<p><b>Namn:</b> ${escapeHtml(name)}<br><b>E-post:</b> ${escapeHtml(fromEmail)}</p>
+<p style="white-space:pre-wrap">${escapeHtml(message)}</p>`,
+  );
+  return send(to, `Kontaktformulär: ${name}`.slice(0, 120).replace(/[\r\n]/g, " "), html);
+}
+
 export function sendEnterpriseInquiry(
   ownerEmail: string,
   fromEmail: string,

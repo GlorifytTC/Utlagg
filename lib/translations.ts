@@ -673,7 +673,8 @@ export interface Translations {
   contactMessage: string;
   contactMessagePh: string;
   contactSend: string;
-  contactSubject: string;
+  contactSent: string;
+  contactError: string;
   annTitle: string;
   annDesc: string;
   annHint: string;
@@ -1696,13 +1697,14 @@ export const strings: Record<Lang, Translations> = {
     contactResponseLabel: "Svarstid",
     contactResponseValue: "Inom 1 arbetsdag",
     contactFormTitle: "Skicka ett meddelande",
-    contactFormDesc: "Fyll i formuläret så öppnas ditt e-postprogram med meddelandet förifyllt.",
+    contactFormDesc: "Fyll i formuläret så återkommer vi inom 1 arbetsdag.",
     contactName: "Namn",
     contactEmailField: "Din e-post",
     contactMessage: "Meddelande",
     contactMessagePh: "Hur kan vi hjälpa till?",
     contactSend: "Skicka meddelande",
-    contactSubject: "Förfrågan via kvittino.se",
+    contactSent: "Tack! Vi har tagit emot ditt meddelande och svarar inom 1 arbetsdag.",
+    contactError: "Det gick inte att skicka meddelandet. Försök igen eller mejla oss direkt.",
     invOrgNr: "Org.nr:",
     invVatNr: "Momsnr:",
     invInvoiceWord: "FAKTURA",
@@ -3234,13 +3236,14 @@ export const strings: Record<Lang, Translations> = {
     contactResponseLabel: "Response time",
     contactResponseValue: "Within 1 business day",
     contactFormTitle: "Send a message",
-    contactFormDesc: "Fill in the form and your email app opens with the message ready to send.",
+    contactFormDesc: "Fill in the form and we will get back to you within 1 business day.",
     contactName: "Name",
     contactEmailField: "Your email",
     contactMessage: "Message",
     contactMessagePh: "How can we help?",
     contactSend: "Send message",
-    contactSubject: "Enquiry via kvittino.se",
+    contactSent: "Thanks! We received your message and will reply within 1 business day.",
+    contactError: "Could not send your message. Please try again or email us directly.",
     invOrgNr: "Reg. no:",
     invVatNr: "VAT no:",
     invInvoiceWord: "INVOICE",

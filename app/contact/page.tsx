@@ -17,12 +17,24 @@ function ContactContent() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
-  function send() {
-    const subject = encodeURIComponent(t.contactSubject);
-    const body = encodeURIComponent(
-      `${t.contactName}: ${name}\n${t.contactEmailField}: ${email}\n\n${message}`,
-    );
-    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+
+  async function send() {
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+      if (!res.ok) throw new Error();
+      setStatus("sent");
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch {
+      setStatus("error");
+    }
   }
 
   const info = [
@@ -115,11 +127,13 @@ function ContactContent() {
               <button
                 type="button"
                 onClick={send}
-                disabled={!name || !email || !message}
+                disabled={!name || !email || !message || status === "sending"}
                 className="w-full rounded-full bg-nordic-600 px-6 py-3.5 text-sm font-medium text-white transition duration-500 ease-premium hover:bg-nordic-700 active:scale-[0.98] disabled:opacity-40"
               >
                 {t.contactSend}
               </button>
+              {status === "sent" && <p role="status" className="text-sm text-nordic-700">{t.contactSent}</p>}
+              {status === "error" && <p role="alert" className="text-sm text-red-600">{t.contactError}</p>}
             </div>
           </div>
         </div>
