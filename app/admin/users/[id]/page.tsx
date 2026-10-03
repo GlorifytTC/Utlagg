@@ -65,6 +65,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
                 ? new Date(user.subscriptionGrantedUntil).toISOString()
                 : null,
               paused: user.subscriptionPaused,
+              customSeats: user.customSeats ?? null,
             }}
           />
         </CardContent>

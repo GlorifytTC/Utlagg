@@ -12,6 +12,7 @@ interface Props {
     source: string | null;
     grantedUntil: string | null;
     paused: boolean;
+    customSeats: number | null;
   };
 }
 
@@ -27,6 +28,7 @@ export function AdminSubscriptionControl({ userId, current }: Props) {
   const [tier, setTier] = useState(current.tier === "free" ? "pro" : current.tier);
   const [days, setDays] = useState<string>("30");
   const [unlimited, setUnlimited] = useState(false);
+  const [seats, setSeats] = useState<string>(current.customSeats ? String(current.customSeats) : "");
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -98,6 +100,20 @@ export function AdminSubscriptionControl({ userId, current }: Props) {
           Ge / ändra prenumeration
         </Button>
       </div>
+
+      {current.tier === "enterprise" && (
+        <div className="flex flex-wrap items-end gap-2">
+          <div>
+            <label className="mb-1 block text-xs text-gray-500">Enterprise: antal användare (tomt = obegränsat)</label>
+            <input type="number" min="1" value={seats} onChange={(e) => setSeats(e.target.value)}
+              className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-white/[0.10] dark:bg-[#111]" />
+          </div>
+          <Button variant="outline" disabled={busy !== null}
+            onClick={() => act("set_seats", { seats: Number(seats) > 0 ? Number(seats) : null })}>
+            Spara platser
+          </Button>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {current.paused ? (

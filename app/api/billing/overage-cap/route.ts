@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { subscriptions } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
+import { getUserCompany } from "@/lib/company";
 import { DEFAULT_OVERAGE_CAP_ORE } from "@/lib/billing/config";
 
 export const runtime = "nodejs";
@@ -32,6 +33,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Ogiltig gräns" }, { status: 400 });
   }
   const capOre = parsed.data.capKr * 100;
+
+  // Owner-pays: the cap lives on the owner's subscription (the payer), so only
+  // the owner may change it.
+  const company = await getUserCompany(session.user.id);
+  if (company && company.role !== "owner") {
+    return NextResponse.json(
+      { error: "Endast företagets ägare kan ändra kostnadsgränsen." },
+      { status: 403 },
+    );
+  }
 
   const updated = await db
     .update(subscriptions)

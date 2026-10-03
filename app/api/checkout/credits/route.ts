@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { subscriptions } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { pricingV2Enabled, CREDIT_PACK } from "@/lib/billing/config";
+import { getUserCompany, getPayerUserId, canManageCompany } from "@/lib/company";
 
 export const runtime = "nodejs";
 
@@ -36,11 +37,22 @@ export async function POST(req: NextRequest) {
   const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
 
   try {
+    // Owner-pays: company credits go into the shared pool, so only the owner or
+    // an admin may buy them, billed to the OWNER's Stripe customer.
+    const company = await getUserCompany(session.user.id);
+    if (company && !canManageCompany(company.role)) {
+      return NextResponse.json(
+        { error: "Endast ägare eller admin kan köpa krediter åt företaget." },
+        { status: 403 },
+      );
+    }
+    const payerId = await getPayerUserId(session.user.id);
+
     // Reuse the existing Stripe customer if we have one (keeps receipts tidy).
     const [existing] = await db
       .select({ customerId: subscriptions.stripeCustomerId })
       .from(subscriptions)
-      .where(eq(subscriptions.userId, session.user.id))
+      .where(eq(subscriptions.userId, payerId))
       .limit(1);
 
     const checkout = await stripe.checkout.sessions.create({

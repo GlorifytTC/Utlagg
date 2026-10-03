@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { hasFeature, type Feature } from "@/lib/features";
+import { getPayerUserId } from "@/lib/company";
 import { planForTier, type Tier } from "@/lib/plans";
 import { pricingV3Enabled } from "@/lib/billing/config";
 import { resolveAccountState, type AccessState } from "@/lib/billing/access";
@@ -27,6 +28,9 @@ export async function currentTier(): Promise<{
 } | null> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return null;
+  // Owner-pays: a company member is entitled by the OWNER's plan, so read (and,
+  // on grant expiry, write) the payer's row, not the member's.
+  const payerId = await getPayerUserId(session.user.id);
   const [u] = await db
     .select({
       tier: users.subscriptionTier,
@@ -37,7 +41,7 @@ export async function currentTier(): Promise<{
       trialEndsAt: users.trialEndsAt,
     })
     .from(users)
-    .where(eq(users.id, session.user.id))
+    .where(eq(users.id, payerId))
     .limit(1);
 
   const v3 = pricingV3Enabled();
@@ -74,7 +78,7 @@ export async function currentTier(): Promise<{
           subscriptionGrantedUntil: null,
           scanLimit: planForTier("free").scanLimit,
         })
-        .where(eq(users.id, session.user.id));
+        .where(eq(users.id, payerId));
     } catch (e) {
       // Never break the request over this - the in-memory downgrade below
       // still applies, so access is correctly denied either way.

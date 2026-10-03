@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { companyInvites, companyMembers } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { getUserCompany } from "@/lib/company";
+import { canAddSeat, SEAT_LIMIT_MSG } from "@/lib/billing/seats";
 import { logAudit, clientIp } from "@/lib/audit";
 
 export const runtime = "nodejs";
@@ -45,6 +46,11 @@ export async function POST(req: NextRequest) {
       { status: 403 },
     );
   }
+
+  // Re-check at accept: the owner may have downgraded, or filled the seats via
+  // other invites, since this one was sent.
+  const seat = await canAddSeat(invite.companyId, false);
+  if (!seat.ok) return NextResponse.json({ error: SEAT_LIMIT_MSG }, { status: 402 });
 
   await db.insert(companyMembers).values({
     companyId: invite.companyId,

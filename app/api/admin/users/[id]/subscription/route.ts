@@ -10,7 +10,9 @@ import { logAuditEvent, clientIp } from "@/lib/audit";
 export const runtime = "nodejs";
 
 const schema = z.object({
-  action: z.enum(["grant", "pause", "resume", "revoke"]),
+  action: z.enum(["grant", "pause", "resume", "revoke", "set_seats"]),
+  // Enterprise negotiated seat count; null/omitted = unlimited.
+  seats: z.number().int().positive().max(100_000).nullable().optional(),
   tier: z.enum(["free", "pro", "business", "max", "enterprise"]).optional(),
   days: z.number().int().positive().max(3650).optional(), // trial length; omit = unlimited
 });
@@ -22,6 +24,7 @@ const schema = z.object({
  *   pause  : suspend premium access (keeps the tier to resume later)
  *   resume : un-pause
  *   revoke : back to free, clears the manual grant
+ *   set_seats : Enterprise negotiated seat count (null = unlimited)
  */
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await requireAdmin();
@@ -51,6 +54,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       scanLimit: plan.scanLimit, // -1 = unlimited for paid tiers
     };
     detail = `grant ${tier}${parsed.data.days ? ` ${parsed.data.days}d` : " (obegränsat)"}`;
+  } else if (action === "set_seats") {
+    set = { customSeats: parsed.data.seats ?? null };
+    detail = `set_seats ${parsed.data.seats ?? "obegränsat"}`;
   } else if (action === "pause") {
     set = { subscriptionPaused: true };
   } else if (action === "resume") {

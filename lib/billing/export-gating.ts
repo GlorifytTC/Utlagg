@@ -2,6 +2,7 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import { getPayerUserId } from "@/lib/company";
 import {
   exportGatingEnabled,
   pricingV3Enabled,
@@ -26,6 +27,8 @@ export type { ExportDecision };
 
 /** Resolve a user's current access state for export gating (light query). */
 export async function exportAccessState(userId: string): Promise<AccessState> {
+  // Owner-pays: a member's access state is the company owner's.
+  const payerId = await getPayerUserId(userId);
   const [u] = await db
     .select({
       tier: users.subscriptionTier,
@@ -35,7 +38,7 @@ export async function exportAccessState(userId: string): Promise<AccessState> {
       trialEndsAt: users.trialEndsAt,
     })
     .from(users)
-    .where(eq(users.id, userId))
+    .where(eq(users.id, payerId))
     .limit(1);
   if (!u) return "active";
   return resolveAccountState({

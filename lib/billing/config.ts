@@ -180,7 +180,7 @@ export const TIERS: Record<Tier, TierConfig> = {
     name: "Företag",
     priceOre: 29_900, // 299 kr
     monthlyScans: 1_500,
-    seats: 10, // 5-10 seats; enforced max is 10
+    seats: 10, // 5-10 seats; hard cap enforced on invite/accept (lib/billing/seats.ts)
     overageOrePerScan: 29, // 0.29 kr/scan
     stripeLookupKey: "kvittino_business_monthly",
     selectable: true,
@@ -209,6 +209,16 @@ export const TIERS: Record<Tier, TierConfig> = {
 
 /** Single config constant for the free quota (spec §2.4). Change it here only. */
 export const FREE_MONTHLY_SCANS = TIERS.free.monthlyScans;
+
+/**
+ * Max members a company may have on `tier`. Enterprise uses the negotiated
+ * `customSeats` (null = unlimited); every other tier uses its TIERS config.
+ * Returns `UNLIMITED` (-1) for no cap.
+ */
+export function seatLimit(tier: Tier, customSeats: number | null): number {
+  if (tier === "enterprise") return customSeats ?? UNLIMITED;
+  return tierConfig(tier).seats;
+}
 
 /** Ascending rank - used for upgrade nudges ("next tier up"). */
 export const TIER_ORDER: Tier[] = [

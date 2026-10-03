@@ -88,6 +88,15 @@ export async function closeOutEndedPeriods(
   let nudged = 0;
 
   for (const row of due) {
+    // Resolve the payer BEFORE claiming: with no Stripe customer there is nothing
+    // to invoice, and claiming would mark the overage flushed and drop it for
+    // good. Leave it unclaimed so a later run bills it once a customer exists.
+    const customer = await customerForScope(row.scope, row.scopeId);
+    if (!customer) {
+      console.warn(`overage not billed - no Stripe customer for ${row.scope}:${row.scopeId}`);
+      continue;
+    }
+
     // Claim the row first (idempotent): only proceed if still unflushed.
     const claimed = await db
       .update(scanUsage)
@@ -96,27 +105,24 @@ export async function closeOutEndedPeriods(
       .returning({ id: scanUsage.id });
     if (claimed.length === 0) continue;
 
-    const customer = await customerForScope(row.scope, row.scopeId);
-    if (customer) {
-      try {
-        await stripe.invoiceItems.create({
-          customer,
-          amount: row.overageBilledOre, // öre
-          currency: "sek",
-          description: `Extra skanningar ${row.periodStart
-            .toISOString()
-            .slice(0, 10)} - ${row.periodEnd.toISOString().slice(0, 10)} (${row.overageScansUsed} st)`,
-        });
-        flushed++;
-      } catch (e) {
-        // Un-claim so a later run retries rather than silently dropping revenue.
-        await db
-          .update(scanUsage)
-          .set({ overageFlushedAt: null })
-          .where(eq(scanUsage.id, row.id));
-        console.error("overage invoice item failed:", e);
-        continue;
-      }
+    try {
+      await stripe.invoiceItems.create({
+        customer,
+        amount: row.overageBilledOre, // öre
+        currency: "sek",
+        description: `Extra skanningar ${row.periodStart
+          .toISOString()
+          .slice(0, 10)} - ${row.periodEnd.toISOString().slice(0, 10)} (${row.overageScansUsed} st)`,
+      });
+      flushed++;
+    } catch (e) {
+      // Un-claim so a later run retries rather than silently dropping revenue.
+      await db
+        .update(scanUsage)
+        .set({ overageFlushedAt: null })
+        .where(eq(scanUsage.id, row.id));
+      console.error("overage invoice item failed:", e);
+      continue;
     }
 
     // Upgrade nudge: overage in two consecutive periods → surface a prompt.

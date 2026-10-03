@@ -6,6 +6,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { users, companyInvites, companyMembers } from "@/db/schema";
 import { getUserCompany } from "@/lib/company";
+import { canAddSeat, SEAT_LIMIT_MSG } from "@/lib/billing/seats";
 import { logAudit, clientIp } from "@/lib/audit";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
@@ -75,6 +76,13 @@ export async function POST(req: NextRequest) {
     .limit(1);
   if (!user) return NextResponse.json({ error: "Kontot hittades inte." }, { status: 400 });
 
+  // Seat check before touching the account (same rule as /company/accept).
+  const existingCompany = await getUserCompany(user.id);
+  if (!existingCompany) {
+    const seat = await canAddSeat(invite.companyId, false);
+    if (!seat.ok) return NextResponse.json({ error: SEAT_LIMIT_MSG }, { status: 402 });
+  }
+
   if (!user.hashedPassword) {
     const hashed = await bcrypt.hash(parsed.data.password, 12);
     // The invite token was mailed to this address, so it proves the inbox -
@@ -86,7 +94,6 @@ export async function POST(req: NextRequest) {
   }
 
   // Add company membership if the user isn't already in a company.
-  const existingCompany = await getUserCompany(user.id);
   if (!existingCompany) {
     await db.insert(companyMembers).values({
       companyId: invite.companyId,

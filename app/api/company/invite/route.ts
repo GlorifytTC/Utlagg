@@ -8,6 +8,7 @@ import { users, companyInvites } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { getUserCompany, canManageCompany } from "@/lib/company";
 import { sendCompanyInviteEmail } from "@/lib/email";
+import { canAddSeat, SEAT_LIMIT_MSG } from "@/lib/billing/seats";
 import { logAudit, clientIp } from "@/lib/audit";
 
 export const runtime = "nodejs";
@@ -29,6 +30,8 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: "Ogiltiga uppgifter" }, { status: 400 });
   const email = parsed.data.email.toLowerCase();
+  const seat = await canAddSeat(membership.companyId, true);
+  if (!seat.ok) return NextResponse.json({ error: SEAT_LIMIT_MSG }, { status: 402 });
   const fullName = `${parsed.data.firstName.trim()} ${parsed.data.lastName.trim()}`.trim();
 
   // Pre-create the account (no password) so the invitee gets one directly

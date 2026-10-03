@@ -160,6 +160,9 @@ export const users = pgTable("users", {
   // tier name (e.g. 'pro'); full Pro entitlement applies during the trial
   // regardless of this value.
   postTrialPlan: subscriptionTier("post_trial_plan"),
+  // Negotiated seat count for Enterprise owners (admin-set). Null = unlimited.
+  // Ignored for every other tier (their seats come from TIERS).
+  customSeats: integer("custom_seats"),
   // --- Pricing V3 §D migration audit (all nullable) ---
   // When the plan-change/trial-start notice email was sent during the Free→V3
   // back-fill, and which path the account was moved onto ('trial' | 'read_only'

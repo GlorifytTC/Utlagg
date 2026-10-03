@@ -10,9 +10,14 @@ import { authOptions } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import {
   TRIAL_DAYS,
+  UNLIMITED,
+  pricingV2Enabled,
   pricingV3Enabled,
+  seatLimit,
   trialRequireCard,
 } from "@/lib/billing/config";
+import { getUserCompany } from "@/lib/company";
+import { seatsInUse } from "@/lib/billing/seats";
 import { checkTrialEligibility } from "@/lib/billing/trial";
 
 export const runtime = "nodejs";
@@ -37,6 +42,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Ogiltig nivå" }, { status: 400 });
   }
   const tier = parsed.data.tier;
+
+  // Owner-pays: only the company owner buys/changes the plan, and it can't drop
+  // below the seats the team already uses.
+  const company = await getUserCompany(session.user.id);
+  if (company) {
+    if (company.role !== "owner") {
+      return NextResponse.json(
+        { error: "Ert företag betalar - kontakta företagets ägare för att ändra planen." },
+        { status: 409 },
+      );
+    }
+    const limit = seatLimit(tier, null);
+    if (pricingV2Enabled() && limit !== UNLIMITED) {
+      const { members } = await seatsInUse(company.companyId);
+      if (members > limit) {
+        return NextResponse.json(
+          { error: `Planen rymmer ${limit} användare men ni är ${members}. Ta bort användare först.` },
+          { status: 409 },
+        );
+      }
+    }
+  }
 
   const priceId = PRICE_ENV[tier];
   if (!priceId) {

@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import { getPayerUserId } from "@/lib/company";
 import type { Tier } from "@/lib/plans";
 import { DashboardChrome } from "@/components/dashboard/DashboardChrome";
 
@@ -20,7 +21,7 @@ export default async function DashboardLayout({
   const [u] = await db
     .select({ tier: users.subscriptionTier })
     .from(users)
-    .where(eq(users.id, session.user.id))
+    .where(eq(users.id, await getPayerUserId(session.user.id)))
     .limit(1);
 
   return (
