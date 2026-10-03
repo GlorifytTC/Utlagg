@@ -2,13 +2,11 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import {
-  Home, Receipt, BarChart3, Settings, LogOut, Moon, Sun, X, Car, CheckSquare, Lock, FileText, TrainFront, Download, Store, MessageSquare, ArrowUpRight,
+  Home, Receipt, BarChart3, Settings, X, Car, CheckSquare, Lock, FileText, TrainFront, Download, Store, MessageSquare,
 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import { useTheme } from "@/components/ThemeProvider";
 import { IdleLogout } from "@/components/IdleLogout";
 import { useLanguage } from "@/context/LanguageContext";
 import type { Translations } from "@/lib/translations";
@@ -16,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { hasFeature, type Feature } from "@/lib/features";
 import type { Tier } from "@/lib/plans";
 import { Logo } from "@/components/brand/Logo";
+import { ProfileMenu } from "@/components/ProfileMenu";
 import { AppShell, NotifBadge, iconBtn, navIconClass, navItemClass } from "@/components/AppShell";
 import { useNotifications } from "@/context/NotificationContext";
 
@@ -42,17 +41,12 @@ const navGroups = [
       { key: "navMarketplace", href: "/dashboard/marketplace", icon: Store },
     ],
   },
-  {
-    labelSv: "Konto",
-    labelEn: "Account",
-    items: [
-      { key: "navSettings", href: "/dashboard/settings", icon: Settings },
-    ],
-  },
 ];
 
+const settingsItem = { key: "navSettings", href: "/dashboard/settings", icon: Settings };
+
 // Flat list for the mobile bottom bar, which picks items by href
-const nav = navGroups.flatMap((g) => g.items);
+const nav = [...navGroups.flatMap((g) => g.items), settingsItem];
 
 const bottomNav = nav.filter((n) => ["/dashboard", "/dashboard/receipts", "/dashboard/chats", "/dashboard/stats", "/dashboard/settings"].includes(n.href));
 
@@ -62,10 +56,7 @@ function isActive(pathname: string, href: string) {
 
 function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClose?: () => void; tier?: Tier }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
-  const { t, lang, toggleLanguage } = useLanguage();
-  const dark = theme === "dark";
+  const { t, lang } = useLanguage();
   const { chat, clear } = useNotifications();
 
   useEffect(() => {
@@ -77,9 +68,6 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
       <div className={cn("flex h-16 shrink-0 items-center gap-1 pl-5 pr-3", "lg:[@media(max-height:860px)]:h-12")}>
         <Link href="/dashboard" onClick={onNavigate} className="mr-auto rounded-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
           <Logo size={24} wordmarkClassName="text-[16px] text-gray-900 dark:text-white" />
-        </Link>
-        <Link href="/" aria-label={t.navWebsite} title={t.navWebsite} className={iconBtn}>
-          <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} />
         </Link>
         {onClose && (
           <button onClick={onClose} aria-label={t.navClose} className={iconBtn}>
@@ -120,25 +108,11 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
           </div>
         ))}
       </nav>
-      <div className="flex shrink-0 items-center gap-1 border-t border-gray-900/[0.06] px-3 py-2.5 dark:border-white/[0.06] lg:[@media(max-height:860px)]:py-1.5">
-        <button
-          onClick={() => { toggleLanguage(); router.refresh(); }}
-          aria-label={lang === "sv" ? "Switch to English" : "Byt till svenska"}
-          title={lang === "sv" ? "English" : "Svenska"}
-          className={cn(iconBtn, "text-[11px] font-semibold tracking-wide")}
-        >
-          {lang === "sv" ? "EN" : "SV"}
-        </button>
-        <button onClick={toggleTheme} aria-label={dark ? t.btnLightMode : t.btnDarkMode} title={dark ? t.btnLightMode : t.btnDarkMode} className={iconBtn}>
-          {dark ? <Sun className="h-4 w-4" strokeWidth={1.75} /> : <Moon className="h-4 w-4" strokeWidth={1.75} />}
-        </button>
-        <button
-          onClick={() => signOut({ callbackUrl: "/" })}
-          className="ml-auto flex h-10 items-center gap-2 rounded-full px-3 text-sm text-gray-500 transition duration-300 ease-premium hover:bg-red-50/70 hover:text-red-600 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-600/20 dark:text-gray-400 dark:hover:bg-red-950/25 dark:hover:text-red-400 lg:h-8"
-        >
-          <LogOut className="h-4 w-4" strokeWidth={1.75} />
-          <span>{t.navLogout}</span>
-        </button>
+      <div className="shrink-0 border-t border-gray-900/[0.06] px-3 py-2.5 dark:border-white/[0.06] lg:[@media(max-height:860px)]:py-1.5">
+        <Link href={settingsItem.href} onClick={onNavigate} aria-current={isActive(pathname, settingsItem.href) ? "page" : undefined} className={navItemClass(isActive(pathname, settingsItem.href))}>
+          <Settings className={navIconClass(isActive(pathname, settingsItem.href))} strokeWidth={1.75} />
+          <span className="flex-1 truncate">{t.navSettings}</span>
+        </Link>
       </div>
     </div>
   );
@@ -153,7 +127,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
     <AppShell
       homeHref="/dashboard"
       renderNav={(p) => <NavList {...p} tier={tier} />}
-      headerEnd={null}
+      headerEnd={<ProfileMenu logoEndpoint="/api/user/logo" settingsHref="/dashboard/settings" />}
       bottomNav={bottomNav.map((item) => ({
         href: item.href,
         label: t[item.key as keyof Translations] as string,

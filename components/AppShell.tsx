@@ -138,8 +138,11 @@ export function AppShell({
         )}
       </AnimatePresence>
 
+      {/* Desktop top bar: account menu lives top-right, where people look for it */}
+      <div className="relative z-30 hidden h-16 items-center justify-end px-6 pt-3 lg:ml-[16.5rem] lg:flex xl:px-8 print:hidden">{headerEnd}</div>
+
       {/* No z-index here: page modals use fixed z-50 and must stack above the rail */}
-      <main className="min-h-[calc(100dvh-4.25rem)] p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-8 lg:ml-[16.5rem] lg:min-h-screen lg:p-6 xl:p-8 print:ml-0 print:min-h-0 print:p-0">
+      <main className="min-h-[calc(100dvh-4.25rem)] p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-8 lg:ml-[16.5rem] lg:min-h-[calc(100vh-4rem)] lg:p-6 lg:pt-2 xl:p-8 xl:pt-2 print:ml-0 print:min-h-0 print:p-0">
         {children}
       </main>
 
