@@ -52,24 +52,28 @@ export function AccountantFirmStats() {
       icon: Users,
       label: t.firmStatsClients,
       value: String(stats.totalClients),
+      href: "/accountant/clients",
       accent: false,
     },
     {
       icon: Clock,
       label: t.firmStatsPending,
       value: String(stats.pendingCount),
+      href: "/accountant/receipts?filter=pending",
       accent: stats.pendingCount > 0,
     },
     {
       icon: TrendingUp,
       label: t.firmStatsMonthAmount,
       value: formatSek(stats.monthAmount),
+      href: "/accountant/receipts?filter=month",
       accent: false,
     },
     {
       icon: Receipt,
       label: t.firmStatsMonthVat,
       value: formatSek(stats.monthVat),
+      href: "/accountant/receipts?filter=month",
       accent: false,
     },
   ];
@@ -90,6 +94,7 @@ export function AccountantFirmStats() {
           label: c.label,
           value: c.value,
           icon: c.icon,
+          href: c.href,
           tone: c.accent ? ("warn" as const) : ("default" as const),
         }))}
       />

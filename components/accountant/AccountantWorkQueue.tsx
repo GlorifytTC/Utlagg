@@ -39,7 +39,7 @@ export function AccountantWorkQueue() {
     { label: t.todoToReview, value: totals.toReview, icon: ClipboardCheck, href: "/accountant/receipts?filter=review" },
     { label: t.todoMissingInfo, value: totals.missingInfo, icon: FileWarning, href: "/accountant/receipts?filter=missing" },
     { label: t.todoLowConfidence, value: totals.lowConfidence, icon: ScanLine, href: "/accountant/receipts?filter=uncertain" },
-    { label: t.todoPending, value: totals.pending, icon: Clock },
+    { label: t.todoPending, value: totals.pending, icon: Clock, href: "/accountant/receipts?filter=pending" },
   ].filter((r) => r.value > 0);
 
   return (

@@ -29,7 +29,7 @@ const statusBadge: Record<string, string> = {
 };
 
 /** One client's receipts (companyId), or a cross-client work-queue list (filter). */
-export function AccountantReceipts({ companyId, filter }: { companyId?: string; filter?: "review" | "uncertain" | "missing" }) {
+export function AccountantReceipts({ companyId, filter, range }: { companyId?: string; filter?: "review" | "uncertain" | "missing" | "pending" | "month" | "reviewed"; range?: "week" | "month" }) {
   const endpoint = companyId ? `/api/accountant/clients/${companyId}/receipts` : "/api/accountant/receipts";
   const { lang } = useLanguage();
   const t = accountantStrings(lang);
@@ -69,6 +69,7 @@ export function AccountantReceipts({ companyId, filter }: { companyId?: string; 
   const load = useCallback(async () => {
     const p = new URLSearchParams({ page: String(page), pageSize: "25", sort, dir });
     if (filter) p.set("filter", filter);
+    if (range) p.set("range", range);
     if (debouncedQ) p.set("q", debouncedQ);
     if (from) p.set("from", from);
     if (to) p.set("to", to);
@@ -102,6 +103,7 @@ export function AccountantReceipts({ companyId, filter }: { companyId?: string; 
         if (pn < 1 || pn > totalPages) return;
         const pqs = new URLSearchParams({ page: String(pn), pageSize: "25", sort, dir });
         if (filter) pqs.set("filter", filter);
+        if (range) pqs.set("range", range);
         if (debouncedQ) pqs.set("q", debouncedQ);
         if (from) pqs.set("from", from);
         if (to) pqs.set("to", to);
@@ -116,7 +118,7 @@ export function AccountantReceipts({ companyId, filter }: { companyId?: string; 
     } catch {
       setStatus("error");
     }
-  }, [endpoint, filter, page, debouncedQ, from, to, sort, dir]);
+  }, [endpoint, filter, range, page, debouncedQ, from, to, sort, dir]);
 
   useEffect(() => {
     load();

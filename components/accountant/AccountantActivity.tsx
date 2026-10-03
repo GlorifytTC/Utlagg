@@ -30,8 +30,8 @@ export function AccountantActivity() {
   return (
     <StatGrid
       items={[
-        { label: t.activityReviewedWeek, value: week, icon: CalendarCheck },
-        { label: t.activityReviewedMonth, value: month ?? 0, icon: CalendarRange },
+        { label: t.activityReviewedWeek, value: week, icon: CalendarCheck, href: "/accountant/receipts?filter=reviewed&range=week" },
+        { label: t.activityReviewedMonth, value: month ?? 0, icon: CalendarRange, href: "/accountant/receipts?filter=reviewed&range=month" },
       ]}
     />
   );

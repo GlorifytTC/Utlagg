@@ -18,19 +18,20 @@ interface ClientRow {
   receiptCount: number;
 }
 
-export function AccountantClientsList() {
+/** `limit` = dashboard preview: first N clients + "view all" link instead of a pager. */
+export function AccountantClientsList({ limit }: { limit?: number }) {
   const { lang } = useLanguage();
   const t = accountantStrings(lang);
   const [rows, setRows] = useState<ClientRow[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(25);
+  const [pageSize, setPageSize] = useState(limit ?? 25);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
 
   const load = useCallback(async (p: number) => {
     setStatus("loading");
     try {
-      const res = await fetch(`/api/accountant/clients?page=${p}&pageSize=25`);
+      const res = await fetch(`/api/accountant/clients?page=${p}&pageSize=${limit ?? 25}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       setRows(data.clients ?? []);
@@ -83,7 +84,7 @@ export function AccountantClientsList() {
     );
   }
 
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const totalPages = limit ? 1 : Math.max(1, Math.ceil(total / pageSize));
 
   return (
     <div className="space-y-4">
@@ -168,6 +169,16 @@ export function AccountantClientsList() {
             </li>
           ))}
         </ul>
+
+        {limit && total > limit && (
+          <Link
+            href="/accountant/clients"
+            className="flex min-h-11 items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70 dark:border-white/[0.07]"
+          >
+            {t.clientsViewAll}
+            <ChevronRight className="h-4 w-4" aria-hidden />
+          </Link>
+        )}
 
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 dark:border-white/[0.07]">

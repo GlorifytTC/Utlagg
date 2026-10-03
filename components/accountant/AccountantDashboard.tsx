@@ -43,7 +43,7 @@ export function AccountantDashboard() {
 
       <section className="space-y-3">
         <h2 className={sectionTitle}>{t.clientsTitle}</h2>
-        <AccountantClientsList />
+        <AccountantClientsList limit={5} />
       </section>
 
       <AccountantActivity />
