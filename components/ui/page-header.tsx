@@ -8,17 +8,22 @@ export function PageHeader({
   subtitle,
   actions,
   back,
+  leading,
   className,
 }: {
   title: React.ReactNode;
   subtitle?: React.ReactNode;
   actions?: React.ReactNode;
   back?: { href: string; label: React.ReactNode };
+  /** Optional mark shown beside the title block (e.g. a company logo). */
+  leading?: React.ReactNode;
   className?: string;
 }) {
   return (
     <div className={cn("flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between", className)}>
-      <div className="min-w-0">
+      <div className={cn("min-w-0", !!leading && "flex items-center gap-4")}>
+        {leading}
+        <div className="min-w-0">
         {back && (
           <Link
             href={back.href}
@@ -32,6 +37,7 @@ export function PageHeader({
           {title}
         </h1>
         {subtitle && <p className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>}
+        </div>
       </div>
       {actions && <div className="flex shrink-0 flex-wrap items-center gap-2 max-sm:[&>*]:flex-1">{actions}</div>}
     </div>

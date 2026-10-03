@@ -6,13 +6,14 @@ import { redirect } from "next/navigation";
 import { eq, sql, desc } from "drizzle-orm";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
-import { receipts, users } from "@/db/schema";
+import { companies, receipts, users } from "@/db/schema";
 import type { Receipt } from "@/db/schema";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { RecentReceipts } from "@/components/dashboard/RecentReceipts";
 import { UsageChart } from "@/components/dashboard/UsageChart";
 import { AccountantEntryLink } from "@/components/accountant/AccountantEntryLink";
 import { DashboardAccountantAccess } from "@/components/dashboard/DashboardAccountantAccess";
+import { getUserCompany } from "@/lib/company";
 import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Översikt" };
@@ -36,6 +37,11 @@ export default async function DashboardPage() {
   if (user.isAccountant) redirect("/accountant");
 
   const t = getT();
+
+  const membership = await getUserCompany(userId);
+  const [company] = membership
+    ? await db.select({ name: companies.name, logoUrl: companies.logoUrl }).from(companies).where(eq(companies.id, membership.companyId)).limit(1)
+    : [];
 
   const [stats] = await db
     .select({
@@ -95,7 +101,19 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      <PageHeader title={`${t.dashWelcome}, ${firstName}`} actions={<AccountantEntryLink />} />
+      <PageHeader
+        title={`${t.dashWelcome}, ${firstName}`}
+        subtitle={company?.name}
+        leading={
+          company?.logoUrl && (
+            // Light tile keeps dark-on-transparent logos legible in dark mode.
+            <span className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-xl border border-gray-900/[0.08] bg-white p-1.5 sm:h-14 sm:w-14 dark:border-white/10">
+              <img src={company.logoUrl} alt={company.name} className="max-h-full max-w-full object-contain" />
+            </span>
+          )
+        }
+        actions={<AccountantEntryLink />}
+      />
 
       {Number(stats?.total ?? 0) === 0 && !premiumEnded && (
         <section className="rounded-2xl bg-nordic-50 p-6 dark:bg-nordic-600/[0.06]">
