@@ -58,6 +58,12 @@ export default function PrivacyPage() {
           <p className="font-medium text-ink/90">{t.priv2BookLabel}</p>
           <p className="text-ink/80">{t.priv2BookDesc}</p>
 
+          <p className="font-medium text-ink/90">{t.priv2OcrLabel}</p>
+          <p className="text-ink/80">{t.priv2OcrDesc}</p>
+
+          <p className="font-medium text-ink/90">{t.priv2AcctLabel}</p>
+          <p className="text-ink/80">{t.priv2AcctDesc}</p>
+
           <p className="font-medium text-ink/90">{t.priv2MileageLabel}</p>
           <p className="text-ink/80">{t.priv2MileageDesc}</p>
 
@@ -120,6 +126,7 @@ export default function PrivacyPage() {
             <li><strong>{t.priv4Li5Strong}</strong> {t.priv4Li5Rest}</li>
             <li><strong>{t.priv4Li6Strong}</strong> {t.priv4Li6Rest}</li>
             <li><strong>{t.priv4Li7Strong}</strong> {t.priv4Li7Rest}</li>
+            <li><strong>{t.priv4Li8Strong}</strong> {t.priv4Li8Rest}</li>
           </ul>
         </section>
 
@@ -138,6 +145,8 @@ export default function PrivacyPage() {
             <li>{t.priv5Li3}</li>
             <li>{t.priv5Li4}</li>
             <li>{t.priv5Li5}</li>
+            <li>{t.priv5Li6}</li>
+            <li>{t.priv5Li7}</li>
           </ul>
           <p>{t.priv5P2}</p>
         </section>

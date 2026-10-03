@@ -14,7 +14,7 @@ export default function DpaPage() {
         personer än dig själv (t.ex. dina anställda, uppdragstagare, leverantörer eller
         fakturamottagare).
       </p>
-      <p className="mt-2 text-sm text-ink/50">Senast uppdaterad: 18 juli 2026</p>
+      <p className="mt-2 text-sm text-ink/50">Senast uppdaterad: 3 oktober 2026</p>
 
       <div className="mt-10 space-y-8 text-sm leading-relaxed">
 
@@ -34,7 +34,7 @@ export default function DpaPage() {
           </p>
           <p>
             <strong>Personuppgiftsbiträde</strong> (&ldquo;vi&rdquo; eller
-            &ldquo;Kvittino&rdquo;): GlorifyTC, org.nr [xxxxxx-xxxx],{" "}
+            &ldquo;Kvittino&rdquo;): GlorifyTC (enskild firma, org.nr 840818-1355),{" "}
             <a className="underline underline-offset-2" href="mailto:legal@kvittino.se">
               legal@kvittino.se
             </a>
@@ -70,7 +70,8 @@ export default function DpaPage() {
           <h2 className="font-display text-lg font-semibold">3. Kategorier av registrerade och personuppgifter</h2>
           <p>
             <strong>Kategorier av registrerade:</strong> Kundens anställda och
-            uppdragstagare, samt fysiska personer som förekommer i uppladdade underlag
+            uppdragstagare, redovisningskonsulter och byråpersonal som Kunden ger
+            åtkomst, samt fysiska personer som förekommer i uppladdade underlag
             (t.ex. enskilda näringsidkare som leverantörer, kontaktpersoner,
             fakturamottagare).
           </p>
@@ -158,7 +159,8 @@ export default function DpaPage() {
             Överföring av personuppgifter till ett land utanför EU/EES sker endast om
             lämpliga skyddsåtgärder enligt kapitel V GDPR finns på plats, t.ex.
             EU-kommissionens standardavtalsklausuler (SCC) eller EU-US Data Privacy
-            Framework. Se{" "}
+            Framework. OCR av kvitton sker via Google Gemini API (USA); Kunden
+            godkänner att kvittobilder skickas dit för detta ändamål. Se{" "}
             <Link className="underline underline-offset-2" href="/legal/privacy">
               integritetspolicyn
             </Link>{" "}
@@ -187,9 +189,10 @@ export default function DpaPage() {
             samtliga personuppgifter. Din stående instruktion är följande, om du inte
             skriftligen anger annat: du ges tillgång till uppgifterna i läsläge för
             självbetjäningsexport (SIE, CSV, PDF) under en exportperiod om tolv (12)
-            månader, med påminnelser 90, 30 och 7 dagar före periodens utgång, varefter
-            uppgifterna raderas permanent inom trettio (30) dagar. Detta motsvarar § 7 i
-            användarvillkoren.
+            månader. Efter exportperioden och efter att vi underrättat dig kan uppgifterna
+            raderas permanent. Detta motsvarar § 7 i användarvillkoren. Raderar du hela
+            kontot i tjänsten tas dina uppgifter och kvittobilder bort i samband med
+            raderingen.
           </p>
           <p>
             Vi får bevara personuppgifter i den utsträckning EU-rätt eller svensk rätt
@@ -240,7 +243,7 @@ export default function DpaPage() {
       </div>
 
       <p className="mt-10 text-xs text-ink/50">
-        Kontakt: legal@kvittino.se · GlorifyTC · Org.nr [xxxxxx-xxxx]
+        Kontakt: legal@kvittino.se · GlorifyTC (enskild firma, org.nr 840818-1355)
       </p>
     </main>
   );

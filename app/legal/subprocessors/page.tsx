@@ -6,11 +6,13 @@ export const metadata = { title: "Underbiträden - Kvittino" };
 
 const rows = (t: Translations): [string, string, string, string][] => [
   ["Railway", t.spPurposeHosting, "EU", "-"],
-  ["Cloudflare R2", t.spPurposeStorage, "EU", "-"],
+  ["Cloudflare R2", t.spPurposeStorage, "EU/Global", "SCC / DPF"],
   ["Stripe", t.spPurposePayments, "EU/US", "SCC / DPF"],
-  ["Resend", t.spPurposeEmail, "US", "SCC / DPF"],
+  ["Brevo", t.spPurposeEmail, "EU", "-"],
   ["Upstash", t.spPurposeRedis, "EU", "-"],
-  ["Google Cloud Vision", t.spPurposeOcr, "EU", t.spEuRegion],
+  ["Google (Gemini API)", t.spPurposeAi, "US", "SCC / DPF"],
+  ["OpenAI, Mindee, OCR.space, Google Cloud Vision", t.spPurposeFallback, "US/EU", "SCC / DPF"],
+  ["Fortnox", t.spPurposeFortnox, "EU", "-"],
 ];
 
 export default function SubprocessorsPage() {
