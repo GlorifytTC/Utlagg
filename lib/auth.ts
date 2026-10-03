@@ -46,6 +46,7 @@ export const authOptions: NextAuthOptions = {
             hashedPassword: users.hashedPassword,
             emailVerified: users.emailVerified,
             bannedUntil: users.bannedUntil,
+            sessionVersion: users.sessionVersion,
           })
           .from(users)
           .where(eq(users.email, email))
@@ -75,6 +76,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name ?? undefined,
+          sv: user.sessionVersion,
         };
       },
     }),
@@ -121,6 +123,7 @@ export const authOptions: NextAuthOptions = {
             email: users.email,
             name: users.name,
             bannedUntil: users.bannedUntil,
+            sessionVersion: users.sessionVersion,
           })
           .from(users)
           .where(eq(users.bankIdSubject, subject))
@@ -132,6 +135,7 @@ export const authOptions: NextAuthOptions = {
             id: existing.id,
             email: existing.email,
             name: existing.name ?? fullName ?? undefined,
+            sv: existing.sessionVersion,
           };
         }
 
@@ -152,23 +156,33 @@ export const authOptions: NextAuthOptions = {
           id: created.id,
           email: created.email,
           name: created.name ?? undefined,
+          sv: created.sessionVersion,
         };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id;
+        token.sv = user.sv ?? 0;
+      }
       // Cut off live sessions of banned users: without token.id every route
       // and layout treats the request as logged out.
       // ponytail: one PK lookup per session read; throttle if it shows up in profiles.
       if (token.id) {
         const [u] = await db
-          .select({ bannedUntil: users.bannedUntil })
+          .select({
+            bannedUntil: users.bannedUntil,
+            sessionVersion: users.sessionVersion,
+          })
           .from(users)
           .where(eq(users.id, token.id as string))
           .limit(1);
-        if (isBanned(u?.bannedUntil)) delete token.id;
+        // No row = deleted user; sv mismatch = password changed/reset.
+        if (!u || isBanned(u.bannedUntil) || u.sessionVersion !== token.sv) {
+          delete token.id;
+        }
       }
       return token;
     },

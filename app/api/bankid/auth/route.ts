@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isBankIdConfigured, initiateBankIdAuth } from "@/lib/bankid";
 import { clientIp } from "@/lib/audit";
+import { checkLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -14,6 +15,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: "BankID är inte konfigurerat (saknar certifikat)." },
       { status: 503 },
+    );
+  }
+  if (!(await checkLimit("auth", `bankid:${clientIp(req) ?? "anon"}`))) {
+    return NextResponse.json(
+      { error: "För många försök. Försök igen om en stund." },
+      { status: 429 },
     );
   }
   try {

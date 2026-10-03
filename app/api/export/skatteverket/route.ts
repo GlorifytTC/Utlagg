@@ -6,6 +6,7 @@ import { receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
 import { assertExportAllowed } from "@/lib/billing/export-gating";
+import { csvText } from "@/lib/csv";
 
 export const runtime = "nodejs";
 
@@ -69,16 +70,18 @@ export async function GET(req: NextRequest) {
   const lines = rows.map((r: Record<string, unknown>) =>
     [
       r.date ? new Date(r.date as string).toISOString().slice(0, 10) : "",
-      r.vendorName ?? "",
+      csvText(r.vendorName),
       sv(r.totalAmount),
       sv(r.vatAmount),
       r.vatRate ?? "",
-      r.basCode ?? "",
-      r.category ?? "",
+      csvText(r.basCode),
+      csvText(r.category),
       // Beskrivning: trimmed first line of OCR text, or category as fallback
-      (r.receiptText ? String(r.receiptText).split("\n")[0].slice(0, 120) : "") ||
-        (r.category ?? ""),
-      r.imageUrl ?? "", // R2 object key / image reference
+      csvText(
+        (r.receiptText ? String(r.receiptText).split("\n")[0].slice(0, 120) : "") ||
+          (r.category ?? ""),
+      ),
+      csvText(r.imageUrl), // R2 object key / image reference
     ].map(esc).join(";"),
   );
 

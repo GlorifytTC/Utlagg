@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { transportPasses, type TransportPass } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { assertExportAllowed } from "@/lib/billing/export-gating";
+import { csvText } from "@/lib/csv";
 
 export const runtime = "nodejs";
 
@@ -48,8 +49,8 @@ export async function GET(req: NextRequest) {
     [
       new Date(p.validFrom).toISOString().slice(0, 10),
       new Date(p.validTo).toISOString().slice(0, 10),
-      p.passType,
-      p.provider === "Other" ? p.providerOther ?? "Annat" : p.provider,
+      csvText(p.passType),
+      csvText(p.provider === "Other" ? p.providerOther ?? "Annat" : p.provider),
       p.amount,
       p.vatRate,
       p.vatAmount ?? "",

@@ -43,6 +43,16 @@ export async function POST(
     return NextResponse.json({ error: "Saknar reportedUserId eller reason" }, { status: 400 });
   }
 
+  // The reported user must be a participant of this channel.
+  if (reportedUserId !== access.rel.accountantId) {
+    const [p] = await db
+      .select({ id: companyMembers.id })
+      .from(companyMembers)
+      .where(and(eq(companyMembers.companyId, access.rel.companyId), eq(companyMembers.userId, String(reportedUserId))))
+      .limit(1);
+    if (!p) return NextResponse.json({ error: "Ogiltig användare" }, { status: 400 });
+  }
+
   // If a messageId is provided, verify it belongs to this channel.
   if (messageId) {
     const [msg] = await db

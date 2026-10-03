@@ -1,3 +1,4 @@
+import { verifyCronSecret } from "@/lib/cron-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { lt } from "drizzle-orm";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
@@ -15,8 +16,7 @@ export const runtime = "nodejs";
  * the primary DB; the R2 copy is a redundant backup, not a tombstone.
  */
 export async function GET(req: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!verifyCronSecret(req)) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
   if (!isStorageConfigured()) {

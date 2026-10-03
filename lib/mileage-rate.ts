@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import {
   companyVehicles,
@@ -9,13 +9,14 @@ import {
 
 /** Resolve the correct Skatteverket rate for a trip given an optional vehicle. */
 export async function rateForVehicle(
-  vehicleId?: string | null,
+  vehicleId: string | null | undefined,
+  companyId: string | null | undefined,
 ): Promise<{ rate: number; vehicleId: string | null }> {
-  if (!vehicleId) return { rate: MILEAGE_RATE_PER_KM, vehicleId: null };
+  if (!vehicleId || !companyId) return { rate: MILEAGE_RATE_PER_KM, vehicleId: null };
   const [v] = await db
     .select()
     .from(companyVehicles)
-    .where(eq(companyVehicles.id, vehicleId))
+    .where(and(eq(companyVehicles.id, vehicleId), eq(companyVehicles.companyId, companyId)))
     .limit(1);
   if (!v) return { rate: MILEAGE_RATE_PER_KM, vehicleId: null };
   return {

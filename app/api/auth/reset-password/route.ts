@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
-import { and, eq, gt } from "drizzle-orm";
+import { and, eq, gt, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { users } from "@/db/schema";
@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
     .update(users)
     .set({
       hashedPassword,
+      sessionVersion: sql`${users.sessionVersion} + 1`,
       passwordResetToken: null,
       passwordResetTokenExpires: null,
     })

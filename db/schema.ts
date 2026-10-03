@@ -115,6 +115,8 @@ export const users = pgTable("users", {
   subscriptionSource: varchar("subscription_source", { length: 20 }), // 'manual' | 'stripe' | null
   subscriptionGrantedUntil: timestamp("subscription_granted_until", { withTimezone: true }),
   subscriptionPaused: boolean("subscription_paused").notNull().default(false),
+  // Bumped on password change/reset; JWTs carrying an older value are rejected.
+  sessionVersion: integer("session_version").notNull().default(0),
   scansUsedThisMonth: integer("scans_used_this_month").notNull().default(0),
   // -1 represents "unlimited" for paid tiers
   scanLimit: integer("scan_limit").notNull().default(25),
@@ -445,6 +447,7 @@ export const companyMembers = pgTable(
   (t) => ({
     companyIdx: index("company_members_company_idx").on(t.companyId),
     userIdx: index("company_members_user_idx").on(t.userId),
+    userUnique: uniqueIndex("company_members_user_unique").on(t.userId),
   }),
 );
 

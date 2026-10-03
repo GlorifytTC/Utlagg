@@ -1,3 +1,4 @@
+import { verifyCronSecret } from "@/lib/cron-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { pricingV2Enabled } from "@/lib/billing/config";
 import { vestDueReferralRewards } from "@/lib/referrals";
@@ -14,9 +15,7 @@ export const runtime = "nodejs";
  * Called with `Authorization: Bearer <CRON_SECRET>`. Suggested schedule: daily.
  */
 export async function GET(req: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  const auth = req.headers.get("authorization");
-  if (!secret || auth !== `Bearer ${secret}`) {
+  if (!verifyCronSecret(req)) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 

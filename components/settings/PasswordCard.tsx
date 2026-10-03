@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { signOut } from "next-auth/react";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,8 @@ export function PasswordCard() {
       setCurrent("");
       setNext("");
       setConfirm("");
+      // All sessions (incl. this one) were invalidated server-side.
+      await signOut({ callbackUrl: "/login" });
     } else {
       const e = await res.json().catch(() => ({}));
       toast.error(e.message ?? t.toastPwChangeFail);

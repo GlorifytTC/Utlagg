@@ -5,7 +5,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { companies, companyMembers } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
-import { getUserCompany, canManageCompany } from "@/lib/company";
+import { getUserCompany, canManageCompany, isUniqueViolation } from "@/lib/company";
 import { logAudit, clientIp } from "@/lib/audit";
 
 export const runtime = "nodejs";
@@ -60,11 +60,17 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "Ogiltiga fält" }, { status: 400 });
 
   const [company] = await db.insert(companies).values(parsed.data).returning();
-  await db.insert(companyMembers).values({
-    companyId: company.id,
-    userId: session.user.id,
-    role: "owner",
-  });
+  try {
+    await db.insert(companyMembers).values({
+      companyId: company.id,
+      userId: session.user.id,
+      role: "owner",
+    });
+  } catch (e) {
+    if (!isUniqueViolation(e)) throw e;
+    await db.delete(companies).where(eq(companies.id, company.id)); // drop the orphan
+    return NextResponse.json({ error: "Du tillhör redan ett företag" }, { status: 409 });
+  }
   await logAudit({ userId: session.user.id, action: "company.create", ipAddress: clientIp(req) });
   return NextResponse.json({ company }, { status: 201 });
 }

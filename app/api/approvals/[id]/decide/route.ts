@@ -5,6 +5,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { approvalRequests, receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
+import { getUserCompany } from "@/lib/company";
 import { logAudit, clientIp } from "@/lib/audit";
 
 export const runtime = "nodejs";
@@ -38,6 +39,22 @@ export async function POST(
     return NextResponse.json({ error: "Redan beslutad" }, { status: 409 });
   }
 
+  // Re-derive CURRENT membership: approver must be in the requester's company
+  // and still hold an approving role.
+  const [approver, requester] = await Promise.all([
+    getUserCompany(session.user.id),
+    getUserCompany(reqRow.requesterId),
+  ]);
+  if (
+    !approver ||
+    !requester ||
+    approver.companyId !== requester.companyId ||
+    !["owner", "admin", "approver"].includes(approver.role)
+  ) {
+    return NextResponse.json({ error: "Saknar behörighet att attestera" }, { status: 403 });
+  }
+  const companyId = approver.companyId;
+
   await db
     .update(approvalRequests)
     .set({
@@ -48,10 +65,11 @@ export async function POST(
     .where(eq(approvalRequests.id, params.id));
 
   // Reflect an approved receipt's status.
-  if (parsed.data.decision === "approved" && reqRow.receiptId) {
-    await db.update(receipts).set({ status: "approved" }).where(eq(receipts.id, reqRow.receiptId));
-  } else if (parsed.data.decision === "rejected" && reqRow.receiptId) {
-    await db.update(receipts).set({ status: "rejected" }).where(eq(receipts.id, reqRow.receiptId));
+  if (reqRow.receiptId) {
+    await db
+      .update(receipts)
+      .set({ status: parsed.data.decision })
+      .where(and(eq(receipts.id, reqRow.receiptId), eq(receipts.companyId, companyId)));
   }
 
   await logAudit({

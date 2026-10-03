@@ -50,25 +50,42 @@ export function isStorageConfigured(): boolean {
   );
 }
 
+/** Max base64 length accepted for an upload (~11 MB binary); same cap as /api/ocr/ai. */
+export const MAX_IMAGE_BASE64 = 15_000_000;
+
+/** Detect the real type from magic bytes; null if not an allowed type. */
+function sniffType(b: Buffer): string | null {
+  if (b.length < 12) return null;
+  if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return "image/jpeg";
+  if (b.readUInt32BE(0) === 0x89504e47) return "image/png";
+  if (b.toString("latin1", 0, 4) === "RIFF" && b.toString("latin1", 8, 12) === "WEBP") return "image/webp";
+  if (b.toString("latin1", 0, 4) === "%PDF") return "application/pdf";
+  if (b.toString("latin1", 4, 8) === "ftyp" && /^(heic|heix|hevc|heim|heis|mif1|msf1)$/.test(b.toString("latin1", 8, 12))) return "image/heic";
+  return null;
+}
+
 /**
- * Accepts a raw base64 string or a `data:...;base64,...` data URL. Handles image
- * types and application/pdf - the latter is a forwarded digital receipt (email /
- * Kivra) stored as its original document.
+ * Accepts a raw base64 string or a `data:...;base64,...` data URL. Allowed:
+ * jpeg, png, webp, heic/heif and application/pdf (a forwarded digital receipt).
+ * The type is taken from the decoded bytes and must match any claimed type;
+ * throws on anything else (svg, html, ...).
  */
-function decodeImage(input: string): { buffer: Buffer; contentType: string } {
-  const match = /^data:(image\/[a-zA-Z.+-]+|application\/pdf);base64,(.*)$/s.exec(input);
-  if (match) {
-    return { buffer: Buffer.from(match[2], "base64"), contentType: match[1] };
-  }
-  // No data-URL prefix: treat the whole thing as base64, assume JPEG.
-  return { buffer: Buffer.from(input, "base64"), contentType: "image/jpeg" };
+export function decodeImage(input: string): { buffer: Buffer; contentType: string } {
+  const match = /^data:([a-zA-Z0-9.+/-]+);base64,(.*)$/s.exec(input);
+  const buffer = Buffer.from(match ? match[2] : input, "base64");
+  const sniffed = sniffType(buffer);
+  if (!sniffed) throw new Error("Unsupported file type");
+  const claimed = match?.[1].toLowerCase();
+  const heif = claimed === "image/heif" && sniffed === "image/heic";
+  if (claimed && claimed !== sniffed && !heif) throw new Error("File content does not match its type");
+  return { buffer, contentType: heif ? "image/heif" : sniffed };
 }
 
 function extFor(contentType: string): string {
   if (contentType.includes("pdf")) return "pdf";
   if (contentType.includes("png")) return "png";
   if (contentType.includes("webp")) return "webp";
-  if (contentType.includes("heic")) return "heic";
+  if (contentType.includes("heic") || contentType.includes("heif")) return "heic";
   return "jpg";
 }
 

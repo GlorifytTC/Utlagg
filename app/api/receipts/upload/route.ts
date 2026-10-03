@@ -9,6 +9,8 @@ import { authOptions } from "@/lib/auth";
 import {
   isStorageConfigured,
   uploadReceiptImage,
+  decodeImage,
+  MAX_IMAGE_BASE64,
   getSignedReceiptUrl,
 } from "@/lib/storage";
 import { logAuditEvent, clientIp } from "@/lib/audit";
@@ -17,7 +19,7 @@ export const runtime = "nodejs";
 export const maxDuration = 30;
 
 const schema = z.object({
-  image: z.string().min(1), // base64 or data URL
+  image: z.string().min(1).max(MAX_IMAGE_BASE64), // base64 or data URL
   receiptId: z.string().uuid().optional(),
 });
 
@@ -42,6 +44,12 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success) {
     return NextResponse.json({ error: "Bild saknas" }, { status: 400 });
+  }
+
+  try {
+    decodeImage(parsed.data.image);
+  } catch {
+    return NextResponse.json({ error: "Filtypen stöds inte" }, { status: 400 });
   }
 
   const userId = session.user.id;

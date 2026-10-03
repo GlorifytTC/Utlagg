@@ -189,11 +189,27 @@ export async function requireCompanyAccess(
  * receipt lists, so tile numbers equal list totals.
  */
 export async function getClientScope(accountantId: string) {
-  const clients: Array<{ companyId: string; companyName: string }> = await db
-    .select({ companyId: accountantClients.companyId, companyName: companies.name })
-    .from(accountantClients)
-    .innerJoin(companies, eq(companies.id, accountantClients.companyId))
-    .where(and(eq(accountantClients.accountantId, accountantId), eq(accountantClients.status, "active")));
+  // Resolve the caller's CURRENT firm; ex-members get an empty scope.
+  const firm = await getUserFirm(accountantId);
+  let clients: Array<{ companyId: string; companyName: string }> = firm
+    ? await db
+        .select({ companyId: accountantClients.companyId, companyName: companies.name })
+        .from(accountantClients)
+        .innerJoin(companies, eq(companies.id, accountantClients.companyId))
+        .where(and(eq(accountantClients.firmId, firm.firmId), eq(accountantClients.status, "active")))
+    : [];
+
+  // Workers (members) only see customers assigned to them; owner/admin see all.
+  if (firm?.role === "member" && clients.length > 0) {
+    const assigned = await db
+      .select({ companyId: workerAssignments.companyId })
+      .from(workerAssignments)
+      .where(and(eq(workerAssignments.firmId, firm.firmId), eq(workerAssignments.workerId, accountantId)));
+    const ok = new Set(assigned.map((a: { companyId: string }) => a.companyId));
+    clients = clients.filter((c) => ok.has(c.companyId));
+  }
+  // Dedupe (duplicate relationship rows for the same company).
+  clients = clients.filter((c, i) => clients.findIndex((x) => x.companyId === c.companyId) === i);
 
   const membersByCompany = new Map<string, string[]>();
   if (clients.length > 0) {

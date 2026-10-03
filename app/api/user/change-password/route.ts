@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { users } from "@/db/schema";
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
   }
 
   const hashedPassword = await bcrypt.hash(parsed.data.newPassword, 12);
-  await db.update(users).set({ hashedPassword }).where(eq(users.id, user.id));
+  await db.update(users).set({ hashedPassword, sessionVersion: sql`${users.sessionVersion} + 1` }).where(eq(users.id, user.id));
   await logAudit({
     userId: user.id,
     action: "user.password.change",

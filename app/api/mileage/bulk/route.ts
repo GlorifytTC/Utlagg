@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { mileageEntries } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { rateForVehicle } from "@/lib/mileage-rate";
+import { getUserCompany } from "@/lib/company";
 
 export const runtime = "nodejs";
 
@@ -27,7 +28,10 @@ export async function POST(req: NextRequest) {
   }
   const d = parsed.data;
   const km = Math.round(d.distanceKm * 100) / 100;
-  const { rate, vehicleId } = await rateForVehicle(d.vehicleId);
+  const { rate, vehicleId } = await rateForVehicle(
+    d.vehicleId,
+    (await getUserCompany(session.user.id))?.companyId,
+  );
   const amount = Math.round(km * rate * 100) / 100;
 
   const rows = Array.from(new Set(d.dates)).map((date) => ({

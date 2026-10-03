@@ -6,7 +6,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { companyInvites, companyMembers } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
-import { getUserCompany } from "@/lib/company";
+import { getUserCompany, isUniqueViolation } from "@/lib/company";
 import { canAddSeat, SEAT_LIMIT_MSG } from "@/lib/billing/seats";
 import { logAudit, clientIp } from "@/lib/audit";
 
@@ -52,11 +52,16 @@ export async function POST(req: NextRequest) {
   const seat = await canAddSeat(invite.companyId, false);
   if (!seat.ok) return NextResponse.json({ error: SEAT_LIMIT_MSG }, { status: 402 });
 
-  await db.insert(companyMembers).values({
-    companyId: invite.companyId,
-    userId: session.user.id,
-    role: invite.role,
-  });
+  try {
+    await db.insert(companyMembers).values({
+      companyId: invite.companyId,
+      userId: session.user.id,
+      role: invite.role,
+    });
+  } catch (e) {
+    if (!isUniqueViolation(e)) throw e;
+    return NextResponse.json({ error: "Du tillhör redan ett företag" }, { status: 409 });
+  }
   await db.update(companyInvites).set({ acceptedAt: new Date() }).where(eq(companyInvites.id, invite.id));
   await logAudit({ userId: session.user.id, action: "company.join", ipAddress: clientIp(req) });
   return NextResponse.json({ ok: true, companyId: invite.companyId });

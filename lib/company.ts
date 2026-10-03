@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { companyMembers } from "@/db/schema";
 
@@ -20,8 +20,15 @@ export async function getUserCompany(
     .select({ companyId: companyMembers.companyId, role: companyMembers.role })
     .from(companyMembers)
     .where(eq(companyMembers.userId, userId))
+    .orderBy(asc(companyMembers.createdAt), asc(companyMembers.id))
     .limit(1);
   return m ? { companyId: m.companyId, role: m.role as CompanyRole } : null;
+}
+
+/** Postgres unique violation (drizzle may wrap the driver error in `cause`). */
+export function isUniqueViolation(e: unknown): boolean {
+  const x = e as { code?: string; cause?: { code?: string } };
+  return x?.code === "23505" || x?.cause?.code === "23505";
 }
 
 /** The company's owner - the account that pays for the whole team. */

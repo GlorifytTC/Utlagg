@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import {
@@ -13,6 +13,7 @@ import {
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
 import { requireFeature } from "@/lib/entitlements";
+import { getUserCompany } from "@/lib/company";
 
 export const runtime = "nodejs";
 
@@ -66,11 +67,12 @@ export async function POST(req: NextRequest) {
   // 0.95 kr/km if fully electric, otherwise 1.20 kr/km.
   let ratePerKm = MILEAGE_RATE_PER_KM;
   let vehicleId: string | null = null;
-  if (parsed.data.vehicleId) {
+  const companyId = (await getUserCompany(userId))?.companyId;
+  if (parsed.data.vehicleId && companyId) {
     const [v] = await db
       .select()
       .from(companyVehicles)
-      .where(eq(companyVehicles.id, parsed.data.vehicleId))
+      .where(and(eq(companyVehicles.id, parsed.data.vehicleId), eq(companyVehicles.companyId, companyId)))
       .limit(1);
     if (v) {
       vehicleId = v.id;

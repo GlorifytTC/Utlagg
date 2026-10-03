@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { mileageEntries } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { assertExportAllowed } from "@/lib/billing/export-gating";
+import { csvText } from "@/lib/csv";
 
 export const runtime = "nodejs";
 
@@ -45,8 +46,8 @@ export async function GET(req: NextRequest) {
   const lines = rows.map((r: Record<string, unknown>) =>
     [
       r.date ? new Date(r.date as string).toISOString().slice(0, 10) : "",
-      r.startAddress, r.endAddress, sv(r.distanceKm), sv(r.ratePerKm), sv(r.amount),
-      r.purpose === "business" ? "Tjänst" : "Privat", r.note,
+      csvText(r.startAddress), csvText(r.endAddress), sv(r.distanceKm), sv(r.ratePerKm), sv(r.amount),
+      r.purpose === "business" ? "Tjänst" : "Privat", csvText(r.note),
     ].map(esc).join(";"),
   );
   const csv = "\uFEFF" + [header.join(";"), ...lines].join("\r\n");

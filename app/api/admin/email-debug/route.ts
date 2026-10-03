@@ -17,7 +17,7 @@ export const runtime = "nodejs";
  * register → wait → check-logs cycle while debugging delivery problems.
  *
  * Auth: either a logged-in admin session, OR a `x-debug-secret` header
- * matching CRON_SECRET - the latter exists so this is reachable even while
+ * matching DEBUG_SECRET (separate from CRON_SECRET; unset = admin only) - the latter exists so this is reachable even while
  * you can't log in yet (e.g. while debugging the verification email itself).
  */
 function timingSafeEqual(a: string, b: string): boolean {
@@ -32,7 +32,7 @@ function timingSafeEqual(a: string, b: string): boolean {
 
 async function authorized(req: NextRequest): Promise<boolean> {
   const headerSecret = req.headers.get("x-debug-secret");
-  if (headerSecret && process.env.CRON_SECRET && timingSafeEqual(headerSecret, process.env.CRON_SECRET)) {
+  if (headerSecret && process.env.DEBUG_SECRET && timingSafeEqual(headerSecret, process.env.DEBUG_SECRET)) {
     return true;
   }
   return Boolean(await requireAdmin());

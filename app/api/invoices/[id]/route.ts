@@ -76,6 +76,9 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   const membership = await getUserCompany(session.user.id);
   if (!membership) return NextResponse.json({ error: "Inget företag" }, { status: 403 });
+  if (!canManageCompany(membership.role)) {
+    return NextResponse.json({ error: "Saknar behörighet" }, { status: 403 });
+  }
 
   const [invoice] = await db
     .select({ id: customerInvoices.id, invoiceNumber: customerInvoices.invoiceNumber })

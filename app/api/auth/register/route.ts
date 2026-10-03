@@ -26,6 +26,11 @@ const schema = z.object({
   ref: z.string().max(32).optional(),
 });
 
+// Identical for new and already-registered emails so the endpoint can't be
+// used to enumerate accounts.
+const genericOk = (email: string) =>
+  NextResponse.json({ email, verificationEmailSent: true }, { status: 201 });
+
 export async function POST(req: NextRequest) {
   try {
     // Cap signups per IP (5/min). Without this the endpoint is an open
@@ -69,24 +74,12 @@ export async function POST(req: NextRequest) {
         !existing.bankIdSubject &&
         !!existing.emailVerificationTokenExpires;
       if (existing.emailVerified || !selfRegistered) {
-        // A real, active account - this email is genuinely taken.
-        return NextResponse.json(
-          { error: "E-postadressen är redan registrerad" },
-          { status: 409 },
-        );
+        return genericOk(email);
       }
       const expired = existing.emailVerificationTokenExpires! < new Date();
       if (!expired) {
-        // They registered minutes ago and the link is still valid - don't
-        // silently delete a pending registration, but don't leave them
-        // stuck either: tell them what's actually going on.
-        return NextResponse.json(
-          {
-            error:
-              "Ett konto med den här e-postadressen väntar redan på bekräftelse. Kolla din inkorg, eller använd \"Skicka länken igen\" på inloggningssidan.",
-          },
-          { status: 409 },
-        );
+        // Pending registration, link still valid: don't delete it.
+        return genericOk(email);
       }
       // Never verified and the 24h window has passed: this row is dead
       // weight, not a real account. Remove it so the email can be reused -
@@ -152,7 +145,7 @@ export async function POST(req: NextRequest) {
     );
 
     return NextResponse.json(
-      { id: user.id, email: user.email, verificationEmailSent: emailSent },
+      { email: user.email, verificationEmailSent: emailSent },
       { status: 201 },
     );
   } catch (err) {

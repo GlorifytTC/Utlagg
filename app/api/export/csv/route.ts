@@ -6,6 +6,7 @@ import { receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { assertExportAllowed } from "@/lib/billing/export-gating";
+import { csvText } from "@/lib/csv";
 
 export const runtime = "nodejs";
 
@@ -64,9 +65,9 @@ export async function GET(req: NextRequest) {
     lines.push(
       [
         r.date ? new Date(r.date).toISOString().slice(0, 10) : "",
-        r.vendorName,
-        r.basCode,
-        r.category,
+        csvText(r.vendorName),
+        csvText(r.basCode),
+        csvText(r.category),
         r.totalAmount,
         r.vatAmount,
         r.vatRate,

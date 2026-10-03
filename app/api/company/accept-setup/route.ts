@@ -5,7 +5,7 @@ import { and, eq, gt, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { users, companyInvites, companyMembers } from "@/db/schema";
-import { getUserCompany } from "@/lib/company";
+import { getUserCompany, isUniqueViolation } from "@/lib/company";
 import { canAddSeat, SEAT_LIMIT_MSG } from "@/lib/billing/seats";
 import { logAudit, clientIp } from "@/lib/audit";
 import { enforceRateLimit } from "@/lib/rate-limit";
@@ -95,11 +95,16 @@ export async function POST(req: NextRequest) {
 
   // Add company membership if the user isn't already in a company.
   if (!existingCompany) {
-    await db.insert(companyMembers).values({
-      companyId: invite.companyId,
-      userId: user.id,
-      role: invite.role,
-    });
+    try {
+      await db.insert(companyMembers).values({
+        companyId: invite.companyId,
+        userId: user.id,
+        role: invite.role,
+      });
+    } catch (e) {
+      if (!isUniqueViolation(e)) throw e;
+      return NextResponse.json({ error: "Du tillhör redan ett företag" }, { status: 409 });
+    }
   }
 
   await db.update(companyInvites).set({ acceptedAt: new Date() }).where(eq(companyInvites.id, invite.id));

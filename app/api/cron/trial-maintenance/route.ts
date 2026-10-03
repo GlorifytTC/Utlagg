@@ -1,3 +1,4 @@
+import { verifyCronSecret } from "@/lib/cron-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { pricingV3Enabled } from "@/lib/billing/config";
 import { expireDueTrials } from "@/lib/billing/trial";
@@ -16,9 +17,7 @@ export const runtime = "nodejs";
  * no-op when V3 is disabled.
  */
 export async function GET(req: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  const auth = req.headers.get("authorization");
-  if (!secret || auth !== `Bearer ${secret}`) {
+  if (!verifyCronSecret(req)) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 

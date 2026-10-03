@@ -7,6 +7,7 @@ import { requireAccountant, requireCompanyAccess } from "@/lib/accountant";
 import { buildSie, SieBalanceError } from "@/lib/sie-export";
 import { logAuditEvent, clientIp } from "@/lib/audit";
 import { logger } from "@/lib/logger";
+import { csvText } from "@/lib/csv";
 import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
@@ -118,9 +119,9 @@ export async function POST(
       lines.push(
         [
           r.date ? new Date(r.date).toISOString().slice(0, 10) : "",
-          r.vendorName,
-          r.basCode,
-          r.category,
+          csvText(r.vendorName),
+          csvText(r.basCode),
+          csvText(r.category),
           r.totalAmount,
           r.vatAmount,
           r.vatRate,

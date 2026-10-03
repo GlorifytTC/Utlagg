@@ -47,7 +47,12 @@ export async function POST(
   await db
     .update(accountantClients)
     .set({ status: "revoked", revokedAt: new Date(), revokedBy: m.userId })
-    .where(eq(accountantClients.id, rel.id));
+    .where(
+      and(
+        eq(accountantClients.firmId, m.firmId),
+        eq(accountantClients.companyId, params.companyId),
+      ),
+    );
 
   // Clear all worker assignments for this customer in the firm.
   await db
