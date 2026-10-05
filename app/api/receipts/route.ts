@@ -1,12 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { and, asc, count, desc, eq, gte, ilike, inArray, lte, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, ilike, lte, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { receipts, receiptReviews, users } from "@/db/schema";
+import { receipts } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { clientIp } from "@/lib/audit";
 import { createReceipt } from "@/lib/receipts/create";
+import { loadReceiptPeople } from "@/lib/receipts/people";
 import { keyBelongsToUser } from "@/lib/storage";
 
 export const runtime = "nodejs";
@@ -26,7 +27,11 @@ const listColumns = {
   basCode: receipts.basCode,
   category: receipts.category,
   status: receipts.status,
+  approvedBy: receipts.approvedBy,
+  userId: receipts.userId,
   createdAt: receipts.createdAt,
+  // Solo users have no approval workflow, so the UI hides the approver for them.
+  inCompany: sql<boolean>`${receipts.companyId} is not null`,
   hasImage: sql<boolean>`${receipts.imageUrl} is not null`,
 } as const;
 
@@ -92,30 +97,13 @@ export async function GET(req: NextRequest) {
     db.select({ total: count() }).from(receipts).where(where),
   ]);
 
-  // Every accountant who reviewed these receipts, oldest first (avatar stack).
-  const ids = rows.map((r: { id: string }) => r.id);
-  const reviewRows = ids.length
-    ? await db
-        .select({
-          receiptId: receiptReviews.receiptId,
-          name: users.name,
-          email: users.email,
-          logoUrl: users.logoUrl,
-        })
-        .from(receiptReviews)
-        .innerJoin(users, eq(users.id, receiptReviews.accountantId))
-        .where(inArray(receiptReviews.receiptId, ids))
-        .orderBy(asc(receiptReviews.reviewedAt))
-    : [];
-  const reviewers = new Map<string, { name: string; logoUrl: string | null }[]>();
-  for (const v of reviewRows) {
-    const list = reviewers.get(v.receiptId) ?? [];
-    list.push({ name: v.name ?? v.email, logoUrl: v.logoUrl });
-    reviewers.set(v.receiptId, list);
-  }
+  const people = await loadReceiptPeople(rows as { id: string; userId: string; status: string; approvedBy: string | null }[]);
 
   return NextResponse.json({
-    receipts: rows.map((r: { id: string }) => ({ ...r, reviewers: reviewers.get(r.id) ?? [] })),
+    receipts: rows.map((r: { id: string; approvedBy: string | null; userId: string }) => {
+      const { approvedBy: _a, userId: _u, ...rest } = r;
+      return { ...rest, ...people.get(r.id) };
+    }),
     total: totals[0]?.total ?? 0,
     page,
     pageSize,

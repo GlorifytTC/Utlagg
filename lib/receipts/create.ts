@@ -107,6 +107,8 @@ export async function createReceipt(
       aiConfidence: d.aiConfidence,
       receiptText: d.receiptText,
       status: receiptStatus,
+      // Self-approved (solo / owner / admin): record who, so the UI can show them.
+      approvedBy: receiptStatus === "approved" ? userId : null,
     })
     .returning();
 

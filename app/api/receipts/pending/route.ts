@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { receipts, users } from "@/db/schema";
-import { getUserCompany, canManageCompany } from "@/lib/company";
+import { getUserCompany, canApproveReceipts } from "@/lib/company";
 import { requireFeature } from "@/lib/entitlements";
 
 export const runtime = "nodejs";
@@ -25,7 +25,7 @@ export async function GET(_req: NextRequest) {
   const userId = gate.userId!;
 
   const membership = await getUserCompany(userId);
-  if (!membership || !canManageCompany(membership.role)) {
+  if (!membership || !canApproveReceipts(membership.role)) {
     return NextResponse.json({ pending: [] });
   }
 

@@ -55,6 +55,11 @@ export function roleAtLeast(role: CompanyRole, min: CompanyRole): boolean {
   return RANK[role] >= RANK[min];
 }
 
+/** Can this role approve/reject members' pending receipts? (owner, admin or approver) */
+export function canApproveReceipts(role: CompanyRole): boolean {
+  return roleAtLeast(role, "approver");
+}
+
 /** Can this role manage members / company settings? (owner or admin) */
 export function canManageCompany(role: CompanyRole): boolean {
   return roleAtLeast(role, "admin");

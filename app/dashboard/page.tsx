@@ -14,6 +14,7 @@ import { UsageChart } from "@/components/dashboard/UsageChart";
 import { AccountantEntryLink } from "@/components/accountant/AccountantEntryLink";
 import { DashboardAccountantAccess } from "@/components/dashboard/DashboardAccountantAccess";
 import { getUserCompany } from "@/lib/company";
+import { loadReceiptPeople } from "@/lib/receipts/people";
 import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Översikt" };
@@ -58,6 +59,7 @@ export default async function DashboardPage() {
     .where(eq(receipts.userId, userId))
     .orderBy(desc(receipts.createdAt))
     .limit(5)) as Receipt[];
+  const recentPeople = await loadReceiptPeople(recent);
 
   const limit = user.scanLimit as number;
   const used = user.scansUsedThisMonth as number;
@@ -148,7 +150,7 @@ export default async function DashboardPage() {
       {/* Recent activity on the left, usage and quick actions on the right */}
       <div className="grid gap-5 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <RecentReceipts receipts={recent} />
+          <RecentReceipts receipts={recent} people={recentPeople} />
         </div>
         <div className="space-y-5 lg:col-span-5">
           <UsageChart used={used} limit={limit} />

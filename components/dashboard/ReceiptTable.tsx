@@ -29,6 +29,8 @@ type ReceiptRow = {
   status: string;
   createdAt: string;
   hasImage: boolean;
+  inCompany: boolean;
+  approver: { name: string; logoUrl: string | null } | null;
   reviewers: { name: string; logoUrl: string | null }[];
 };
 
@@ -74,10 +76,13 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
     rejected: t.statusRejected,
   };
 
-  // Approved + reviewed by accountants: the avatar stack replaces the pill.
+  // Approved: the avatar stack (approver + accountant reviewers) replaces the pill.
+  // Solo users have no approver, only reviewers (if any).
   const statusCell = (r: ReceiptRow) =>
-    r.status === "approved" && r.reviewers.length > 0 ? (
-      <ReviewerStack reviewers={r.reviewers} />
+    r.status === "approved" && ((r.inCompany && r.approver) || r.reviewers.length > 0) ? (
+      <ReviewerStack approver={r.inCompany ? r.approver : null} reviewers={r.reviewers} />
+    ) : r.status === "approved" ? (
+      <span className="text-gray-400">-</span>
     ) : (
       <span className="inline-flex items-center gap-2">
         <span className={cn("rounded-full px-2.5 py-1 text-xs font-medium", STATUS_STYLE[r.status])}>

@@ -104,6 +104,8 @@ type EditableRow = {
   note?: string | null;
   reviewedAt?: Date | null;
   reviewedBy?: string | null;
+  status?: "approved";
+  approvedBy?: string;
 };
 
 /**
@@ -167,6 +169,11 @@ export async function PATCH(
       });
     updates.reviewedAt = now;
     updates.reviewedBy = acct.userId; // server-derived reviewer - never from input
+    // An accountant's review also approves a still-pending receipt (never a rejected one).
+    if (current.status === "pending") {
+      updates.status = "approved";
+      updates.approvedBy = acct.userId;
+    }
   } else if (d.reviewed === false) {
     await db
       .delete(receiptReviews)

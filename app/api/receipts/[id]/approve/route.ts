@@ -3,7 +3,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { receipts } from "@/db/schema";
-import { getUserCompany, canManageCompany } from "@/lib/company";
+import { getUserCompany, canApproveReceipts } from "@/lib/company";
 import { requireFeature } from "@/lib/entitlements";
 import { logAudit, clientIp } from "@/lib/audit";
 
@@ -32,8 +32,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   if (!parsed.success) return NextResponse.json({ error: "Ogiltigt beslut" }, { status: 400 });
 
   const membership = await getUserCompany(userId);
-  if (!membership || !canManageCompany(membership.role)) {
-    return NextResponse.json({ error: "Endast ägare/admin kan attestera" }, { status: 403 });
+  if (!membership || !canApproveReceipts(membership.role)) {
+    return NextResponse.json({ error: "Endast ägare/admin/attestant kan attestera" }, { status: 403 });
   }
 
   const [receipt] = await db

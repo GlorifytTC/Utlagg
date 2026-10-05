@@ -135,6 +135,7 @@ export interface Translations {
   receiptCancel: string;
   receiptApprove: string;
   reviewedBy: string;
+  approvedBy: string;
   reviewedOn: string;
   accountantNote: string;
   receiptDelete: string;
@@ -2062,6 +2063,7 @@ export const strings: Record<Lang, Translations> = {
     idleLogout: "Logga ut nu",
     receiptApprove: "Godkänn",
     reviewedBy: "Granskad av",
+    approvedBy: "Godkänd av",
     reviewedOn: "Granskad",
     accountantNote: "Notering från revisor",
     receiptDelete: "Ta bort",
@@ -3612,6 +3614,7 @@ export const strings: Record<Lang, Translations> = {
     idleLogout: "Log out now",
     receiptApprove: "Approve",
     reviewedBy: "Reviewed by",
+    approvedBy: "Approved by",
     reviewedOn: "Reviewed",
     accountantNote: "Accountant note",
     receiptDelete: "Delete",

@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { formatSek, formatDate } from "@/lib/utils";
 import type { Receipt } from "@/db/schema";
 import { getT } from "@/lib/i18n-server";
+import { ReviewerStack } from "@/components/dashboard/ReviewerStack";
+import type { ReceiptPeople } from "@/lib/receipts/people";
 
 const statusStyles: Record<string, string> = {
   approved: "text-green-600 dark:text-green-400",
@@ -11,13 +13,22 @@ const statusStyles: Record<string, string> = {
   rejected: "text-red-600 dark:text-red-400",
 };
 
-export function RecentReceipts({ receipts }: { receipts: Receipt[] }) {
+export function RecentReceipts({
+  receipts,
+  people,
+}: {
+  receipts: Receipt[];
+  people: Map<string, ReceiptPeople>;
+}) {
   const t = getT();
   const statusLabel: Record<string, string> = {
     approved: t.statusApproved,
     pending: t.statusPending,
     rejected: t.statusRejected,
   };
+
+  // Solo users have no approval workflow, so no approver bubble for them.
+  const approverOf = (r: Receipt) => (r.companyId ? people.get(r.id)?.approver : null);
 
   return (
     <Card>
@@ -61,6 +72,13 @@ export function RecentReceipts({ receipts }: { receipts: Receipt[] }) {
                   <p className="font-medium text-gray-900 dark:text-white">
                     {formatSek(Number(r.totalAmount ?? 0))}
                   </p>
+                  {r.status === "approved" && (approverOf(r) || people.get(r.id)?.reviewers.length) ? (
+                    <ReviewerStack
+                      className="mt-1"
+                      approver={approverOf(r)}
+                      reviewers={people.get(r.id)?.reviewers ?? []}
+                    />
+                  ) : r.status === "approved" ? null : (
                   <p
                     className={cn(
                       "text-xs",
@@ -69,6 +87,7 @@ export function RecentReceipts({ receipts }: { receipts: Receipt[] }) {
                   >
                     {statusLabel[r.status] ?? r.status}
                   </p>
+                  )}
                 </div>
               </li>
             ))}
