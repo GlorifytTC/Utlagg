@@ -3,9 +3,8 @@ import { cn } from "@/lib/utils";
 
 /**
  * Kvittino brand mark - a rounded-square badge in the terracotta accent holding a
- * cream receipt silhouette (torn-perforation bottom edge) with three printed line
- * bars. Badge fills with the accent and the receipt takes the surface colour, both
- * theme-aware via Tailwind `fill-*` utilities so the mark works on paper and AMOLED.
+ * tilted cream receipt (torn-perforation bottom edge) with a smiling face printed on it.
+ * Badge fills with the accent and the receipt takes the surface colour, both theme-aware via Tailwind `fill-*` utilities so the mark works on paper and AMOLED.
  *
  * The `.dark` class lives on `<html>` globally, so pages that force a light surface
  * (landing, login, register) would otherwise pick up the AMOLED receipt fill when the
@@ -31,15 +30,24 @@ export function LogoMark({
       className={className}
     >
       <rect x="2" y="2" width="28" height="28" rx="8" className="fill-nordic-600" />
-      {/* Receipt body - cream on paper, true-black on AMOLED (only when adaptive) */}
-      <path
-        d="M9 8h14v13l-2.3-1.8L18.4 21l-2.3-1.8L13.8 21l-2.3-1.8L9 21z"
-        className={cn("fill-paper", adaptive && "dark:fill-[#050505]")}
-      />
-      {/* Printed line items, in the accent showing through the receipt */}
-      <rect x="12" y="11.5" width="8" height="1.6" rx="0.8" className="fill-nordic-600" />
-      <rect x="12" y="14.7" width="8" height="1.6" rx="0.8" className="fill-nordic-600" />
-      <rect x="12" y="17.9" width="5" height="1.6" rx="0.8" className="fill-nordic-600" />
+      <g transform="rotate(-6 16 16)">
+        {/* Receipt body - cream on paper, true-black on AMOLED (only when adaptive) */}
+        <path
+          d="M8.5 7h15v16.5l-1.875-1.5-1.875 1.5-1.875-1.5-1.875 1.5-1.875-1.5-1.875 1.5-1.875-1.5-1.875 1.5z"
+          className={cn("fill-paper", adaptive && "dark:fill-[#050505]")}
+        />
+        {/* Printed header bar, eyes and smile, in the accent showing through */}
+        <rect x="12.25" y="9.25" width="7.5" height="1.125" rx="0.5625" className="fill-nordic-600" />
+        <circle cx="12.875" cy="13.25" r="1.25" className="fill-nordic-600" />
+        <circle cx="19.125" cy="13.25" r="1.25" className="fill-nordic-600" />
+        <path
+          d="M12.25 16.9q3.75 3.5 7.5 0"
+          fill="none"
+          strokeWidth="1.625"
+          strokeLinecap="round"
+          className="stroke-nordic-600"
+        />
+      </g>
     </svg>
   );
 }

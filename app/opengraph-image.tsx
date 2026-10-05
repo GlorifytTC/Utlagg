@@ -22,10 +22,13 @@ export default function OpengraphImage() {
       >
         <svg width="128" height="128" viewBox="0 0 512 512">
           <rect width="512" height="512" rx="128" fill="#C4522F" />
-          <path d="M144 128h224v208l-36.8-28.8L294.4 336l-36.8-28.8L220.8 336l-36.8-28.8L144 336z" fill="#FAF8F3" />
-          <rect x="192" y="184" width="128" height="26" rx="13" fill="#C4522F" />
-          <rect x="192" y="235" width="128" height="26" rx="13" fill="#C4522F" />
-          <rect x="192" y="286" width="80" height="26" rx="13" fill="#C4522F" />
+          <g transform="rotate(-6 256 256)">
+            <path d="M136 112h240v264l-30-24-30 24-30-24-30 24-30-24-30 24-30-24-30 24z" fill="#FAF8F3"/>
+            <rect x="196" y="148" width="120" height="18" rx="9" fill="#C4522F"/>
+            <circle cx="206" cy="212" r="20" fill="#C4522F"/>
+            <circle cx="306" cy="212" r="20" fill="#C4522F"/>
+            <path d="M196 270q60 56 120 0" fill="none" stroke="#C4522F" strokeWidth="26" strokeLinecap="round"/>
+          </g>
         </svg>
         <div style={{ marginTop: 48, fontSize: 88, fontWeight: 700, letterSpacing: -2 }}>Kvittino</div>
         <div style={{ marginTop: 16, fontSize: 38, color: "#5a5a5a" }}>
