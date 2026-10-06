@@ -11,6 +11,8 @@ import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 import { AccountantClientStats } from "@/components/accountant/AccountantClientStats";
 import { AccountantReceipts } from "@/components/accountant/AccountantReceipts";
 import { AccountantInvoices } from "@/components/accountant/AccountantInvoices";
+import { AccountantMileage } from "@/components/accountant/AccountantMileage";
+import { AccountantTransport } from "@/components/accountant/AccountantTransport";
 import { AccountantExports } from "@/components/accountant/AccountantExports";
 import { AccountantAuditLog } from "@/components/accountant/AccountantAuditLog";
 import { useLanguage } from "@/context/LanguageContext";
@@ -24,14 +26,18 @@ interface Detail {
   clientId: string | null;
 }
 
-type Tab = "overview" | "receipts" | "invoices" | "exports" | "activity";
+type Tab = "overview" | "receipts" | "invoices" | "mileage" | "transport" | "exports" | "activity";
+
+const VALID_TABS: Tab[] = ["overview", "receipts", "invoices", "mileage", "transport", "exports", "activity"];
 
 export function AccountantClientWorkspace({ companyId, initialTab }: { companyId: string; initialTab?: string }) {
   const { lang } = useLanguage();
   const t = accountantStrings(lang);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "notfound" | "error">("loading");
-  const [tab, setTab] = useState<Tab>(initialTab === "invoices" ? "invoices" : "overview");
+  const [tab, setTab] = useState<Tab>(
+    initialTab && (VALID_TABS as string[]).includes(initialTab) ? (initialTab as Tab) : "overview",
+  );
 
   const load = useCallback(async () => {
     setStatus("loading");
@@ -99,6 +105,8 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
     { key: "overview", label: t.overviewTitle },
     { key: "receipts", label: t.colReceipts },
     { key: "invoices", label: t.cwTabInvoices },
+    { key: "mileage", label: t.cwTabMileage },
+    { key: "transport", label: t.cwTabTransport },
     { key: "exports", label: t.cwTabExport },
     { key: "activity", label: t.cwTabActivity },
   ];
@@ -189,6 +197,28 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
             transition={{ duration: 0.15 }}
           >
             <AccountantInvoices companyId={companyId} />
+          </motion.div>
+        )}
+        {tab === "mileage" && (
+          <motion.div
+            key="mileage"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+          >
+            <AccountantMileage companyId={companyId} />
+          </motion.div>
+        )}
+        {tab === "transport" && (
+          <motion.div
+            key="transport"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+          >
+            <AccountantTransport companyId={companyId} />
           </motion.div>
         )}
         {tab === "exports" && (

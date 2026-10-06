@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { and, asc, desc, gte, inArray, lte, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { receipts, companies, accountantExports } from "@/db/schema";
+import { receipts, companies, accountantExports, mileageEntries, transportPasses } from "@/db/schema";
 import { requireAccountant, requireCompanyAccess } from "@/lib/accountant";
 import { buildSie, SieBalanceError } from "@/lib/sie-export";
 import { logAuditEvent, clientIp } from "@/lib/audit";
@@ -14,6 +14,9 @@ export const runtime = "nodejs";
 
 const bodySchema = z.object({
   format: z.enum(["csv", "sie"]).default("csv"),
+  // Which dataset to export. Receipts support CSV + SIE; mileage and public
+  // transport are CSV only (they have no BAS verifications to balance).
+  dataset: z.enum(["receipts", "mileage", "transport"]).default("receipts"),
   from: z.string().optional(),
   to: z.string().optional(),
   creditAccount: z.string().max(10).optional(),
@@ -54,7 +57,10 @@ export async function POST(
 
   const parsed = bodySchema.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return NextResponse.json({ error: "Ogiltiga uppgifter" }, { status: 400 });
-  const { format } = parsed.data;
+  const { format, dataset } = parsed.data;
+  if (dataset !== "receipts" && format === "sie") {
+    return NextResponse.json({ error: "SIE kan endast exporteras för kvitton." }, { status: 400 });
+  }
 
   // Parse optional inclusive date range.
   const fromStr = parsed.data.from ?? null;
@@ -74,6 +80,99 @@ export async function POST(
   }
   if (from && to && from > to)
     return NextResponse.json({ error: "Startdatum är efter slutdatum." }, { status: 400 });
+
+  const rangeSuffix = fromStr || toStr ? `-${fromStr ?? "start"}_${toStr ?? "nu"}` : `-${new Date().toISOString().slice(0, 10)}`;
+
+  // --- Mileage (Milersättning), CSV only -------------------------------------
+  if (dataset === "mileage") {
+    if (access.memberIds.length === 0) {
+      return NextResponse.json({ error: "Inga körningar att exportera." }, { status: 404 });
+    }
+    const conds: SQL[] = [inArray(mileageEntries.userId, access.memberIds)];
+    if (from) conds.push(gte(mileageEntries.date, from));
+    if (to) conds.push(lte(mileageEntries.date, to));
+    const rows = await db.select().from(mileageEntries).where(and(...conds)).orderBy(desc(mileageEntries.date));
+
+    const header = ["Datum", "Från", "Till", "Sträcka (km)", "Kr/km", "Belopp (SEK)", "Syfte", "Not"];
+    const lines = [header.join(";")];
+    for (const r of rows) {
+      lines.push(
+        [
+          r.date ? new Date(r.date).toISOString().slice(0, 10) : "",
+          csvText(r.startAddress),
+          csvText(r.endAddress),
+          r.distanceKm,
+          r.ratePerKm,
+          r.amount,
+          csvText(r.purpose),
+          csvText(r.note),
+        ].map(csvCell).join(";"),
+      );
+    }
+    const csv = "﻿" + lines.join("\r\n");
+    await recordHistory(rows.length);
+    await logAuditEvent({
+      userId: acct.userId,
+      action: "accountant.export.mileage.csv",
+      entityType: "company",
+      entityId: access.companyId,
+      targetCompanyId: access.companyId,
+      details: `${rows.length} körningar`,
+      ipAddress: clientIp(req),
+    });
+    return new NextResponse(csv, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/csv; charset=utf-8",
+        "Content-Disposition": `attachment; filename="milersattning${rangeSuffix}.csv"`,
+      },
+    });
+  }
+
+  // --- Public transport (Kollektivtrafik), CSV only --------------------------
+  if (dataset === "transport") {
+    if (access.memberIds.length === 0) {
+      return NextResponse.json({ error: "Inga biljetter att exportera." }, { status: 404 });
+    }
+    const conds: SQL[] = [inArray(transportPasses.userId, access.memberIds)];
+    if (from) conds.push(gte(transportPasses.validFrom, from));
+    if (to) conds.push(lte(transportPasses.validFrom, to));
+    const rows = await db.select().from(transportPasses).where(and(...conds)).orderBy(desc(transportPasses.validFrom));
+
+    const header = ["Giltig från", "Giltig till", "Typ", "Leverantör", "Belopp (SEK)", "Moms (SEK)", "Momssats (%)"];
+    const lines = [header.join(";")];
+    for (const r of rows) {
+      lines.push(
+        [
+          r.validFrom ? new Date(r.validFrom).toISOString().slice(0, 10) : "",
+          r.validTo ? new Date(r.validTo).toISOString().slice(0, 10) : "",
+          csvText(r.passType),
+          csvText(r.provider === "other" && r.providerOther ? r.providerOther : r.provider),
+          r.amount,
+          r.vatAmount ?? "",
+          r.vatRate,
+        ].map(csvCell).join(";"),
+      );
+    }
+    const csv = "﻿" + lines.join("\r\n");
+    await recordHistory(rows.length);
+    await logAuditEvent({
+      userId: acct.userId,
+      action: "accountant.export.transport.csv",
+      entityType: "company",
+      entityId: access.companyId,
+      targetCompanyId: access.companyId,
+      details: `${rows.length} biljetter`,
+      ipAddress: clientIp(req),
+    });
+    return new NextResponse(csv, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/csv; charset=utf-8",
+        "Content-Disposition": `attachment; filename="kollektivtrafik${rangeSuffix}.csv"`,
+      },
+    });
+  }
 
   // No current members ⇒ nothing to export (never an unscoped query).
   if (access.memberIds.length === 0) {
@@ -145,7 +244,6 @@ export async function POST(
       ipAddress: clientIp(req),
     });
 
-    const rangeSuffix = fromStr || toStr ? `-${fromStr ?? "start"}_${toStr ?? "nu"}` : `-${new Date().toISOString().slice(0, 10)}`;
     return new NextResponse(csv, {
       status: 200,
       headers: {
