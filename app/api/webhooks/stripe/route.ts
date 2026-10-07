@@ -20,6 +20,7 @@ import {
 } from "@/lib/referrals";
 import { grantCreditPack } from "@/lib/billing/credits";
 import { activateBoostFromWebhook } from "@/lib/accountant-boost";
+import { reverseRefundedCharge } from "@/lib/billing/refunds";
 import {
   TRIAL_SCANS,
   formatOre,
@@ -186,6 +187,7 @@ export async function POST(req: NextRequest) {
           typeof charge.customer === "string" ? charge.customer : charge.customer?.id ?? "",
         );
         if (uid) await applyReferralEventForReferred(uid, "refund", `charge=${charge.id}`);
+        await reverseRefundedCharge(charge);
         break;
       }
       case "charge.dispute.created": {

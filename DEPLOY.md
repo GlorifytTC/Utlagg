@@ -98,8 +98,11 @@ webhook endpoint (`/api/webhooks/stripe`) so subscription syncing works.
   accountant's sign-off before real bookkeeping.
 - **OCR queue (QStash)**: client exists but the upload flow still runs OCR
   synchronously; wiring the queue end-to-end is a follow-up.
-- **Admin**: impersonation and refunds are intentionally not built (security/money
-  risk); MRR-over-time needs a monthly snapshot job first.
+- **Admin**: impersonation is intentionally not built (security risk); MRR-over-time
+  needs a monthly snapshot job first. Refunds: admin user page → "Återbetalning"
+  (full refund). The Stripe webhook must include `charge.refunded`; it zeroes the
+  credit pack, cancels the boost, or cancels the subscription (current invoice only).
+  Partial refunds do not revoke access.
 - **Sentry / pino**: not installed; a lightweight logger is used instead.
 - **Compliance**: GDPR / EU AI Act / Bokföringslagen are process + legal matters,
   not just code. The technical hooks exist; the legal artifacts (DPA, lawful basis

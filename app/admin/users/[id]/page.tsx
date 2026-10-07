@@ -7,6 +7,8 @@ import { requireAdmin } from "@/lib/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminUserActions } from "@/components/admin/AdminUserActions";
 import { AdminSubscriptionControl } from "@/components/admin/AdminSubscriptionControl";
+import { AdminRefund, type AdminCharge } from "@/components/admin/AdminRefund";
+import { stripe } from "@/lib/stripe";
 
 export const metadata = { title: "Admin · Användare" };
 export const dynamic = "force-dynamic";
@@ -23,6 +25,23 @@ export default async function AdminUserDetail({ params }: { params: { id: string
     .from(subscriptions)
     .where(eq(subscriptions.userId, params.id))
     .limit(1);
+
+  // ponytail: charges of the user's Stripe customer only; customer-less
+  // one-offs (credit pack / boost via customer_email) are refunded in Stripe.
+  let charges: AdminCharge[] = [];
+  if (sub?.stripeCustomerId) {
+    try {
+      const list = await stripe.charges.list({ customer: sub.stripeCustomerId, limit: 10 });
+      charges = list.data.map((c) => ({
+        id: c.id,
+        created: new Date(c.created * 1000).toISOString(),
+        amountOre: c.amount,
+        refunded: c.refunded,
+      }));
+    } catch (e) {
+      console.error("admin charge list failed:", e);
+    }
+  }
 
   const userReceipts = await db
     .select()
@@ -84,6 +103,11 @@ export default async function AdminUserDetail({ params }: { params: { id: string
             <p className="text-gray-500">Ingen prenumerationspost.</p>
           )}
         </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>Återbetalning</CardTitle></CardHeader>
+        <CardContent><AdminRefund userId={user.id} charges={charges} /></CardContent>
       </Card>
 
       <Card>
