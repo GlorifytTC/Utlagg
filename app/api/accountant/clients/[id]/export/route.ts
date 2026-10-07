@@ -8,6 +8,7 @@ import { buildSie, SieBalanceError } from "@/lib/sie-export";
 import { logAuditEvent, clientIp } from "@/lib/audit";
 import { logger } from "@/lib/logger";
 import { csvText } from "@/lib/csv";
+import { exportPreview } from "@/lib/export-preview";
 import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
@@ -20,6 +21,7 @@ const bodySchema = z.object({
   from: z.string().optional(),
   to: z.string().optional(),
   creditAccount: z.string().max(10).optional(),
+  preview: z.boolean().optional(),
 });
 
 // Same CSV cell escaping as /api/export/csv (semicolon-delimited, Excel-sv).
@@ -80,6 +82,11 @@ export async function POST(
   }
   if (from && to && from > to)
     return NextResponse.json({ error: "Startdatum är efter slutdatum." }, { status: 400 });
+
+  // Preview: counts + totals only, nothing generated or recorded in history.
+  if (parsed.data.preview) {
+    return NextResponse.json(await exportPreview(access.memberIds, { from, to }, "start"));
+  }
 
   const rangeSuffix = fromStr || toStr ? `-${fromStr ?? "start"}_${toStr ?? "nu"}` : `-${new Date().toISOString().slice(0, 10)}`;
 

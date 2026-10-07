@@ -4,8 +4,15 @@ import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
-import { fieldClass } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { CheckCard } from "@/components/ui/check-card";
+import { PeriodPicker, defaultPeriod } from "@/components/export/PeriodPicker";
+import { downloadFile } from "@/lib/export-download";
+import type { ExportPreview } from "@/lib/export-preview";
+import { Download, FileText, Car, Bus, Loader2 } from "lucide-react";
+
+type Dataset = "receipts" | "mileage" | "transport";
+const fmtSek = (n: number) => `${n.toLocaleString("sv-SE", { maximumFractionDigits: 0 })} kr`;
 
 interface ExportRow {
   id: string;
@@ -17,11 +24,13 @@ interface ExportRow {
 }
 
 export function AccountantExports({ companyId }: { companyId: string }) {
-  const { lang } = useLanguage();
+  const { lang, t: tt } = useLanguage();
   const t = accountantStrings(lang);
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [busy, setBusy] = useState<"csv" | "sie" | null>(null);
+  const [period, setPeriod] = useState(() => defaultPeriod());
+  const [selected, setSelected] = useState<Record<Dataset, boolean>>({ receipts: true, mileage: false, transport: false });
+  const [format, setFormat] = useState<"csv" | "sie">("csv");
+  const [preview, setPreview] = useState<ExportPreview | null>(null);
+  const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [history, setHistory] = useState<ExportRow[]>([]);
   const [histStatus, setHistStatus] = useState<"loading" | "ok" | "error">("loading");
@@ -43,38 +52,52 @@ export function AccountantExports({ companyId }: { companyId: string }) {
     loadHistory();
   }, [loadHistory]);
 
-  async function doExport(format: "csv" | "sie") {
-    setBusy(format);
+  const post = (extra: object) =>
+    [`/api/accountant/clients/${companyId}/export`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ from: period.from || undefined, to: period.to || undefined, ...extra }),
+    }] as const;
+
+  useEffect(() => {
+    const ctl = new AbortController();
+    setPreview(null);
+    fetch(...post({ preview: true }), )
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && !ctl.signal.aborted && setPreview(d))
+      .catch(() => {});
+    return () => ctl.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companyId, period.from, period.to]);
+
+  const picked = (Object.keys(selected) as Dataset[]).filter((d) => selected[d]);
+  const empty = !!preview && picked.every((d) => preview[d].count === 0);
+
+  async function doExport() {
+    setBusy(true);
     setErr(null);
     try {
-      const res = await fetch(`/api/accountant/clients/${companyId}/export`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ format, from: from || undefined, to: to || undefined }),
-      });
-      if (!res.ok) {
-        const d = await res.json().catch(() => ({}));
-        setErr(d?.error ?? t.exFailed);
-        return;
+      for (const d of picked) {
+        const [url, init] = post({ dataset: d, format: d === "receipts" ? format : "csv" });
+        await downloadFile(url, init, d);
       }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = format === "csv" ? "kvitton.csv" : "kvittino.se";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
       loadHistory();
-    } catch {
-      setErr(t.exFailed);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : t.exFailed);
     } finally {
-      setBusy(null);
+      setBusy(false);
     }
   }
 
-  const inputCls = `${fieldClass} h-11 py-2 sm:h-10 sm:!w-auto`;
+  const info = (d: Dataset) =>
+    !preview ? (
+      <span className="skeleton mt-2 block h-4 w-32 rounded" aria-hidden />
+    ) : (
+      <p className="mt-2 text-xs tabular-nums text-gray-500 dark:text-gray-400">
+        {preview[d].count > 0 ? `${tt.expRows.replace("{n}", String(preview[d].count))} · ${fmtSek(preview[d].total)}` : tt.expNoRows}
+      </p>
+    );
+  const toggle = (d: Dataset) => (e: React.ChangeEvent<HTMLInputElement>) => setSelected((s) => ({ ...s, [d]: e.target.checked }));
 
   return (
     <div className="space-y-6">
@@ -82,31 +105,48 @@ export function AccountantExports({ companyId }: { companyId: string }) {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl panel p-6"
+        className="space-y-5 rounded-2xl panel p-4 sm:p-6"
       >
-        <div className="grid grid-cols-2 items-end gap-3 sm:flex sm:flex-wrap">
-          <div>
-            <label htmlFor="ex-from" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
-              {t.rcFrom}
-            </label>
-            <input id="ex-from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputCls} />
-          </div>
-          <div>
-            <label htmlFor="ex-to" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
-              {t.rcTo}
-            </label>
-            <input id="ex-to" type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputCls} />
-          </div>
-          <div className="col-span-2 grid grid-cols-2 gap-2 sm:flex">
-            <Button onClick={() => doExport("csv")} disabled={busy !== null} className="h-11 sm:h-10">
-              {busy === "csv" ? t.exExporting : t.exCsv}
-            </Button>
-            <Button variant="outline" onClick={() => doExport("sie")} disabled={busy !== null} className="h-11 sm:h-10">
-              {busy === "sie" ? t.exExporting : t.exSie}
-            </Button>
-          </div>
+        <PeriodPicker value={period} onChange={setPeriod} />
+        <div className="space-y-3">
+          <CheckCard title={tt.expDownloadReceipts} description={tt.expReceiptsDesc} icon={<FileText className="h-5 w-5" strokeWidth={1.75} />} checked={selected.receipts} onChange={toggle("receipts")}>
+            <div>
+              <div role="radiogroup" aria-label={tt.expDownloadReceipts} className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                {(["csv", "sie"] as const).map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    role="radio"
+                    aria-checked={format === f}
+                    onClick={() => setFormat(f)}
+                    className={`min-h-11 rounded-full border px-3.5 sm:min-h-10 py-1.5 text-sm font-medium transition duration-300 ease-premium motion-reduce:transition-none ${
+                      format === f
+                        ? "border-nordic-600 bg-nordic-600 text-white"
+                        : "border-gray-900/15 text-gray-600 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300"
+                    }`}
+                  >
+                    {f === "csv" ? "CSV" : "SIE"}
+                  </button>
+                ))}
+              </div>
+              {info("receipts")}
+            </div>
+          </CheckCard>
+          <CheckCard title={tt.expDownloadMileage} description={tt.expMileageDesc} icon={<Car className="h-5 w-5" strokeWidth={1.75} />} checked={selected.mileage} onChange={toggle("mileage")}>
+            {info("mileage")}
+          </CheckCard>
+          <CheckCard title={tt.expDownloadTransport} description={tt.expTransportDesc} icon={<Bus className="h-5 w-5" strokeWidth={1.75} />} checked={selected.transport} onChange={toggle("transport")}>
+            {info("transport")}
+          </CheckCard>
         </div>
-        {err && <p className="mt-3 text-sm text-red-600">{err}</p>}
+        <div className="sticky bottom-0 -mx-4 -mb-4 flex flex-col gap-2 border-t border-gray-900/[0.07] bg-[#fffefb]/90 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur dark:border-white/[0.08] dark:bg-[#0d0d0d]/90 sm:static sm:mx-0 sm:mb-0 sm:flex-row sm:items-center sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
+          <Button onClick={doExport} disabled={busy || picked.length === 0 || empty} className="w-full sm:w-auto">
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" strokeWidth={1.75} />}
+            {busy ? t.exExporting : tt.expDownloadSelected}
+          </Button>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t.exSieNote}</p>
+        </div>
+        {err && <p role="alert" className="text-sm text-red-600">{err}</p>}
       </motion.div>
 
       {/* History */}

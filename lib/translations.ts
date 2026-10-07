@@ -804,7 +804,18 @@ export interface Translations {
   expDownloadReceipts: string;
   expDownloadMileage: string;
   expDownloadTransport: string;
-  expDownloadAll: string;
+  expCategories: string;
+  expReceiptsDesc: string;
+  expMileageDesc: string;
+  expTransportDesc: string;
+  expRows: string;
+  expNoRows: string;
+  expDownloadSelected: string;
+  expDownloading: string;
+  expLocked: string;
+  expLockedHint: string;
+  expSelectOne: string;
+  expFailed: string;
   navExport: string;
   dashExportHint: string;
   fortnoxReviewTitle: string;
@@ -1539,7 +1550,18 @@ export const strings: Record<Lang, Translations> = {
     expDownloadReceipts: "Kvitton",
     expDownloadMileage: "Körjournal",
     expDownloadTransport: "Periodbiljetter",
-    expDownloadAll: "Ladda ner allt för perioden",
+    expCategories: "Vad vill du exportera?",
+    expReceiptsDesc: "Kvitton med moms och BAS-konto",
+    expMileageDesc: "Körjournal med ersättning per km",
+    expTransportDesc: "Periodbiljetter och kollektivtrafik",
+    expRows: "{n} rader",
+    expNoRows: "Inget att exportera för perioden",
+    expDownloadSelected: "Ladda ner valda",
+    expDownloading: "Laddar ner…",
+    expLocked: "Låst",
+    expLockedHint: "Kräver aktivt abonnemang. CSV är alltid tillgängligt.",
+    expSelectOne: "Välj minst en sak att exportera",
+    expFailed: "Exporten misslyckades.",
     rcCategoryAutoDetected: "Auto-identifierad",
     stRangeMonth: "Månad",
     stRangeYear: "År",
@@ -3086,7 +3108,18 @@ export const strings: Record<Lang, Translations> = {
     expDownloadReceipts: "Receipts",
     expDownloadMileage: "Mileage log",
     expDownloadTransport: "Transport passes",
-    expDownloadAll: "Download everything for this period",
+    expCategories: "What do you want to export?",
+    expReceiptsDesc: "Receipts with VAT and BAS account",
+    expMileageDesc: "Mileage log with per-km compensation",
+    expTransportDesc: "Transit passes and public transport",
+    expRows: "{n} rows",
+    expNoRows: "Nothing to export for this period",
+    expDownloadSelected: "Download selected",
+    expDownloading: "Downloading…",
+    expLocked: "Locked",
+    expLockedHint: "Requires an active subscription. CSV is always available.",
+    expSelectOne: "Select at least one thing to export",
+    expFailed: "Export failed.",
     rcCategoryAutoDetected: "Auto-detected",
     stRangeMonth: "Month",
     stRangeYear: "Year",

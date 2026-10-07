@@ -1,165 +1,166 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { buttonClass } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { CheckCard } from "@/components/ui/check-card";
+import { PeriodPicker, defaultPeriod } from "@/components/export/PeriodPicker";
 import { useLanguage } from "@/context/LanguageContext";
-import { Download, FileSpreadsheet, FileText, Car, Bus } from "lucide-react";
-import { fieldClass } from "@/components/ui/input";
+import { downloadFile } from "@/lib/export-download";
+import type { ExportPreview } from "@/lib/export-preview";
+import { Download, FileText, Car, Bus, Lock, Loader2 } from "lucide-react";
 
-type PresetKey = "thisMonth" | "lastMonth" | "thisQuarter" | "lastQuarter" | "thisYear" | "allTime" | "custom";
+type Category = "receipts" | "mileage" | "transport";
+type Format = "csv" | "sie" | "pdf";
 
-function toIso(d: Date): string {
-  return d.toISOString().slice(0, 10);
-}
+const fmtSek = (n: number) => `${n.toLocaleString("sv-SE", { maximumFractionDigits: 0 })} kr`;
 
-/** Swedish VAT quarters: Q1 Jan-Mar, Q2 Apr-Jun, Q3 Jul-Sep, Q4 Oct-Dec -
- * matches how Skatteverket actually structures quarterly VAT reporting,
- * not a generic rolling 3-month window. */
-function quarterRange(year: number, quarter: number): { from: Date; to: Date } {
-  const startMonth = (quarter - 1) * 3;
-  const from = new Date(year, startMonth, 1);
-  const to = new Date(year, startMonth + 3, 0); // last day of the quarter
-  return { from, to };
-}
-
-function computeRange(preset: PresetKey, now = new Date()): { from: string; to: string } {
-  const y = now.getFullYear();
-  const m = now.getMonth();
-  switch (preset) {
-    case "thisMonth": {
-      const from = new Date(y, m, 1);
-      const to = new Date(y, m + 1, 0);
-      return { from: toIso(from), to: toIso(to) };
-    }
-    case "lastMonth": {
-      const from = new Date(y, m - 1, 1);
-      const to = new Date(y, m, 0);
-      return { from: toIso(from), to: toIso(to) };
-    }
-    case "thisQuarter": {
-      const q = Math.floor(m / 3) + 1;
-      const { from, to } = quarterRange(y, q);
-      return { from: toIso(from), to: toIso(to) };
-    }
-    case "lastQuarter": {
-      const q = Math.floor(m / 3) + 1;
-      const { from, to } = q === 1 ? quarterRange(y - 1, 4) : quarterRange(y, q - 1);
-      return { from: toIso(from), to: toIso(to) };
-    }
-    case "thisYear":
-      return { from: toIso(new Date(y, 0, 1)), to: toIso(new Date(y, 11, 31)) };
-    case "allTime":
-      return { from: "2000-01-01", to: toIso(new Date(y, 11, 31)) };
-    default:
-      return { from: toIso(new Date(y, m, 1)), to: toIso(now) };
-  }
-}
-
-export function ExportPanel() {
+export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean } }) {
   const { t } = useLanguage();
-  const [preset, setPreset] = useState<PresetKey>("thisQuarter");
-  const initial = computeRange("thisQuarter");
-  const [from, setFrom] = useState(initial.from);
-  const [to, setTo] = useState(initial.to);
+  const [period, setPeriod] = useState(() => defaultPeriod());
+  const [selected, setSelected] = useState<Record<Category, boolean>>({ receipts: true, mileage: false, transport: false });
+  const [format, setFormat] = useState<Format>("csv");
+  const [preview, setPreview] = useState<ExportPreview | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
-  function choosePreset(p: PresetKey) {
-    setPreset(p);
-    if (p !== "custom") {
-      const r = computeRange(p);
-      setFrom(r.from);
-      setTo(r.to);
+  const qs = `?from=${period.from}&to=${period.to}`;
+
+  useEffect(() => {
+    const ctl = new AbortController();
+    setPreview(null);
+    fetch(`/api/export/preview${qs}`, { signal: ctl.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setPreview(d))
+      .catch(() => {});
+    return () => ctl.abort();
+  }, [qs]);
+
+  const urls: Record<Category, string> = {
+    receipts: `/api/export/${format}${qs}`,
+    mileage: `/api/mileage/export${qs}`,
+    transport: `/api/transport/export${qs}`,
+  };
+  const picked = (Object.keys(selected) as Category[]).filter((c) => selected[c]);
+
+  async function download() {
+    setBusy(true);
+    setErr(null);
+    try {
+      for (const c of picked) await downloadFile(urls[c], undefined, `${c}.${c === "receipts" ? format : "csv"}`);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : t.expFailed);
+    } finally {
+      setBusy(false);
     }
   }
 
-  const qs = useMemo(() => `?from=${from}&to=${to}`, [from, to]);
+  const info = (c: Category) => {
+    const p = preview?.[c];
+    if (!preview) return <span className="skeleton mt-2 block h-4 w-32 rounded" aria-hidden />;
+    return (
+      <p className="mt-2 text-xs tabular-nums text-gray-500 dark:text-gray-400">
+        {p && p.count > 0 ? `${t.expRows.replace("{n}", String(p.count))} · ${fmtSek(p.total)}` : t.expNoRows}
+      </p>
+    );
+  };
+  const empty = !!preview && picked.every((c) => preview[c].count === 0);
 
-  const presets: { key: PresetKey; label: string }[] = [
-    { key: "thisMonth", label: t.expThisMonth },
-    { key: "lastMonth", label: t.expLastMonth },
-    { key: "thisQuarter", label: t.expThisQuarter },
-    { key: "lastQuarter", label: t.expLastQuarter },
-    { key: "thisYear", label: t.expThisYear },
-    { key: "allTime", label: t.expAllTime },
-    { key: "custom", label: t.expCustom },
+  const formats: { key: Format; label: string; lock: boolean; icon: React.ReactNode }[] = [
+    { key: "csv", label: t.btnExportCsv, lock: false, icon: <FileText className="h-4 w-4" strokeWidth={1.75} /> },
+    { key: "sie", label: t.btnExportSie, lock: locked.sie, icon: <FileText className="h-4 w-4" strokeWidth={1.75} /> },
+    { key: "pdf", label: t.btnExportPdf, lock: locked.pdf, icon: <Download className="h-4 w-4" strokeWidth={1.75} /> },
   ];
 
+  const toggle = (c: Category) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setSelected((s) => ({ ...s, [c]: e.target.checked }));
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t.expPeriodTitle}</CardTitle>
-        <CardDescription>{t.expPeriodDesc}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex flex-wrap gap-2">
-          {presets.map((p) => (
-            <button
-              key={p.key}
-              onClick={() => choosePreset(p.key)}
-              aria-pressed={preset === p.key}
-              className={`min-h-10 rounded-full px-4 py-1.5 text-sm font-medium transition duration-300 ease-premium active:scale-[0.98] ${
-                preset === p.key
-                  ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                  : "border border-gray-900/15 text-gray-600 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300 dark:hover:border-white/30"
-              }`}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>{t.expPeriodTitle}</CardTitle>
+          <CardDescription>{t.expPeriodDesc}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PeriodPicker value={period} onChange={setPeriod} />
+        </CardContent>
+      </Card>
 
-        <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end">
-          <div>
-            <label htmlFor="exp-from" className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.expFrom}</label>
-            <input
-              id="exp-from"
-              type="date"
-              value={from}
-              onChange={(e) => {
-                setFrom(e.target.value);
-                setPreset("custom");
-              }}
-              className={`${fieldClass} h-11 py-2 sm:!w-auto md:h-10`}
-            />
-          </div>
-          <div>
-            <label htmlFor="exp-to" className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.expTo}</label>
-            <input
-              id="exp-to"
-              type="date"
-              value={to}
-              onChange={(e) => {
-                setTo(e.target.value);
-                setPreset("custom");
-              }}
-              className={`${fieldClass} h-11 py-2 sm:!w-auto md:h-10`}
-            />
-          </div>
-        </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t.expCategories}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <CheckCard
+            title={t.expDownloadReceipts}
+            description={t.expReceiptsDesc}
+            icon={<FileText className="h-5 w-5" strokeWidth={1.75} />}
+            checked={selected.receipts}
+            onChange={toggle("receipts")}
+          >
+            <div>
+              <div role="radiogroup" aria-label={t.expDownloadReceipts} className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">
+                {formats.map((f) => (
+                  <button
+                    key={f.key}
+                    type="button"
+                    role="radio"
+                    aria-checked={format === f.key}
+                    disabled={f.lock}
+                    onClick={() => setFormat(f.key)}
+                    title={f.lock ? t.expLockedHint : undefined}
+                    className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border px-3.5 sm:min-h-10 py-1.5 text-sm font-medium transition duration-300 ease-premium motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-60 ${
+                      format === f.key
+                        ? "border-nordic-600 bg-nordic-600 text-white"
+                        : "border-gray-900/15 text-gray-600 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300"
+                    }`}
+                  >
+                    {f.lock ? <Lock className="h-3.5 w-3.5" strokeWidth={2} /> : f.icon}
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+              {(locked.sie || locked.pdf) && <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{t.expLockedHint}</p>}
+              {info("receipts")}
+            </div>
+          </CheckCard>
 
-        <div className="grid grid-cols-1 gap-3 pt-2 sm:flex sm:flex-wrap">
-          <a href={`/api/export/csv${qs}`} className={buttonClass("outline", "w-full sm:w-auto")}>
-            <FileSpreadsheet className="h-4 w-4" strokeWidth={1.75} />
-            {t.btnExportCsv}
-          </a>
-          <a href={`/api/export/sie${qs}`} className={buttonClass("outline", "w-full sm:w-auto")}>
-            <FileText className="h-4 w-4" strokeWidth={1.75} />
-            {t.btnExportSie}
-          </a>
-          <a href={`/api/export/pdf${qs}`} className={buttonClass("outline", "w-full sm:w-auto")}>
-            <Download className="h-4 w-4" strokeWidth={1.75} />
-            {t.btnExportPdf}
-          </a>
-          <a href={`/api/mileage/export${qs}`} className={buttonClass("outline", "w-full sm:w-auto")}>
-            <Car className="h-4 w-4" strokeWidth={1.75} />
-            {t.expDownloadMileage}
-          </a>
-          <a href={`/api/transport/export${qs}`} className={buttonClass("outline", "w-full sm:w-auto")}>
-            <Bus className="h-4 w-4" strokeWidth={1.75} />
-            {t.expDownloadTransport}
-          </a>
-        </div>
-      </CardContent>
-    </Card>
+          <CheckCard
+            title={t.expDownloadMileage}
+            description={t.expMileageDesc}
+            icon={<Car className="h-5 w-5" strokeWidth={1.75} />}
+            checked={selected.mileage}
+            onChange={toggle("mileage")}
+          >
+            {info("mileage")}
+          </CheckCard>
+
+          <CheckCard
+            title={t.expDownloadTransport}
+            description={t.expTransportDesc}
+            icon={<Bus className="h-5 w-5" strokeWidth={1.75} />}
+            checked={selected.transport}
+            onChange={toggle("transport")}
+          >
+            {info("transport")}
+          </CheckCard>
+
+          <div className="sticky bottom-0 -mx-4 -mb-4 flex flex-col gap-2 border-t border-gray-900/[0.07] bg-[#fffefb]/90 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur dark:border-white/[0.08] dark:bg-[#0d0d0d]/90 sm:static sm:mx-0 sm:mb-0 sm:flex-row sm:items-center sm:border-0 sm:bg-transparent sm:p-0 sm:pt-2 sm:backdrop-blur-none">
+            <Button onClick={download} disabled={busy || picked.length === 0 || empty} className="w-full sm:w-auto">
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" strokeWidth={1.75} />}
+              {busy ? t.expDownloading : t.expDownloadSelected}
+            </Button>
+            {picked.length === 0 && <p className="text-xs text-gray-500 dark:text-gray-400">{t.expSelectOne}</p>}
+            {empty && picked.length > 0 && <p className="text-xs text-gray-500 dark:text-gray-400">{t.expNoRows}</p>}
+          </div>
+          {err && (
+            <p role="alert" className="text-sm text-red-600">
+              {err}
+            </p>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
