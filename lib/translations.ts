@@ -816,6 +816,9 @@ export interface Translations {
   expLockedHint: string;
   expSelectOne: string;
   expFailed: string;
+  expListTitle: string;
+  expMore: string;
+  expBundleHint: string;
   navExport: string;
   dashExportHint: string;
   fortnoxReviewTitle: string;
@@ -1562,6 +1565,9 @@ export const strings: Record<Lang, Translations> = {
     expLockedHint: "Kräver aktivt abonnemang. CSV är alltid tillgängligt.",
     expSelectOne: "Välj minst en sak att exportera",
     expFailed: "Exporten misslyckades.",
+    expListTitle: "Ingår i exporten",
+    expMore: "+{n} till ingår (visas ej här)",
+    expBundleHint: "Flera val laddas ner som en ZIP-fil.",
     rcCategoryAutoDetected: "Auto-identifierad",
     stRangeMonth: "Månad",
     stRangeYear: "År",
@@ -3120,6 +3126,9 @@ export const strings: Record<Lang, Translations> = {
     expLockedHint: "Requires an active subscription. CSV is always available.",
     expSelectOne: "Select at least one thing to export",
     expFailed: "Export failed.",
+    expListTitle: "Included in the export",
+    expMore: "+{n} more included (not shown here)",
+    expBundleHint: "Multiple selections download as one ZIP file.",
     rcCategoryAutoDetected: "Auto-detected",
     stRangeMonth: "Month",
     stRangeYear: "Year",

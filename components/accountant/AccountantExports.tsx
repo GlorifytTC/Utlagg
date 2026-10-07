@@ -7,7 +7,8 @@ import { accountantStrings } from "@/lib/accountant-i18n";
 import { Button } from "@/components/ui/button";
 import { CheckCard } from "@/components/ui/check-card";
 import { PeriodPicker, defaultPeriod } from "@/components/export/PeriodPicker";
-import { downloadFile } from "@/lib/export-download";
+import { ExportList } from "@/components/export/ExportList";
+import { downloadExport, fetchFile } from "@/lib/export-download";
 import type { ExportPreview } from "@/lib/export-preview";
 import { Download, FileText, Car, Bus, Loader2 } from "lucide-react";
 
@@ -77,10 +78,12 @@ export function AccountantExports({ companyId }: { companyId: string }) {
     setBusy(true);
     setErr(null);
     try {
+      const files = [];
       for (const d of picked) {
         const [url, init] = post({ dataset: d, format: d === "receipts" ? format : "csv" });
-        await downloadFile(url, init, d);
+        files.push(await fetchFile(url, init, d));
       }
+      await downloadExport(files, `kvittino-export-${period.from}_${period.to}.zip`);
       loadHistory();
     } catch (e) {
       setErr(e instanceof Error ? e.message : t.exFailed);
@@ -139,12 +142,13 @@ export function AccountantExports({ companyId }: { companyId: string }) {
             {info("transport")}
           </CheckCard>
         </div>
+        {preview && <ExportList preview={preview} selected={selected} />}
         <div className="sticky bottom-0 -mx-4 -mb-4 flex flex-col gap-2 border-t border-gray-900/[0.07] bg-[#fffefb]/90 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur dark:border-white/[0.08] dark:bg-[#0d0d0d]/90 sm:static sm:mx-0 sm:mb-0 sm:flex-row sm:items-center sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
           <Button onClick={doExport} disabled={busy || picked.length === 0 || empty} className="w-full sm:w-auto">
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" strokeWidth={1.75} />}
             {busy ? t.exExporting : tt.expDownloadSelected}
           </Button>
-          <p className="text-xs text-gray-500 dark:text-gray-400">{t.exSieNote}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{picked.length > 1 ? `${tt.expBundleHint} ` : ""}{t.exSieNote}</p>
         </div>
         {err && <p role="alert" className="text-sm text-red-600">{err}</p>}
       </motion.div>

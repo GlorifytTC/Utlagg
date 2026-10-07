@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { CheckCard } from "@/components/ui/check-card";
 import { PeriodPicker, defaultPeriod } from "@/components/export/PeriodPicker";
 import { useLanguage } from "@/context/LanguageContext";
-import { downloadFile } from "@/lib/export-download";
+import { ExportList } from "@/components/export/ExportList";
+import { downloadExport, fetchFile } from "@/lib/export-download";
 import type { ExportPreview } from "@/lib/export-preview";
 import { Download, FileText, Car, Bus, Lock, Loader2 } from "lucide-react";
 
@@ -47,7 +48,9 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
     setBusy(true);
     setErr(null);
     try {
-      for (const c of picked) await downloadFile(urls[c], undefined, `${c}.${c === "receipts" ? format : "csv"}`);
+      const files = [];
+      for (const c of picked) files.push(await fetchFile(urls[c], undefined, `${c}.${c === "receipts" ? format : "csv"}`));
+      await downloadExport(files, `kvittino-export-${period.from}_${period.to}.zip`);
     } catch (e) {
       setErr(e instanceof Error ? e.message : t.expFailed);
     } finally {
@@ -146,11 +149,14 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
             {info("transport")}
           </CheckCard>
 
+          {preview && <ExportList preview={preview} selected={selected} />}
+
           <div className="sticky bottom-0 -mx-4 -mb-4 flex flex-col gap-2 border-t border-gray-900/[0.07] bg-[#fffefb]/90 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur dark:border-white/[0.08] dark:bg-[#0d0d0d]/90 sm:static sm:mx-0 sm:mb-0 sm:flex-row sm:items-center sm:border-0 sm:bg-transparent sm:p-0 sm:pt-2 sm:backdrop-blur-none">
             <Button onClick={download} disabled={busy || picked.length === 0 || empty} className="w-full sm:w-auto">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" strokeWidth={1.75} />}
               {busy ? t.expDownloading : t.expDownloadSelected}
             </Button>
+            {picked.length > 1 && <p className="text-xs text-gray-500 dark:text-gray-400">{t.expBundleHint}</p>}
             {picked.length === 0 && <p className="text-xs text-gray-500 dark:text-gray-400">{t.expSelectOne}</p>}
             {empty && picked.length > 0 && <p className="text-xs text-gray-500 dark:text-gray-400">{t.expNoRows}</p>}
           </div>
