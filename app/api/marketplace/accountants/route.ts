@@ -17,6 +17,7 @@ import { authOptions } from "@/lib/auth";
 import { getUserCompany, canManageCompany } from "@/lib/company";
 import { requireAccountant } from "@/lib/accountant";
 import { verifiedFirmIds } from "@/lib/firm-verified";
+import { rankAccountants } from "@/lib/marketplace-rank";
 
 export const runtime = "nodejs";
 
@@ -52,7 +53,7 @@ type RankedItem = AccountantRow & {
  *
  * Any signed-in user can browse. Accountants are ranked by relevance (industry
  * match vs viewer's company) + popularity (active client count), with boost as
- * a tie-breaker within equal relevance. Only safe display fields are returned.
+ * a +4 bonus that rotates hourly among boosted accountants/firms (lib/marketplace-rank.ts). Only safe display fields are returned.
  *
  * ponytail: in-memory rank after DB filter. Fine for ~hundreds of accountants;
  * add a DB rank column if the listing grows to thousands.
@@ -243,21 +244,14 @@ export async function GET(req: NextRequest) {
     };
   });
 
-  // ponytail: same logic as rankAccountants() in lib/accountant-boost.ts
-  items.sort((a, b) => {
-    if (b.relevance !== a.relevance) return b.relevance - a.relevance;
-    const ab = boostedIds.has(a.id) ? 1 : 0;
-    const bb = boostedIds.has(b.id) ? 1 : 0;
-    if (bb !== ab) return bb - ab;
-    // Secondary tie-breaks on raw signals before stable id sort.
-    if (b.activeClientCount !== a.activeClientCount) return b.activeClientCount - a.activeClientCount;
-    if (b.reviewCount !== a.reviewCount) return b.reviewCount - a.reviewCount;
-    return a.id.localeCompare(b.id);
-  });
+  const ranked = rankAccountants(
+    items.map((a) => ({ ...a, firmId: firmMap.get(a.id)?.firmId ?? null })),
+    boostedIds,
+  );
 
   const start = (page - 1) * pageSize;
-  const pageItems = items.slice(start, start + pageSize);
-  const hasMore = start + pageSize < items.length;
+  const pageItems = ranked.slice(start, start + pageSize);
+  const hasMore = start + pageSize < ranked.length;
 
   return NextResponse.json({
     accountants: pageItems.map((a) => {

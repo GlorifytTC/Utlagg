@@ -103,23 +103,3 @@ export async function activateBoostFromWebhook(params: {
     expiresAt,
   });
 }
-
-/**
- * Deterministic accountant ranking: relevance FIRST, boost SECOND. `relevance`
- * is a caller-computed score (location/specialty/etc). A boost only breaks ties
- * or lifts an accountant above a COMPARABLE non-boosted one - it never
- * overrides a materially more relevant result, because relevance is the primary
- * sort key. Used wherever accountants are shown to companies.
- */
-export function rankAccountants<T extends { accountantId: string; relevance: number }>(
-  items: T[],
-  boostedIds: Set<string>,
-): T[] {
-  return [...items].sort((a, b) => {
-    if (b.relevance !== a.relevance) return b.relevance - a.relevance; // relevance first
-    const ab = boostedIds.has(a.accountantId) ? 1 : 0;
-    const bb = boostedIds.has(b.accountantId) ? 1 : 0;
-    if (bb !== ab) return bb - ab; // boost second (tie-breaker within same relevance)
-    return a.accountantId.localeCompare(b.accountantId); // stable final tie-break
-  });
-}

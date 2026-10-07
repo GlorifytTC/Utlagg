@@ -4,27 +4,16 @@ import { readFileSync, readdirSync } from "node:fs";
 
 /**
  * Tests for Accountant Boost: activation idempotency, expiry correctness (query
- * time, not cron), ranking (relevance first / boost second), and the webhook
- * validation logic. DB-backed via PGlite with the real migrations.
+ * time, not cron), and the webhook validation logic. DB-backed via PGlite with
+ * the real migrations. Ranking lives in marketplace-ranking.test.ts.
  *
- * The constants + rankAccountants are mirrored here (the real module is
- * server-only and can't be imported into the vitest env); the ranking logic is
- * identical to lib/accountant-boost.ts.
+ * The constants are mirrored here (the real module is server-only and can't be
+ * imported into the vitest env).
  */
 
 const BOOST_PRICE_ORE = 4900;
 const BOOST_CURRENCY = "sek";
 const BOOST_DURATION_DAYS = 7;
-
-function rankAccountants<T extends { accountantId: string; relevance: number }>(items: T[], boostedIds: Set<string>): T[] {
-  return [...items].sort((a, b) => {
-    if (b.relevance !== a.relevance) return b.relevance - a.relevance;
-    const ab = boostedIds.has(a.accountantId) ? 1 : 0;
-    const bb = boostedIds.has(b.accountantId) ? 1 : 0;
-    if (bb !== ab) return bb - ab;
-    return a.accountantId.localeCompare(b.accountantId);
-  });
-}
 
 let pg: PGlite;
 
@@ -144,37 +133,5 @@ describe("Boost — webhook validation", () => {
   it("rejects missing accountantId / wrong kind", () => {
     expect(webhookAccepts({ kind: "accountant_boost" }, "paid", 4900, "sek")).toBe(false);
     expect(webhookAccepts({ kind: "credit_pack", accountantId: "a1" }, "paid", 4900, "sek")).toBe(false);
-  });
-});
-
-describe("Boost — ranking (relevance first, boost second)", () => {
-  it("boosted accountant ranks above an EQUALLY relevant non-boosted one", () => {
-    const items = [
-      { accountantId: "plain", relevance: 5 },
-      { accountantId: "boosted", relevance: 5 },
-    ];
-    const ranked = rankAccountants(items, new Set(["boosted"]));
-    expect(ranked[0].accountantId).toBe("boosted");
-  });
-
-  it("Boost does NOT override materially higher relevance", () => {
-    const items = [
-      { accountantId: "relevant", relevance: 9 }, // not boosted, very relevant
-      { accountantId: "boosted", relevance: 3 }, // boosted, weak relevance
-    ];
-    const ranked = rankAccountants(items, new Set(["boosted"]));
-    expect(ranked[0].accountantId).toBe("relevant");
-  });
-
-  it("non-boosted results remain present; ranking is deterministic", () => {
-    const items = [
-      { accountantId: "b", relevance: 5 },
-      { accountantId: "a", relevance: 5 },
-      { accountantId: "c", relevance: 5 },
-    ];
-    const r1 = rankAccountants(items, new Set()).map((x) => x.accountantId);
-    const r2 = rankAccountants(items, new Set()).map((x) => x.accountantId);
-    expect(r1).toEqual(r2); // deterministic
-    expect(r1).toEqual(["a", "b", "c"]); // stable id tie-break
   });
 });
