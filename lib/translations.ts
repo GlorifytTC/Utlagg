@@ -281,7 +281,6 @@ export interface Translations {
   audienceFirmBody: string;
   audienceFirmCta: string;
   audienceFree: string;
-  trustBankid: string;
   trustAudit: string;
   trustEu: string;
   fbKicker: string;
@@ -924,7 +923,6 @@ export interface Translations {
   priv5Li3: string;
   priv5Li4: string;
   priv5Li5: string;
-  priv5Li6: string;
   priv5Li7: string;
   priv5P2: string;
   priv6Title: string;
@@ -1490,7 +1488,6 @@ export interface Translations {
   spPurposeOcr: string;
   spPurposeAi: string;
   spPurposeFallback: string;
-  spPurposeFortnox: string;
   spEuRegion: string;
   spNoticePre: string;
   annZoomOut: string;
@@ -1672,7 +1669,7 @@ export const strings: Record<Lang, Translations> = {
     howStep2Title: "Granska",
     howStep2Body: "Kontrollera de ifyllda fälten och välj BAS-konto. Allt är redigerbart innan du sparar.",
     howStep3Title: "Exportera",
-    howStep3Body: "Exportera till SIE, CSV eller Fortnox - redo för din bokföring och Skatteverket.",
+    howStep3Body: "Exportera till SIE, CSV eller PDF - redo för din bokföring och Skatteverket.",
     footerProduct: "Produkt",
     footerCompany: "Företag",
     footerLegal: "Juridik",
@@ -2148,7 +2145,7 @@ export const strings: Record<Lang, Translations> = {
     heroVisualItem2: "Kaffe ×2",
     heroVisualTotal: "Totalt",
     heroVisualReady: "Godkänt · redo för utbetalning",
-    heroVisualFortnox: "Exporteras till Fortnox",
+    heroVisualFortnox: "Redo för SIE-export",
     fvRecLodging: "Logi 1 natt",
     fvRecBreakfast: "Frukost",
     fvRecParking: "Parkering",
@@ -2177,9 +2174,9 @@ export const strings: Record<Lang, Translations> = {
     feature4Title: "7-årig revisionslogg",
     feature4Body:
       "Varje åtgärd loggas med tidsstämpel och IP enligt bokföringslagen.",
-    feature5Title: "SIE, CSV, PDF & Fortnox",
+    feature5Title: "SIE, CSV & PDF",
     feature5Body:
-      "Exportera i formatet din bokföring vill ha, eller skicka direkt till Fortnox.",
+      "Exportera i formatet din bokföring vill ha.",
     feature6Title: "Milersättning & kollektivtrafik",
     feature6Body:
       "Logga körda mil med sparade rutter och fordon, eller registrera kollektivtrafikbiljetter. Ersättningen räknas ut enligt Skatteverkets schabloner eller företagets regler.",
@@ -2210,7 +2207,6 @@ export const strings: Record<Lang, Translations> = {
       "500 skanningar/mån",
       "SIE/PDF-export, moms & BAS",
       "Milersättning",
-      "Fortnox-integration",
       "7-årig revisionslogg",
     ],
     planBusinessFeatures: [
@@ -2284,7 +2280,6 @@ export const strings: Record<Lang, Translations> = {
     audienceFirmBody: "Se vad som behöver granskas hos varje klient, rätta direkt och exportera SIE per klient.",
     audienceFirmCta: "Så fungerar det för byråer",
     audienceFree: "Gratis",
-    trustBankid: "Inloggning med BankID",
     trustAudit: "7-årig revisionslogg",
     trustEu: "Primär lagring i Sverige och EU",
     fbKicker: "För redovisningsbyråer",
@@ -2363,7 +2358,7 @@ export const strings: Record<Lang, Translations> = {
     pricingTableBas: "BAS-autokategorisering",
     pricingTableCurrency: "Flera valutor",
     pricingTableSie4: "SIE4-export",
-    pricingTableSync: "Fortnox / Visma / Bokio-synk",
+    pricingTableSync: "Export till Visma / Bokio / Fortnox (SIE4)",
     pricingTableRoles: "Rollbaserad åtkomst",
     pricingTableLimits: "Beloppsgränser",
     pricingTableOnboarding: "Anpassad onboarding",
@@ -2387,8 +2382,8 @@ export const strings: Record<Lang, Translations> = {
     cookieGdprRights: "Du har rätt att begära tillgång till, rättelse av och radering av dina personuppgifter, samt att lämna in ett klagomål till IMY om du anser att dina rättigheter enligt GDPR inte uppfylls.",
     cookieCatNecessaryLabel: "Nödvändiga",
     cookieCatNecessaryBasis: "LEK - strikt nödvändigt undantag",
-    cookieCatNecessaryDesc: "Dessa cookies krävs för att tjänsten ska fungera. De hanterar inloggningssessioner, CSRF-skydd och BankID-autentisering. De är undantagna från samtyckeskrav enligt lag om elektronisk kommunikation (LEK) och behandlar inga personuppgifter utöver vad som är strikt nödvändigt för tjänsteleveransen.",
-    cookieCatNecessaryExamples: "Sessions-ID, CSRF-token, BankID-sessionstoken",
+    cookieCatNecessaryDesc: "Dessa cookies krävs för att tjänsten ska fungera. De hanterar inloggningssessioner och CSRF-skydd. De är undantagna från samtyckeskrav enligt lag om elektronisk kommunikation (LEK) och behandlar inga personuppgifter utöver vad som är strikt nödvändigt för tjänsteleveransen.",
+    cookieCatNecessaryExamples: "Sessions-ID, CSRF-token",
     cookieCatNecessaryRetention: "Session - max 8 timmar",
     cookieCatFunctionalLabel: "Funktionella",
     cookieCatFunctionalBasis: "GDPR Art. 6(1)(a) - samtycke",
@@ -2411,7 +2406,7 @@ export const strings: Record<Lang, Translations> = {
     priv1DpaLink: "personuppgiftsbiträdesavtal (DPA)",
     priv2Title: "2. Vilka uppgifter vi samlar in",
     priv2AccountLabel: "Kontoinformation",
-    priv2AccountDesc: "Namn, e-postadress, krypterat lösenord och inloggningsmetod (e-post/lösenord eller BankID). Vid inloggning med BankID behandlas ditt personnummer vid inloggningstillfället som en del av autentiseringen, men vi lagrar det inte; vi bevarar endast en referens till den genomförda autentiseringen.",
+    priv2AccountDesc: "Namn, e-postadress, krypterat lösenord och inloggningsmetod (e-post/lösenord).",
     priv2CompanyLabel: "Företagsinformation",
     priv2CompanyDesc: "Företagsnamn, organisationsnummer, momsregistreringsnummer och postadress om du registrerar ett företag i tjänsten.",
     priv2BookLabel: "Bokföringsunderlag",
@@ -2483,9 +2478,8 @@ export const strings: Record<Lang, Translations> = {
     priv5Li3: "Betalningshantering (Stripe, EU/USA med lämpliga skyddsåtgärder)",
     priv5Li4: "Transaktionsmejl och inkommande kvittomejl (Brevo, EU)",
     priv5Li5: "AI-baserad OCR av kvitton (Google Gemini API, USA med lämpliga skyddsåtgärder) och, där de aktiverats, reservtjänster för OCR",
-    priv5Li6: "Bokföringsintegration (Fortnox) - endast om du själv kopplar ditt konto",
     priv5Li7: "Webbläsarbaserad OCR (Tesseract) hämtar sina bibliotek från CDN-tjänster (jsDelivr)",
-    priv5P2: "Om du själv kopplar ditt konto till Fortnox överförs bokföringsdata dit på din begäran. Revisorer och byråer som du ger åtkomst till ser dina uppgifter enligt avsnitt 2. Vi säljer aldrig personuppgifter till tredje part och delar dem aldrig för marknadsföringsändamål utan ditt uttryckliga samtycke. Vi kan lämna ut uppgifter till myndigheter (t.ex. Skatteverket, Polisen) om vi är skyldiga att göra det enligt lag.",
+    priv5P2: "Revisorer och byråer som du ger åtkomst till ser dina uppgifter enligt avsnitt 2. Vi säljer aldrig personuppgifter till tredje part och delar dem aldrig för marknadsföringsändamål utan ditt uttryckliga samtycke. Vi kan lämna ut uppgifter till myndigheter (t.ex. Skatteverket, Polisen) om vi är skyldiga att göra det enligt lag.",
     priv6Title: "6. Överföring till tredjeland",
     priv6P1: "Vi eftersträvar att lagra och behandla personuppgifter inom EU/EES. Vissa underbiträden - bl.a. Google (Gemini API för OCR) och Stripe - är etablerade i eller kan behandla uppgifter i USA. Sådana överföringar sker med stöd av EU-kommissionens standardavtalsklausuler (SCC, art. 46.2.c GDPR) och/eller EU-US Data Privacy Framework där leverantören är certifierad.",
     priv6P2Pre: "Du kan begära information om vilka skyddsåtgärder som gäller för en specifik underbiträdare genom att kontakta oss på",
@@ -2541,7 +2535,7 @@ export const strings: Record<Lang, Translations> = {
     terms2P2: "Dessa villkor gäller för samtliga planer och provperioder om inget annat skriftligen avtalats.",
     terms2P3: "Ändringar av villkoren hanteras enligt § 15. För konsumenter förutsätter väsentliga ändringar till din nackdel att du underrättas i förväg och ges möjlighet att säga upp avtalet utan kostnad innan ändringen träder i kraft.",
     terms3Title: "§ 3 Tjänstens omfattning",
-    terms3P1: "Kvittino är en webbaserad SaaS-tjänst (Software as a Service) för skanning och hantering av kvitton, körjournalföring, utläggsattest, kollektivtrafikregistrering och fakturahantering samt för samarbete med redovisningskonsulter och byråer och export till bokföring (SIE, CSV, PDF och Fortnox) - anpassad för svenska momssatser (6/12/25 %), BAS-kontoplanen och Bokföringslagens krav.",
+    terms3P1: "Kvittino är en webbaserad SaaS-tjänst (Software as a Service) för skanning och hantering av kvitton, körjournalföring, utläggsattest, kollektivtrafikregistrering och fakturahantering samt för samarbete med redovisningskonsulter och byråer och export till bokföring (SIE, CSV och PDF) - anpassad för svenska momssatser (6/12/25 %), BAS-kontoplanen och Bokföringslagens krav.",
     terms3P2: "Vi strävar efter hög tillgänglighet men garanterar inte avbrottsfri drift. Planerat underhåll och oplanerade driftstörningar kan förekomma. Tjänsten tillhandahålls i befintligt skick (\"as-is\"), med de begränsningar som följer av § 13.",
     terms3P3: "AI-genererade värden - t.ex. OCR-utläsning av leverantör, belopp och momssats - är hjälpmedel och utgör inte juridiskt bindande underlag. Du ansvarar alltid för att kontrollera och godkänna uppgifter innan de sparas eller exporteras. Vi fattar inte automatiserade beslut med rättslig verkan för dig (se integritetspolicyns avsnitt om automatiserat beslutsfattande).",
     terms4Title: "§ 4 Konton och åtkomst",
@@ -2976,7 +2970,7 @@ export const strings: Record<Lang, Translations> = {
     cbQ1: "Hur fungerar kvittoskanningen?",
     cbA1: "Fota kvittot, ladda upp en PDF eller vidarebefordra det via mejl - även från Kivra. AI:n läser leverantör, organisationsnummer, datum, totalbelopp och moms på några sekunder och föreslår BAS-konto. Den lär sig av dina rättningar.",
     cbQ2: "Vilka bokföringsprogram stöds?",
-    cbA2: "Fortnox kopplas direkt från Pro och uppåt. Visma, Bokio och andra program fungerar via SIE4-export. Du kan också exportera CSV, PDF och underlag till Skatteverket.",
+    cbA2: "Fortnox, Visma, Bokio och andra program fungerar via SIE4-export. Du kan också exportera CSV, PDF och underlag till Skatteverket.",
     cbQ3: "Var lagras mina data?",
     cbA3: "Främst i Sverige, inom EU/EES. Kvittobilder ligger i privat lagring bakom signerade länkar, all trafik går över TLS och en revisionslogg sparas i sju år enligt Bokföringslagen.",
     cbQ4: "Hur fungerar provperioden?",
@@ -3021,7 +3015,7 @@ export const strings: Record<Lang, Translations> = {
     secEncTitle: "Kryptering",
     secEncBody: "All trafik sker över TLS (HTTPS). Lösenord lagras hashade med bcrypt. Känsliga värden kan krypteras i vila med AES-256-GCM.",
     secAuthTitle: "Åtkomst & autentisering",
-    secAuthBody: "Inloggning via e-post/lösenord eller BankID. Säkerhetsrubriker (CSP, HSTS, X-Frame-Options m.fl.) sätts på alla svar. Känsliga åtgärder loggas i en revisionslogg som bevaras i sju år.",
+    secAuthBody: "Inloggning via e-post/lösenord. Säkerhetsrubriker (CSP, HSTS, X-Frame-Options m.fl.) sätts på alla svar. Känsliga åtgärder loggas i en revisionslogg som bevaras i sju år.",
     secStorageTitle: "Kvittolagring & integritet",
     secStorageBody: "Kvittobilder lagras i privat objektlagring och nås via tidsbegränsade signerade länkar. Varje bild får en SHA-256-summa vid uppladdning för att kunna upptäcka förändring (i linje med Bokföringslagens krav på oföränderlig digital kopia).",
     secReportTitle: "Rapportera sårbarhet",
@@ -3043,7 +3037,6 @@ export const strings: Record<Lang, Translations> = {
     spPurposeOcr: "OCR av kvitton",
     spPurposeAi: "AI-baserad OCR av kvitton (Gemini API)",
     spPurposeFallback: "Reserv-OCR, endast om aktiverad",
-    spPurposeFortnox: "Bokföringsintegration, endast på kundens begäran",
     spEuRegion: "- (EU-region)",
     spNoticePre: "Vi underrättar företagskunder minst trettio (30) dagar innan vi lägger till eller byter ut ett underbiträde, i enlighet med DPA:ts punkt 5. Vill du få sådana underrättelser, kontakta",
     annZoomOut: "Zooma ut",
@@ -3223,7 +3216,7 @@ export const strings: Record<Lang, Translations> = {
     howStep2Title: "Review",
     howStep2Body: "Check the filled-in fields and choose a BAS account. Everything stays editable before you save.",
     howStep3Title: "Export",
-    howStep3Body: "Export to SIE, CSV or Fortnox - ready for your books and the Swedish Tax Agency.",
+    howStep3Body: "Export to SIE, CSV or PDF - ready for your books and the Swedish Tax Agency.",
     footerProduct: "Product",
     footerCompany: "Company",
     footerLegal: "Legal",
@@ -3699,7 +3692,7 @@ export const strings: Record<Lang, Translations> = {
     heroVisualItem2: "Coffee ×2",
     heroVisualTotal: "Total",
     heroVisualReady: "Approved · ready for payout",
-    heroVisualFortnox: "Exports to Fortnox",
+    heroVisualFortnox: "Ready for SIE export",
     fvRecLodging: "Lodging, 1 night",
     fvRecBreakfast: "Breakfast",
     fvRecParking: "Parking",
@@ -3729,9 +3722,9 @@ export const strings: Record<Lang, Translations> = {
     feature4Title: "7-year audit log",
     feature4Body:
       "Every action logged with timestamp and IP per the Accounting Act.",
-    feature5Title: "SIE, CSV, PDF & Fortnox",
+    feature5Title: "SIE, CSV & PDF",
     feature5Body:
-      "Export in the format your bookkeeping wants, or send straight to Fortnox.",
+      "Export in the format your bookkeeping wants.",
     feature6Title: "Mileage & public transport",
     feature6Body:
       "Log mileage with saved routes and vehicles, or register public transport tickets. Reimbursement follows Swedish Tax Agency rates or company policy.",
@@ -3758,7 +3751,6 @@ export const strings: Record<Lang, Translations> = {
       "500 scans/month",
       "SIE/PDF export, VAT & BAS",
       "Mileage allowance",
-      "Fortnox integration",
       "7-year audit log",
     ],
     planBusinessFeatures: [
@@ -3831,7 +3823,6 @@ export const strings: Record<Lang, Translations> = {
     audienceFirmBody: "See what needs review at each client, correct it directly and export SIE per client.",
     audienceFirmCta: "How it works for firms",
     audienceFree: "Free",
-    trustBankid: "BankID login",
     trustAudit: "7-year audit log",
     trustEu: "Stored primarily in Sweden and the EU",
     fbKicker: "For accounting firms",
@@ -3910,7 +3901,7 @@ export const strings: Record<Lang, Translations> = {
     pricingTableBas: "BAS auto-categorisation",
     pricingTableCurrency: "Multi-currency",
     pricingTableSie4: "SIE4 export",
-    pricingTableSync: "Fortnox / Visma / Bokio sync",
+    pricingTableSync: "Export to Visma / Bokio / Fortnox (SIE4)",
     pricingTableRoles: "Role-based access",
     pricingTableLimits: "Spending limits",
     pricingTableOnboarding: "Custom onboarding",
@@ -3934,8 +3925,8 @@ export const strings: Record<Lang, Translations> = {
     cookieGdprRights: "You have the right to access, rectify, and erase your personal data, and to lodge a complaint with IMY if you believe your rights under GDPR are not upheld.",
     cookieCatNecessaryLabel: "Necessary",
     cookieCatNecessaryBasis: "LEK - strictly necessary exemption",
-    cookieCatNecessaryDesc: "These cookies are required for the service to function. They handle login sessions, CSRF protection, and BankID authentication. They are exempt from consent requirements under the Swedish Electronic Communications Act (LEK) and process no personal data beyond what is strictly required for service delivery.",
-    cookieCatNecessaryExamples: "Session ID, CSRF token, BankID session token",
+    cookieCatNecessaryDesc: "These cookies are required for the service to function. They handle login sessions and CSRF protection. They are exempt from consent requirements under the Swedish Electronic Communications Act (LEK) and process no personal data beyond what is strictly required for service delivery.",
+    cookieCatNecessaryExamples: "Session ID, CSRF token",
     cookieCatNecessaryRetention: "Session - max 8 hours",
     cookieCatFunctionalLabel: "Functional",
     cookieCatFunctionalBasis: "GDPR Art. 6(1)(a) - consent",
@@ -3958,7 +3949,7 @@ export const strings: Record<Lang, Translations> = {
     priv1DpaLink: "data processing agreement (DPA)",
     priv2Title: "2. Data We Collect",
     priv2AccountLabel: "Account information",
-    priv2AccountDesc: "Name, email address, encrypted password and login method (email/password or BankID). When logging in with BankID, your personal identity number is processed at the time of authentication as part of the authentication, but we do not store it; we only retain a reference to the completed authentication.",
+    priv2AccountDesc: "Name, email address, encrypted password and login method (email/password).",
     priv2CompanyLabel: "Company information",
     priv2CompanyDesc: "Company name, registration number, VAT number and postal address if you register a company in the service.",
     priv2BookLabel: "Accounting records",
@@ -4030,9 +4021,8 @@ export const strings: Record<Lang, Translations> = {
     priv5Li3: "Payment processing (Stripe, EU/US with appropriate safeguards)",
     priv5Li4: "Transactional email and inbound receipt email (Brevo, EU)",
     priv5Li5: "AI-based OCR of receipts (Google Gemini API, US with appropriate safeguards) and, where enabled, fallback OCR services",
-    priv5Li6: "Bookkeeping integration (Fortnox) - only if you connect your account yourself",
     priv5Li7: "Browser-based OCR (Tesseract) loads its libraries from CDN services (jsDelivr)",
-    priv5P2: "If you connect your account to Fortnox, accounting data is transferred there at your request. Accountants and firms that you grant access see your data as described in section 2. We never sell personal data to third parties and never share it for marketing purposes without your explicit consent. We may disclose data to authorities (e.g. the Swedish Tax Agency, the Police) if we are obliged to do so by law.",
+    priv5P2: "Accountants and firms that you grant access see your data as described in section 2. We never sell personal data to third parties and never share it for marketing purposes without your explicit consent. We may disclose data to authorities (e.g. the Swedish Tax Agency, the Police) if we are obliged to do so by law.",
     priv6Title: "6. Transfers to Third Countries",
     priv6P1: "We aim to store and process personal data within the EU/EEA. Certain sub-processors - including Google (Gemini API for OCR) and Stripe - are established in or may process data in the USA. Such transfers take place on the basis of the European Commission's standard contractual clauses (SCC, art. 46.2.c GDPR) and/or the EU-US Data Privacy Framework where the supplier is certified.",
     priv6P2Pre: "You can request information about the safeguards applicable to a specific sub-processor by contacting us at",
@@ -4088,7 +4078,7 @@ export const strings: Record<Lang, Translations> = {
     terms2P2: "These terms apply to all plans and trial periods unless otherwise agreed in writing.",
     terms2P3: "Changes to the terms are handled in accordance with § 15. For consumers, material changes to your detriment require advance notice and the opportunity to terminate the agreement without charge before the change takes effect.",
     terms3Title: "§ 3 Scope of Service",
-    terms3P1: "Kvittino is a web-based SaaS (Software as a Service) for scanning and managing receipts, mileage logging, expense approval, public transport recording and invoice management, and for collaboration with accountants and firms and export to bookkeeping (SIE, CSV, PDF and Fortnox) - adapted to Swedish VAT rates (6/12/25 %), the BAS chart of accounts and the requirements of the Bookkeeping Act.",
+    terms3P1: "Kvittino is a web-based SaaS (Software as a Service) for scanning and managing receipts, mileage logging, expense approval, public transport recording and invoice management, and for collaboration with accountants and firms and export to bookkeeping (SIE, CSV and PDF) - adapted to Swedish VAT rates (6/12/25 %), the BAS chart of accounts and the requirements of the Bookkeeping Act.",
     terms3P2: "We strive for high availability but do not guarantee uninterrupted operation. Planned maintenance and unplanned outages may occur. The service is provided \"as-is\", with the limitations set out in § 13.",
     terms3P3: "AI-generated values - e.g. OCR readings of supplier, amount and VAT rate - are decision-support tools and do not constitute legally binding records. You are always responsible for checking and approving data before it is saved or exported. We do not make automated decisions with legal effect for you (see the automated decision-making section of the privacy policy).",
     terms4Title: "§ 4 Accounts and Access",
@@ -4523,7 +4513,7 @@ export const strings: Record<Lang, Translations> = {
     cbQ1: "How does receipt scanning work?",
     cbA1: "Snap a photo, upload a PDF or forward it by email - Kivra included. The AI reads vendor, org number, date, total and VAT in seconds and suggests a BAS account. It learns from your corrections.",
     cbQ2: "Which accounting tools are supported?",
-    cbA2: "Fortnox connects directly on Pro and up. Visma, Bokio and other tools work via SIE4 export. You can also export CSV, PDF and a Skatteverket report.",
+    cbA2: "Fortnox, Visma, Bokio and other tools work via SIE4 export. You can also export CSV, PDF and a Skatteverket report.",
     cbQ3: "Where is my data stored?",
     cbA3: "Primarily in Sweden, within the EU/EEA. Receipt images sit in private storage behind signed links, all traffic uses TLS, and a seven-year audit log is kept per Bokföringslagen.",
     cbQ4: "How does the free trial work?",
@@ -4568,7 +4558,7 @@ export const strings: Record<Lang, Translations> = {
     secEncTitle: "Encryption",
     secEncBody: "All traffic runs over TLS (HTTPS). Passwords are stored hashed with bcrypt. Sensitive values can be encrypted at rest with AES-256-GCM.",
     secAuthTitle: "Access & authentication",
-    secAuthBody: "Sign-in via email/password or BankID. Security headers (CSP, HSTS, X-Frame-Options and more) are set on all responses. Sensitive actions are recorded in an audit log that is kept for seven years.",
+    secAuthBody: "Sign-in via email/password. Security headers (CSP, HSTS, X-Frame-Options and more) are set on all responses. Sensitive actions are recorded in an audit log that is kept for seven years.",
     secStorageTitle: "Receipt storage & integrity",
     secStorageBody: "Receipt images are stored in private object storage and accessed via time-limited signed links. Each image gets a SHA-256 checksum on upload so changes can be detected (in line with the Swedish Bookkeeping Act's requirement for an unalterable digital copy).",
     secReportTitle: "Report a vulnerability",
@@ -4590,7 +4580,6 @@ export const strings: Record<Lang, Translations> = {
     spPurposeOcr: "Receipt OCR",
     spPurposeAi: "AI-based receipt OCR (Gemini API)",
     spPurposeFallback: "Fallback OCR, only if enabled",
-    spPurposeFortnox: "Bookkeeping integration, only at the customer's request",
     spEuRegion: "- (EU region)",
     spNoticePre: "We notify business customers at least thirty (30) days before adding or replacing a subprocessor, in accordance with section 5 of the DPA. To receive such notices, contact",
     annZoomOut: "Zoom out",

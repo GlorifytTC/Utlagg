@@ -12,7 +12,6 @@ const rows = (t: Translations): [string, string, string, string][] => [
   ["Upstash", t.spPurposeRedis, "EU", "-"],
   ["Google (Gemini API)", t.spPurposeAi, "US", "SCC / DPF"],
   ["OpenAI, Mindee, OCR.space, Google Cloud Vision", t.spPurposeFallback, "US/EU", "SCC / DPF"],
-  ["Fortnox", t.spPurposeFortnox, "EU", "-"],
 ];
 
 export default function SubprocessorsPage() {

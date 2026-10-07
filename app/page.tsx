@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, ScrollText, Server, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, ScrollText, Server } from "lucide-react";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
@@ -23,7 +23,6 @@ function HomeContent() {
   const rm = useReducedMotion();
 
   const trust = [
-    { icon: ShieldCheck, label: t.trustBankid },
     { icon: ScrollText, label: t.trustAudit },
     { icon: Server, label: t.trustEu },
   ];

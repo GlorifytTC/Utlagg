@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, CreditCard, Plug, SlidersHorizontal, Store, User } from "lucide-react";
+import { Building2, CreditCard, SlidersHorizontal, Store, User } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { SettingsShell } from "@/components/settings/SettingsShell";
 
@@ -26,7 +26,6 @@ export function UserSettingsLayout({ showBilling, children }: { showBilling: boo
             { href: `${base}/company`, label: t.navCompany, icon: Building2 },
             { href: `${base}/accountants`, label: t.setAccountants, icon: Store },
             ...(showBilling ? [{ href: `${base}/billing`, label: t.navSubscription, icon: CreditCard }] : []),
-            { href: `${base}/integrations`, label: t.navIntegrations, icon: Plug },
           ],
         },
       ]}

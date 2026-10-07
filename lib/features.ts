@@ -18,7 +18,7 @@ export const FEATURE_MIN_TIER: Record<Feature, Tier> = {
 };
 
 export const FEATURE_LABEL: Record<Feature, string> = {
-  fortnox: "Fortnox-integration",
+  fortnox: "Bokföringsintegration",
   mileage: "Milersättning",
   approvals: "Attestflöden",
   invoicing: "Fakturering",

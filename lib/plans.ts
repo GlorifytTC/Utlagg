@@ -44,7 +44,6 @@ const FEATURES: Record<Tier, string[]> = {
     "500 skanningar/mån",
     "SIE/PDF-export, moms & BAS",
     "Milersättning",
-    "Fortnox-integration",
     "7-årig revisionslogg",
   ],
   business: [

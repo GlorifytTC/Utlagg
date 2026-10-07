@@ -168,7 +168,7 @@ context), `entitlements.ts` (feature gates; read-only → no premium features), 
 
 `lib/billing/export-gating.ts` → `assertExportAllowed(userId, format)`, pure core
 in `export-gating-core.ts` → `canUseExport({state}, format)`. Wired into **every**
-export entry point (SIE, PDF, CSV, Skatteverket, mileage, transport, Fortnox sync).
+export entry point (SIE, PDF, CSV, Skatteverket, mileage, transport).
 
 - **Active / trial →** all formats.
 - **Read-only →** `GATED_EXPORT_FORMATS` (`sie`, `sie4`, `premium_pdf`,

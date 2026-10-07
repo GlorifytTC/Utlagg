@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Kvittino - AI-driven kvittohantering",
     short_name: "Kvittino",
     description:
-      "Smart kvittoscanning med AI, svensk momshantering och Fortnox-integration.",
+      "Smart kvittoscanning med AI och svensk momshantering.",
     start_url: "/dashboard",
     display: "standalone",
     background_color: "#FAF8F3",

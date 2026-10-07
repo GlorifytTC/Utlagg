@@ -145,7 +145,6 @@ export default function PrivacyPage() {
             <li>{t.priv5Li3}</li>
             <li>{t.priv5Li4}</li>
             <li>{t.priv5Li5}</li>
-            <li>{t.priv5Li6}</li>
             <li>{t.priv5Li7}</li>
           </ul>
           <p>{t.priv5P2}</p>

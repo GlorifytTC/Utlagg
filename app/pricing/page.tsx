@@ -28,7 +28,6 @@ const PRICING_TABLE_ROWS = [
   { labelKey: "pricingTableBas", starter: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
   { labelKey: "pricingTableCurrency", starter: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
   { labelKey: "pricingTableSie4", starter: "✓", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableSync", starter: "-", pro: "✓", business: "✓", max: "✓", enterprise: "✓" },
   { labelKey: "pricingTableRoles", starter: "-", pro: "-", business: "✓", max: "✓", enterprise: "✓" },
   { labelKey: "pricingTableLimits", starter: "-", pro: "-", business: "✓", max: "✓", enterprise: "✓" },
   { labelKey: "pricingTableOnboarding", starter: "-", pro: "-", business: "-", max: "✓", enterprise: "✓" },
