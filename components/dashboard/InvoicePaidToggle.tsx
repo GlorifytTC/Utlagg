@@ -34,7 +34,7 @@ export function InvoicePaidToggle({ id, paid, variant = "button" }: Props) {
         type="button"
         disabled={loading}
         onClick={toggle}
-        className="text-sm text-nordic-600 underline underline-offset-2 hover:text-nordic-700 disabled:opacity-50 dark:text-nordic-300"
+        className="inline-flex min-h-11 items-center text-sm text-nordic-600 underline underline-offset-2 hover:text-nordic-700 disabled:opacity-50 md:min-h-0 dark:text-nordic-300"
       >
         {paid ? t.invMarkUnpaid : t.invMarkPaid}
       </button>

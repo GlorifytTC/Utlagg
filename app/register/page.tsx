@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
+import { Field } from "@/components/auth/Field";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 
 // Cooldown between verification-email sends. Also armed right after signup so
@@ -12,7 +14,18 @@ const RESEND_COOLDOWN = 30;
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense
+      fallback={
+        <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
+          <div className="w-full max-w-sm space-y-4" aria-hidden="true">
+            <div className="skeleton h-8 w-32 rounded-lg" />
+            <div className="skeleton h-11 w-full rounded-xl" />
+            <div className="skeleton h-11 w-full rounded-xl" />
+            <div className="skeleton h-11 w-full rounded-full" />
+          </div>
+        </main>
+      }
+    >
       <RegisterForm />
     </Suspense>
   );
@@ -101,18 +114,18 @@ function RegisterForm() {
     return (
       <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
         <div className="w-full max-w-sm text-center">
-          <Link href="/">
+          <Link href="/" className="inline-block rounded focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
             <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
           </Link>
           <h1 className="mt-8 font-display text-3xl font-semibold tracking-tight">{t.regCheckInbox}</h1>
           {emailFailed ? (
             <>
-              <p className="mt-4 text-sm text-red-600">
+              <p role="alert" className="mt-4 text-sm text-red-600">
                 {withEmail(t.regEmailFailed, sentTo)}
               </p>
               <p className="mt-4 text-sm text-ink/70">
                 {t.regEmailFailedHelpPre}{" "}
-                <a href="mailto:support@kvittino.se" className="text-nordic-600 underline">
+                <a href="mailto:support@kvittino.se" className="text-nordic-700 underline">
                   support@kvittino.se
                 </a>{" "}
                 {t.regEmailFailedHelpPost}
@@ -127,31 +140,31 @@ function RegisterForm() {
           {/* Resend, available in both cases - whether the first send failed
               outright or the mail simply never turned up. */}
           <div className="mt-6">
-            <button
+            <Button
+              className="dark:!text-white"
               onClick={resendVerification}
               disabled={cooldown > 0 || resendState === "sending"}
-              className="rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {resendState === "sending"
                 ? t.stSubmitting
                 : cooldown > 0
                   ? t.regResendIn.replace("{n}", String(cooldown))
                   : t.regResend}
-            </button>
+            </Button>
             {resendState === "sent" && cooldown > 0 && (
-              <p className="mt-2 text-sm text-green-700">
+              <p role="status" className="mt-2 text-sm text-green-700">
                 {withEmail(t.regResent, sentTo)}
               </p>
             )}
             {resendState === "error" && (
-              <p className="mt-2 text-sm text-red-600">
+              <p role="alert" className="mt-2 text-sm text-red-600">
                 {t.regResendError}
               </p>
             )}
           </div>
-          <p className="mt-6 text-sm text-ink/60">
+          <p className="mt-6 text-sm text-ink/65">
             {t.regNoMailPre}{" "}
-            <Link href="/login" className="text-nordic-600 underline">
+            <Link href="/login" className="text-nordic-700 underline">
               {t.regNoMailLogin}
             </Link>{" "}
             {t.regNoMailPost}
@@ -164,11 +177,11 @@ function RegisterForm() {
   return (
     <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
       <div className="w-full max-w-sm">
-        <Link href="/">
+        <Link href="/" className="inline-block rounded focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
         <h1 className="mt-8 font-display text-3xl font-semibold tracking-tight">{t.authCreateAccount}</h1>
-        <p className="mt-2 text-sm text-ink/60">
+        <p className="mt-2 text-sm text-ink/65">
           {accountType === "accountant"
             ? t.regAccountantSubtitle
             : t.regUserSubtitle}
@@ -178,51 +191,48 @@ function RegisterForm() {
         <div className="mt-5 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
           <button
             type="button"
+            aria-pressed={accountType === "user"}
             onClick={() => setAccountType("user")}
             className={
-              "break-words rounded-lg border px-3 py-3 text-left text-sm transition-colors " +
+              "break-words rounded-lg border px-3 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 " +
               (accountType === "user"
                 ? "border-ink bg-ink/[0.03]"
                 : "hairline hover:border-ink/40")
             }
           >
             <span className="block font-medium text-ink">{t.regTypeUser}</span>
-            <span className="mt-0.5 block text-xs text-ink/50">{t.regTypeUserDesc}</span>
+            <span className="mt-0.5 block text-xs text-ink/65">{t.regTypeUserDesc}</span>
           </button>
           <button
             type="button"
+            aria-pressed={accountType === "accountant"}
             onClick={() => setAccountType("accountant")}
             className={
-              "break-words rounded-lg border px-3 py-3 text-left text-sm transition-colors " +
+              "break-words rounded-lg border px-3 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 " +
               (accountType === "accountant"
                 ? "border-ink bg-ink/[0.03]"
                 : "hairline hover:border-ink/40")
             }
           >
             <span className="block font-medium text-ink">{t.regTypeAccountant}</span>
-            <span className="mt-0.5 block text-xs text-ink/50">{t.regTypeAccountantDesc}</span>
+            <span className="mt-0.5 block text-xs text-ink/65">{t.regTypeAccountantDesc}</span>
           </button>
         </div>
 
         <div className="mt-6 space-y-4">
-          <input placeholder={t.regName} value={form.name} onChange={update("name")}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
-          <input placeholder={accountType === "accountant" ? t.regFirmOptional : t.regCompanyOptional} value={form.companyName} onChange={update("companyName")}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
-          <input type="email" placeholder={t.fldEmail} value={form.email} onChange={update("email")}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
-          <input type="password" placeholder={t.regPasswordHint} value={form.password} onChange={update("password")}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30" />
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <button onClick={handleSubmit} disabled={loading}
-            className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.98] active:opacity-90 disabled:opacity-60">
+          <Field id="reg-name" autoComplete="name" label={t.regName} value={form.name} onChange={update("name")} />
+          <Field id="reg-company" autoComplete="organization" label={accountType === "accountant" ? t.regFirmOptional : t.regCompanyOptional} value={form.companyName} onChange={update("companyName")} />
+          <Field id="reg-email" type="email" autoComplete="email" label={t.fldEmail} value={form.email} error={!!error} onChange={update("email")} />
+          <Field id="reg-password" type="password" autoComplete="new-password" label={t.regPasswordHint} value={form.password} error={!!error}
+            onChange={update("password")} onKeyDown={(e) => e.key === "Enter" && handleSubmit()} />
+          {error && <p id="form-error" role="alert" className="text-sm text-red-600">{error}</p>}
+          <Button onClick={handleSubmit} disabled={loading} className="w-full dark:!text-white">
             {loading ? t.regCreating : t.authCreateAccount}
-          </button>
+          </Button>
         </div>
-        <p className="mt-6 text-sm text-ink/60">
+        <p className="mt-6 text-sm text-ink/65">
           {t.regHaveAccount}{" "}
-          <Link href="/login" className="text-nordic-600 underline">{t.login}</Link>
+          <Link href="/login" className="text-nordic-700 underline">{t.login}</Link>
         </p>
       </div>
     </main>

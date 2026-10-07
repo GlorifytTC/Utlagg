@@ -15,7 +15,7 @@ import {
   Legend,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { formatSek } from "@/lib/utils";
+import { formatSek, localeFor } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 import { Palette } from "lucide-react";
 import { Select } from "@/components/ui/input";
@@ -89,7 +89,7 @@ export function StatsClient() {
   // Localised month names for the picker (Januari… / January…). Built from
   // Intl so we never have to hand-maintain 12 translation keys per language.
   const monthNames = useMemo(() => {
-    const locale = lang === "en" ? "en-US" : "sv-SE";
+    const locale = localeFor(lang);
     const fmt = new Intl.DateTimeFormat(locale, { month: "long" });
     return Array.from({ length: 12 }, (_, i) => {
       const name = fmt.format(new Date(2020, i, 1));
@@ -163,9 +163,10 @@ export function StatsClient() {
             {(["month", "year"] as Range[]).map((r) => (
               <button
                 key={r}
+                type="button"
                 onClick={() => setMode(r)}
                 aria-pressed={mode === r}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-300 ease-premium ${
+                className={`min-h-11 rounded-full px-4 py-1.5 text-sm font-medium transition duration-300 ease-premium focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 md:min-h-0 ${
                   mode === r
                     ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
                     : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -208,11 +209,12 @@ export function StatsClient() {
           {/* Chart palette picker */}
           <div className="relative">
             <button
+              type="button"
               onClick={() => setPickerOpen((o) => !o)}
               aria-expanded={pickerOpen}
-              className={buttonClass("outline", "h-10")}
+              className={buttonClass("outline")}
             >
-              <Palette className="h-4 w-4" strokeWidth={1.75} />
+              <Palette className="h-4 w-4" strokeWidth={1.75} aria-hidden />
               {theme.name}
             </button>
             {pickerOpen && (
@@ -221,8 +223,9 @@ export function StatsClient() {
                 {Object.entries(THEMES).map(([key, th]) => (
                   <button
                     key={key}
+                    type="button"
                     onClick={() => chooseTheme(key as keyof typeof THEMES)}
-                    className={`flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-sm hover:bg-gray-900/[0.04] dark:hover:bg-white/[0.06] ${
+                    className={`flex min-h-11 w-full items-center gap-2 rounded-xl px-2 py-1.5 text-sm md:min-h-0 hover:bg-gray-900/[0.04] dark:hover:bg-white/[0.06] ${
                       key === themeKey ? "bg-gray-900/[0.05] dark:bg-white/[0.08]" : ""
                     }`}
                   >
@@ -257,7 +260,7 @@ export function StatsClient() {
         {/* Trend chart */}
         <Card className="lg:col-span-3">
           <CardHeader>
-            <CardTitle>{t.stTrend}</CardTitle>
+            <CardTitle as="h2">{t.stTrend}</CardTitle>
             <CardDescription>
               {mode === "month" ? `${monthNames[selMonth]} ${selYear}` : selYear}
             </CardDescription>
@@ -287,7 +290,7 @@ export function StatsClient() {
         {/* Category donut */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>{t.stByCategory}</CardTitle>
+            <CardTitle as="h2">{t.stByCategory}</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -328,7 +331,7 @@ export function StatsClient() {
       {pieData.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>{t.stByCategory}</CardTitle>
+            <CardTitle as="h2">{t.stByCategory}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {pieData
@@ -347,7 +350,14 @@ export function StatsClient() {
                         {formatSek(p.value)} · {pct.toFixed(0)}% {t.stShareOfTotal}
                       </span>
                     </div>
-                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.08]">
+                    <div
+                      role="progressbar"
+                      aria-label={p.name}
+                      aria-valuenow={Math.round(pct)}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.08]"
+                    >
                       <div
                         className="h-full rounded-full transition-all"
                         style={{ width: `${pct}%`, background: p.color }}

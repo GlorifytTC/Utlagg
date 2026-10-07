@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/input";
+import { PageHeader } from "@/components/ui/page-header";
+import { ErrorState } from "@/components/ui/error-state";
+import { AdminTabs } from "@/components/admin/AdminTabs";
 
 type Status = "pending" | "approved" | "rejected";
 
@@ -21,18 +27,20 @@ export default function AdminVerificationsPage() {
   const [tab, setTab] = useState<Status>("pending");
   const [rows, setRows] = useState<Accountant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setError(false);
     try {
       const res = await fetch(`/api/admin/verifications?status=${tab}`);
       if (!res.ok) throw new Error();
       setRows((await res.json()).accountants);
     } catch {
-      toast.error("Kunde inte ladda verifieringar");
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -85,30 +93,25 @@ export default function AdminVerificationsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Verifieringar</h1>
+      <PageHeader title="Verifieringar" />
 
-      <div className="flex gap-2">
-        {(Object.keys(TAB_LABEL) as Status[]).map((s) => (
-          <button
-            key={s}
-            onClick={() => setTab(s)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-              tab === s
-                ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                : "text-gray-500 hover:text-gray-800 dark:text-gray-400"
-            }`}
-          >
-            {TAB_LABEL[s]}
-          </button>
-        ))}
-      </div>
+      <AdminTabs
+        label="Status"
+        value={tab}
+        onChange={setTab}
+        tabs={(Object.keys(TAB_LABEL) as Status[]).map((s) => ({ key: s, label: TAB_LABEL[s] }))}
+      />
 
       <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
-        <div>
-          {loading ? (
-            <p className="text-sm text-gray-500">Laddar…</p>
+        <div className={cn(selected && "max-lg:hidden")}>
+          {error ? (
+            <ErrorState onRetry={load} retryLabel="Försök igen">Kunde inte ladda verifieringar.</ErrorState>
+          ) : loading ? (
+            <div className="space-y-2" role="status" aria-label="Laddar">
+              {[0, 1, 2].map((i) => <div key={i} className="skeleton h-20 rounded-2xl" />)}
+            </div>
           ) : rows.length === 0 ? (
-            <p className="text-sm text-gray-500">Inga ärenden.</p>
+            <div className="panel rounded-2xl p-6 text-center text-sm text-gray-500 dark:text-gray-400">Inga ärenden.</div>
           ) : (
             <ul className="space-y-2">
               {rows.map((r) => (
@@ -117,15 +120,15 @@ export default function AdminVerificationsPage() {
                     onClick={() => setSelectedId(r.id)}
                     aria-current={selectedId === r.id}
                     className={cn(
-                      "w-full rounded-2xl border bg-white p-4 text-left transition dark:bg-[#0D0D0D]",
+                      "w-full rounded-2xl border bg-white p-4 text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:bg-[#0D0D0D]",
                       selectedId === r.id
                         ? "border-nordic-600 ring-2 ring-nordic-600/15"
                         : "border-gray-200 hover:border-gray-300 dark:border-white/[0.08] dark:hover:border-white/[0.16]",
                     )}
                   >
                     <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{r.name ?? r.email}</p>
-                    {r.name && <p className="truncate text-xs text-gray-500">{r.email}</p>}
-                    <p className="mt-2 text-xs text-gray-400">{new Date(r.verificationUpdatedAt).toLocaleString("sv-SE")}</p>
+                    {r.name && <p className="truncate text-xs text-gray-500 dark:text-gray-400">{r.email}</p>}
+                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{new Date(r.verificationUpdatedAt).toLocaleString("sv-SE")}</p>
                   </button>
                 </li>
               ))}
@@ -133,52 +136,46 @@ export default function AdminVerificationsPage() {
           )}
         </div>
 
-        <div className="min-w-0 rounded-2xl border border-gray-200 bg-white dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className={cn("panel min-w-0 rounded-2xl", !selected && "max-lg:hidden")}>
           {!selected ? (
-            <p className="p-8 text-center text-sm text-gray-500">Välj en revisor för att granska dokumentet.</p>
+            <p className="p-8 text-center text-sm text-gray-500 dark:text-gray-400">Välj en revisor för att granska dokumentet.</p>
           ) : (
             <div className="space-y-4 p-5">
+              <Button variant="ghost" className="-ml-2 lg:hidden" onClick={() => setSelectedId(null)}>
+                <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
+                Tillbaka
+              </Button>
               <div>
-                <p className="text-xs text-gray-500">Namn som visas med märket</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Namn som visas med märket</p>
                 <p className="font-medium">{selected.name ?? "(inget namn)"}</p>
-                <p className="text-xs text-gray-400">{selected.email}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{selected.email}</p>
               </div>
-              <button
-                onClick={() => openDocument(selected.id)}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-white/[0.08] dark:text-gray-300 dark:hover:bg-white/[0.04]"
-              >
+              <Button variant="outline" onClick={() => openDocument(selected.id)}>
                 Öppna dokument
-              </button>
-              <p className="text-xs text-gray-500">Kontrollera att namnet stämmer med dokumentet innan du godkänner.</p>
+              </Button>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Kontrollera att namnet stämmer med dokumentet innan du godkänner.</p>
               {selected.verificationNote && (
-                <p className="rounded-lg bg-gray-50 p-3 text-sm dark:bg-white/[0.04]">Anteckning: {selected.verificationNote}</p>
+                <p className="rounded-xl bg-gray-900/[0.04] p-3 text-sm dark:bg-white/[0.06]">Anteckning: {selected.verificationNote}</p>
               )}
-              <textarea
+              <Textarea
+                aria-label="Anteckning till revisorn"
                 placeholder="Anteckning till revisorn (valfri, visas vid avslag)…"
                 rows={2}
                 maxLength={500}
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-white/[0.08] dark:bg-transparent dark:text-white"
+                className="resize-none"
               />
               <div className="flex flex-wrap gap-2">
                 {selected.verificationStatus !== "rejected" && (
-                  <button
-                    disabled={busy}
-                    onClick={() => decide(selected, "rejected")}
-                    className="rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 disabled:opacity-60 dark:border-red-900/50 dark:text-red-400"
-                  >
+                  <Button variant="destructive" disabled={busy} onClick={() => decide(selected, "rejected")}>
                     {selected.verificationStatus === "approved" ? "Återkalla" : "Avslå"}
-                  </button>
+                  </Button>
                 )}
                 {selected.verificationStatus !== "approved" && (
-                  <button
-                    disabled={busy}
-                    onClick={() => decide(selected, "approved")}
-                    className="rounded-lg bg-gray-900 px-3 py-1.5 text-sm text-white hover:opacity-80 disabled:opacity-60 dark:bg-white dark:text-gray-900"
-                  >
+                  <Button disabled={busy} onClick={() => decide(selected, "approved")}>
                     Godkänn
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>

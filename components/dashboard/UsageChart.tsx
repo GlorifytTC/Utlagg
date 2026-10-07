@@ -15,7 +15,7 @@ export function UsageChart({
   return (
     <Card className="rounded-2xl panel transition-shadow hover:shadow-sm">
       <CardHeader className="pb-4">
-        <CardTitle className="font-display text-lg text-gray-900 dark:text-white">
+        <CardTitle as="h2" className="text-gray-900 dark:text-white">
           {t.scansThisMonth}
         </CardTitle>
         <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
@@ -26,12 +26,19 @@ export function UsageChart({
       </CardHeader>
       <CardContent>
         {unlimited ? (
-          <p className="text-3xl font-semibold text-nordic-600 dark:text-nordic-600">
+          <p className="text-3xl font-semibold text-nordic-600">
             {used}
           </p>
         ) : (
           <div>
-            <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.08]">
+            <div
+              role="progressbar"
+              aria-label={t.scansThisMonth}
+              aria-valuenow={used}
+              aria-valuemin={0}
+              aria-valuemax={limit}
+              className="h-3 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.08]"
+            >
               <div
                 className={`h-full rounded-full transition-all duration-700 ease-out ${
                   pct >= 100

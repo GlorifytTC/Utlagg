@@ -7,5 +7,9 @@ export const dynamic = "force-dynamic";
 
 export default async function ChatsPage() {
   const session = await getServerSession(authOptions);
-  return <ChatInbox role="accountant" currentUserId={session?.user?.id ?? ""} />;
+  return (
+    <div className="max-w-6xl">
+      <ChatInbox role="accountant" currentUserId={session?.user?.id ?? ""} />
+    </div>
+  );
 }

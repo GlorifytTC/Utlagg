@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Briefcase } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
+import { buttonClass } from "@/components/ui/button";
 
 /**
  * Shows a link into the accountant workspace only when the signed-in user is
@@ -35,7 +36,7 @@ export function AccountantEntryLink() {
   return (
     <Link
       href="/accountant"
-      className="inline-flex items-center gap-2 rounded-full border border-gray-900/[0.12] px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-gray-900/40 dark:border-white/[0.12] dark:text-gray-300 dark:hover:border-white/40"
+      className={buttonClass("outline")}
     >
       <Briefcase size={15} />
       {t.entryLink}

@@ -5,11 +5,24 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
+import { Field } from "@/components/auth/Field";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense
+      fallback={
+        <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
+          <div className="w-full max-w-sm space-y-4" aria-hidden="true">
+            <div className="skeleton h-8 w-32 rounded-lg" />
+            <div className="skeleton h-11 w-full rounded-xl" />
+            <div className="skeleton h-11 w-full rounded-xl" />
+            <div className="skeleton h-11 w-full rounded-full" />
+          </div>
+        </main>
+      }
+    >
       <LoginForm />
     </Suspense>
   );
@@ -25,7 +38,7 @@ function LoginForm() {
   const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [unverified, setUnverified] = useState(false);
-  const [resendState, setResendState] = useState<"idle" | "sending" | "sent">("idle");
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   useEffect(() => {
     const verify = searchParams.get("verify");
@@ -78,69 +91,72 @@ function LoginForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      await res.json().catch(() => null);
-    } finally {
-      setResendState("sent");
+      setResendState(res.ok ? "sent" : "error");
+    } catch {
+      setResendState("error");
     }
   }
 
   return (
     <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
       <div className="w-full max-w-sm">
-        <Link href="/">
+        <Link href="/" className="inline-block rounded focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
         <h1 className="mt-8 font-display text-3xl font-semibold tracking-tight">{t.login}</h1>
         <div className="mt-6 space-y-4">
-          <input
+          <Field
+            id="login-email"
             type="email"
-            placeholder={t.fldEmail}
+            autoComplete="email"
+            label={t.fldEmail}
             value={email}
+            error={!!error}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
           />
-          <input
+          <Field
+            id="login-password"
             type="password"
-            placeholder={t.authPassword}
+            autoComplete="current-password"
+            label={t.authPassword}
             value={password}
+            error={!!error}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
           />
-          {notice && !error && <p className="text-sm text-nordic-700">{notice}</p>}
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {notice && !error && <p role="status" className="text-sm text-nordic-700">{notice}</p>}
+          {error && <p id="form-error" role="alert" className="text-sm text-red-600">{error}</p>}
           {unverified && (
             <div className="rounded-lg bg-nordic-50 px-4 py-3 text-sm text-nordic-900">
               {resendState === "sent" ? (
-                <p>{t.authResentTo.replace("{email}", email)}</p>
+                <p role="status">{t.authResentTo.replace("{email}", email)}</p>
               ) : (
-                <button
-                  type="button"
-                  onClick={handleResend}
-                  disabled={resendState === "sending"}
-                  className="underline disabled:opacity-60"
-                >
-                  {resendState === "sending" ? t.stSubmitting : t.authResend}
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={resendState === "sending"}
+                    className="inline-flex min-h-11 items-center underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 disabled:opacity-60"
+                  >
+                    {resendState === "sending" ? t.stSubmitting : t.authResend}
+                  </button>
+                  {resendState === "error" && <p role="alert" className="text-red-600">{t.regResendError}</p>}
+                </>
               )}
             </div>
           )}
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
-          >
+          <Button onClick={handleSubmit} disabled={loading} className="w-full dark:!text-white">
             {loading ? t.authLoggingIn : t.login}
-          </button>
+          </Button>
         </div>
-        <p className="mt-6 text-sm text-ink/60">
+        <p className="mt-6 text-sm text-ink/65">
           {t.authNoAccount}{" "}
-          <Link href="/register" className="inline-block py-2 text-nordic-600 underline">
+          <Link href="/register" className="inline-block py-2 text-nordic-700 underline">
             {t.authCreateAccount}
           </Link>
         </p>
-        <p className="text-sm text-ink/60">
-          <Link href="/forgot-password" className="inline-block py-2 text-nordic-600 underline">
+        <p className="text-sm text-ink/65">
+          <Link href="/forgot-password" className="inline-block py-2 text-nordic-700 underline">
             {t.authForgotPassword}
           </Link>
         </p>

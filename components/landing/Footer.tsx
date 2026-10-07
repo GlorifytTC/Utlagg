@@ -42,7 +42,7 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-[2fr_1fr_1fr_1fr]">
           <div className="col-span-2 md:col-span-1">
             <p className="font-display text-2xl font-semibold tracking-tight">{t.footerTitle}</p>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink/60">
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink/65">
               {t.footerDescription}
             </p>
             <div className="mt-6 flex flex-wrap gap-2 text-xs text-ink/70">
@@ -57,7 +57,7 @@ export function Footer() {
               <ul className="mt-4 space-y-0.5 text-sm md:space-y-2.5">
                 {c.links.map((l) => (
                   <li key={l.href}>
-                    <Link href={l.href} className="inline-block py-2 text-ink/60 transition duration-300 ease-premium hover:text-ink">
+                    <Link href={l.href} className="inline-block rounded py-2 text-ink/65 transition duration-300 ease-premium hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
                       {l.label}
                     </Link>
                   </li>
@@ -67,7 +67,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-16 border-t hairline pt-6 text-xs text-ink/50">
+        <div className="mt-16 border-t hairline pt-6 text-xs text-ink/65">
           <p>{t.footerCopyright.replace("{year}", String(year))}</p>
         </div>
       </div>

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useLanguage } from "@/context/LanguageContext";
 
 export function ReceiptDetailActions({
@@ -16,6 +16,7 @@ export function ReceiptDetailActions({
   const { t } = useLanguage();
   const router = useRouter();
   const [busy, setBusy] = useState<null | "approve" | "delete">(null);
+  const [confirming, setConfirming] = useState(false);
 
   async function approve() {
     setBusy("approve");
@@ -29,7 +30,7 @@ export function ReceiptDetailActions({
   }
 
   async function remove() {
-    if (!confirm(t.receiptDeleteConfirm)) return;
+    setConfirming(false);
     setBusy("delete");
     await fetch(`/api/receipts/${id}`, { method: "DELETE" });
     // Back to the list, which re-fetches the (now smaller) page on mount.
@@ -39,31 +40,33 @@ export function ReceiptDetailActions({
   return (
     <div className="flex flex-wrap gap-2">
       {status === "pending" && (
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
+        <Button
+          variant="outline"
           onClick={approve}
           disabled={busy !== null}
-          className={cn(
-            "rounded-full border border-gray-900/[0.15] px-4 py-1.5 text-sm hover:border-emerald-400 hover:text-emerald-700 dark:border-white/[0.15]",
-            busy && "opacity-50",
-          )}
+          className="hover:border-emerald-400 hover:text-emerald-700 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
         >
           {busy === "approve" ? "…" : t.receiptApprove}
-        </motion.button>
+        </Button>
       )}
-      <motion.button
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        onClick={remove}
+      <Button
+        variant="outline"
+        onClick={() => setConfirming(true)}
         disabled={busy !== null}
-        className={cn(
-          "rounded-full border border-gray-900/[0.15] px-4 py-1.5 text-sm text-red-600 hover:border-red-400 dark:border-white/[0.15]",
-          busy && "opacity-50",
-        )}
+        className="text-red-600 hover:border-red-400 dark:text-red-400"
       >
         {busy === "delete" ? "…" : t.receiptDelete}
-      </motion.button>
+      </Button>
+      <ConfirmDialog
+        open={confirming}
+        title={t.receiptDeleteTitle}
+        description={t.receiptDeleteConfirm}
+        confirmLabel={t.receiptDelete}
+        cancelLabel={t.btnCancel}
+        destructive
+        onConfirm={remove}
+        onCancel={() => setConfirming(false)}
+      />
     </div>
   );
 }

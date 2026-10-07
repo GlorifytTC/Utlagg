@@ -9,6 +9,8 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { formatSek } from "@/lib/utils";
 import {
   computeInvoiceTotals,
   formatSellerAddress,
@@ -27,7 +29,6 @@ const emptyLine = (): InvoiceLine => ({
   unitPrice: 0,
   vatRate: 25,
 });
-const kr = (n: number) => n.toFixed(2).replace(".", ",");
 const plusDays = (iso: string, days: number) => {
   const d = new Date(iso);
   d.setDate(d.getDate() + days);
@@ -131,8 +132,8 @@ export default function NewInvoicePage() {
       {seller && (
         <Card>
           <CardHeader className="flex-row items-start justify-between gap-3 space-y-0">
-            <CardTitle>{t.invFromTitle}</CardTitle>
-            <Link href="/dashboard/settings/company" className="text-sm text-nordic-600 underline">
+            <CardTitle as="h2">{t.invFromTitle}</CardTitle>
+            <Link href="/dashboard/settings/company" className="text-sm text-nordic-600 underline dark:text-nordic-400">
               {t.invFromEdit}
             </Link>
           </CardHeader>
@@ -155,7 +156,7 @@ export default function NewInvoicePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t.invCustomer}</CardTitle>
+          <CardTitle as="h2">{t.invCustomer}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -229,7 +230,7 @@ export default function NewInvoicePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t.invLines}</CardTitle>
+          <CardTitle as="h2">{t.invLines}</CardTitle>
           <CardDescription>{t.invLinesDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -237,6 +238,7 @@ export default function NewInvoicePage() {
             <div key={i} className="grid grid-cols-2 gap-2 rounded-xl border border-gray-900/[0.07] p-3 dark:border-white/[0.07] sm:grid-cols-12 sm:rounded-none sm:border-0 sm:p-0">
               <Input
                 className="col-span-2 sm:col-span-5"
+                aria-label={`${t.phDescription} ${i + 1}`}
                 placeholder={t.phDescription}
                 value={l.description}
                 onChange={(e) => setLine(i, { description: e.target.value })}
@@ -251,6 +253,7 @@ export default function NewInvoicePage() {
                 onChange={(e) =>
                   setLine(i, { quantity: Number(e.target.value) })
                 }
+                aria-label={`${t.phQuantity} ${i + 1}`}
                 placeholder={t.phQuantity}
               />
               <Input
@@ -263,11 +266,12 @@ export default function NewInvoicePage() {
                 onChange={(e) =>
                   setLine(i, { unitPrice: Number(e.target.value) })
                 }
+                aria-label={`${t.phUnitPrice} ${i + 1}`}
                 placeholder={t.phUnitPrice}
               />
               <Select
                 disabled={reverseCharge}
-                aria-label={t.invColVat}
+                aria-label={`${t.invColVat} ${i + 1}`}
                 className="col-span-1 px-2 sm:col-span-2"
                 value={l.vatRate}
                 onChange={(e) =>
@@ -281,13 +285,13 @@ export default function NewInvoicePage() {
               </Select>
               <Button
                 variant="ghost"
-                className="col-span-2 h-10 w-10 justify-self-end sm:col-span-1 !p-0 sm:justify-self-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                className="col-span-2 !h-11 !w-11 justify-self-end sm:col-span-1 md:!h-10 md:!w-10 !p-0 sm:justify-self-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                 onClick={() =>
                   setLines((ls) =>
                     ls.length > 1 ? ls.filter((_, idx) => idx !== i) : ls
                   )
                 }
-                aria-label={t.ariaRemoveRow}
+                aria-label={`${t.ariaRemoveRow} ${i + 1}`}
                 title={t.ariaRemoveRow}
               >
                 <X className="h-4 w-4" strokeWidth={1.75} />
@@ -305,32 +309,30 @@ export default function NewInvoicePage() {
 
       <Card>
         <CardContent className="space-y-3 p-5">
-          <label className="flex items-start gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={reverseCharge}
-              onChange={(e) => setReverseCharge(e.target.checked)}
-              className="mt-0.5"
-            />
-            <span>
-              {t.invReversePre} &quot;{REVERSE_CHARGE_TEXT}&quot;.{" "}
-              {t.invReversePost}
-            </span>
-          </label>
+          <Checkbox
+            checked={reverseCharge}
+            onChange={(e) => setReverseCharge(e.target.checked)}
+            labelClassName="items-start"
+            label={
+              <>
+                {t.invReversePre} &quot;{REVERSE_CHARGE_TEXT}&quot;. {t.invReversePost}
+              </>
+            }
+          />
           <div className="text-sm tabular-nums">
             <div className="flex justify-between">
               <span>{t.invSubtotal}</span>
-              <span>{kr(totals.subtotal)} kr</span>
+              <span>{formatSek(totals.subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span>{t.invColVat}</span>
               <span>
-                {reverseCharge ? t.invVatReverse : `${kr(totals.vatTotal)} kr`}
+                {reverseCharge ? t.invVatReverse : formatSek(totals.vatTotal)}
               </span>
             </div>
             <div className="flex justify-between font-semibold">
               <span>{t.invToPay}</span>
-              <span>{kr(totals.total)} kr</span>
+              <span>{formatSek(totals.total)}</span>
             </div>
           </div>
           <Button onClick={save} disabled={loading}>

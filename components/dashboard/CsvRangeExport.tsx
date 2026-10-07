@@ -45,7 +45,7 @@ export function CsvRangeExport() {
   return (
     <Card className="panel rounded-2xl transition-shadow hover:shadow-sm">
       <CardHeader className="pb-4">
-        <CardTitle className="font-display text-lg text-gray-900 dark:text-white">{t.csvTitle}</CardTitle>
+        <CardTitle as="h2" className="text-gray-900 dark:text-white">{t.csvTitle}</CardTitle>
         <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
           {t.csvDesc}
         </CardDescription>
@@ -70,12 +70,12 @@ export function CsvRangeExport() {
         </div>
         <div className="grid gap-3 sm:flex sm:flex-wrap sm:items-end">
           <div className="space-y-1">
-            <Label className="text-xs text-gray-500 dark:text-gray-400">{t.csvFrom}</Label>
-            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="sm:!w-auto" />
+            <Label htmlFor="csv-from" className="!text-xs text-gray-500 dark:text-gray-400">{t.csvFrom}</Label>
+            <Input id="csv-from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="sm:!w-auto" />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs text-gray-500 dark:text-gray-400">{t.csvTo}</Label>
-            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="sm:!w-auto" />
+            <Label htmlFor="csv-to" className="!text-xs text-gray-500 dark:text-gray-400">{t.csvTo}</Label>
+            <Input id="csv-to" type="date" value={to} onChange={(e) => setTo(e.target.value)} className="sm:!w-auto" />
           </div>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="sm:w-auto">
             <Button

@@ -146,11 +146,11 @@ function Toggle({
       type="button"
       role="switch"
       aria-checked={checked}
-      aria-label={`${label} cookies - ${checked ? "enabled" : "disabled"}`}
+      aria-label={label}
       disabled={disabled}
       onClick={() => onChange?.(!checked)}
       className={cn(
-        "relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nordic-600 focus-visible:ring-offset-2",
+        "relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200 before:absolute before:-inset-2.5 before:content-[''] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20",
         checked ? "bg-ink" : "bg-ink/15",
         disabled && "cursor-not-allowed opacity-50",
       )}
@@ -192,13 +192,13 @@ function CategoryRow({
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+          className="flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-lg text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
           aria-expanded={expanded}
         >
           <motion.span
             animate={{ rotate: expanded ? 180 : 0 }}
             transition={{ duration: 0.2 }}
-            className="shrink-0 text-ink/30"
+            className="shrink-0 text-ink/60"
           >
             <IconChevron />
           </motion.span>
@@ -208,12 +208,12 @@ function CategoryRow({
                 {cat.label}
               </span>
               {cat.required ? (
-                <span className="rounded-full bg-ink/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink/50">
+                <span className="rounded-full bg-ink/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink/65">
                   {t.cookieAlwaysActive}
                 </span>
               ) : null}
             </div>
-            <p className="mt-0.5 truncate text-xs text-ink/40">
+            <p className="mt-0.5 truncate text-xs text-ink/65">
               {cat.legalBasis}
             </p>
           </div>
@@ -240,13 +240,13 @@ function CategoryRow({
               <p className="text-xs leading-relaxed text-ink/70">
                 {cat.description}
               </p>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink/45">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink/65">
                 <span>
-                  <span className="font-medium text-ink/55">{t.cookieExamples}:</span>{" "}
+                  <span className="font-medium text-ink/75">{t.cookieExamples}:</span>{" "}
                   {cat.examples}
                 </span>
                 <span>
-                  <span className="font-medium text-ink/55">{t.cookieRetention}:</span>{" "}
+                  <span className="font-medium text-ink/75">{t.cookieRetention}:</span>{" "}
                   {cat.retention}
                 </span>
               </div>
@@ -316,6 +316,8 @@ export function CookieConsent() {
       {!leaving && (
         <motion.div
           key="cookie-consent"
+          role="dialog"
+          aria-label={t.cookieTitle}
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 32, opacity: 0 }}
@@ -335,13 +337,13 @@ export function CookieConsent() {
                 </p>
               </div>
               <div className="hidden items-center gap-2 sm:flex">
-                <span className="rounded-full border hairline px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink/40">
+                <span className="rounded-full border hairline px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink/60">
                   GDPR
                 </span>
-                <span className="rounded-full border hairline px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink/40">
+                <span className="rounded-full border hairline px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink/60">
                   LEK
                 </span>
-                <span className="rounded-full border hairline px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink/40">
+                <span className="rounded-full border hairline px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink/60">
                   IMY
                 </span>
               </div>
@@ -353,7 +355,7 @@ export function CookieConsent() {
                 {t.cookieBody}{" "}
                 <Link
                   href="/legal/privacy"
-                  className="text-nordic-600 underline decoration-dotted transition hover:decoration-solid"
+                  className="rounded text-nordic-700 underline decoration-dotted transition hover:decoration-solid focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
                 >
                   {t.cookiePrivacyLink}
                 </Link>
@@ -390,19 +392,19 @@ export function CookieConsent() {
                     </div>
 
                     <div className="mt-3 rounded-xl border hairline bg-white/30 px-4 py-3">
-                      <p className="text-[11px] leading-relaxed text-ink/50">
-                        <span className="font-medium text-ink/60">
+                      <p className="text-[11px] leading-relaxed text-ink/65">
+                        <span className="font-medium text-ink/75">
                           {t.cookieDataController}:
                         </span>{" "}
                         {t.cookieDataControllerValue}{" "}
-                        <span className="font-medium text-ink/60">
+                        <span className="font-medium text-ink/75">
                           {t.cookieSupervisory}:
                         </span>{" "}
                         <a
                           href="https://www.imy.se"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-nordic-600 underline decoration-dotted transition hover:decoration-solid"
+                          className="rounded text-nordic-700 underline decoration-dotted transition hover:decoration-solid focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
                         >
                           IMY - Integritetsskyddsmyndigheten
                         </a>
@@ -419,7 +421,7 @@ export function CookieConsent() {
               {/* Primary */}
               <button
                 onClick={() => commit({ functional: true, analytics: true })}
-                className="rounded-full bg-ink px-5 py-3 sm:py-2.5 text-sm font-medium text-paper transition hover:bg-nordic-900"
+                className="min-h-11 rounded-full bg-ink px-5 py-3 sm:min-h-0 sm:py-2.5 text-sm font-medium text-paper transition hover:bg-nordic-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
               >
                 {t.cookieAcceptAll}
               </button>
@@ -427,7 +429,7 @@ export function CookieConsent() {
               {/* Equal-prominence reject - required by IMY guidance */}
               <button
                 onClick={() => commit({ functional: false, analytics: false })}
-                className="rounded-full border hairline px-5 py-3 sm:py-2.5 text-sm font-medium text-ink/75 transition hover:border-ink/30 hover:text-ink"
+                className="min-h-11 rounded-full border hairline px-5 py-3 sm:min-h-0 sm:py-2.5 text-sm font-medium text-ink/75 transition hover:border-ink/30 hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
               >
                 {t.cookieRejectAll}
               </button>
@@ -442,7 +444,7 @@ export function CookieConsent() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.12 }}
                     onClick={() => setManaging(true)}
-                    className="col-span-2 px-2 py-3 text-sm text-ink/45 sm:ml-auto sm:py-0 underline decoration-dotted transition hover:text-ink hover:decoration-solid"
+                    className="col-span-2 min-h-11 rounded-full px-2 py-3 text-sm text-ink/65 sm:ml-auto sm:min-h-0 sm:py-0 underline decoration-dotted transition hover:text-ink hover:decoration-solid focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
                   >
                     {t.cookieManage}
                   </motion.button>
@@ -454,7 +456,7 @@ export function CookieConsent() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.12 }}
                     onClick={() => commit({})}
-                    className="col-span-2 rounded-full border border-nordic-600/40 px-5 py-3 sm:ml-auto sm:py-2.5 text-sm font-medium text-nordic-600 transition hover:border-nordic-600 hover:bg-nordic-600/5"
+                    className="col-span-2 min-h-11 rounded-full border border-nordic-600/40 px-5 py-3 sm:ml-auto sm:min-h-0 sm:py-2.5 text-sm font-medium text-nordic-700 transition hover:border-nordic-600 hover:bg-nordic-600/5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
                   >
                     {t.cookieSave}
                   </motion.button>

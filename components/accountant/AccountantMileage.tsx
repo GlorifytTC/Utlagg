@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
-import { buttonClass } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/ui/error-state";
+import { formatDate, formatSek, localeFor } from "@/lib/utils";
 import { StatGrid } from "@/components/ui/stat";
 
 interface MileageRow {
@@ -24,14 +26,13 @@ interface Summary {
   totalAmount: number;
 }
 
-const nf = new Intl.NumberFormat("sv-SE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const kr = (n: unknown) => `${nf.format(Number(n) || 0)} kr`;
-const km = (n: unknown) => `${nf.format(Number(n) || 0)} km`;
-
 /** Read-only list of a client's mileage entries (Milersättning), with CSV export. */
 export function AccountantMileage({ companyId }: { companyId: string }) {
   const { lang } = useLanguage();
   const t = accountantStrings(lang);
+  const nf = new Intl.NumberFormat(localeFor(lang), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const kr = (n: unknown) => formatSek(Number(n) || 0);
+  const km = (n: unknown) => `${nf.format(Number(n) || 0)} km`;
   const [rows, setRows] = useState<MileageRow[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
@@ -78,7 +79,7 @@ export function AccountantMileage({ companyId }: { companyId: string }) {
       </div>
     );
   }
-  if (status === "error") return <p className="text-sm text-red-600">{t.mlLoadError}</p>;
+  if (status === "error") return <ErrorState>{t.mlLoadError}</ErrorState>;
   if (rows.length === 0) {
     return <div className="rounded-2xl panel p-10 text-center text-sm text-gray-500 dark:text-gray-400">{t.mlEmpty}</div>;
   }
@@ -97,14 +98,32 @@ export function AccountantMileage({ companyId }: { companyId: string }) {
             ]}
           />
           <div className="flex justify-end">
-            <button onClick={downloadCsv} disabled={downloading} className={buttonClass("outline")}>
+            <Button variant="outline" onClick={downloadCsv} disabled={downloading}>
               <Download className="h-4 w-4" strokeWidth={1.75} />
               {t.exCsv}
-            </button>
+            </Button>
           </div>
         </div>
       )}
-      <div className="overflow-x-auto rounded-2xl panel">
+      {/* Mobile: card list */}
+      <ul className="space-y-3 md:hidden">
+        {rows.map((r) => (
+          <li key={r.id} className="panel space-y-1 rounded-2xl p-4">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{formatDate(r.date, lang)}</span>
+              <span className="text-sm font-medium tabular-nums text-gray-900 dark:text-white">{kr(r.amount)}</span>
+            </div>
+            <p className="break-words text-sm text-gray-600 dark:text-gray-300">
+              {r.startAddress} → {r.endAddress}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {km(r.distanceKm)} · {r.purpose}
+            </p>
+          </li>
+        ))}
+      </ul>
+      {/* Desktop: table */}
+      <div className="hidden overflow-x-auto rounded-2xl panel md:block">
         <table className="w-full min-w-[640px]">
           <thead className="border-b border-gray-900/[0.06] text-left dark:border-white/[0.06]">
             <tr>
@@ -119,7 +138,7 @@ export function AccountantMileage({ companyId }: { companyId: string }) {
           <tbody className="divide-y divide-gray-900/[0.05] dark:divide-white/[0.05]">
             {rows.map((r) => (
               <tr key={r.id}>
-                <td className={td}>{r.date ? new Date(r.date).toLocaleDateString("sv-SE") : ""}</td>
+                <td className={td}>{r.date ? formatDate(r.date, lang) : ""}</td>
                 <td className={td}>{r.startAddress}</td>
                 <td className={td}>{r.endAddress}</td>
                 <td className={td}>{km(r.distanceKm)}</td>

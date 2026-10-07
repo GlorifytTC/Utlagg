@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/brand/Logo";
+import { useFocusTrap } from "@/components/useFocusTrap";
 
 // Shared chrome for the signed-in app: the user dashboard and the accountant
 // workspace differ only in their nav contents, so both render through this.
@@ -71,6 +72,8 @@ export function AppShell({
 }) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
+  const drawerRef = useRef<HTMLElement>(null);
+  useFocusTrap(open, drawerRef);
 
   // Drawer: lock page scroll underneath and close on Escape.
   useEffect(() => {
@@ -86,7 +89,7 @@ export function AppShell({
   }, [open]);
 
   return (
-    <div className="app-shell relative min-h-screen bg-[#F5F4F0] dark:bg-black dark:text-gray-100 print:bg-white print:min-h-0">
+    <div className="app-shell relative min-h-dvh bg-[#F5F4F0] dark:bg-black dark:text-gray-100 print:bg-white print:min-h-0">
       {/* Canvas texture + one warm glow; fixed layers, light theme only */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 opacity-[0.035] dark:hidden print:hidden" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden print:hidden dark:hidden">
@@ -124,8 +127,12 @@ export function AppShell({
             transition={{ duration: 0.25 }}
             className="fixed inset-0 z-40 lg:hidden print:hidden"
           >
-            <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
+            <div aria-hidden="true" className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
             <motion.aside
+              ref={drawerRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label={t.openMenu}
               initial={{ x: "-105%" }}
               animate={{ x: 0 }}
               exit={{ x: "-105%" }}
@@ -139,11 +146,11 @@ export function AppShell({
       </AnimatePresence>
 
       {/* Desktop top bar: account menu lives top-right, where people look for it */}
-      <div className="relative z-30 hidden h-16 items-center justify-end px-6 pt-3 lg:ml-[16.5rem] lg:flex xl:px-8 print:hidden">{headerEnd}</div>
+      <div className="relative z-30 hidden h-16 px-6 pt-3 lg:ml-[16.5rem] lg:block xl:px-8 print:hidden"><div className="mx-auto flex h-full max-w-[96rem] items-center justify-end">{headerEnd}</div></div>
 
       {/* No z-index here: page modals use fixed z-50 and must stack above the rail */}
-      <main className="min-h-[calc(100dvh-4.25rem)] p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-8 lg:ml-[16.5rem] lg:min-h-[calc(100vh-4rem)] lg:p-6 lg:pt-2 xl:p-8 xl:pt-2 print:ml-0 print:min-h-0 print:p-0">
-        {children}
+      <main className="min-h-[calc(100dvh-4.25rem)] p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-8 lg:ml-[16.5rem] lg:min-h-[calc(100dvh-4rem)] lg:p-6 lg:pt-2 xl:p-8 xl:pt-2 print:ml-0 print:min-h-0 print:p-0">
+        <div className="mx-auto max-w-[96rem]">{children}</div>
       </main>
 
       {/* Mobile bottom bar: floating, clear of the home indicator */}
@@ -154,7 +161,7 @@ export function AppShell({
             href={href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex flex-col items-center gap-1 rounded-2xl px-0.5 py-2 text-[11px] font-medium leading-tight transition duration-300 ease-premium active:scale-95",
+              "flex flex-col items-center gap-1 rounded-2xl px-0.5 py-2 text-xs font-medium leading-tight transition duration-300 ease-premium active:scale-95",
               active ? "bg-nordic-600/[0.09] text-nordic-700 dark:text-nordic-300" : "text-gray-500 dark:text-gray-400",
             )}
           >

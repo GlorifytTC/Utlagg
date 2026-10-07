@@ -139,7 +139,7 @@ export function AuditTimeline({ entries, showActor = false, loading = false }: P
           <Eye className="h-5 w-5 text-gray-300 dark:text-gray-600" />
         </div>
         <p className="font-display text-sm font-medium text-gray-900 dark:text-white">{t.auditEmptyTitle}</p>
-        <p className="max-w-xs text-sm text-gray-400 dark:text-gray-500">
+        <p className="max-w-xs text-sm text-gray-500 dark:text-gray-400">
           {t.auditEmptyBody}
         </p>
       </motion.div>
@@ -214,7 +214,7 @@ export function AuditTimeline({ entries, showActor = false, loading = false }: P
                             {label}
                           </span>
                           {showActor && actor && (
-                            <span className="ml-1.5 text-sm text-gray-400 dark:text-gray-500">
+                            <span className="ml-1.5 text-sm text-gray-500 dark:text-gray-400">
                               {t.auditBy.replace("{actor}", actor)}
                             </span>
                           )}
@@ -222,13 +222,13 @@ export function AuditTimeline({ entries, showActor = false, loading = false }: P
                         <time
                           dateTime={entry.createdAt}
                           title={new Date(entry.createdAt).toLocaleString(locale)}
-                          className="shrink-0 text-[11px] tabular-nums text-gray-400 dark:text-gray-500"
+                          className="shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400"
                         >
                           {relativeTime(entry.createdAt, t)}
                         </time>
                       </div>
                       {sub && (
-                        <p className="mt-0.5 truncate text-xs text-gray-400 dark:text-gray-500">
+                        <p className="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400">
                           {sub}
                         </p>
                       )}

@@ -9,7 +9,7 @@ export function AdminUserActions({ userId }: { userId: string }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
 
-  async function call(path: string, method: string, label: string, confirmText?: string) {
+  async function call(path: string, method: string, label: string, confirmText?: string, redirectAfter = false) {
     if (confirmText && !confirm(confirmText)) return;
     setBusy(label);
     setMsg(null);
@@ -17,7 +17,7 @@ export function AdminUserActions({ userId }: { userId: string }) {
     const ok = res.ok;
     setBusy(null);
     setMsg(ok ? `${label}: klart` : `${label}: misslyckades`);
-    if (ok && label === "Radera konto") router.push("/admin/users");
+    if (ok && redirectAfter) router.push("/admin/users");
     else router.refresh();
   }
 
@@ -40,11 +40,12 @@ export function AdminUserActions({ userId }: { userId: string }) {
       <Button
         variant="destructive"
         disabled={busy !== null}
-        onClick={() => call(`/api/admin/users/${userId}`, "DELETE", "Radera konto", "Radera detta konto permanent? Detta går inte att ångra.")}
+        onClick={() => call(`/api/admin/users/${userId}`, "DELETE", "Radera konto", "Radera detta konto permanent? Detta går inte att ångra.", true)}
       >
         Radera konto
       </Button>
-      {msg && <span className="text-sm text-gray-500">{msg}</span>}
+      {busy && <span role="status" className="text-sm text-gray-500 dark:text-gray-400">{busy}…</span>}
+      {!busy && msg && <span role="status" className="text-sm text-gray-500 dark:text-gray-400">{msg}</span>}
     </div>
   );
 }

@@ -9,11 +9,16 @@ export function formatSek(amount: number | string | null | undefined): string {
   }).format(n);
 }
 
-export function formatDate(d: Date | string | null | undefined): string {
+/** BCP-47 locale for the UI language. */
+export function localeFor(lang?: string): string {
+  return lang === "en" ? "en-GB" : "sv-SE";
+}
+
+export function formatDate(d: Date | string | null | undefined, lang?: string): string {
   if (!d) return "-";
   const date = typeof d === "string" ? new Date(d) : d;
   if (Number.isNaN(date.getTime())) return "-";
-  return new Intl.DateTimeFormat("sv-SE").format(date);
+  return new Intl.DateTimeFormat(localeFor(lang)).format(date);
 }
 
 export function cn(...classes: Array<string | false | null | undefined>): string {

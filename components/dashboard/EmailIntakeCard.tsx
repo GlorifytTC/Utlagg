@@ -43,7 +43,7 @@ export function EmailIntakeCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{t.setEmailIntakeTitle}</CardTitle>
+        <CardTitle>{t.setEmailIntakeTitle}</CardTitle>
         <CardDescription>{t.setEmailIntakeDesc}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-wrap items-center gap-2">

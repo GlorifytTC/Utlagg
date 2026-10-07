@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
+import { ErrorState } from "@/components/ui/error-state";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 
@@ -113,7 +114,7 @@ export function AccountantReceiptEditor({
   }
 
   if (status === "loading") return <p className="text-sm text-gray-500 dark:text-gray-400">{t.reLoading}</p>;
-  if (status === "error" || !detail) return <p className="text-sm text-red-600">{t.reLoadError}</p>;
+  if (status === "error" || !detail) return <ErrorState>{t.reLoadError}</ErrorState>;
 
   return (
     <div className="grid gap-6 md:grid-cols-[1fr_280px]">
@@ -140,7 +141,7 @@ export function AccountantReceiptEditor({
             {reviewed ? t.reMarkUnreviewed : t.reMarkReviewed}
           </Button>
           {reviewed && <span className="text-xs text-green-700 dark:text-green-300">{t.reReviewed}</span>}
-          {msg && <span className="text-xs text-gray-500 dark:text-gray-400">{msg}</span>}
+          {msg && <span role="status" className="text-xs text-gray-500 dark:text-gray-400">{msg}</span>}
         </div>
       </div>
 
@@ -168,7 +169,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   return (
     // Wrapping label binds the text to the control without threading ids through.
     <label className="block">
-      <span className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{label}</span>
+      <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
       {children}
     </label>
   );

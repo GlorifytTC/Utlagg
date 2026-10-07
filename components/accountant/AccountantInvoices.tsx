@@ -6,6 +6,9 @@ import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import type { InvoiceIncomeSummary } from "@/lib/invoice-income";
 import { StatGrid } from "@/components/ui/stat";
+import { Badge } from "@/components/ui/badge";
+import { ErrorState } from "@/components/ui/error-state";
+import { formatDate, formatSek } from "@/lib/utils";
 
 interface InvoiceRow {
   id: string;
@@ -18,8 +21,7 @@ interface InvoiceRow {
   status: string;
 }
 
-const money = new Intl.NumberFormat("sv-SE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const kr = (n: unknown) => `${money.format(Number(n) || 0)} kr`;
+const kr = (n: unknown) => formatSek(Number(n) || 0);
 
 /** Read-only list of a client's customer invoices. Each row opens the printable sheet. */
 export function AccountantInvoices({ companyId }: { companyId: string }) {
@@ -49,7 +51,7 @@ export function AccountantInvoices({ companyId }: { companyId: string }) {
       </div>
     );
   }
-  if (status === "error") return <p className="text-sm text-red-600">{t.ivLoadError}</p>;
+  if (status === "error") return <ErrorState>{t.ivLoadError}</ErrorState>;
   if (rows.length === 0) {
     return <div className="rounded-2xl panel p-10 text-center text-sm text-gray-500 dark:text-gray-400">{t.ivEmpty}</div>;
   }
@@ -93,24 +95,18 @@ export function AccountantInvoices({ companyId }: { companyId: string }) {
                   className="border-t border-gray-900/[0.07] transition-colors hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
                 >
                   <td className="px-5 py-3 text-sm font-medium">
-                    <Link href={`/accountant/clients/${companyId}/invoices/${r.id}`} className="text-nordic-600 transition hover:text-nordic-700 dark:text-nordic-300">
+                    <Link href={`/accountant/clients/${companyId}/invoices/${r.id}`} className="inline-flex min-h-11 items-center rounded-full text-nordic-600 transition hover:text-nordic-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-nordic-300">
                       {r.invoiceNumber}
                     </Link>
                   </td>
                   <td className="px-5 py-3 text-sm text-gray-900 dark:text-white">{r.buyerName}</td>
-                  <td className={td}>{r.issueDate.slice(0, 10)}</td>
-                  <td className={td}>{r.dueDate ? r.dueDate.slice(0, 10) : "-"}</td>
+                  <td className={td}>{formatDate(r.issueDate, lang)}</td>
+                  <td className={td}>{formatDate(r.dueDate, lang)}</td>
                   <td className={`${td} text-right tabular-nums`}>{kr(r.total)}</td>
                   <td className="px-5 py-3">
-                    <span
-                      className={
-                        r.status === "paid"
-                          ? "rounded-full bg-green-100/50 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900/20 dark:text-green-300"
-                          : "rounded-full bg-amber-100/50 px-2 py-0.5 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-300"
-                      }
-                    >
+                    <Badge tone={r.status === "paid" ? "success" : "warning"}>
                       {r.status === "paid" ? t.ivPaid : t.ivUnpaid}
-                    </span>
+                    </Badge>
                   </td>
                 </tr>
               ))}
@@ -121,22 +117,16 @@ export function AccountantInvoices({ companyId }: { companyId: string }) {
         <ul className="divide-y divide-gray-900/[0.07] dark:divide-white/[0.07] md:hidden">
           {rows.map((r) => (
             <li key={r.id}>
-              <Link href={`/accountant/clients/${companyId}/invoices/${r.id}`} className="flex min-h-[56px] items-center gap-3 p-4">
+              <Link href={`/accountant/clients/${companyId}/invoices/${r.id}`} className="flex min-h-[56px] items-center gap-3 p-4 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-nordic-600/20">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
                     #{r.invoiceNumber} · {r.buyerName}
                   </p>
                   <p className="text-xs tabular-nums text-gray-500 dark:text-gray-400">{kr(r.total)}</p>
                 </div>
-                <span
-                  className={
-                    r.status === "paid"
-                      ? "shrink-0 rounded-full bg-green-100/50 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900/20 dark:text-green-300"
-                      : "shrink-0 rounded-full bg-amber-100/50 px-2 py-0.5 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-300"
-                  }
-                >
+                <Badge tone={r.status === "paid" ? "success" : "warning"} className="shrink-0">
                   {r.status === "paid" ? t.ivPaid : t.ivUnpaid}
-                </span>
+                </Badge>
               </Link>
             </li>
           ))}

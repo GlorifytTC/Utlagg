@@ -39,7 +39,7 @@ export default function SecurityPage() {
           ))}
         </div>
 
-        <p className="mt-10 max-w-2xl text-xs leading-relaxed text-ink/50">{t.secDisclaimer}</p>
+        <p className="mt-10 max-w-2xl text-xs leading-relaxed text-ink/65">{t.secDisclaimer}</p>
       </main>
       <Footer />
     </div>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useLanguage } from "@/context/LanguageContext";
-import { fieldClass } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { computeRange, type PresetKey } from "@/lib/export-range";
 
 export type Period = { preset: PresetKey; from: string; to: string };
@@ -23,8 +24,7 @@ export function PeriodPicker({ value, onChange }: { value: Period; onChange: (p:
     { key: "allTime", label: t.expAllTime },
     { key: "custom", label: t.expCustom },
   ];
-  const field = `${fieldClass} h-11 py-2 sm:!w-auto md:h-10`;
-  const label = "mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400";
+  const label = "mb-1 block !text-xs text-gray-500 dark:text-gray-400";
 
   return (
     <div className="space-y-4">
@@ -35,7 +35,7 @@ export function PeriodPicker({ value, onChange }: { value: Period; onChange: (p:
             type="button"
             onClick={() => onChange(p.key === "custom" ? { ...value, preset: "custom" } : { preset: p.key, ...computeRange(p.key) })}
             aria-pressed={value.preset === p.key}
-            className={`min-h-11 shrink-0 snap-start rounded-full px-4 py-1.5 text-sm sm:min-h-10 font-medium transition duration-300 ease-premium active:scale-[0.98] motion-reduce:transition-none ${
+            className={`min-h-11 shrink-0 snap-start rounded-full px-4 py-1.5 text-sm sm:min-h-10 font-medium transition duration-300 ease-premium active:scale-[0.98] motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 ${
               value.preset === p.key
                 ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
                 : "border border-gray-900/15 text-gray-600 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300 dark:hover:border-white/30"
@@ -48,12 +48,12 @@ export function PeriodPicker({ value, onChange }: { value: Period; onChange: (p:
       {value.preset === "custom" && (
         <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:flex sm:flex-wrap sm:items-end">
           <div>
-            <label htmlFor="exp-from" className={label}>{t.expFrom}</label>
-            <input id="exp-from" type="date" value={value.from} max={value.to || undefined} onChange={(e) => onChange({ ...value, from: e.target.value })} className={field} />
+            <Label htmlFor="exp-from" className={label}>{t.expFrom}</Label>
+            <Input id="exp-from" type="date" value={value.from} max={value.to || undefined} onChange={(e) => onChange({ ...value, from: e.target.value })} className="sm:!w-auto" />
           </div>
           <div>
-            <label htmlFor="exp-to" className={label}>{t.expTo}</label>
-            <input id="exp-to" type="date" value={value.to} min={value.from || undefined} onChange={(e) => onChange({ ...value, to: e.target.value })} className={field} />
+            <Label htmlFor="exp-to" className={label}>{t.expTo}</Label>
+            <Input id="exp-to" type="date" value={value.to} min={value.from || undefined} onChange={(e) => onChange({ ...value, to: e.target.value })} className="sm:!w-auto" />
           </div>
         </div>
       )}

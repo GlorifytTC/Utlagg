@@ -1,5 +1,7 @@
 import { computeMetrics, monthlySeries } from "@/lib/admin-metrics";
 import { formatSek } from "@/lib/utils";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatGrid } from "@/components/ui/stat";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlanPie, MonthlyBars } from "@/components/admin/RevenueCharts";
 
@@ -12,23 +14,16 @@ export default async function AdminRevenue() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Intäkter</h1>
+      <PageHeader title="Intäkter" />
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {[
+      <StatGrid
+        items={[
           { label: "MRR", value: formatSek(m.mrr) },
           { label: "ARR", value: formatSek(m.arr) },
           { label: "Betalande", value: String(m.payingCustomers) },
           { label: "ARPU", value: formatSek(m.arpu) },
-        ].map((c) => (
-          <Card key={c.label}>
-            <CardContent className="p-5">
-              <p className="text-sm text-gray-500 dark:text-gray-400">{c.label}</p>
-              <p className="text-2xl font-semibold">{c.value}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+        ]}
+      />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card>
@@ -54,7 +49,7 @@ export default async function AdminRevenue() {
         </Card>
       </div>
 
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-gray-500 dark:text-gray-400">
         MRR/ARR beräknas från nuvarande aktiva planer (Pro 149 kr, Företag 299 kr). En
         historisk MRR-kurva kräver att vi sparar månatliga ögonblicksbilder - det finns inte ännu.
       </p>

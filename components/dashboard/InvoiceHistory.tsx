@@ -6,7 +6,7 @@ import { Download, ExternalLink, Loader2, ReceiptText } from "lucide-react";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/context/LanguageContext";
-import { cn } from "@/lib/utils";
+import { cn, formatDate, localeFor } from "@/lib/utils";
 
 interface InvoiceRow {
   id: string;
@@ -39,7 +39,7 @@ export function InvoiceHistory() {
     };
   }, []);
 
-  const locale = lang === "sv" ? "sv-SE" : "en-GB";
+  const locale = localeFor(lang);
   const fmtAmount = (amount: number, currency: string) =>
     new Intl.NumberFormat(locale, {
       style: "currency",
@@ -49,10 +49,10 @@ export function InvoiceHistory() {
 
   const statusBadge = (status: string | null) => {
     if (status === "paid")
-      return <Badge className="bg-green-600 text-white">{t.invStatusPaid}</Badge>;
+      return <Badge tone="success">{t.invStatusPaid}</Badge>;
     if (status === "open")
-      return <Badge className="bg-amber-500 text-white">{t.invStatusOpen}</Badge>;
-    return <Badge className="bg-red-600 text-white">{t.invStatusFailed}</Badge>;
+      return <Badge tone="warning">{t.invStatusOpen}</Badge>;
+    return <Badge tone="danger">{t.invStatusFailed}</Badge>;
   };
 
   return (
@@ -62,8 +62,8 @@ export function InvoiceHistory() {
       className="panel rounded-2xl transition-shadow hover:shadow-sm"
     >
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 font-display text-lg text-gray-900 dark:text-white">
-          <ReceiptText className="h-5 w-5 text-nordic-600" />
+        <CardTitle as="h2" className="flex items-center gap-2 text-gray-900 dark:text-white">
+          <ReceiptText className="h-5 w-5 text-nordic-600" aria-hidden />
           {t.invHistoryTitle}
         </CardTitle>
         <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
@@ -72,10 +72,10 @@ export function InvoiceHistory() {
       </CardHeader>
       <CardContent>
         {error ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">{t.invLoadFail}</p>
+          <p role="alert" className="text-sm text-red-600 dark:text-red-400">{t.invLoadFail}</p>
         ) : invoices === null ? (
-          <div className="flex items-center justify-center py-6">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-500 dark:text-gray-400" />
+          <div role="status" aria-busy="true" aria-label={t.loading} className="flex items-center justify-center py-6">
+            <Loader2 aria-hidden className="h-5 w-5 animate-spin text-gray-500 dark:text-gray-400" />
           </div>
         ) : invoices.length === 0 ? (
           <p className="py-2 text-sm text-gray-500 dark:text-gray-400">{t.invEmpty}</p>
@@ -84,11 +84,11 @@ export function InvoiceHistory() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-900/[0.07] text-left text-xs uppercase tracking-wide text-gray-500 dark:border-white/[0.07] dark:text-gray-400">
-                  <th className="pb-2 pr-4 font-medium">{t.invColDate}</th>
-                  <th className="pb-2 pr-4 font-medium">{t.invColNumber}</th>
-                  <th className="pb-2 pr-4 font-medium">{t.invColAmount}</th>
-                  <th className="pb-2 pr-4 font-medium">{t.invColStatus}</th>
-                  <th className="pb-2" />
+                  <th scope="col" className="pb-2 pr-4 font-medium">{t.invColDate}</th>
+                  <th scope="col" className="pb-2 pr-4 font-medium">{t.invColNumber}</th>
+                  <th scope="col" className="pb-2 pr-4 font-medium">{t.invColAmount}</th>
+                  <th scope="col" className="pb-2 pr-4 font-medium">{t.invColStatus}</th>
+                  <th scope="col" className="pb-2"><span className="sr-only">{t.colActions}</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -104,7 +104,7 @@ export function InvoiceHistory() {
                     )}
                   >
                     <td className="py-3 pr-4 whitespace-nowrap">
-                      {new Date(inv.created).toLocaleDateString(locale)}
+                      {formatDate(new Date(inv.created), lang)}
                     </td>
                     <td className="py-3 pr-4 font-mono text-xs text-gray-500 dark:text-gray-400">
                       {inv.number ?? "-"}
@@ -120,9 +120,9 @@ export function InvoiceHistory() {
                             href={inv.hostedUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex min-h-10 items-center gap-1 px-1 text-nordic-600 hover:underline md:min-h-0"
+                            className="inline-flex min-h-11 items-center gap-1 px-1 text-nordic-600 hover:underline md:min-h-0 dark:text-nordic-400"
                           >
-                            <ExternalLink className="h-3.5 w-3.5" />
+                            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                             {t.invPay}
                           </a>
                         )}
@@ -130,9 +130,9 @@ export function InvoiceHistory() {
                           <a
                             href={inv.pdfUrl}
                             aria-label={t.invDownload}
-                            className="inline-flex min-h-10 min-w-10 items-center justify-center gap-1 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white md:min-h-0 md:min-w-0"
+                            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white md:min-h-0 md:min-w-0"
                           >
-                            <Download className="h-3.5 w-3.5" />
+                            <Download className="h-3.5 w-3.5" aria-hidden />
                             <span className="hidden sm:inline">{t.invDownload}</span>
                           </a>
                         )}

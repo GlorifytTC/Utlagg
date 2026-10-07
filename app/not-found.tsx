@@ -8,17 +8,17 @@ export const metadata = { title: "404" };
 export default function NotFound() {
   const sv = getServerLang() === "sv";
   return (
-    <div className="light-surface relative min-h-screen overflow-x-clip bg-paper">
+    <div className="light-surface relative min-h-dvh overflow-x-clip bg-paper">
       <Navbar />
       <main className="mx-auto max-w-xl px-6 py-32 text-center">
-        <p className="text-sm font-medium text-nordic-600">404</p>
+        <p className="text-sm font-medium text-nordic-700">404</p>
         <h1 className="mt-4 font-display text-4xl font-semibold tracking-tight">
           {sv ? "Sidan hittades inte" : "Page not found"}
         </h1>
         <p className="mt-4 text-ink/65">
           {sv ? "Sidan finns inte eller har flyttats." : "This page doesn't exist or has moved."}
         </p>
-        <Link href="/" className="mt-8 inline-block rounded-full bg-nordic-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-nordic-700">
+        <Link href="/" className="mt-8 inline-block rounded-full bg-nordic-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
           {sv ? "Till startsidan" : "Back to home"}
         </Link>
       </main>

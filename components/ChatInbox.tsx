@@ -113,6 +113,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
       );
     }
 
+    // Fixed heights: 21rem (mobile) / 13rem / 10.5rem (lg) approximate the app chrome (header, page title, tab bar) above the inbox, so the panel fills the viewport without page scroll. Adjust if the surrounding layout changes.
     return (
       <div className="grid h-[calc(100dvh-21rem-env(safe-area-inset-bottom))] overflow-hidden rounded-2xl panel md:h-[calc(100dvh-13rem)] md:min-h-[420px] lg:h-[calc(100dvh-10.5rem)] lg:grid-cols-[320px_1fr] xl:grid-cols-[360px_1fr]">
         {/* Conversation list */}
@@ -126,7 +127,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t.chatsSearch}
-                className="w-full rounded-xl border border-transparent bg-gray-900/[0.04] py-2 pl-9 pr-3 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-nordic-600/40 focus:bg-white dark:bg-white/[0.05] dark:text-white dark:focus:bg-transparent"
+                className="w-full rounded-xl border border-transparent bg-gray-900/[0.04] py-2 pl-9 pr-3 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-500 focus:border-nordic-600/40 focus:bg-white dark:bg-white/[0.05] dark:text-white dark:focus:bg-transparent"
               />
             </label>
           </div>
@@ -154,7 +155,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
                         {c.lastMessage && (
                           <time
                             dateTime={c.lastMessage.createdAt}
-                            className="shrink-0 text-[11px] tabular-nums text-gray-400 dark:text-gray-500"
+                            className="shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400"
                           >
                             {formatListDate(new Date(c.lastMessage.createdAt), lang, t.chatsYesterday)}
                           </time>
@@ -163,11 +164,11 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
                       <span className="mt-0.5 block truncate text-[13px] text-gray-500 dark:text-gray-400">
                         {c.lastMessage ? (
                           <>
-                            {c.lastMessage.mine && <span className="text-gray-400 dark:text-gray-500">{t.chatsYou}: </span>}
+                            {c.lastMessage.mine && <span className="text-gray-500 dark:text-gray-400">{t.chatsYou}: </span>}
                             {c.lastMessage.body}
                           </>
                         ) : (
-                          <span className="italic text-gray-400 dark:text-gray-500">{t.chatsNoMessages}</span>
+                          <span className="italic text-gray-500 dark:text-gray-400">{t.chatsNoMessages}</span>
                         )}
                       </span>
                     </span>
@@ -221,7 +222,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
           ) : (
             <div className="m-auto flex flex-col items-center px-6 text-center">
               <MessageSquare className="mb-3 h-6 w-6 text-gray-300 dark:text-gray-600" strokeWidth={1.5} />
-              <p className="text-sm text-gray-400 dark:text-gray-500">{t.chatsSelect}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t.chatsSelect}</p>
             </div>
           )}
         </section>

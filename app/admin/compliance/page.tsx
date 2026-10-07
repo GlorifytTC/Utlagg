@@ -1,4 +1,5 @@
 import { retentionReport } from "@/lib/compliance";
+import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SkatteverketExport } from "@/components/SkatteverketExport";
 
@@ -19,7 +20,7 @@ export default async function AdminCompliance() {
 
   return (
     <div className="max-w-3xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Efterlevnad</h1>
+      <PageHeader title="Efterlevnad" />
 
       <Card>
         <CardHeader>
@@ -37,7 +38,7 @@ export default async function AdminCompliance() {
           <CardDescription>Exportera all data för en användare som JSON</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Öppna en användare under <span className="font-medium">Användare</span> och hämta
             <code className="mx-1">/api/admin/compliance/sar/&lt;id&gt;</code> (admin-skyddad).
           </p>
@@ -60,14 +61,16 @@ export default async function AdminCompliance() {
           <CardDescription>Tjänster som behandlar persondata</CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {subprocessors.map(([n, p, r]) => (
-                <tr key={n}><td className="py-2 font-medium">{n}</td><td className="py-2">{p}</td><td className="py-2 text-gray-500">{r}</td></tr>
+                <tr key={n}><td className="py-2 font-medium">{n}</td><td className="py-2">{p}</td><td className="py-2 text-gray-500 dark:text-gray-400">{r}</td></tr>
               ))}
             </tbody>
           </table>
-          <p className="mt-3 text-xs text-gray-400">
+          </div>
+          <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
             Detta är en teknisk översikt, inte juridisk rådgivning. DPA-text och dataregister bör granskas av jurist.
           </p>
         </CardContent>

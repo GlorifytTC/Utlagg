@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useId } from "react";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -20,6 +20,8 @@ interface Props {
 
 export function BuyerAutocomplete({ onSelect, onInputChange, id }: Props) {
   const { t } = useLanguage();
+  const uid = useId();
+  const listId = `${uid}-buyers`;
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Buyer[]>([]);
   const [open, setOpen] = useState(false);
@@ -112,17 +114,19 @@ export function BuyerAutocomplete({ onSelect, onInputChange, id }: Props) {
         role="combobox"
         aria-autocomplete="list"
         aria-expanded={open && suggestions.length > 0}
-        aria-controls="buyer-listbox"
+        aria-controls={listId}
+        aria-activedescendant={open && highlightIndex >= 0 ? `${uid}-opt-${highlightIndex}` : undefined}
       />
       {open && suggestions.length > 0 && (
         <ul
-          id="buyer-listbox"
+          id={listId}
           role="listbox"
           className="panel absolute z-50 mt-1 max-h-[40dvh] w-full overflow-auto rounded-xl py-1 dark:border-white/[0.07] dark:bg-[#0A0A0A]"
         >
           {suggestions.map((buyer, idx) => (
             <li
               key={`${buyer.name}-${buyer.orgNumber ?? ""}`}
+              id={`${uid}-opt-${idx}`}
               role="option"
               aria-selected={idx === highlightIndex}
               className={`cursor-pointer px-3 py-3 text-sm md:py-2 ${
@@ -140,7 +144,7 @@ export function BuyerAutocomplete({ onSelect, onInputChange, id }: Props) {
                 {buyer.name}
               </span>
               {buyer.orgNumber && (
-                <span className="ml-2 text-xs text-gray-500">
+                <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
                   {buyer.orgNumber}
                 </span>
               )}

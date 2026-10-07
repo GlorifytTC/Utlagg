@@ -36,7 +36,7 @@ export function DeleteAccountCard() {
     <>
       <Card className="border-red-200 dark:border-red-900/50">
         <CardHeader>
-          <CardTitle className="text-red-600">{t.btnDeleteAccount}</CardTitle>
+          <CardTitle className="text-red-600 dark:text-red-400">{t.btnDeleteAccount}</CardTitle>
           <CardDescription>{t.prDeleteDesc}</CardDescription>
         </CardHeader>
         <CardContent>

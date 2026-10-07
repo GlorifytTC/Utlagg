@@ -1,7 +1,7 @@
 // components/landing/Navbar.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -9,12 +9,15 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/brand/Logo";
+import { useFocusTrap } from "@/components/useFocusTrap";
 
 export function Navbar() {
   const { t, lang, toggleLanguage } = useLanguage();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const rm = useReducedMotion();
+  const menuRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(open, menuRef);
   const { status } = useSession();
   const isAuthed = status === "authenticated";
   // While the session is resolving, don't render either auth state to avoid a
@@ -52,7 +55,7 @@ export function Navbar() {
           clicks through its transparent margins. */}
       <header className="pointer-events-none sticky top-0 z-50 px-4 pt-4">
         <div className="pointer-events-auto mx-auto flex h-14 max-w-6xl items-center justify-between rounded-full border border-ink/[0.08] bg-paper/75 py-2 pl-5 pr-2 shadow-[0_8px_30px_-12px_rgba(60,40,25,0.18),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl">
-          <Link href="/" onClick={() => setOpen(false)} className="shrink-0">
+          <Link href="/" onClick={() => setOpen(false)} className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
             <Logo size={26} wordmarkClassName="text-lg" adaptive={false} />
           </Link>
 
@@ -64,8 +67,8 @@ export function Navbar() {
                 href={l.href}
                 aria-current={pathname === l.href ? "page" : undefined}
                 className={cn(
-                  "transition-colors duration-300 ease-premium",
-                  pathname === l.href ? "font-medium text-ink" : "text-ink/60 hover:text-ink",
+                  "rounded transition-colors duration-300 ease-premium focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20",
+                  pathname === l.href ? "font-medium text-ink" : "text-ink/65 hover:text-ink",
                 )}
               >
                 {l.label}
@@ -76,15 +79,15 @@ export function Navbar() {
           <div className="flex items-center gap-2">
             <button
               onClick={toggleLanguage}
-              aria-label="Language"
-              className="hidden rounded-full px-3 py-1.5 text-xs font-medium text-ink/60 transition hover:bg-ink/5 hover:text-ink lg:block"
+              aria-label={t.navLanguage}
+              className="hidden rounded-full px-3 py-1.5 text-xs font-medium text-ink/65 transition hover:bg-ink/5 hover:text-ink lg:block focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
             >
               {lang === "sv" ? "SV / EN" : "EN / SV"}
             </button>
             {authResolved && !isAuthed && (
               <Link
                 href="/login"
-                className="hidden rounded-full px-3 py-1.5 text-sm text-ink/60 transition hover:text-ink lg:block"
+                className="hidden rounded-full px-3 py-1.5 text-sm text-ink/65 transition hover:text-ink lg:block focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
               >
                 {t.login}
               </Link>
@@ -92,7 +95,7 @@ export function Navbar() {
             {authResolved && (
               <Link
                 href={primary.href}
-                className="hidden whitespace-nowrap rounded-full bg-nordic-600 px-3.5 py-2.5 text-xs font-medium text-white transition duration-500 ease-premium hover:bg-nordic-700 active:scale-[0.98] min-[380px]:block sm:px-5 sm:text-sm"
+                className="hidden whitespace-nowrap rounded-full bg-nordic-600 px-3.5 py-2.5 text-xs font-medium text-white transition duration-500 ease-premium hover:bg-nordic-700 active:scale-[0.98] min-[380px]:block sm:px-5 sm:text-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
               >
                 {primary.label}
               </Link>
@@ -103,7 +106,7 @@ export function Navbar() {
               onClick={() => setOpen((v) => !v)}
               aria-label={open ? t.navClose : t.navMenu}
               aria-expanded={open}
-              className="relative grid h-11 w-11 place-items-center rounded-full transition hover:bg-ink/5 lg:hidden"
+              className="relative grid h-11 w-11 place-items-center rounded-full transition hover:bg-ink/5 lg:hidden focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
             >
               <span
                 className={cn(
@@ -126,6 +129,10 @@ export function Navbar() {
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={menuRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t.navMenu}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -145,8 +152,8 @@ export function Navbar() {
                     onClick={() => setOpen(false)}
                     aria-current={pathname === l.href ? "page" : undefined}
                     className={cn(
-                      "block py-3 font-display text-4xl font-semibold tracking-tight transition active:opacity-60",
-                      pathname === l.href ? "text-nordic-600" : "text-ink",
+                      "block rounded py-3 font-display text-4xl font-semibold tracking-tight transition active:opacity-60 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20",
+                      pathname === l.href ? "text-nordic-700" : "text-ink",
                     )}
                   >
                     {l.label}
@@ -164,7 +171,7 @@ export function Navbar() {
                   <Link
                     href={primary.href}
                     onClick={() => setOpen(false)}
-                    className="rounded-full bg-nordic-600 px-5 py-4 text-center font-medium text-white transition active:scale-[0.98]"
+                    className="rounded-full bg-nordic-600 px-5 py-4 text-center font-medium text-white transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
                   >
                     {primary.label}
                   </Link>
@@ -174,7 +181,7 @@ export function Navbar() {
                     <Link
                       href="/login"
                       onClick={() => setOpen(false)}
-                      className="py-2 text-ink/70 transition hover:text-ink"
+                      className="inline-flex min-h-11 items-center rounded px-1 text-ink/70 transition hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
                     >
                       {t.login}
                     </Link>
@@ -183,7 +190,7 @@ export function Navbar() {
                   )}
                   <button
                     onClick={toggleLanguage}
-                    className="rounded-full border hairline px-4 py-2 text-sm text-ink/70 transition hover:text-ink"
+                    className="min-h-11 rounded-full border hairline px-4 py-2 text-sm text-ink/70 transition hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
                   >
                     {lang === "sv" ? "Svenska / English" : "English / Svenska"}
                   </button>

@@ -116,7 +116,7 @@ function HomeContent() {
             </h2>
             <Link
               href="/features"
-              className="inline-block shrink-0 py-3 text-sm font-medium text-nordic-600 transition hover:text-nordic-700"
+              className="inline-block shrink-0 py-3 text-sm font-medium text-nordic-700 transition hover:text-nordic-700"
             >
               {t.features} →
             </Link>

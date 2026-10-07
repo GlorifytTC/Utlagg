@@ -45,7 +45,14 @@ export function UsageMeter({
       </motion.p>
       {!unlimited && (
         <>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.08]">
+          <div
+            role="progressbar"
+            aria-label={t.scansThisMonth}
+            aria-valuenow={used}
+            aria-valuemin={0}
+            aria-valuemax={limit}
+            className="mt-3 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.08]"
+          >
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
@@ -59,7 +66,7 @@ export function UsageMeter({
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -5 }}
-                className="mt-2 text-xs text-amber-600 dark:text-amber-400"
+                className="mt-2 text-xs text-amber-700 dark:text-amber-400"
               >
                 {t.usageNearLimit}
               </motion.p>

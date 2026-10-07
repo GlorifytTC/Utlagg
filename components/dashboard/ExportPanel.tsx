@@ -8,13 +8,13 @@ import { PeriodPicker, defaultPeriod } from "@/components/export/PeriodPicker";
 import { useLanguage } from "@/context/LanguageContext";
 import { ExportList } from "@/components/export/ExportList";
 import { downloadExport, fetchFile } from "@/lib/export-download";
+import { formatSek } from "@/lib/utils";
 import type { ExportPreview } from "@/lib/export-preview";
 import { Download, FileText, Car, Bus, Lock, Loader2 } from "lucide-react";
 
 type Category = "receipts" | "mileage" | "transport";
 type Format = "csv" | "sie" | "pdf";
 
-const fmtSek = (n: number) => `${n.toLocaleString("sv-SE", { maximumFractionDigits: 0 })} kr`;
 
 export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean } }) {
   const { t } = useLanguage();
@@ -63,7 +63,7 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
     if (!preview) return <span className="skeleton mt-2 block h-4 w-32 rounded" aria-hidden />;
     return (
       <p className="mt-2 text-xs tabular-nums text-gray-500 dark:text-gray-400">
-        {p && p.count > 0 ? `${t.expRows.replace("{n}", String(p.count))} · ${fmtSek(p.total)}` : t.expNoRows}
+        {p && p.count > 0 ? `${t.expRows.replace("{n}", String(p.count))} · ${formatSek(p.total)}` : t.expNoRows}
       </p>
     );
   };
@@ -82,7 +82,7 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{t.expPeriodTitle}</CardTitle>
+          <CardTitle as="h2">{t.expPeriodTitle}</CardTitle>
           <CardDescription>{t.expPeriodDesc}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -92,7 +92,7 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
 
       <Card>
         <CardHeader>
-          <CardTitle>{t.expCategories}</CardTitle>
+          <CardTitle as="h2">{t.expCategories}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <CheckCard
@@ -113,9 +113,9 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
                     disabled={f.lock}
                     onClick={() => setFormat(f.key)}
                     title={f.lock ? t.expLockedHint : undefined}
-                    className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border px-3.5 sm:min-h-10 py-1.5 text-sm font-medium transition duration-300 ease-premium motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-60 ${
+                    className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border px-3.5 sm:min-h-10 py-1.5 text-sm font-medium transition duration-300 ease-premium motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 disabled:cursor-not-allowed disabled:opacity-60 ${
                       format === f.key
-                        ? "border-nordic-600 bg-nordic-600 text-white"
+                        ? "border-nordic-600 bg-nordic-600 text-white dark:text-[#050505]"
                         : "border-gray-900/15 text-gray-600 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300"
                     }`}
                   >
@@ -161,7 +161,7 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
             {empty && picked.length > 0 && <p className="text-xs text-gray-500 dark:text-gray-400">{t.expNoRows}</p>}
           </div>
           {err && (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
               {err}
             </p>
           )}

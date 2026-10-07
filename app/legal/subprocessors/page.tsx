@@ -26,11 +26,11 @@ export default function SubprocessorsPage() {
         </Link>
         .
       </p>
-      <p className="mt-2 text-sm text-ink/50">{t.spUpdated}</p>
+      <p className="mt-2 text-sm text-ink/65">{t.spUpdated}</p>
 
       <div className="mt-8 overflow-x-auto">
       <table className="w-full min-w-[34rem] text-sm">
-        <thead className="text-left text-ink/50">
+        <thead className="text-left text-ink/65">
           <tr>
             <th className="py-2 pr-4">{t.spColVendor}</th>
             <th className="pr-4">{t.spColPurpose}</th>

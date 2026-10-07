@@ -6,9 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Search, MapPin, X, Users, Star, CalendarDays } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { accountantStrings } from "@/lib/accountant-i18n";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
-import { fieldClass } from "@/components/ui/input";
-import { buttonClass } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ErrorState } from "@/components/ui/error-state";
 
 interface AccountantRow {
   id: string;
@@ -36,6 +39,10 @@ interface Props {
   compact?: boolean;
   profileBasePath?: string;
 }
+
+// 44px hit area, visually still a small icon
+const clearBtn =
+  "absolute right-0 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-gray-400 dark:hover:text-white";
 
 function Avatar({
   name,
@@ -83,27 +90,20 @@ function RatingBadge({ rating, count }: { rating: number; count: number }) {
       <span className="font-display text-xl font-bold leading-none text-gray-900 dark:text-white">
         {rating.toFixed(1)}
       </span>
-      <span className="text-[11px] leading-none text-nordic-600">
+      <span className="text-xs leading-none text-nordic-600">
         {"★".repeat(Math.round(rating))}{"☆".repeat(5 - Math.round(rating))}
       </span>
-      <span className="text-[10px] text-gray-500 dark:text-gray-400">({count})</span>
+      <span className="text-xs text-gray-500 dark:text-gray-400">({count})</span>
     </div>
   );
 }
 
 function StatusBadge({ status }: { status: "active" | "pending" }) {
   const { t } = useLanguage();
-  if (status === "active") {
-    return (
-      <span className="rounded-full bg-green-100/60 px-3 py-1 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
-        {t.mktConnected}
-      </span>
-    );
-  }
   return (
-    <span className="rounded-full bg-nordic-600/10 px-3 py-1 text-xs font-medium text-nordic-600 dark:bg-nordic-600/20">
-      {t.mktRequestSent}
-    </span>
+    <Badge tone={status === "active" ? "success" : "accent"} className="px-3 py-1">
+      {status === "active" ? t.mktConnected : t.mktRequestSent}
+    </Badge>
   );
 }
 
@@ -112,7 +112,8 @@ export function AccountantMarketplace({
   compact = false,
   profileBasePath = "/dashboard/marketplace",
 }: Props) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const at = accountantStrings(lang);
   const [q, setQ] = useState("");
   const [city, setCity] = useState("");
   const [rows, setRows] = useState<AccountantRow[]>([]);
@@ -186,18 +187,19 @@ export function AccountantMarketplace({
               className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400"
               strokeWidth={2}
             />
-            <input
+            <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder={t.mktSearchPlaceholder}
               aria-label={t.mktSearchLabel}
-              className={`${fieldClass} h-11 py-2.5 pl-10 pr-9`}
+              className="!pl-10 !pr-11"
             />
             {q && (
               <button
+                type="button"
                 onClick={() => setQ("")}
                 aria-label={t.mktClearSearch}
-                className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-gray-500 dark:text-gray-400 hover:text-gray-600"
+                className={clearBtn}
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -208,30 +210,28 @@ export function AccountantMarketplace({
               className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500 dark:text-gray-400"
               strokeWidth={2}
             />
-            <input
+            <Input
               value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder={t.mktCityPlaceholder}
               aria-label={t.mktCityLabel}
-              className={`${fieldClass} h-11 py-2.5 pl-8 pr-8`}
+              className="!pl-8 !pr-11"
             />
             {city && (
               <button
+                type="button"
                 onClick={() => setCity("")}
                 aria-label={t.mktClearCity}
-                className="absolute right-0.5 top-1/2 -translate-y-1/2 p-2 text-gray-500 dark:text-gray-400 hover:text-gray-600"
+                className={clearBtn}
               >
                 <X className="h-3 w-3" />
               </button>
             )}
           </div>
           {hasFilters && (
-            <button
-              onClick={() => { setQ(""); setCity(""); }}
-              className={buttonClass("outline", "h-11 shrink-0 text-gray-600 dark:text-gray-300")}
-            >
+            <Button variant="outline" onClick={() => { setQ(""); setCity(""); }} className="shrink-0">
               {t.mktClear}
-            </button>
+            </Button>
           )}
         </div>
       )}
@@ -254,17 +254,14 @@ export function AccountantMarketplace({
           ))}
         </div>
       ) : loadState === "error" ? (
-        <p className="text-sm text-red-600">{t.mktLoadError}</p>
+        <ErrorState onRetry={load} retryLabel={at.retry}>{t.mktLoadError}</ErrorState>
       ) : rows.length === 0 ? (
         <div className="rounded-2xl panel px-8 py-14 text-center">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t.mktEmpty}</p>
           {hasFilters && (
-            <button
-              onClick={() => { setQ(""); setCity(""); }}
-              className="mt-2 text-sm text-nordic-600 hover:underline"
-            >
+            <Button variant="ghost" onClick={() => { setQ(""); setCity(""); }} className="mt-2 text-nordic-600 dark:!text-nordic-400">
               {t.mktClearFilters}
-            </button>
+            </Button>
           )}
         </div>
       ) : (
@@ -308,12 +305,12 @@ export function AccountantMarketplace({
                           </span>
                           {a.isVerified && <VerifiedBadge />}
                           {a.isBoosted && (
-                            <span className="rounded-full bg-nordic-600/10 px-1.5 py-px text-[10px] font-bold uppercase tracking-widest text-nordic-600 dark:bg-nordic-600/20">
+                            <span className="rounded-full bg-nordic-600/10 px-1.5 py-px text-xs font-bold text-nordic-600 dark:bg-nordic-600/20">
                               {t.mktBoosted}
                             </span>
                           )}
                           {isSelf && (
-                            <span className="rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-medium text-gray-500 dark:bg-white/[0.08] dark:text-gray-400">
+                            <span className="rounded-full bg-gray-100 px-1.5 py-px text-xs font-medium text-gray-500 dark:bg-white/[0.08] dark:text-gray-400">
                               {t.mktYou}
                             </span>
                           )}
@@ -337,7 +334,7 @@ export function AccountantMarketplace({
                       ) : (
                         <div className="flex flex-col items-center gap-0.5">
                           <Star className="h-5 w-5 text-gray-200 dark:text-gray-700" strokeWidth={1.5} />
-                          <span className="text-[10px] text-gray-300 dark:text-gray-600">{t.mktNew}</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">{t.mktNew}</span>
                         </div>
                       )}
                     </div>
@@ -355,13 +352,13 @@ export function AccountantMarketplace({
                         {a.specializations.slice(0, 4).map((s) => (
                           <span
                             key={s}
-                            className="rounded-full bg-[#F1ECE0] px-2.5 py-0.5 text-[11px] font-medium text-gray-600 dark:bg-white/[0.07] dark:text-gray-400"
+                            className="rounded-full bg-[#F1ECE0] px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-white/[0.07] dark:text-gray-400"
                           >
                             {s}
                           </span>
                         ))}
                         {a.specializations.length > 4 && (
-                          <span className="rounded-full bg-gray-100/80 px-2.5 py-0.5 text-[11px] text-gray-500 dark:text-gray-400 dark:bg-white/[0.05]">
+                          <span className="rounded-full bg-gray-100/80 px-2.5 py-0.5 text-xs text-gray-500 dark:text-gray-400 dark:bg-white/[0.05]">
                             +{a.specializations.length - 4}
                           </span>
                         )}
@@ -371,19 +368,19 @@ export function AccountantMarketplace({
                     {/* Stats row */}
                     <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-gray-900/[0.05] pt-3 dark:border-white/[0.05]">
                       {a.activeClientCount > 0 && (
-                        <span className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400">
+                        <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                           <Users className="h-3 w-3 shrink-0" strokeWidth={2} />
                           {(a.activeClientCount === 1 ? t.mktClientsOne : t.mktClientsMany).replace("{n}", String(a.activeClientCount))}
                         </span>
                       )}
                       {a.joinedYear && (
-                        <span className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400">
+                        <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                           <CalendarDays className="h-3 w-3 shrink-0" strokeWidth={2} />
                           {t.mktSince.replace("{year}", String(a.joinedYear))}
                         </span>
                       )}
                       {!a.activeClientCount && !a.joinedYear && (
-                        <span className="text-[11px] text-gray-300 dark:text-gray-600">{t.mktNewAccountant}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{t.mktNewAccountant}</span>
                       )}
                     </div>
 
@@ -394,13 +391,13 @@ export function AccountantMarketplace({
                       ) : a.myStatus === "pending" ? (
                         <StatusBadge status="pending" />
                       ) : !isSelf && canRequest ? (
-                        <button
+                        <Button
                           disabled={busy === a.id}
                           onClick={(e) => { e.preventDefault(); sendRequest(a.id); }}
-                          className="relative z-10 w-full rounded-xl bg-nordic-600 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 active:scale-[0.98] disabled:opacity-60"
+                          className="relative z-10 w-full"
                         >
                           {busy === a.id ? t.mktSending : t.mktSendRequest}
-                        </button>
+                        </Button>
                       ) : null}
                     </div>
                   </div>

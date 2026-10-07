@@ -27,7 +27,7 @@ function Segmented<T extends string>({
           aria-pressed={value === o.value}
           onClick={() => value !== o.value && onChange(o.value)}
           className={cn(
-            "min-h-10 rounded-full px-4 text-sm font-medium transition duration-300 ease-premium focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20",
+            "min-h-11 rounded-full px-4 text-sm font-medium transition duration-300 ease-premium focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 md:min-h-10",
             value === o.value
               ? "bg-white text-gray-900 shadow-sm dark:bg-white/[0.14] dark:text-white"
               : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white",
@@ -49,7 +49,7 @@ export function PreferencesCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{t.setPreferences}</CardTitle>
+        <CardTitle as="h2">{t.setPreferences}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="space-y-2">

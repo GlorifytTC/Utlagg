@@ -4,6 +4,8 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
+import { Field } from "@/components/auth/Field";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 
 /**
@@ -16,7 +18,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
       <div className="w-full max-w-sm">
-        <Link href="/">
+        <Link href="/" className="inline-block rounded focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
         <div className="panel mt-8 space-y-3 rounded-2xl p-6">{children}</div>
@@ -99,7 +101,7 @@ function AccountantAcceptInner() {
 
   return (
     <Shell>
-      {state === "working" && <p className="text-ink/70">{t.accAcceptWorking}</p>}
+      {state === "working" && <p role="status" className="text-ink/70">{t.accAcceptWorking}</p>}
 
       {state === "notoken" && (
         <p className="text-ink/70">{t.accAcceptNoToken}</p>
@@ -120,26 +122,23 @@ function AccountantAcceptInner() {
           <p className="text-ink/70">
             {t.accAcceptNeedsCompanyBody}
           </p>
-          <input
+          <Field
+            id="acc-company"
+            autoComplete="organization"
+            label={t.fldCompanyName}
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
-            placeholder={t.fldCompanyName}
-            className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30 sm:text-sm"
           />
-          <button
-            onClick={createCompanyThenRetry}
-            disabled={busy || !companyName.trim()}
-            className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.98] disabled:opacity-50"
-          >
+          <Button onClick={createCompanyThenRetry} disabled={busy || !companyName.trim()} className="w-full dark:!text-white">
             {busy ? t.accAcceptCreating : t.accAcceptCreateAndAccept}
-          </button>
+          </Button>
         </div>
       )}
 
       {state === "error" && (
         <div className="space-y-3">
           <h1 className="font-display text-2xl font-semibold tracking-tight">{t.accAcceptErrorTitle}</h1>
-          <p className="text-ink/70">{message}</p>
+          <p role="alert" className="text-ink/70">{message}</p>
         </div>
       )}
     </Shell>

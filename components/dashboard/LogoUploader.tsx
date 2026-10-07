@@ -62,7 +62,7 @@ export function LogoUploader({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt={label} className="h-full w-full object-contain" />
         ) : (
-          <span className="text-xs text-gray-400 dark:text-gray-500">{t.logoNone}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">{t.logoNone}</span>
         )}
       </div>
       <div className="flex flex-col gap-2">
@@ -80,6 +80,7 @@ export function LogoUploader({
         <input
           ref={inputRef}
           type="file"
+          aria-label={label}
           accept="image/png,image/jpeg,image/webp,image/svg+xml"
           className="hidden"
           onChange={(e) => {

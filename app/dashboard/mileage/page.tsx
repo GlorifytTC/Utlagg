@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
-import { formatSek } from "@/lib/utils";
+import { formatSek, formatDate } from "@/lib/utils";
 import { Button, buttonClass } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,7 +40,7 @@ interface Route {
 }
 
 export default function MileagePage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [rate, setRate] = useState(2.5);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [form, setForm] = useState({
@@ -102,7 +102,7 @@ export default function MileagePage() {
   const km = Number(form.distanceKm) || 0;
   const selectedVehicle = vehicles.find((v) => v.id === vehicleId) || null;
   const effectiveRate = !selectedVehicle ? rate : selectedVehicle.isElectric ? 0.95 : 1.2;
-  const preview = (km * effectiveRate).toFixed(2).replace(".", ",");
+  const preview = formatSek(km * effectiveRate);
 
   async function save() {
     if (!form.startAddress || !form.endAddress || km <= 0) {
@@ -268,7 +268,7 @@ export default function MileagePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t.milNewTrip}</CardTitle>
+          <CardTitle as="h2">{t.milNewTrip}</CardTitle>
           <CardDescription>{t.milNewTripDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -316,7 +316,7 @@ export default function MileagePage() {
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t.fldAmount}</p>
-              <p className="flex h-10 items-center font-display text-lg font-semibold tabular-nums" aria-live="polite">{preview} kr</p>
+              <p className="flex h-10 items-center font-display text-lg font-semibold tabular-nums" aria-live="polite">{preview}</p>
             </div>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">{t.milVehicleNote}</p>
@@ -327,7 +327,7 @@ export default function MileagePage() {
       {/* Recurring / saved routes */}
       <Card>
         <CardHeader>
-          <CardTitle>{t.milRoutesTitle}</CardTitle>
+          <CardTitle as="h2">{t.milRoutesTitle}</CardTitle>
           <CardDescription>{t.milRoutesDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -395,7 +395,7 @@ export default function MileagePage() {
                           onClick={() => deleteRoute(r.id)}
                           aria-label={t.btnDelete}
                           title={t.btnDelete}
-                          className="h-10 w-10 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                          className="!h-11 !w-11 shrink-0 !p-0 md:!h-10 md:!w-10 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
                           <Trash2 className="h-4 w-4" strokeWidth={1.75} />
                         </Button>
@@ -420,6 +420,7 @@ export default function MileagePage() {
                             {dowLabels.map((d, i) => (
                               <button
                                 key={i}
+                                type="button"
                                 aria-pressed={period.dows[i]}
                                 onClick={() => {
                                   const dows = [...period.dows];
@@ -427,9 +428,9 @@ export default function MileagePage() {
                                   setPeriod({ ...period, dows });
                                 }}
                                 className={
-                                  "h-10 w-10 rounded-full border text-xs transition duration-300 ease-premium active:scale-95 " +
+                                  "h-11 w-11 rounded-full border text-xs transition duration-300 ease-premium focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 active:scale-95 md:h-10 md:w-10 " +
                                   (period.dows[i]
-                                    ? "border-nordic-600 bg-nordic-600 text-white"
+                                    ? "border-nordic-600 bg-nordic-600 text-white dark:text-[#050505]"
                                     : "border-gray-900/15 text-gray-500 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300")
                                 }
                               >
@@ -454,14 +455,14 @@ export default function MileagePage() {
       {isAdmin && (
         <Card>
           <CardHeader>
-            <CardTitle>{t.milManageVehicles}</CardTitle>
+            <CardTitle as="h2">{t.milManageVehicles}</CardTitle>
             <CardDescription>{t.milVehicleNote}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {vehicles.length > 0 && (
               <ul className="divide-y divide-gray-900/[0.06] text-sm dark:divide-white/[0.07]">
                 {vehicles.map((v) => (
-                  <li key={v.id} className="flex items-center justify-between py-2 dark:text-gray-100">
+                  <li key={v.id} className="flex items-center justify-between gap-2 py-2 dark:text-gray-100">
                     <span>
                       <span className="font-medium">{v.registrationNumber}</span>
                       {v.model ? ` · ${v.model}` : ""}
@@ -475,7 +476,7 @@ export default function MileagePage() {
                       }}
                       aria-label={t.btnDelete}
                       title={t.btnDelete}
-                      className="h-10 w-10 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                      className="!h-11 !w-11 shrink-0 !p-0 md:!h-10 md:!w-10 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                     >
                       <Trash2 className="h-4 w-4" strokeWidth={1.75} />
                     </Button>
@@ -523,28 +524,29 @@ export default function MileagePage() {
 
       <Card>
         <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 space-y-0">
-          <CardTitle>{t.milLog}</CardTitle>
+          <CardTitle as="h2">{t.milLog}</CardTitle>
           <a href="/api/mileage/export" className={buttonClass("outline")}>{t.btnExportCsv}</a>
         </CardHeader>
         <CardContent>
           {entries.length === 0 ? (
             <p className="text-sm text-gray-500 dark:text-gray-400">{t.milNoneYet}</p>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full min-w-[720px] text-sm">
                 <thead className="border-b border-gray-900/[0.07] text-left text-xs font-medium text-gray-500 dark:border-white/[0.08] dark:text-gray-400">
                   <tr>
                     {[t.fldDate, t.fldFrom, t.fldTo, t.milKm, t.fldAmount, t.fldPurpose, ""].map((h, i) => (
-                      <th key={i} className="px-3 py-3 font-medium">{h}</th>
+                      <th key={i} scope="col" className="px-3 py-3 font-medium">{h || <span className="sr-only">{t.colActions}</span>}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.07]">
                   {entries.map((e) => (
                     <tr key={e.id} className="dark:text-gray-100">
-                      <td className="whitespace-nowrap px-3 py-3">{new Date(e.date).toLocaleDateString("sv-SE")}</td>
-                      <td className="max-w-[140px] truncate px-3 py-3">{e.startAddress}</td>
-                      <td className="max-w-[140px] truncate px-3 py-3">{e.endAddress}</td>
+                      <td className="whitespace-nowrap px-3 py-3">{formatDate(e.date, lang)}</td>
+                      <td className="max-w-[140px] truncate px-3 py-3" title={e.startAddress}>{e.startAddress}</td>
+                      <td className="max-w-[140px] truncate px-3 py-3" title={e.endAddress}>{e.endAddress}</td>
                       <td className="px-3 py-3">{Number(e.distanceKm).toFixed(0)}</td>
                       <td className="whitespace-nowrap px-3 py-3 tabular-nums">{formatSek(e.amount)}</td>
                       <td className="px-3 py-3">{e.purpose === "business" ? t.purposeBusinessShort : t.purposePrivate}</td>
@@ -553,7 +555,7 @@ export default function MileagePage() {
                           onClick={() => remove(e.id)}
                           aria-label={t.btnDelete}
                           title={t.btnDelete}
-                          className="h-10 w-10 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                          className="!h-11 !w-11 shrink-0 !p-0 md:!h-10 md:!w-10 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
                           <Trash2 className="h-4 w-4" strokeWidth={1.75} />
                         </Button></td>
@@ -562,6 +564,35 @@ export default function MileagePage() {
                 </tbody>
               </table>
             </div>
+
+            <ul className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.07] md:hidden">
+              {entries.map((e) => (
+                <li key={e.id} className="flex items-start justify-between gap-3 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium" title={`${e.startAddress} → ${e.endAddress}`}>
+                      {e.startAddress} → {e.endAddress}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {formatDate(e.date, lang)} · {Number(e.distanceKm).toFixed(0)} km ·{" "}
+                      {e.purpose === "business" ? t.purposeBusinessShort : t.purposePrivate}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <span className="font-medium tabular-nums">{formatSek(e.amount)}</span>
+                    <Button
+                      variant="ghost"
+                      onClick={() => remove(e.id)}
+                      aria-label={t.btnDelete}
+                      title={t.btnDelete}
+                      className="!h-11 !w-11 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                    >
+                      <Trash2 className="h-4 w-4" strokeWidth={1.75} />
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            </>
           )}
         </CardContent>
       </Card>

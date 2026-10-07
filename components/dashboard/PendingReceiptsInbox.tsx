@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
+import { formatSek, formatDate } from "@/lib/utils";
 
 interface PendingReceipt {
   id: string;
@@ -21,10 +22,7 @@ interface PendingReceipt {
   uploaderEmail: string | null;
 }
 
-function money(v: string | null): string {
-  if (v == null) return "-";
-  return `${Number(v).toFixed(2).replace(".", ",")} kr`;
-}
+const money = (v: string | null) => (v == null ? "-" : formatSek(v));
 
 /**
  * "Awaiting your approval" - where an owner/admin sees every bill a member
@@ -32,7 +30,7 @@ function money(v: string | null): string {
  * then approve it (into the dashboard) or remove it (reject).
  */
 export function PendingReceiptsInbox() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [items, setItems] = useState<PendingReceipt[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -72,12 +70,12 @@ export function PendingReceiptsInbox() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t.apInboxTitle}</CardTitle>
+        <CardTitle as="h2">{t.apInboxTitle}</CardTitle>
         <CardDescription>{t.apInboxDesc}</CardDescription>
       </CardHeader>
       <CardContent>
         {!loaded ? (
-          <p className="text-sm text-gray-500">…</p>
+          <p role="status" aria-busy="true" className="text-sm text-gray-500 dark:text-gray-400">{t.loading}</p>
         ) : (
           <ul className="divide-y divide-gray-100 dark:divide-white/[0.07]">
             {items.map((r) => {
@@ -85,13 +83,19 @@ export function PendingReceiptsInbox() {
               return (
                 <li key={r.id} className="py-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <button className="flex-1 text-left" onClick={() => setOpenId(open ? null : r.id)}>
+                    <button
+                      type="button"
+                      aria-expanded={open}
+                      aria-controls={`pending-${r.id}`}
+                      className="min-h-11 flex-1 rounded-lg text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 md:min-h-0"
+                      onClick={() => setOpenId(open ? null : r.id)}
+                    >
                       <p className="font-medium">
                         {r.vendorName || t.apUnknownVendor} · {money(r.totalAmount)}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         {t.apFrom} {r.uploaderName || r.uploaderEmail || "-"}
-                        {r.date ? ` · ${new Date(r.date).toLocaleDateString("sv-SE")}` : ""}
+                        {r.date ? ` · ${formatDate(r.date, lang)}` : ""}
                       </p>
                     </button>
                     <div className="flex w-full gap-2 sm:w-auto">
@@ -110,29 +114,29 @@ export function PendingReceiptsInbox() {
                   </div>
 
                   {open && (
-                    <div className="mt-3 grid gap-4 rounded-xl bg-gray-900/[0.03] p-4 dark:bg-white/[0.03] sm:grid-cols-[1fr_auto]">
+                    <div id={`pending-${r.id}`} className="mt-3 grid gap-4 rounded-xl bg-gray-900/[0.03] p-4 dark:bg-white/[0.03] sm:grid-cols-[1fr_auto]">
                       <dl className="grid grid-cols-1 gap-x-4 sm:grid-cols-2 gap-y-2 text-sm">
-                        <dt className="text-gray-500">{t.apDetailVendor}</dt>
+                        <dt className="text-gray-500 dark:text-gray-400">{t.apDetailVendor}</dt>
                         <dd className="break-words">{r.vendorName || "-"}</dd>
-                        <dt className="text-gray-500">{t.apDetailTotal}</dt>
+                        <dt className="text-gray-500 dark:text-gray-400">{t.apDetailTotal}</dt>
                         <dd className="break-words">{money(r.totalAmount)}</dd>
-                        <dt className="text-gray-500">{t.apDetailVat}</dt>
+                        <dt className="text-gray-500 dark:text-gray-400">{t.apDetailVat}</dt>
                         <dd className="break-words">
                           {money(r.vatAmount)}
                           {r.vatRate ? ` (${r.vatRate}%)` : ""}
                         </dd>
-                        <dt className="text-gray-500">{t.apDetailDate}</dt>
-                        <dd className="break-words">{r.date ? new Date(r.date).toLocaleDateString("sv-SE") : "-"}</dd>
-                        <dt className="text-gray-500">{t.apDetailCategory}</dt>
+                        <dt className="text-gray-500 dark:text-gray-400">{t.apDetailDate}</dt>
+                        <dd className="break-words">{formatDate(r.date, lang)}</dd>
+                        <dt className="text-gray-500 dark:text-gray-400">{t.apDetailCategory}</dt>
                         <dd className="break-words">{r.category || "-"}</dd>
-                        <dt className="text-gray-500">{t.apDetailNumber}</dt>
+                        <dt className="text-gray-500 dark:text-gray-400">{t.apDetailNumber}</dt>
                         <dd className="break-words">{r.receiptNumber || "-"}</dd>
                       </dl>
                       {r.imageUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={r.imageUrl}
-                          alt={r.vendorName || "kvitto"}
+                          alt={r.vendorName || t.receiptImageAlt}
                           className="max-h-56 rounded-xl border border-gray-900/[0.07] object-contain dark:border-white/10"
                         />
                       )}

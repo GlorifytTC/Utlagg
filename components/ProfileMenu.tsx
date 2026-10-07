@@ -34,6 +34,8 @@ export function ProfileMenu({
   const [open, setOpen] = useState(false);
   const [logo, setLogo] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const dark = theme === "dark";
   const name = session?.user?.name ?? "";
   const email = session?.user?.email ?? "";
@@ -54,7 +56,13 @@ export function ProfileMenu({
     const onClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      triggerRef.current?.focus();
+    };
+    // Focus the first item on open so keyboard users land inside the menu.
+    menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
     document.addEventListener("mousedown", onClick);
     document.addEventListener("keydown", onKey);
     return () => {
@@ -63,9 +71,21 @@ export function ProfileMenu({
     };
   }, [open]);
 
+  function onMenuKey(e: React.KeyboardEvent) {
+    const items = Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []);
+    const i = items.indexOf(document.activeElement as HTMLElement);
+    const go = (n: number) => { e.preventDefault(); items[(n + items.length) % items.length]?.focus(); };
+    if (e.key === "ArrowDown") go(i + 1);
+    else if (e.key === "ArrowUp") go(i - 1);
+    else if (e.key === "Home") go(0);
+    else if (e.key === "End") go(items.length - 1);
+    else if (e.key === "Tab") setOpen(false);
+  }
+
   return (
     <div ref={ref} className="relative">
       <button
+        ref={triggerRef}
         onClick={() => setOpen((v) => !v)}
         aria-label={name || t.menuProfile}
         aria-haspopup="menu"
@@ -81,7 +101,7 @@ export function ProfileMenu({
       </button>
 
       {open && (
-        <div role="menu" className="panel absolute right-0 top-full z-50 mt-2 w-72 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl py-1">
+        <div ref={menuRef} role="menu" onKeyDown={onMenuKey} className="panel absolute right-0 top-full z-50 mt-2 w-72 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl py-1">
           {(name || email) && (
             <div className="border-b border-gray-900/[0.06] px-4 py-3 dark:border-white/[0.06]">
               {name && <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{name}</p>}

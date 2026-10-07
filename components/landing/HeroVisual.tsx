@@ -234,7 +234,7 @@ function ExpenseCard({
 
       <p className="mt-4 flex items-center gap-2 border-t border-ink/5 pt-3 text-xs text-ink/50">
         <span className="h-1.5 w-1.5 rounded-full bg-nordic-600" />
-        {t.heroVisualFortnox}
+        {t.heroVisualSie}
       </p>
     </div>
   );

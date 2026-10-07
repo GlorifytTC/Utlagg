@@ -6,6 +6,8 @@ import { ShieldCheck } from "lucide-react";
 import { AuditTimeline, type AuditEntry } from "@/components/audit/AuditTimeline";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
+import { ErrorState } from "@/components/ui/error-state";
+import { Badge } from "@/components/ui/badge";
 
 export function AccountantAuditLog({ companyId }: { companyId: string }) {
   const { lang } = useLanguage();
@@ -29,7 +31,7 @@ export function AccountantAuditLog({ companyId }: { companyId: string }) {
   useEffect(() => { load(); }, [load]);
 
   if (status === "error") {
-    return <p className="text-sm text-red-600">{t.auditLoadError}</p>;
+    return <ErrorState onRetry={load} retryLabel={t.retry}>{t.auditLoadError}</ErrorState>;
   }
 
   return (
@@ -45,9 +47,7 @@ export function AccountantAuditLog({ companyId }: { companyId: string }) {
             {t.auditTitle}
           </p>
         </div>
-        <span className="rounded-full border border-gray-900/[0.07] px-2.5 py-0.5 text-[10px] font-medium text-gray-500 dark:text-gray-400 dark:border-white/[0.07]">
-          {t.audit30Days}
-        </span>
+        <Badge tone="neutral">{t.audit30Days}</Badge>
       </div>
       <div className="px-4 py-4">
         <AuditTimeline entries={entries} loading={status === "loading"} />

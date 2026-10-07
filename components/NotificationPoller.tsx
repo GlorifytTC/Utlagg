@@ -69,7 +69,7 @@ export function NotificationPoller() {
         if (data.events.length > 0) playNotifSound();
         for (const e of data.events) {
           toast.success(label[e.type].replace("{name}", e.actorName), {
-            action: { label: "→", onClick: () => routerRef.current.push(e.href) },
+            action: { label: tr.btnView, onClick: () => routerRef.current.push(e.href) },
           });
           if (e.type === "message") inc("chat");
           else inc("requests");

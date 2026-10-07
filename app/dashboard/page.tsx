@@ -119,7 +119,7 @@ export default async function DashboardPage() {
 
       {Number(stats?.total ?? 0) === 0 && !premiumEnded && (
         <section className="rounded-2xl bg-nordic-50 p-6 dark:bg-nordic-600/[0.06]">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+          <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-white">
             {t.dashGettingStartedTitle}
           </h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">

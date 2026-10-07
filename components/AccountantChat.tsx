@@ -128,9 +128,9 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
     return (
       <div className={cn(frame, "items-center justify-center", !fill && "h-80")}>
         {status === "loading" ? (
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-transparent dark:border-gray-600 dark:border-t-transparent" />
+          <div role="status" aria-label={t.loading} className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-transparent dark:border-gray-600 dark:border-t-transparent" />
         ) : (
-          <p className="text-sm text-red-600">{t.chatLoadError}</p>
+          <p role="alert" className="text-sm text-red-600 dark:text-red-400">{t.chatLoadError}</p>
         )}
       </div>
     );
@@ -148,7 +148,7 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
         className={cn("flex flex-col overflow-y-auto px-4 py-5 sm:px-6", fill ? "flex-1 min-h-0" : "h-[50dvh] min-h-[320px]")}
       >
         {messages.length === 0 && (
-          <p className="m-auto text-sm text-gray-400 dark:text-gray-500">{t.chatEmptyThread}</p>
+          <p className="m-auto text-sm text-gray-500 dark:text-gray-400">{t.chatEmptyThread}</p>
         )}
         {messages.map((m, i) => {
           const prev = messages[i - 1];
@@ -168,7 +168,7 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
               {newDay && (
                 <div className="my-4 flex items-center gap-3 first:mt-0" role="separator">
                   <span className="h-px flex-1 bg-gray-900/[0.06] dark:bg-white/[0.07]" />
-                  <span className="text-[11px] font-medium text-gray-400 first-letter:uppercase dark:text-gray-500">
+                  <span className="text-xs font-medium text-gray-500 first-letter:uppercase dark:text-gray-400">
                     {formatDayLabel(at, lang, t.chatsToday, t.chatsYesterday)}
                   </span>
                   <span className="h-px flex-1 bg-gray-900/[0.06] dark:bg-white/[0.07]" />
@@ -177,7 +177,7 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
               <div className={cn("group flex items-end gap-1.5", isMine ? "flex-row-reverse" : "flex-row", joinsPrev ? "mt-0.5" : "mt-3")}>
                 <div className={cn("flex min-w-0 max-w-[85%] flex-col sm:max-w-[65%]", isMine ? "items-end" : "items-start")}>
                   {!isMine && !joinsPrev && (
-                    <p className="mb-1 px-1 text-[11px] font-medium text-gray-500 dark:text-gray-400">
+                    <p className="mb-1 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                       {m.senderName ?? (m.senderRole === "accountant" ? t.chatRoleAccountant : t.chatRoleClient)}
                     </p>
                   )}
@@ -197,20 +197,20 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
                     <p className="whitespace-pre-wrap break-words">{m.body}</p>
                   </div>
                   {!joinsNext && (
-                    <p className="mt-1 px-1 text-[10.5px] tabular-nums text-gray-400 dark:text-gray-500">{formatTime(at, lang)}</p>
+                    <p className="mt-1 px-1 text-xs tabular-nums text-gray-500 dark:text-gray-400">{formatTime(at, lang)}</p>
                   )}
                 </div>
                 {!isMine && (
                   <button
                     onClick={() => setReportTarget({ userId: m.senderId, messageId: m.id })}
                     className={cn(
-                      "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-gray-400 opacity-100 transition-opacity hover:text-red-500 focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100",
+                      "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-gray-500 opacity-100 transition-opacity hover:text-red-500 focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100",
                       !joinsNext && "mb-2",
                     )}
                     title={t.chatReport}
                     aria-label={t.chatReport}
                   >
-                    <Flag size={12} />
+                    <Flag size={12} aria-hidden />
                   </button>
                 )}
               </div>
@@ -224,6 +224,7 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
         <div className="border-t border-gray-900/[0.07] bg-amber-50 p-4 dark:border-white/[0.08] dark:bg-amber-950/20">
           <p className="mb-2 text-sm font-medium text-amber-800 dark:text-amber-200">{t.chatReport}</p>
           <textarea
+            aria-label={t.chatReport}
             value={reportReason}
             onChange={(e) => setReportReason(e.target.value)}
             rows={2}
@@ -233,14 +234,15 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
           />
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={submitReport}
-              className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm text-white hover:bg-amber-700"
+              className="min-h-11 rounded-lg bg-amber-700 px-3 py-1.5 text-sm text-white hover:bg-amber-800 md:min-h-0"
             >
               {t.chatReportSend}
             </button>
             <button
               onClick={() => { setReportTarget(null); setReportReason(""); }}
-              className="rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              className="min-h-11 rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 md:min-h-0 dark:text-gray-400 dark:hover:text-gray-300"
             >
               {t.chatCancel}
             </button>
@@ -263,26 +265,26 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
               maxLength={2000}
               aria-label={t.chatPlaceholder}
               placeholder={t.chatPlaceholder}
-              className="max-h-36 flex-1 resize-none bg-transparent py-2.5 text-base text-gray-900 outline-none sm:text-sm placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
+              className="max-h-36 flex-1 resize-none bg-transparent py-2.5 text-base text-gray-900 outline-none sm:text-sm placeholder:text-gray-500 dark:text-white dark:placeholder:text-gray-400"
             />
             <button
               onClick={send}
               disabled={sending || !text.trim()}
               aria-label={t.chatSend}
-              className="my-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-nordic-600 text-white transition hover:bg-nordic-700 disabled:bg-gray-900/10 disabled:text-gray-400 dark:disabled:bg-white/10"
+              className="my-1 flex h-11 w-11 shrink-0 md:h-10 md:w-10 items-center justify-center rounded-full bg-nordic-600 text-white transition hover:bg-nordic-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-[#050505] disabled:bg-gray-900/10 disabled:text-gray-500 dark:disabled:bg-white/10"
             >
-              <ArrowUp size={16} strokeWidth={2.25} />
+              <ArrowUp size={16} strokeWidth={2.25} aria-hidden />
             </button>
           </div>
           {/* Report the other user directly */}
           {myRole && otherMsg && (
             <button
               onClick={() => setReportTarget({ userId: otherMsg.senderId })}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-gray-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-gray-500 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30"
               title={t.chatReportUser}
               aria-label={t.chatReportUser}
             >
-              <Flag size={15} />
+              <Flag size={15} aria-hidden />
             </button>
           )}
         </div>

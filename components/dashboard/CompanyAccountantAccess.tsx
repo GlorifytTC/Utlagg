@@ -75,50 +75,50 @@ export function CompanyAccountantAccess() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <CardTitle>{t.caaTitle}</CardTitle>
+            <CardTitle as="h2">{t.caaTitle}</CardTitle>
             <CardDescription>{t.caaDesc}</CardDescription>
           </div>
           <Link
             href="/dashboard/accountant-activity"
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-gray-900/[0.10] px-3 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:border-gray-900/20 hover:text-gray-800 dark:border-white/[0.10] dark:text-gray-400 dark:hover:text-white"
           >
-            <ShieldCheck className="h-3.5 w-3.5" />
+            <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
             {t.caaActivityLog}
           </Link>
         </div>
       </CardHeader>
       <CardContent>
         {status === "loading" ? (
-          <p className="text-sm text-gray-500">{t.loading}</p>
+          <p role="status" aria-busy="true" className="text-sm text-gray-500 dark:text-gray-400">{t.loading}</p>
         ) : status === "error" ? (
-          <p className="text-sm text-red-600">{t.caaLoadError}</p>
+          <p role="alert" className="text-sm text-red-600 dark:text-red-400">{t.caaLoadError}</p>
         ) : rows.length === 0 ? (
-          <p className="text-sm text-gray-500">{t.caaEmpty}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t.caaEmpty}</p>
         ) : (
           <ul className="divide-y divide-gray-100 dark:divide-white/[0.07]">
             {rows.map((a) => (
               <li key={a.relationshipId} className="py-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
+                  <div className="min-w-0 break-words">
                     <p className="flex flex-wrap items-center gap-1.5 font-medium">
                       {a.name ?? a.email}
                       {a.isVerified && <VerifiedBadge />}
                     </p>
-                    <p className="text-xs text-gray-500">{a.email}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{a.email}</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <button
                       onClick={() => setChatOpen(chatOpen === a.relationshipId ? null : a.relationshipId)}
-                      className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
+                      className="flex min-h-11 items-center gap-1 text-sm text-gray-500 hover:text-gray-800 md:min-h-0 dark:text-gray-400 dark:hover:text-gray-200"
                     >
-                      <MessageSquare size={14} />
+                      <MessageSquare size={14} aria-hidden />
                       {t.caaChat}
                     </button>
                     {confirmId === a.accountantId ? (
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-500">{t.caaConfirmRevoke}</span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{t.caaConfirmRevoke}</span>
                         <Button
                           variant="destructive"
                           disabled={busy === a.accountantId}
@@ -133,7 +133,7 @@ export function CompanyAccountantAccess() {
                     ) : (
                       <button
                         onClick={() => setConfirmId(a.accountantId)}
-                        className="text-sm text-red-600 hover:underline"
+                        className="min-h-11 text-sm text-red-600 hover:underline md:min-h-0 dark:text-red-400"
                       >
                         {t.caaRevoke}
                       </button>

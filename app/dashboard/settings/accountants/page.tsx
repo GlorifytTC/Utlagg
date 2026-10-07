@@ -27,7 +27,7 @@ export default function CompanyAccountantsPage() {
       <SectionHeader title={t.setAccountants} />
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{t.navMarketplace}</CardTitle>
+          <CardTitle>{t.navMarketplace}</CardTitle>
           <CardDescription>{t.setFindAccountants}</CardDescription>
         </CardHeader>
         <CardContent>

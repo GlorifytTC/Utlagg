@@ -15,7 +15,7 @@ export default async function CompanyAccountantProfilePage({
   const { id } = await params;
 
   return (
-    <div>
+    <div className="max-w-6xl">
       <AccountantProfile
         accountantId={id}
         backHref="/dashboard/marketplace"

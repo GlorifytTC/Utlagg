@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { TrendingUp, Receipt, CheckCircle, Clock } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from "recharts";
-import { formatSek, formatDate } from "@/lib/utils";
+import { formatSek, formatDate, localeFor } from "@/lib/utils";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import { BUCKET_LABELS, type SpendBucket } from "@/lib/stats-categories";
@@ -46,16 +47,13 @@ interface StatsData {
   recentReceipts: RecentReceipt[];
 }
 
-const shortMonth = (bucket: string) => {
-  const m = parseInt(bucket.split("-")[1] ?? "1", 10);
-  return ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"][m - 1] ?? bucket;
+const shortMonth = (bucket: string, lang: string) => {
+  const [y, m] = bucket.split("-").map((n) => parseInt(n, 10));
+  if (!y || !m) return bucket;
+  return new Intl.DateTimeFormat(localeFor(lang), { month: "short" }).format(new Date(y, m - 1, 1));
 };
 
-const statusColors: Record<string, string> = {
-  approved: "bg-green-100/50 text-green-700 dark:bg-green-900/20 dark:text-green-300",
-  pending: "bg-amber-100/50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
-  rejected: "bg-red-100/50 text-red-600 dark:bg-red-900/20 dark:text-red-400",
-};
+const statusTone: Record<string, BadgeTone> = { approved: "success", pending: "warning", rejected: "danger" };
 
 const statusLabel = (status: string, lang: string) => {
   const labels: Record<string, { sv: string; en: string }> = {
@@ -262,7 +260,7 @@ export function AccountantClientStats({
                     tick={{ fontSize: 11 }}
                     axisLine={false}
                     tickLine={false}
-                    tickFormatter={shortMonth}
+                    tickFormatter={(b: string) => shortMonth(b, lang)}
                   />
                   <YAxis
                     tick={{ fontSize: 11 }}
@@ -298,8 +296,9 @@ export function AccountantClientStats({
               {t.clientStatsRecent}
             </p>
             <button
+              type="button"
               onClick={onViewAllReceipts}
-              className="text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70"
+              className="inline-flex min-h-11 items-center rounded-full px-2 text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-nordic-400"
             >
               {t.clientStatsViewAll} →
             </button>
@@ -312,18 +311,14 @@ export function AccountantClientStats({
                     {r.vendorName || "-"}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {formatDate(r.date ?? r.createdAt)}
+                    {formatDate(r.date ?? r.createdAt, lang)}
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-3">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {formatSek(Number(r.totalAmount))}
                   </span>
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[r.status] ?? "bg-gray-100 text-gray-600"}`}
-                  >
-                    {statusLabel(r.status, lang)}
-                  </span>
+                  <Badge tone={statusTone[r.status] ?? "neutral"}>{statusLabel(r.status, lang)}</Badge>
                 </div>
               </li>
             ))}

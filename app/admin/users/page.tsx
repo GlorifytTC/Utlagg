@@ -3,7 +3,9 @@ import { and, desc, eq, ilike, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { formatDate } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClass } from "@/components/ui/button";
+import { Input, Select } from "@/components/ui/input";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Admin · Användare" };
 export const dynamic = "force-dynamic";
@@ -45,37 +47,39 @@ export default async function AdminUsersPage({
     .where(where)) as { total: number }[];
 
   const pages = Math.max(1, Math.ceil(Number(total) / PAGE_SIZE));
-  const csvHref = `/api/admin/users?format=csv${q ? `&q=${encodeURIComponent(q)}` : ""}${tier ? `&tier=${tier}` : ""}`;
+  const csvHref = `/api/admin/users?format=csv${q ? `&q=${encodeURIComponent(q)}` : ""}${tier ? `&tier=${encodeURIComponent(tier)}` : ""}`;
+  const pageHref = (p: number) =>
+    `/admin/users?page=${p}${q ? `&q=${encodeURIComponent(q)}` : ""}${tier ? `&tier=${encodeURIComponent(tier)}` : ""}`;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Användare ({Number(total)})</h1>
-        <a href={csvHref}>
-          <Button variant="outline">Exportera CSV</Button>
-        </a>
-      </div>
+      <PageHeader
+        title={`Användare (${Number(total)})`}
+        actions={<a href={csvHref} className={buttonClass("outline")}>Exportera CSV</a>}
+      />
 
       <form method="GET" className="flex flex-wrap gap-2">
-        <input
+        <Input
           name="q"
+          type="search"
+          aria-label="Sök e-post"
           defaultValue={q ?? ""}
           placeholder="Sök e-post…"
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+          className="sm:!w-64"
         />
-        <select name="tier" defaultValue={tier ?? "all"} className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-950">
+        <Select name="tier" aria-label="Plan" defaultValue={tier ?? "all"} className="sm:!w-48">
           <option value="all">Alla planer</option>
           <option value="free">Gratis</option>
           <option value="pro">Pro</option>
           <option value="business">Företag</option>
           <option value="enterprise">Enterprise</option>
-        </select>
+        </Select>
         <Button type="submit" variant="outline">Filtrera</Button>
       </form>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+      <div className="panel overflow-x-auto rounded-2xl">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left text-gray-500 dark:bg-gray-900 dark:text-gray-400">
+          <thead className="text-left text-xs font-medium text-gray-500 dark:text-gray-400">
             <tr>
               <th className="px-4 py-3">E-post</th>
               <th className="px-4 py-3">Namn</th>
@@ -86,9 +90,9 @@ export default async function AdminUsersPage({
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {rows.map((u: Record<string, unknown>) => (
-              <tr key={u.id as string} className="hover:bg-gray-50 dark:hover:bg-gray-900">
+              <tr key={u.id as string} className="hover:bg-gray-900/[0.03] dark:hover:bg-white/[0.04]">
                 <td className="px-4 py-3">
-                  <Link href={`/admin/users/${u.id}`} className="text-nordic-600 underline">
+                  <Link href={`/admin/users/${u.id}`} className="break-all text-nordic-600 underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
                     {u.email as string}
                   </Link>
                 </td>
@@ -99,7 +103,7 @@ export default async function AdminUsersPage({
               </tr>
             ))}
             {rows.length === 0 && (
-              <tr><td colSpan={5} className="px-4 py-6 text-center text-gray-500">Inga användare</td></tr>
+              <tr><td colSpan={5} className="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Inga användare</td></tr>
             )}
           </tbody>
         </table>
@@ -107,11 +111,11 @@ export default async function AdminUsersPage({
 
       <div className="flex items-center gap-3 text-sm">
         {page > 1 && (
-          <Link className="underline" href={`/admin/users?page=${page - 1}${q ? `&q=${q}` : ""}${tier ? `&tier=${tier}` : ""}`}>← Föregående</Link>
+          <Link className={buttonClass("outline")} href={pageHref(page - 1)}>← Föregående</Link>
         )}
-        <span className="text-gray-500">Sida {page} av {pages}</span>
+        <span className="text-gray-500 dark:text-gray-400">Sida {page} av {pages}</span>
         {page < pages && (
-          <Link className="underline" href={`/admin/users?page=${page + 1}${q ? `&q=${q}` : ""}${tier ? `&tier=${tier}` : ""}`}>Nästa →</Link>
+          <Link className={buttonClass("outline")} href={pageHref(page + 1)}>Nästa →</Link>
         )}
       </div>
     </div>

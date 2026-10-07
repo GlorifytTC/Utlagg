@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
+import { Field } from "@/components/auth/Field";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function ForgotPasswordPage() {
@@ -10,27 +12,35 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   async function submit() {
     setLoading(true);
-    await fetch("/api/auth/forgot-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    setLoading(false);
-    setSent(true);
+    setError(false);
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) setSent(true);
+      else setError(true);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
       <div className="w-full max-w-sm">
-        <Link href="/">
+        <Link href="/" className="inline-block rounded focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
         <h1 className="mt-8 font-display text-3xl font-semibold tracking-tight">{t.fpTitle}</h1>
         {sent ? (
-          <p className="mt-6 text-sm text-ink/70">
+          <p role="status" className="mt-6 text-sm text-ink/70">
             {t.fpSent}
           </p>
         ) : (
@@ -38,25 +48,24 @@ export default function ForgotPasswordPage() {
             <p className="text-sm text-ink/70">
               {t.fpIntro}
             </p>
-            <input
+            <Field
+              id="fp-email"
               type="email"
-              placeholder={t.fldEmail}
+              autoComplete="email"
+              label={t.fldEmail}
               value={email}
+              error={error}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && submit()}
-              className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm transition focus-visible:border-nordic-600 focus-visible:ring-2 focus-visible:ring-nordic-600/30"
             />
-            <button
-              onClick={submit}
-              disabled={loading || !email}
-              className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
-            >
+            {error && <p id="form-error" role="alert" className="text-sm text-red-600">{t.somethingWentWrong}</p>}
+            <Button onClick={submit} disabled={loading || !email} className="w-full dark:!text-white">
               {loading ? t.stSubmitting : t.fpSend}
-            </button>
+            </Button>
           </div>
         )}
-        <p className="mt-6 text-sm text-ink/60">
-          <Link href="/login" className="underline">
+        <p className="mt-6 text-sm text-ink/65">
+          <Link href="/login" className="inline-flex min-h-11 items-center underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
             {t.fpBackToLogin}
           </Link>
         </p>

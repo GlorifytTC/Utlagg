@@ -4,7 +4,8 @@ import { cn } from "@/lib/utils";
 type Variant = "default" | "outline" | "destructive" | "ghost";
 
 const variants: Record<Variant, string> = {
-  default: "bg-nordic-600 text-white hover:bg-nordic-700",
+  // dark accent is light (#E2734A): white text fails contrast there
+  default: "bg-nordic-600 text-white hover:bg-nordic-700 dark:text-[#050505]",
   outline:
     "border border-gray-900/15 bg-transparent hover:border-gray-900/30 hover:bg-gray-900/[0.03] dark:border-white/[0.14] dark:text-white dark:hover:border-white/30 dark:hover:bg-white/[0.06]",
   destructive: "bg-red-600 text-white hover:bg-red-700",

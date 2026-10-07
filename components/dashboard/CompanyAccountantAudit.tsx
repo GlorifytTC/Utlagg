@@ -28,7 +28,7 @@ export function CompanyAccountantAudit() {
   useEffect(() => { load(); }, [load]);
 
   if (status === "error") {
-    return <p className="text-sm text-red-600">{t.cauLoadError}</p>;
+    return <p role="alert" className="text-sm text-red-600 dark:text-red-400">{t.cauLoadError}</p>;
   }
 
   return (
@@ -39,7 +39,7 @@ export function CompanyAccountantAudit() {
       className="overflow-hidden rounded-2xl panel"
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-900/[0.07] px-6 py-5 dark:border-white/[0.07]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-900/[0.07] px-6 py-5 dark:border-white/[0.07]">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-gray-900/[0.07] bg-white/70 dark:border-white/[0.08] dark:bg-white/[0.05]">
             <ShieldCheck className="h-4 w-4 text-gray-500 dark:text-gray-400" strokeWidth={1.75} />
@@ -48,18 +48,18 @@ export function CompanyAccountantAudit() {
             <h2 className="font-display text-sm font-semibold text-gray-900 dark:text-white">
               {t.cauTitle}
             </h2>
-            <p className="text-[11px] text-gray-400 dark:text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               {t.cauSubtitle}
             </p>
           </div>
         </div>
-        <span className="rounded-full border border-gray-900/[0.07] px-2.5 py-0.5 text-[10px] font-medium text-gray-500 dark:text-gray-400 dark:border-white/[0.07]">
+        <span className="rounded-full border border-gray-900/[0.07] px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:text-gray-400 dark:border-white/[0.07]">
           {t.cau30Days}
         </span>
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 border-b border-gray-900/[0.05] px-6 py-2.5 dark:border-white/[0.05]">
+      <div className="flex flex-wrap items-center gap-4 border-b border-gray-900/[0.05] px-6 py-2.5 dark:border-white/[0.05]">
         {[
           { dot: "bg-gray-300 dark:bg-gray-600", label: t.cauLegendView },
           { dot: "bg-accent", label: t.cauLegendEdit },
@@ -67,7 +67,7 @@ export function CompanyAccountantAudit() {
         ].map(({ dot, label }) => (
           <div key={label} className="flex items-center gap-1.5">
             <div className={`h-1.5 w-1.5 rounded-full ${dot}`} />
-            <span className="text-[10px] text-gray-400 dark:text-gray-500">{label}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{label}</span>
           </div>
         ))}
       </div>

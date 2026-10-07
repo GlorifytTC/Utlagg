@@ -32,7 +32,7 @@ function AboutContent() {
       <main>
         {/* Hero */}
         <section className="mx-auto max-w-6xl px-6 pb-20 pt-12 md:pb-28 md:pt-20">
-          <motion.p {...enter(0, rm)} className="text-sm font-medium text-nordic-600">
+          <motion.p {...enter(0, rm)} className="text-sm font-medium text-nordic-700">
             {t.aboutKicker}
           </motion.p>
           <motion.h1

@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Logo } from "@/components/brand/Logo";
+import { Field } from "@/components/auth/Field";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 
 /**
@@ -91,11 +93,11 @@ function CompanyJoinInner() {
   return (
     <main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12">
       <div className="w-full max-w-sm">
-        <Link href="/">
+        <Link href="/" className="inline-block rounded focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
 
-        {state === "checking" && <p className="mt-6 text-sm text-ink/60">{t.loading}</p>}
+        {state === "checking" && <p role="status" className="mt-6 text-sm text-ink/65">{t.loading}</p>}
 
         {state === "invalid" && (
           <div className="mt-6 space-y-3">
@@ -111,7 +113,7 @@ function CompanyJoinInner() {
             <h1 className="font-display text-2xl">{t.joinWelcome}</h1>
             <p className="text-sm text-ink/70">
               {t.joinReady}{" "}
-              <Link href="/dashboard" className="underline">
+              <Link href="/dashboard" className="underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
                 {t.joinGoToWorkspace}
               </Link>
               .
@@ -125,41 +127,31 @@ function CompanyJoinInner() {
             <p className="text-sm text-ink/70">
               {name ? t.joinGreeting.replace("{name}", name) : ""}{t.joinIntroCompany}
             </p>
-            <div>
-              <label className="mb-1 block text-xs text-ink/50">{t.fldEmail}</label>
-              <input
-                value={email}
-                disabled
-                className="w-full rounded-lg border hairline bg-ink/[0.03] px-4 py-3 text-base text-ink/60 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs text-ink/50">{t.authPassword}</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={t.joinPwPlaceholder}
-                className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm focus:border-nordic-600"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs text-ink/50">{t.rpConfirmPassword}</label>
-              <input
-                type="password"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                className="w-full rounded-lg border hairline bg-white px-4 py-3 text-base outline-none sm:text-sm focus:border-nordic-600"
-              />
-            </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <button
-              onClick={submit}
-              disabled={state === "working"}
-              className="w-full rounded-full bg-nordic-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
-            >
+            <Field id="join-email" type="email" autoComplete="email" label={t.fldEmail} value={email} disabled readOnly />
+            <Field
+              id="join-password"
+              type="password"
+              autoComplete="new-password"
+              label={t.authPassword}
+              value={password}
+              error={!!error}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={t.joinPwPlaceholder}
+            />
+            <Field
+              id="join-confirm"
+              type="password"
+              autoComplete="new-password"
+              label={t.rpConfirmPassword}
+              value={confirm}
+              error={!!error}
+              onChange={(e) => setConfirm(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && submit()}
+            />
+            {error && <p id="form-error" role="alert" className="text-sm text-red-600">{error}</p>}
+            <Button onClick={submit} disabled={state === "working"} className="w-full dark:!text-white">
               {state === "working" ? t.accAcceptCreating : t.joinSubmit}
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -170,7 +162,7 @@ function CompanyJoinInner() {
 export default function CompanyJoinPage() {
   const { t } = useLanguage();
   return (
-    <Suspense fallback={<main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12"><p className="text-sm text-ink/60">{t.loading}</p></main>}>
+    <Suspense fallback={<main className="light-surface flex min-h-dvh items-center justify-center bg-paper px-6 py-12"><p role="status" className="text-sm text-ink/65">{t.loading}</p></main>}>
       <CompanyJoinInner />
     </Suspense>
   );

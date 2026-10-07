@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Trash2 } from "lucide-react";
 import { Button, buttonClass } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
-import { formatSek } from "@/lib/utils";
+import { formatSek, formatDate, localeFor } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/context/LanguageContext";
 import { PageHeader } from "@/components/ui/page-header";
@@ -33,7 +34,7 @@ function monthRange(d = new Date()) {
 
 export default function TransportPage() {
   const { t, lang } = useLanguage();
-  const locale = lang === "sv" ? "sv-SE" : "en-US";
+  const locale = localeFor(lang);
   const [passes, setPasses] = useState<Pass[]>([]);
   const init = monthRange();
   const [form, setForm] = useState({
@@ -95,7 +96,7 @@ export default function TransportPage() {
       {/* Quick add */}
       <Card>
         <CardHeader>
-          <CardTitle>{t.trQuickTitle}</CardTitle>
+          <CardTitle as="h2">{t.trQuickTitle}</CardTitle>
           <CardDescription>{t.trQuickDesc}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -108,7 +109,7 @@ export default function TransportPage() {
       {/* New pass */}
       <Card>
         <CardHeader>
-          <CardTitle>{t.trNewTitle}</CardTitle>
+          <CardTitle as="h2">{t.trNewTitle}</CardTitle>
           <CardDescription>{t.trVatNote}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -185,14 +186,11 @@ export default function TransportPage() {
             </div>
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-            <input
-              type="checkbox"
-              checked={form.isRecurring}
-              onChange={(e) => setForm({ ...form, isRecurring: e.target.checked })}
-            />
-            {t.trRecurring}
-          </label>
+          <Checkbox
+            checked={form.isRecurring}
+            onChange={(e) => setForm({ ...form, isRecurring: e.target.checked })}
+            label={t.trRecurring}
+          />
 
           <Button onClick={() => save()}>{t.trSave}</Button>
         </CardContent>
@@ -201,30 +199,30 @@ export default function TransportPage() {
       {/* List */}
       <Card>
         <CardHeader>
-          <CardTitle>{t.trListTitle}</CardTitle>
+          <CardTitle as="h2">{t.trListTitle}</CardTitle>
         </CardHeader>
         <CardContent>
           {passes.length === 0 ? (
             <p className="text-sm text-gray-500 dark:text-gray-400">{t.trEmpty}</p>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="border-b border-gray-900/[0.07] text-left text-xs font-medium text-gray-500 dark:border-white/[0.08] dark:text-gray-400">
-                    <th className="px-3 py-3 font-medium">{t.trColPeriod}</th>
-                    <th className="px-3 py-3 font-medium">{t.trColProvider}</th>
-                    <th className="px-3 py-3 text-right">{t.trColAmount}</th>
-                    <th className="px-3 py-3 text-right">{t.trColVat}</th>
-                    <th className="px-3 py-3 text-right">{t.trColStatus}</th>
-                    <th className="px-3 py-3 font-medium"></th>
+                    <th scope="col" className="px-3 py-3 font-medium">{t.trColPeriod}</th>
+                    <th scope="col" className="px-3 py-3 font-medium">{t.trColProvider}</th>
+                    <th scope="col" className="px-3 py-3 text-right">{t.trColAmount}</th>
+                    <th scope="col" className="px-3 py-3 text-right">{t.trColVat}</th>
+                    <th scope="col" className="px-3 py-3 text-right">{t.trColStatus}</th>
+                    <th scope="col" className="px-3 py-3"><span className="sr-only">{t.colActions}</span></th>
                   </tr>
                 </thead>
                 <tbody>
                   {passes.map((p) => (
                     <tr key={p.id} className="border-b border-gray-900/[0.06] last:border-0 dark:border-white/[0.07] dark:text-gray-100">
                       <td className="px-3 py-3">
-                        {new Date(p.validFrom).toLocaleDateString(locale)} -{" "}
-                        {new Date(p.validTo).toLocaleDateString(locale)}
+                        {formatDate(p.validFrom, lang)} - {formatDate(p.validTo, lang)}
                       </td>
                       <td className="px-3 py-3">{providerLabel(p)}</td>
                       <td className="px-3 py-3 text-right tabular-nums">{formatSek(p.amount)}</td>
@@ -240,7 +238,7 @@ export default function TransportPage() {
                           onClick={() => remove(p.id)}
                           aria-label={t.btnDelete}
                           title={t.btnDelete}
-                          className="h-10 w-10 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                          className="!h-11 !w-11 md:!h-10 md:!w-10 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
                           <Trash2 className="h-4 w-4" strokeWidth={1.75} />
                         </Button>
@@ -250,6 +248,36 @@ export default function TransportPage() {
                 </tbody>
               </table>
             </div>
+
+            <ul className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.07] md:hidden">
+              {passes.map((p) => (
+                <li key={p.id} className="flex items-start justify-between gap-3 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium" title={providerLabel(p)}>{providerLabel(p)}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {formatDate(p.validFrom, lang)} - {formatDate(p.validTo, lang)}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {p.isRecurring ? t.trRecurringTag : t.trOnceTag}
+                      {p.vatAmount ? ` · ${t.trColVat}: ${formatSek(p.vatAmount)}` : ""}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <span className="font-medium tabular-nums">{formatSek(p.amount)}</span>
+                    <Button
+                      variant="ghost"
+                      onClick={() => remove(p.id)}
+                      aria-label={t.btnDelete}
+                      title={t.btnDelete}
+                      className="!h-11 !w-11 md:!h-10 md:!w-10 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                    >
+                      <Trash2 className="h-4 w-4" strokeWidth={1.75} />
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            </>
           )}
         </CardContent>
       </Card>
@@ -257,7 +285,7 @@ export default function TransportPage() {
       {/* Export */}
       <Card>
         <CardHeader>
-          <CardTitle>{t.trExportTitle}</CardTitle>
+          <CardTitle as="h2">{t.trExportTitle}</CardTitle>
           <CardDescription>{t.trExportDesc}</CardDescription>
         </CardHeader>
         <CardContent>

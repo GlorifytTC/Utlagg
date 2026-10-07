@@ -37,7 +37,7 @@ export function CtaLink({
     <Link
       href={href}
       className={cn(
-        "group inline-flex max-w-full items-center gap-3 whitespace-normal rounded-full text-sm font-medium transition duration-500 ease-premium active:scale-[0.98]",
+        "group inline-flex max-w-full items-center gap-3 whitespace-normal rounded-full text-sm font-medium transition duration-500 ease-premium active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20",
         arrow ? "py-1.5 pl-6 pr-1.5" : "px-6 py-3.5",
         shell[variant],
         className,
@@ -94,7 +94,7 @@ export function CtaPanel({
             <CtaLink href={href} variant="light">
               {label}
             </CtaLink>
-            {note && <p className="mt-4 text-xs text-paper/50">{note}</p>}
+            {note && <p className="mt-4 text-xs text-paper/65">{note}</p>}
           </div>
         </div>
       </motion.div>

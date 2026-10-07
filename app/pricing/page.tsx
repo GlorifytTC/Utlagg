@@ -90,7 +90,7 @@ function PricingPageContent() {
       onClick={() => handleSelect(tier)}
       disabled={loading === tier}
       className={cn(
-        "whitespace-nowrap rounded-full px-5 py-3 text-sm font-medium transition duration-500 ease-premium active:scale-[0.98]",
+        "min-h-11 whitespace-nowrap rounded-full px-5 py-3 text-sm font-medium transition duration-500 ease-premium active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20",
         highlight
           ? "bg-nordic-600 text-white hover:bg-nordic-700"
           : "border border-ink/15 hover:border-ink/40",
@@ -208,7 +208,7 @@ function PricingPageContent() {
           </h2>
 
           <div className="mt-12 flex flex-wrap items-center gap-2">
-            <span className="mr-2 text-sm font-medium text-ink/60">{t.pricingIncludedAll}</span>
+            <span className="mr-2 text-sm font-medium text-ink/65">{t.pricingIncludedAll}</span>
             {CORE_ROWS.map((row) => (
               <span
                 key={row.labelKey}
@@ -220,12 +220,13 @@ function PricingPageContent() {
             ))}
           </div>
 
-          <div className="bezel mt-10">
+          <p className="mt-10 text-xs text-ink/65 md:hidden">{t.pricingScrollHint}</p>
+          <div className="bezel mt-3 md:mt-10">
             <div className="bezel-core overflow-x-auto p-2 md:p-4">
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead>
                   <tr>
-                    <th className="sticky left-0 z-10 bg-[#fffdf8] px-4 pb-4 pt-3 font-medium text-ink/50" />
+                    <th className="sticky left-0 z-10 bg-[#fffdf8] px-4 pb-4 pt-3 font-medium text-ink/65" />
                     {TIER_ORDER.map((tier) => (
                       <th key={tier} className="px-4 pb-4 pt-3 font-semibold text-ink">
                         {planName(t, tier)}
@@ -235,8 +236,8 @@ function PricingPageContent() {
                 </thead>
                 <tbody>
                   {MATRIX_ROWS.map((row) => (
-                    <tr key={row.labelKey} className="odd:bg-ink/[0.025]">
-                      <td className="sticky left-0 z-10 rounded-l-xl bg-[#fffdf8] px-4 py-3.5 text-ink/75">
+                    <tr key={row.labelKey} className="group odd:bg-ink/[0.025]">
+                      <td className="sticky left-0 z-10 rounded-l-xl bg-[#fffdf8] group-odd:bg-[#f7f7f2] px-4 py-3.5 text-ink/75">
                         {t[row.labelKey as keyof typeof t] as string}
                       </td>
                       {TIER_ORDER.map((tier, ti) => (

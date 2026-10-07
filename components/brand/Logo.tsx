@@ -15,18 +15,20 @@ export function LogoMark({
   size = 32,
   className,
   adaptive = true,
+  decorative = false,
 }: {
   size?: number;
   className?: string;
   adaptive?: boolean;
+  /** Hide from assistive tech when the wordmark is rendered next to it. */
+  decorative?: boolean;
 }) {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 32 32"
-      role="img"
-      aria-label="Kvittino"
+      {...(decorative ? { "aria-hidden": true } : { role: "img", "aria-label": "Kvittino" })}
       className={className}
     >
       <rect x="2" y="2" width="28" height="28" rx="8" className="fill-nordic-600" />
@@ -68,7 +70,7 @@ export function Logo({
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
-      <LogoMark size={size} adaptive={adaptive} />
+      <LogoMark size={size} adaptive={adaptive} decorative />
       <span
         className={cn(
           "font-display font-extrabold tracking-tight",

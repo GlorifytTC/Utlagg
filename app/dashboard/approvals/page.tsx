@@ -21,7 +21,7 @@ interface Req {
 }
 
 export default function ApprovalsPage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [reqs, setReqs] = useState<Req[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [allowed, setAllowed] = useState<boolean | null>(null);
@@ -79,7 +79,7 @@ export default function ApprovalsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t.apWaiting}</CardTitle>
+          <CardTitle as="h2">{t.apWaiting}</CardTitle>
           <CardDescription>{t.apWaitingDesc}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -92,7 +92,7 @@ export default function ApprovalsPage() {
                   <div>
                     <p className="font-medium tabular-nums">{formatSek(r.amount)}</p>
                     {r.requesterComment && <p className="text-sm text-gray-500 dark:text-gray-400">{r.requesterComment}</p>}
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(r.createdAt)}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(r.createdAt, lang)}</p>
                   </div>
                   {commenting?.id === r.id ? (
                     <div className="flex flex-col gap-2 w-full">

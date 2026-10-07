@@ -7,6 +7,9 @@ import { ChevronRight } from "lucide-react";
 import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
+import { Badge } from "@/components/ui/badge";
+import { ErrorState } from "@/components/ui/error-state";
+import { Pager } from "@/components/ui/pager";
 
 interface ClientRow {
   companyId: string;
@@ -59,15 +62,9 @@ export function AccountantClientsList({ limit }: { limit?: number }) {
 
   if (status === "error") {
     return (
-      <div className="rounded-2xl panel p-8 text-center">
-        <p className="text-sm text-red-600">{t.clientsLoadError}</p>
-        <button
-          onClick={() => load(page)}
-          className="mt-3 min-h-11 rounded-full border border-gray-900/[0.15] px-4 text-sm transition-colors hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40"
-        >
-          {t.retry}
-        </button>
-      </div>
+      <ErrorState onRetry={() => load(page)} retryLabel={t.retry}>
+        {t.clientsLoadError}
+      </ErrorState>
     );
   }
 
@@ -131,14 +128,12 @@ export function AccountantClientsList({ limit }: { limit?: number }) {
                     {c.receiptCount}
                   </td>
                   <td className="px-5 py-3">
-                    <span className="rounded-full bg-green-100/50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
-                      {t.statusActive}
-                    </span>
+                    <Badge tone="success">{t.statusActive}</Badge>
                   </td>
                   <td className="px-5 py-3 text-right">
                     <Link
                       href={`/accountant/clients/${c.companyId}`}
-                      className="text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70"
+                      className="inline-flex min-h-11 items-center rounded-full text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-nordic-400"
                     >
                       {t.openClient} →
                     </Link>
@@ -154,7 +149,7 @@ export function AccountantClientsList({ limit }: { limit?: number }) {
             <li key={c.companyId}>
               <Link
                 href={`/accountant/clients/${c.companyId}`}
-                className="flex min-h-[56px] items-center gap-3 p-4"
+                className="flex min-h-[56px] items-center gap-3 p-4 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-nordic-600/20"
               >
                 <ClientAvatar name={c.companyName} logoUrl={c.logoUrl} size="sm" />
                 <div className="min-w-0 flex-1">
@@ -164,7 +159,7 @@ export function AccountantClientsList({ limit }: { limit?: number }) {
                     {c.receiptCount} {t.colReceipts.toLowerCase()}
                   </p>
                 </div>
-                <ChevronRight className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+                <ChevronRight className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" aria-hidden />
               </Link>
             </li>
           ))}
@@ -173,7 +168,7 @@ export function AccountantClientsList({ limit }: { limit?: number }) {
         {limit && total > limit && (
           <Link
             href="/accountant/clients"
-            className="flex min-h-11 items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70 dark:border-white/[0.07]"
+            className="flex min-h-11 items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 text-sm font-medium text-nordic-600 dark:text-nordic-400 transition-opacity hover:opacity-70 dark:border-white/[0.07]"
           >
             {t.clientsViewAll}
             <ChevronRight className="h-4 w-4" aria-hidden />
@@ -181,27 +176,15 @@ export function AccountantClientsList({ limit }: { limit?: number }) {
         )}
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 dark:border-white/[0.07]">
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {t.pageOf.replace("{page}", String(page)).replace("{total}", String(totalPages))}
-            </span>
-            <div className="flex gap-2">
-              <button
-                disabled={page <= 1}
-                onClick={() => setPage((p) => p - 1)}
-                className="min-h-11 rounded-full border border-gray-900/[0.15] px-4 text-sm transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
-              >
-                {t.pagePrev}
-              </button>
-              <button
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-                className="min-h-11 rounded-full border border-gray-900/[0.15] px-4 text-sm transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
-              >
-                {t.pageNext}
-              </button>
-            </div>
-          </div>
+          <Pager
+            page={page}
+            pageCount={totalPages}
+            onChange={setPage}
+            prevLabel={t.pagePrev}
+            nextLabel={t.pageNext}
+            status={t.pageOf.replace("{page}", String(page)).replace("{total}", String(totalPages))}
+            className="border-t border-gray-900/[0.07] px-5 py-3 dark:border-white/[0.07]"
+          />
         )}
       </motion.div>
     </div>

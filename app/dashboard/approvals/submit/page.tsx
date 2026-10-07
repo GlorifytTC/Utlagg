@@ -9,6 +9,7 @@ import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UpsellCard } from "@/components/UpsellCard";
 import { useLanguage } from "@/context/LanguageContext";
+import { formatSek } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/page-header";
 
 interface Receipt { id: string; vendorName: string | null; totalAmount: string | null; }
@@ -68,7 +69,7 @@ export default function SubmitApprovalPage() {
       <PageHeader title={t.btnSubmitApproval} back={{ href: "/dashboard/approvals", label: t.navApprovals }} />
       <Card>
         <CardHeader>
-          <CardTitle>{t.apRequest}</CardTitle>
+          <CardTitle as="h2">{t.apRequest}</CardTitle>
           <CardDescription>{t.apRequestDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -78,7 +79,7 @@ export default function SubmitApprovalPage() {
               <option value="">{t.phSelectReceipt}</option>
               {receipts.map((r) => (
                 <option key={r.id} value={r.id}>
-                  {(r.vendorName ?? t.unknownShort)} - {Number(r.totalAmount ?? 0).toFixed(2).replace(".", ",")} kr
+                  {(r.vendorName ?? t.unknownShort)} - {formatSek(Number(r.totalAmount ?? 0))}
                 </option>
               ))}
             </Select>

@@ -12,7 +12,10 @@ import { parseReceiptText } from "@/lib/ocr";
 import { useLanguage } from "@/context/LanguageContext";
 import { ReceiptAnnotator } from "@/components/dashboard/ReceiptAnnotator";
 import { cn } from "@/lib/utils";
-import { fieldClass } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface Draft {
   vendorName: string;
@@ -433,7 +436,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   }
 
   return (
-    <div className="panel rounded-2xl p-6 transition-shadow hover:shadow-sm">
+    <div className="panel rounded-2xl p-4 transition-shadow hover:shadow-sm sm:p-6">
       {/* Rendered through a portal on document.body: the uploader card uses
           backdrop-blur, and backdrop-filter establishes a containing block
           for position:fixed descendants - so without the portal this "full
@@ -478,7 +481,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
           document.body,
         )}
 
-      <h2 className="font-display text-xl text-gray-900 dark:text-white">{t.receiptNewTitle}</h2>
+      <h2 className="font-display text-xl font-semibold text-gray-900 dark:text-white">{t.receiptNewTitle}</h2>
 
       <AnimatePresence mode="wait">
         {stage === "idle" && (
@@ -505,22 +508,20 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
           >
             <p className="text-sm text-gray-600 dark:text-gray-300">{t.receiptDragDrop}</p>
             <div className="mt-3 flex flex-wrap justify-center gap-3">
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => inputRef.current?.click()} className="rounded-full bg-nordic-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-nordic-700 dark:text-[#050505]">
-                {t.receiptChooseImage}
-              </motion.button>
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={openCamera} className="rounded-full border border-gray-900/[0.15] px-5 py-2.5 text-sm text-gray-600 hover:border-gray-900/40 dark:border-white/[0.15] dark:text-gray-300 dark:hover:border-white/40">
-                {t.receiptTakePhoto}
-              </motion.button>
+              <Button onClick={() => inputRef.current?.click()}>{t.receiptChooseImage}</Button>
+              <Button variant="outline" onClick={openCamera}>{t.receiptTakePhoto}</Button>
             </div>
-            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
-            <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
-            <p className="mt-3 text-xs text-gray-400 dark:text-gray-400">{t.receiptCameraHint}</p>
+            <input ref={inputRef} type="file" aria-label={t.receiptChooseImage} accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+            <input ref={cameraRef} type="file" aria-label={t.receiptTakePhoto} accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+            <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">{t.receiptCameraHint}</p>
           </motion.div>
         )}
 
         {stage === "scanning" && (
           <motion.div
             key="scanning"
+            role="status"
+            aria-busy="true"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
@@ -531,7 +532,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               className="h-10 w-10 rounded-full border-2 border-nordic-600 border-t-transparent"
             />
-            <p className="text-sm text-gray-600 dark:text-gray-300">{t.ruAnalyzing}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">{scanStatus || t.ruAnalyzing}</p>
           </motion.div>
         )}
 
@@ -574,34 +575,35 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             )}
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.colVendor}</label>
-                <input
+                <Label htmlFor="ru-vendor" className="mb-1.5 block">{t.colVendor}</Label>
+                <Input
+                  id="ru-vendor"
                   value={draft.vendorName}
                   onChange={(e) => setDraft({ ...draft, vendorName: e.target.value })}
-                  className={`${fieldClass} h-10 py-2`}
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.receiptNumberLabel}</label>
-                <input
+                <Label htmlFor="ru-number" className="mb-1.5 block">{t.receiptNumberLabel}</Label>
+                <Input
+                  id="ru-number"
                   value={draft.receiptNumber}
                   onChange={(e) => setDraft({ ...draft, receiptNumber: e.target.value })}
-                  className={`${fieldClass} h-10 py-2`}
                   placeholder={t.phOptional}
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.colDate}</label>
-                <input
+                <Label htmlFor="ru-date" className="mb-1.5 block">{t.colDate}</Label>
+                <Input
+                  id="ru-date"
                   type="date"
                   value={draft.date}
                   onChange={(e) => setDraft({ ...draft, date: e.target.value })}
-                  className={`${fieldClass} h-10 py-2`}
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.trAmount}</label>
-                <input
+                <Label htmlFor="ru-total" className="mb-1.5 block">{t.trAmount}</Label>
+                <Input
+                  id="ru-total"
                   inputMode="decimal"
                   value={draft.totalAmount}
                   onChange={(e) => {
@@ -612,12 +614,12 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                       vatAmount: recalcVat(total, d.vatRate),
                     }));
                   }}
-                  className={`${fieldClass} h-10 py-2`}
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.annFieldVatRate}</label>
-                <select
+                <Label htmlFor="ru-rate" className="mb-1.5 block">{t.annFieldVatRate}</Label>
+                <Select
+                  id="ru-rate"
                   value={draft.vatRate}
                   onChange={(e) => {
                     const rate = Number(e.target.value) as VatRate;
@@ -627,86 +629,67 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                       vatAmount: recalcVat(d.totalAmount, rate),
                     }));
                   }}
-                  className={`${fieldClass} h-10 py-2`}
                 >
                   <option value={6}>6 %</option>
                   <option value={12}>12 %</option>
                   <option value={25}>25 %</option>
-                </select>
+                </Select>
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">{t.ruVatSek}</label>
-                <input
+                <Label htmlFor="ru-vat" className="mb-1.5 block">{t.ruVatSek}</Label>
+                <Input
+                  id="ru-vat"
                   inputMode="decimal"
                   value={draft.vatAmount}
                   onChange={(e) => setDraft({ ...draft, vatAmount: e.target.value })}
-                  className={`${fieldClass} h-10 py-2`}
                 />
               </div>
             </div>
             
             <div>
-              <label className="mb-1.5 flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+              <Label htmlFor="ru-bas" className="mb-1.5 flex items-center gap-2">
                 {t.ruBasAccount}
-                {draft.basCodeAutoDetected && (
-                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                    {t.rcCategoryAutoDetected}
-                  </span>
-                )}
-              </label>
-              <BasSelect value={draft.basCode} onChange={onBasChange} />
+                {draft.basCodeAutoDetected && <Badge tone="success">{t.rcCategoryAutoDetected}</Badge>}
+              </Label>
+              <BasSelect id="ru-bas" value={draft.basCode} onChange={onBasChange} />
             </div>
 
             <AnimatePresence>
               {error && (
                 <motion.p
+                  role="alert"
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -5 }}
-                  className="text-sm text-amber-600 dark:text-amber-400"
+                  className="text-sm text-amber-700 dark:text-amber-400"
                 >
                   {error}
                 </motion.p>
               )}
             </AnimatePresence>
 
-            <div className="flex gap-3 pt-2">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={save}
-                disabled={isSaving}
-                className={cn(
-                  "rounded-full bg-nordic-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-nordic-700 dark:text-[#050505]",
-                  isSaving && "opacity-70 cursor-not-allowed",
-                )}
-              >
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Button onClick={save} disabled={isSaving} aria-busy={isSaving} className="px-6">
                 {isSaving ? (
                   <span className="inline-flex items-center gap-2">
-                    <motion.span
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    >
-                      <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent dark:border-gray-900 dark:border-t-transparent" />
-                    </motion.span>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent dark:border-gray-900 dark:border-t-transparent" />
                     {t.stSaving}
                   </span>
                 ) : (
                   t.ruSaveReceipt
                 )}
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              </Button>
+              <Button
+                variant="outline"
+                className="px-6"
                 onClick={() => {
                   setDraft(emptyDraft());
                   setStage("idle");
                   setError(null);
                 }}
-                className="rounded-full border border-gray-900/[0.15] px-6 py-2.5 text-sm hover:border-gray-900/40 dark:border-white/[0.15] dark:hover:border-white/40"
               >
                 {t.btnCancel}
-              </motion.button>
+              </Button>
             </div>
           </motion.div>
         )}

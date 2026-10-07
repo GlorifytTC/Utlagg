@@ -76,7 +76,8 @@ export function AccountantChatPage({
           </span>
         }
       />
-      <div className="panel h-[calc(100dvh-14rem)] min-h-[420px] overflow-hidden rounded-2xl">
+      {/* Mobile: also subtract the bottom nav + safe-area inset (12rem); md+: sidebar layout, 14rem covers the page header. */}
+      <div className="panel h-[calc(100dvh-12rem-env(safe-area-inset-bottom))] min-h-[420px] overflow-hidden md:h-[calc(100dvh-14rem)] rounded-2xl">
         <AccountantChat fill clientId={detail.clientId} currentUserId={currentUserId} />
       </div>
     </div>

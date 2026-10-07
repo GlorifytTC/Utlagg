@@ -15,7 +15,7 @@ const badge: Record<string, string> = {
 };
 
 export default function ApprovalHistoryPage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [reqs, setReqs] = useState<Req[]>([]);
   useEffect(() => {
     fetch("/api/approvals?type=outgoing").then(async (r) => {
@@ -27,7 +27,7 @@ export default function ApprovalHistoryPage() {
     <div className="max-w-3xl space-y-6">
       <PageHeader title={t.apHistoryTitle} back={{ href: "/dashboard/approvals", label: t.navApprovals }} />
       <Card>
-        <CardHeader><CardTitle>{t.apHistoryDesc}</CardTitle></CardHeader>
+        <CardHeader><CardTitle as="h2">{t.apHistoryDesc}</CardTitle></CardHeader>
         <CardContent>
           {reqs.length === 0 ? (
             <p className="text-sm text-gray-500 dark:text-gray-400">{t.apNoneYet}</p>
@@ -38,7 +38,7 @@ export default function ApprovalHistoryPage() {
                   <div>
                     <p className="font-medium tabular-nums">{formatSek(r.amount)}</p>
                     {r.approverComment && <p className="text-sm text-gray-500 dark:text-gray-400">{r.approverComment}</p>}
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(r.createdAt)}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(r.createdAt, lang)}</p>
                   </div>
                   <span className={"text-sm font-medium " + (badge[r.status] ?? "")}>
                     {r.status === "pending" ? t.statusPending : r.status === "approved" ? t.statusApproved : t.statusRejected}

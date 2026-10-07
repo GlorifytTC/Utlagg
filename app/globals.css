@@ -24,6 +24,7 @@
 /* Marketing cards and chips stay light in both themes, so pin the light accent
    there; otherwise nordic-50 turns into a dark-brown pill on a white card. */
 .light-surface {
+  color-scheme: light;
   --accent: 196 82 47;
   --accent-strong: 165 64 31;
   --accent-tint: 246 236 231;
@@ -54,7 +55,7 @@ input[type="radio"] {
 /* Subtle paper grain for the Nordic-minimal background */
 .bg-grain {
   background-image: radial-gradient(
-    rgba(22, 24, 29, 0.035) 1px,
+    rgba(26, 26, 26, 0.035) 1px,
     transparent 1px
   );
   background-size: 4px 4px;
@@ -62,7 +63,7 @@ input[type="radio"] {
 
 /* Hairline divider used across the marketing site */
 .hairline {
-  border-color: rgba(22, 24, 29, 0.12);
+  border-color: rgba(26, 26, 26, 0.12);
 }
 
 /* Marketing "double bezel": a faint outer tray holding an inner core, like a
@@ -195,7 +196,7 @@ html.dark:has(.app-shell) {
   100% { background-position: 1000px 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, #f1ece0 25%, #e6e0d2 50%, #f1ece0 75%);
   background-size: 2000px 100%;
   animation: shimmer 2s infinite;
 }
@@ -277,7 +278,7 @@ html.dark:has(.app-shell) {
   }
 
   /* Remove rounded corners and shadow from the invoice card */
-  .rounded-2xl {
+  .invoice-sheet {
     border-radius: 0 !important;
     box-shadow: none !important;
   }

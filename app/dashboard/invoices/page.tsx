@@ -8,7 +8,9 @@ import { customerInvoices } from "@/db/schema";
 import { currentTier } from "@/lib/entitlements";
 import { hasFeature } from "@/lib/features";
 import { getUserCompany, canManageCompany } from "@/lib/company";
-import { getT } from "@/lib/i18n-server";
+import { getT, getServerLang } from "@/lib/i18n-server";
+import { formatSek, formatDate } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import { summarizeInvoiceIncome, type InvoiceLike } from "@/lib/invoice-income";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonClass } from "@/components/ui/button";
@@ -25,6 +27,7 @@ export default async function InvoicesPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
   const t = getT();
+  const lang = getServerLang();
 
   const ctx = await currentTier();
   if (!ctx || !hasFeature(ctx.tier, "invoicing")) {
@@ -47,7 +50,7 @@ export default async function InvoicesPage() {
         <PageHeader title={t.navInvoices} />
         <Card>
           <CardHeader>
-            <CardTitle>{t.invNeedCompanyTitle}</CardTitle>
+            <CardTitle as="h2">{t.invNeedCompanyTitle}</CardTitle>
             <CardDescription>{t.invNeedCompanyDesc}</CardDescription>
           </CardHeader>
           <CardContent>
@@ -68,7 +71,6 @@ export default async function InvoicesPage() {
   // Cash-method income recognition: only paid invoices count as income, and
   // only their net (excl. VAT). Unpaid invoices are outstanding receivables.
   const summary = summarizeInvoiceIncome(rows as unknown as InvoiceLike[]);
-  const money = (n: number) => n.toLocaleString("sv-SE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <div className="max-w-6xl space-y-6">
@@ -80,11 +82,11 @@ export default async function InvoicesPage() {
       {rows.length > 0 && (
         <StatGrid
           items={[
-            { label: t.invSumIncomeLabel, value: `${money(summary.incomeNet)} kr`, hint: t.invSumIncomeHint },
-            { label: t.invSumVatLabel, value: `${money(summary.vatToRemit)} kr`, hint: t.invSumVatHint },
+            { label: t.invSumIncomeLabel, value: formatSek(summary.incomeNet), hint: t.invSumIncomeHint },
+            { label: t.invSumVatLabel, value: formatSek(summary.vatToRemit), hint: t.invSumVatHint },
             {
               label: t.invSumOutstandingLabel,
-              value: `${money(summary.outstandingGross)} kr`,
+              value: formatSek(summary.outstandingGross),
               hint: t.invSumOutstandingHint.replace("{count}", String(summary.outstandingCount)),
               tone: summary.outstandingCount > 0 ? "warn" : "default",
             },
@@ -96,48 +98,87 @@ export default async function InvoicesPage() {
           {rows.length === 0 ? (
             <p className="p-6 text-sm text-gray-500 dark:text-gray-400">{t.invNoneYet}</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-sm">
-                <thead className="border-b border-gray-900/[0.07] text-left text-xs font-medium text-gray-500 dark:border-white/[0.08] dark:text-gray-400">
-                  <tr>
-                    {[t.invColNr, t.invColCustomer, t.invColDate, t.invColAmount, t.invColVat, t.invColStatus, ""].map((h, i) => (
-                      <th key={i} className="px-3 py-3 font-medium">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.07]">
-                  {rows.map((r: Record<string, unknown>) => (
-                    <tr key={r.id as string} className="dark:text-gray-100">
-                      <td className="whitespace-nowrap px-3 py-3 font-medium">{r.invoiceNumber as string}</td>
-                      <td className="px-3 py-3">{r.buyerName as string}</td>
-                      <td className="whitespace-nowrap px-3 py-3">{new Date(r.issueDate as string).toLocaleDateString("sv-SE")}</td>
-                      <td className="whitespace-nowrap px-3 py-3 tabular-nums">{Number(r.total).toFixed(2).replace(".", ",")} kr</td>
-                      <td className="whitespace-nowrap px-3 py-3 tabular-nums">{(r.reverseCharge as boolean) ? t.invReverse : `${Number(r.vatTotal).toFixed(2).replace(".", ",")} kr`}</td>
-                      <td className="px-3 py-3">
-                        <div className="flex items-center gap-2">
-                          {r.status === "paid" ? (
-                            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">{t.invBadgePaid}</span>
-                          ) : (
-                            <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">{t.invBadgeUnpaid}</span>
-                          )}
-                          {canManage && <InvoicePaidToggle id={r.id as string} paid={r.status === "paid"} variant="inline" />}
-                        </div>
-                      </td>
-                      <td className="px-3 py-3 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link href={`/dashboard/invoices/${r.id}`} className="text-sm font-medium text-nordic-600 transition hover:text-nordic-700 dark:text-nordic-300">{t.btnView}</Link>
-                          <DeleteInvoiceButton
-                            id={r.id as string}
-                            confirmText={t.invDeleteConfirm}
-                            label={t.btnDelete}
-                          />
-                        </div>
-                      </td>
+            <>
+              <div className="hidden overflow-x-auto md:block">
+                <table className="w-full min-w-[720px] text-sm">
+                  <thead className="border-b border-gray-900/[0.07] text-left text-xs font-medium text-gray-500 dark:border-white/[0.08] dark:text-gray-400">
+                    <tr>
+                      {[t.invColNr, t.invColCustomer, t.invColDate, t.invColAmount, t.invColVat, t.invColStatus, ""].map((h, i) => (
+                        <th key={i} scope="col" className="px-3 py-3 font-medium">{h}</th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.07]">
+                    {rows.map((r: Record<string, unknown>) => (
+                      <tr key={r.id as string} className="dark:text-gray-100">
+                        <td className="whitespace-nowrap px-3 py-3 font-medium">{r.invoiceNumber as string}</td>
+                        <td className="max-w-[16rem] truncate px-3 py-3" title={r.buyerName as string}>{r.buyerName as string}</td>
+                        <td className="whitespace-nowrap px-3 py-3">{formatDate(r.issueDate as string, lang)}</td>
+                        <td className="whitespace-nowrap px-3 py-3 tabular-nums">{formatSek(Number(r.total))}</td>
+                        <td className="whitespace-nowrap px-3 py-3 tabular-nums">{(r.reverseCharge as boolean) ? t.invReverse : formatSek(Number(r.vatTotal))}</td>
+                        <td className="px-3 py-3">
+                          <div className="flex items-center gap-2">
+                            {r.status === "paid" ? (
+                              <Badge tone="success">{t.invBadgePaid}</Badge>
+                            ) : (
+                              <Badge tone="warning">{t.invBadgeUnpaid}</Badge>
+                            )}
+                            {canManage && <InvoicePaidToggle id={r.id as string} paid={r.status === "paid"} variant="inline" />}
+                          </div>
+                        </td>
+                        <td className="px-3 py-3 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Link href={`/dashboard/invoices/${r.id}`} className="text-sm font-medium text-nordic-600 transition hover:text-nordic-700 dark:text-nordic-300">{t.btnView}</Link>
+                            <DeleteInvoiceButton
+                              id={r.id as string}
+                              confirmText={t.invDeleteConfirm}
+                              label={t.btnDelete}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <ul className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.07] md:hidden">
+                {rows.map((r: Record<string, unknown>) => (
+                  <li key={r.id as string} className="space-y-3 px-4 py-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium" title={r.buyerName as string}>{r.buyerName as string}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {r.invoiceNumber as string} · {formatDate(r.issueDate as string, lang)}
+                        </p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="font-medium tabular-nums">{formatSek(Number(r.total))}</p>
+                        <p className="text-xs text-gray-500 tabular-nums dark:text-gray-400">
+                          {t.invColVat}: {(r.reverseCharge as boolean) ? t.invReverse : formatSek(Number(r.vatTotal))}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {r.status === "paid" ? (
+                        <Badge tone="success">{t.invBadgePaid}</Badge>
+                      ) : (
+                        <Badge tone="warning">{t.invBadgeUnpaid}</Badge>
+                      )}
+                      {canManage && <InvoicePaidToggle id={r.id as string} paid={r.status === "paid"} variant="inline" />}
+                      <div className="ml-auto flex items-center gap-2">
+                        <Link href={`/dashboard/invoices/${r.id}`} className="inline-flex min-h-11 items-center text-sm font-medium text-nordic-600 transition hover:text-nordic-700 dark:text-nordic-300">{t.btnView}</Link>
+                        <DeleteInvoiceButton
+                          id={r.id as string}
+                          confirmText={t.invDeleteConfirm}
+                          label={t.btnDelete}
+                        />
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
         </CardContent>
       </Card>

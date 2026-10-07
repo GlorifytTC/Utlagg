@@ -23,7 +23,7 @@ export function UpsellCard({
         <span className="mb-2 grid h-10 w-10 place-items-center rounded-full bg-nordic-600/10 text-nordic-700 dark:text-nordic-300">
           <Lock className="h-[18px] w-[18px]" strokeWidth={1.75} />
         </span>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle as="h2">{title}</CardTitle>
         <CardDescription>
           {description ?? t.upsellIncludedIn.replace("{plan}", requiredPlan)}
         </CardDescription>

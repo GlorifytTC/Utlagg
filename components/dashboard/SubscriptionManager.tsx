@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PLANS, SELECTABLE_PLANS, planFeatures, planName, planPrice } from "@/lib/plans";
 import { useLanguage } from "@/context/LanguageContext";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function SubscriptionManager({
   currentTier,
@@ -24,7 +25,7 @@ export function SubscriptionManager({
   const [loading, setLoading] = useState<string | null>(null);
   const [showCancel, setShowCancel] = useState(false);
   const [accepted, setAccepted] = useState(false);
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const router = useRouter();
 
   const selfServe = SELECTABLE_PLANS.filter((p) => p.tier !== "enterprise");
@@ -106,23 +107,26 @@ export function SubscriptionManager({
               aria-labelledby="cancel-title"
               className="panel max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-[1.5rem] p-6"
             >
-              <h2 id="cancel-title" className="text-lg font-semibold text-gray-900 dark:text-white">{t.cancelTitle}</h2>
+              <h2 id="cancel-title" className="font-display text-lg font-semibold text-gray-900 dark:text-white">{t.cancelTitle}</h2>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{t.cancelIntro}</p>
               <ul className="mt-3 space-y-2 text-sm text-gray-600 dark:text-gray-300">
                 <li>• {t.cancelBullet1Pre}<strong>{t.cancelBullet1Strong}</strong>{t.cancelBullet1Post}</li>
                 <li>• {t.cancelBullet2Pre}<strong>{t.cancelBullet2Strong}</strong>{t.cancelBullet2Post}</li>
                 <li>• {t.cancelBullet3Pre}<strong>{t.cancelBullet3Strong}</strong>{t.cancelBullet3Post}</li>
               </ul>
-              <label className="mt-4 flex items-start gap-2 text-sm text-gray-700 dark:text-gray-200">
-                <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5 h-5 w-5 shrink-0" />
-                <span>{t.cancelAccept}</span>
-              </label>
+              <Checkbox
+                labelClassName="mt-4 items-start"
+                className="h-5 w-5"
+                checked={accepted}
+                onChange={(e) => setAccepted(e.target.checked)}
+                label={t.cancelAccept}
+              />
               <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                 <Button className="w-full sm:w-auto" variant="outline" onClick={() => setShowCancel(false)} disabled={loading !== null}>
                   {t.cancelAbort}
                 </Button>
                 <Button className="w-full sm:w-auto" variant="destructive" onClick={cancel} disabled={!accepted || loading !== null}>
-                  {loading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : t.cancelConfirm}
+                  {loading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : t.cancelConfirm}
                 </Button>
               </div>
             </motion.div>
@@ -136,10 +140,10 @@ export function SubscriptionManager({
         className="panel rounded-2xl transition-shadow hover:shadow-sm"
       >
         <CardHeader>
-          <CardTitle className="font-display text-lg text-gray-900 dark:text-white">{t.subCurrentPlan}</CardTitle>
+          <CardTitle as="h2" className="text-gray-900 dark:text-white">{t.subCurrentPlan}</CardTitle>
           <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
             {t.subYouAreOnPre}{current ? planName(t, current.tier) : currentTier}{t.subYouAreOnPost}
-            {periodEnd ? ` · ${t.subRenews} ${new Date(periodEnd).toLocaleDateString()}` : ""}
+            {periodEnd ? ` · ${t.subRenews} ${formatDate(periodEnd, lang)}` : ""}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-3">
@@ -148,7 +152,7 @@ export function SubscriptionManager({
             {hasBilling && (
               <Button variant="outline" onClick={openPortal} disabled={loading !== null}>
                 {loading === "portal" ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                 ) : (
                   <>
                     <CreditCard className="mr-2 h-4 w-4" />
@@ -181,8 +185,8 @@ export function SubscriptionManager({
               )}
             >
               <div className="flex items-center justify-between gap-2">
-                <h3 className="font-display text-lg font-semibold text-gray-900 dark:text-white">{planName(t, plan.tier)}</h3>
-                {isCurrent && <Badge className="bg-nordic-600 text-white">{t.subCurrentBadge}</Badge>}
+                <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-white">{planName(t, plan.tier)}</h2>
+                {isCurrent && <Badge tone="accent">{t.subCurrentBadge}</Badge>}
               </div>
               <p className="mt-2 whitespace-nowrap text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{planPrice(t, plan)}</p>
               <ul className="mt-5 flex-1 space-y-2.5 text-sm text-gray-600 dark:text-gray-300">
@@ -200,7 +204,7 @@ export function SubscriptionManager({
                 onClick={() => upgrade(plan.tier as "starter" | "pro" | "business" | "max")}
               >
                 {loading === plan.tier ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                 ) : isCurrent ? (
                   t.subCurrentBadge
                 ) : (
@@ -224,8 +228,8 @@ export function SubscriptionManager({
         >
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-display text-lg font-semibold text-gray-900 dark:text-white">{planName(t, enterprise.tier)}</h3>
-              {currentTier === "enterprise" && <Badge className="bg-nordic-600 text-white">{t.subCurrentBadge}</Badge>}
+              <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-white">{planName(t, enterprise.tier)}</h2>
+              {currentTier === "enterprise" && <Badge tone="accent">{t.subCurrentBadge}</Badge>}
             </div>
             <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600 dark:text-gray-300">
               {planFeatures(t, enterprise.tier).map((f) => (
@@ -250,7 +254,7 @@ export function SubscriptionManager({
                   else window.location.href = "mailto:sales@kvittino.se?subject=Enterprise";
                 }}
               >
-                {loading === "enterprise" ? <Loader2 className="h-4 w-4 animate-spin" /> : t.subRequestQuote}
+                {loading === "enterprise" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : t.subRequestQuote}
               </Button>
             )}
           </div>

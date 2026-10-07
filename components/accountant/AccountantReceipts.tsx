@@ -5,7 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AccountantReceiptEditor } from "@/components/accountant/AccountantReceiptEditor";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
-import { fieldClass } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { ErrorState } from "@/components/ui/error-state";
+import { Pager } from "@/components/ui/pager";
+import { formatDate } from "@/lib/utils";
 
 interface ReceiptRow {
   id: string;
@@ -22,11 +27,7 @@ interface ReceiptRow {
   companyName?: string;
 }
 
-const statusBadge: Record<string, string> = {
-  approved: "bg-green-100/50 text-green-700 dark:bg-green-900/20 dark:text-green-300",
-  pending: "bg-amber-100/50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
-  rejected: "bg-red-100/50 text-red-700 dark:bg-red-900/20 dark:text-red-300",
-};
+const statusTone: Record<string, BadgeTone> = { approved: "success", pending: "warning", rejected: "danger" };
 
 /** One client's receipts (companyId), or a cross-client work-queue list (filter). */
 export function AccountantReceipts({ companyId, filter, range }: { companyId?: string; filter?: "review" | "uncertain" | "missing" | "pending" | "month" | "reviewed"; range?: "week" | "month" }) {
@@ -139,18 +140,15 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
-  const inputCls = `${fieldClass} h-11 py-2 md:h-10`;
-  const dateCls = `${fieldClass} h-11 py-2 md:h-10 sm:!w-auto`;
-
   return (
     <div className="space-y-4">
       {/* Filters */}
       <div className="grid grid-cols-2 items-end gap-3 sm:flex sm:flex-wrap">
         <div className="col-span-2 min-w-[180px] flex-1">
-          <label htmlFor="rc-q" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          <Label htmlFor="rc-q" className="mb-1.5 block">
             {t.rcSearch}
-          </label>
-          <input
+          </Label>
+          <Input
             id="rc-q"
             type="search"
             value={q}
@@ -159,14 +157,13 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
               setPage(1);
             }}
             placeholder={t.rcSearchPlaceholder}
-            className={inputCls}
           />
         </div>
         <div>
-          <label htmlFor="rc-from" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          <Label htmlFor="rc-from" className="mb-1.5 block">
             {t.rcFrom}
-          </label>
-          <input
+          </Label>
+          <Input
             id="rc-from"
             type="date"
             value={from}
@@ -174,14 +171,14 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
               setFrom(e.target.value);
               setPage(1);
             }}
-            className={dateCls}
+            className="sm:!w-auto"
           />
         </div>
         <div>
-          <label htmlFor="rc-to" className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          <Label htmlFor="rc-to" className="mb-1.5 block">
             {t.rcTo}
-          </label>
-          <input
+          </Label>
+          <Input
             id="rc-to"
             type="date"
             value={to}
@@ -189,7 +186,7 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
               setTo(e.target.value);
               setPage(1);
             }}
-            className={dateCls}
+            className="sm:!w-auto"
           />
         </div>
       </div>
@@ -210,14 +207,11 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
             ))}
           </motion.div>
         ) : status === "error" ? (
-          <motion.p
-            key="error"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-sm text-red-600"
-          >
-            {t.rcLoadError}
-          </motion.p>
+          <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <ErrorState onRetry={load} retryLabel={t.retry}>
+              {t.rcLoadError}
+            </ErrorState>
+          </motion.div>
         ) : rows.length === 0 ? (
           <motion.div
             key="empty"
@@ -278,7 +272,7 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
                         onClick={() => setOpenId(openId === r.id ? null : r.id)}
                       >
                         <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
-                          {r.date ? r.date.slice(0, 10) : "-"}
+                          {formatDate(r.date, lang)}
                         </td>
                         {!companyId && (
                           <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">{r.companyName || "-"}</td>
@@ -296,11 +290,7 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
                           {r.vatAmount ?? "-"}
                         </td>
                         <td className="px-5 py-3">
-                          <span
-                            className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusBadge[r.status] ?? "bg-gray-100/80 text-gray-600 dark:bg-white/[0.06] dark:text-gray-400"}`}
-                          >
-                            {statusLabel[r.status] ?? r.status}
-                          </span>
+                          <Badge tone={statusTone[r.status] ?? "neutral"}>{statusLabel[r.status] ?? r.status}</Badge>
                         </td>
                         <td className="px-5 py-3 text-right text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70">
                           {openId === r.id ? t.rcClose : t.rcReview}
@@ -334,18 +324,16 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
                       <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{r.vendorName || "-"}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         {!companyId && r.companyName ? `${r.companyName} · ` : ""}
-                        {r.date ? r.date.slice(0, 10) : "-"} · {r.totalAmount ?? "-"}
+                        {formatDate(r.date, lang)} · {r.totalAmount ?? "-"}
                       </p>
                     </div>
-                    <span
-                      className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${statusBadge[r.status] ?? "bg-gray-100/80 text-gray-600 dark:bg-white/[0.06] dark:text-gray-400"}`}
-                    >
+                    <Badge tone={statusTone[r.status] ?? "neutral"} className="shrink-0">
                       {statusLabel[r.status] ?? r.status}
-                    </span>
+                    </Badge>
                     <button
                       type="button"
                       onClick={() => setOpenId(openId === r.id ? null : r.id)}
-                      className="min-h-11 shrink-0 px-2 text-sm font-medium text-nordic-600"
+                      className="min-h-11 shrink-0 rounded-full px-2 text-sm font-medium text-nordic-600 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-nordic-400"
                     >
                       {openId === r.id ? t.rcClose : t.rcReview}
                     </button>
@@ -360,27 +348,15 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
             </ul>
 
             {totalPages > 1 && (
-              <div className="flex items-center justify-between border-t border-gray-900/[0.07] px-5 py-3 dark:border-white/[0.07]">
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {t.pageOf.replace("{page}", String(page)).replace("{total}", String(totalPages))}
-                </span>
-                <div className="flex gap-2">
-                  <button
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => p - 1)}
-                    className="min-h-11 rounded-full border border-gray-900/[0.15] px-4 text-sm transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
-                  >
-                    {t.pagePrev}
-                  </button>
-                  <button
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                    className="min-h-11 rounded-full border border-gray-900/[0.15] px-4 text-sm transition-colors hover:border-gray-900/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/[0.15] dark:hover:border-white/40"
-                  >
-                    {t.pageNext}
-                  </button>
-                </div>
-              </div>
+              <Pager
+                page={page}
+                pageCount={totalPages}
+                onChange={setPage}
+                prevLabel={t.pagePrev}
+                nextLabel={t.pageNext}
+                status={t.pageOf.replace("{page}", String(page)).replace("{total}", String(totalPages))}
+                className="border-t border-gray-900/[0.07] px-5 py-3 dark:border-white/[0.07]"
+              />
             )}
           </motion.div>
         )}

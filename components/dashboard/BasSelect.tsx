@@ -1,19 +1,24 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useId } from "react";
 import { searchBasAccounts } from "@/lib/bas";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
-import { fieldClass } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 
 export function BasSelect({
   value,
   onChange,
+  id,
 }: {
   value: string | null;
   onChange: (code: string) => void;
+  /** Id for the combobox input so an external <Label htmlFor> can label it. */
+  id?: string;
 }) {
   const { t } = useLanguage();
+  const uid = useId();
+  const listId = `${uid}-list`;
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
@@ -31,6 +36,8 @@ export function BasSelect({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const showList = open && results.length > 0;
 
   useEffect(() => {
     setFocusedIndex(0);
@@ -70,8 +77,15 @@ export function BasSelect({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <input
+      <Input
         ref={inputRef}
+        id={id}
+        role="combobox"
+        aria-expanded={showList}
+        aria-controls={listId}
+        aria-autocomplete="list"
+        aria-activedescendant={showList ? `${uid}-opt-${focusedIndex}` : undefined}
+        autoComplete="off"
         value={open ? query : value ?? ""}
         placeholder={t.basSearchPlaceholder}
         onFocus={() => setOpen(true)}
@@ -80,21 +94,17 @@ export function BasSelect({
           setOpen(true);
         }}
         onKeyDown={handleKeyDown}
-        className={`${fieldClass} h-10 py-2`}
       />
-      
-      {/* Dropdown */}
-      <div
-        className={cn(
-          "panel absolute z-20 mt-1 w-full overflow-hidden rounded-xl transition-all duration-200 dark:border-white/[0.07] dark:bg-[#0A0A0A]",
-          open && results.length > 0 ? "opacity-100 translate-y-0" : "pointer-events-none -translate-y-1 opacity-0",
-        )}
-      >
-        <ul className="max-h-64 overflow-auto py-1">
-          {results.map((a, index) => (
-            <li key={a.code}>
-              <button
-                type="button"
+
+      {showList && (
+        <div className="panel absolute z-20 mt-1 w-full overflow-hidden rounded-xl dark:border-white/[0.07] dark:bg-[#0A0A0A]">
+          <ul id={listId} role="listbox" className="max-h-64 overflow-auto py-1">
+            {results.map((a, index) => (
+              <li
+                key={a.code}
+                id={`${uid}-opt-${index}`}
+                role="option"
+                aria-selected={index === focusedIndex}
                 onClick={() => {
                   onChange(a.code);
                   setOpen(false);
@@ -102,17 +112,17 @@ export function BasSelect({
                 }}
                 onMouseEnter={() => setFocusedIndex(index)}
                 className={cn(
-                  "flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition-colors",
+                  "flex min-h-11 w-full cursor-pointer items-center gap-3 px-3 py-2 text-left text-sm transition-colors md:min-h-0",
                   index === focusedIndex ? "bg-gray-900/[0.04] dark:bg-white/[0.04]" : "hover:bg-gray-900/[0.04] dark:hover:bg-white/[0.04]",
                 )}
               >
                 <span className="font-mono text-sm text-nordic-600">{a.code}</span>
                 <span className="text-sm text-gray-700 dark:text-gray-300">{a.name}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

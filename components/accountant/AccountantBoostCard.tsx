@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import { Button } from "@/components/ui/button";
+import { localeFor } from "@/lib/utils";
 
 interface BoostState {
   active: boolean;
@@ -79,7 +80,7 @@ export function AccountantBoostCard() {
 
   if (state?.active) {
     const until = state.expiresAt
-      ? new Date(state.expiresAt).toLocaleDateString(lang === "en" ? "en-GB" : "sv-SE", {
+      ? new Date(state.expiresAt).toLocaleDateString(localeFor(lang), {
           year: "numeric",
           month: "long",
           day: "numeric",
@@ -96,7 +97,7 @@ export function AccountantBoostCard() {
           <p className="font-display text-base font-semibold text-gray-900 dark:text-white">
             {t.boostActive}
           </p>
-          <span className="rounded-full bg-nordic-600/10 px-2.5 py-1 text-xs font-medium text-nordic-600 dark:bg-nordic-600/20">
+          <span className="rounded-full bg-nordic-600/10 px-2.5 py-1 text-xs font-medium text-nordic-600 dark:bg-nordic-600/20 dark:text-nordic-400">
             {t.statusActive}
           </span>
         </div>

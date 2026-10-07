@@ -119,7 +119,7 @@ function FeaturesPageContent() {
           <div className="grid gap-14 md:grid-cols-3 md:gap-10">
             {GROUPS.map((g, gi) => (
               <motion.div key={g.label} {...reveal(gi, rm)} className="border-t-2 border-ink pt-6">
-                <h2 className="text-sm font-semibold text-nordic-600">{g.label}</h2>
+                <h2 className="text-sm font-semibold text-nordic-700">{g.label}</h2>
                 <div className="mt-8 space-y-10">
                   {g.items.map((f) => (
                     <div key={f.title}>
@@ -150,7 +150,7 @@ function FeaturesPageContent() {
                   <p
                     className={cn(
                       "font-display text-2xl font-semibold tracking-tight",
-                      !col.ours && "text-ink/50",
+                      !col.ours && "text-ink/65",
                     )}
                   >
                     {t[col.nameKey]}
@@ -158,7 +158,7 @@ function FeaturesPageContent() {
                   <dl className="mt-8 space-y-6">
                     {COMPARISON_ROWS.map((row) => (
                       <div key={row.labelKey}>
-                        <dt className="text-xs font-medium text-ink/50">
+                        <dt className="text-xs font-medium text-ink/65">
                           {t[row.labelKey as keyof typeof t] as string}
                         </dt>
                         <dd
@@ -178,7 +178,7 @@ function FeaturesPageContent() {
           </div>
           <Link
             href="/for-accountants"
-            className="mt-7 inline-block py-3 text-sm font-medium text-nordic-600 transition hover:text-nordic-700"
+            className="mt-7 inline-block py-3 text-sm font-medium text-nordic-700 transition hover:text-nordic-700"
           >
             {t.featuresFirmLink} →
           </Link>

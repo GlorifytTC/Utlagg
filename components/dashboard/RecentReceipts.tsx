@@ -3,13 +3,13 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatSek, formatDate } from "@/lib/utils";
 import type { Receipt } from "@/db/schema";
-import { getT } from "@/lib/i18n-server";
+import { getT, getServerLang } from "@/lib/i18n-server";
 import { ReviewerStack } from "@/components/dashboard/ReviewerStack";
 import type { ReceiptPeople } from "@/lib/receipts/people";
 
 const statusStyles: Record<string, string> = {
-  approved: "text-green-600 dark:text-green-400",
-  pending: "text-amber-600 dark:text-amber-400",
+  approved: "text-green-700 dark:text-green-400",
+  pending: "text-amber-700 dark:text-amber-400",
   rejected: "text-red-600 dark:text-red-400",
 };
 
@@ -21,6 +21,7 @@ export function RecentReceipts({
   people: Map<string, ReceiptPeople>;
 }) {
   const t = getT();
+  const lang = getServerLang();
   const statusLabel: Record<string, string> = {
     approved: t.statusApproved,
     pending: t.statusPending,
@@ -33,9 +34,7 @@ export function RecentReceipts({
   return (
     <Card>
       <CardHeader className="pb-4">
-        <CardTitle className="font-display text-lg">
-          {t.recentTitle}
-        </CardTitle>
+        <CardTitle as="h2">{t.recentTitle}</CardTitle>
         <CardDescription>
           {t.recentDesc}
         </CardDescription>
@@ -65,7 +64,7 @@ export function RecentReceipts({
                     {r.vendorName ?? t.unknownVendor}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {r.date ? formatDate(r.date) : "-"}
+                    {r.date ? formatDate(r.date, lang) : "-"}
                   </p>
                 </div>
                 <div className="ml-4 shrink-0 text-right">

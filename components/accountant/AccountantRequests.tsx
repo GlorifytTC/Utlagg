@@ -4,6 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/ui/error-state";
+import { formatDate } from "@/lib/utils";
 
 interface RequestRow {
   id: string;
@@ -14,19 +18,10 @@ interface RequestRow {
   respondedAt: string | null;
 }
 
-const statusBadge: Record<string, { label: "statusPending" | "reqStatusAccepted" | "reqStatusDeclined"; cls: string }> = {
-  pending: {
-    label: "statusPending",
-    cls: "bg-amber-100/50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
-  },
-  active: {
-    label: "reqStatusAccepted",
-    cls: "bg-green-100/50 text-green-700 dark:bg-green-900/20 dark:text-green-300",
-  },
-  revoked: {
-    label: "reqStatusDeclined",
-    cls: "bg-gray-100/80 text-gray-600 dark:bg-white/[0.06] dark:text-gray-400",
-  },
+const statusBadge: Record<string, { label: "statusPending" | "reqStatusAccepted" | "reqStatusDeclined"; tone: BadgeTone }> = {
+  pending: { label: "statusPending", tone: "warning" },
+  active: { label: "reqStatusAccepted", tone: "success" },
+  revoked: { label: "reqStatusDeclined", tone: "neutral" },
 };
 
 export function AccountantRequests() {
@@ -76,7 +71,7 @@ export function AccountantRequests() {
   }
 
   if (status === "error") {
-    return <p className="text-sm text-red-600">{t.reqLoadError}</p>;
+    return <ErrorState onRetry={load} retryLabel={t.retry}>{t.reqLoadError}</ErrorState>;
   }
 
   if (rows.length === 0) {
@@ -103,32 +98,18 @@ export function AccountantRequests() {
             >
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">{r.companyName}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{r.createdAt?.slice(0, 10)}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(r.createdAt, lang)}</p>
               </div>
               <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
-                <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${s.cls}`}>
-                  {t[s.label]}
-                </span>
+                <Badge tone={s.tone}>{t[s.label]}</Badge>
                 {r.status === "pending" && (
                   <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      disabled={busy === r.id}
-                      onClick={() => respond(r.id, "accept")}
-                      className="rounded-full border border-green-600/30 bg-green-50/60 min-h-11 px-4 text-sm font-medium text-green-700 transition-colors hover:bg-green-100/60 disabled:opacity-50 dark:border-green-400/20 dark:bg-green-900/20 dark:text-green-300"
-                    >
+                    <Button disabled={busy === r.id} onClick={() => respond(r.id, "accept")}>
                       {t.reqAccept}
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      disabled={busy === r.id}
-                      onClick={() => respond(r.id, "decline")}
-                      className="rounded-full border border-gray-900/[0.15] min-h-11 px-4 text-sm font-medium text-gray-600 transition-colors hover:border-gray-900/30 disabled:opacity-50 dark:border-white/[0.15] dark:text-gray-400"
-                    >
+                    </Button>
+                    <Button variant="outline" disabled={busy === r.id} onClick={() => respond(r.id, "decline")}>
                       {t.reqDecline}
-                    </motion.button>
+                    </Button>
                   </div>
                 )}
               </div>

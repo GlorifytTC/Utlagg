@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { CompanyLogoCard } from "@/components/dashboard/CompanyLogoCard";
 import { useLanguage } from "@/context/LanguageContext";
 import type { SellerDetails } from "@/lib/invoice";
@@ -28,6 +30,7 @@ export default function CompanyPage() {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ name: "", orgNumber: "", vatNumber: "" });
   const [details, setDetails] = useState<DetailsForm | null>(null);
+  const [removeId, setRemoveId] = useState<string | null>(null);
   const [invite, setInvite] = useState({ firstName: "", lastName: "", email: "", role: "member" });
 
   const load = useCallback(async () => {
@@ -58,6 +61,8 @@ export default function CompanyPage() {
   useEffect(() => { load(); }, [load]);
 
   const canManage = role === "owner" || role === "admin";
+  const roleLabel = (r: string | null) =>
+    r === "owner" ? t.roleOwner : r === "admin" ? t.roleAdmin : r === "member" ? t.roleMember : r === "approver" ? t.roleApprover : (r ?? "");
 
   async function createCompany() {
     if (!form.name) { toast.error(t.toastEnterCompanyName); return; }
@@ -98,7 +103,7 @@ export default function CompanyPage() {
   }
 
   async function removeMember(memberId: string) {
-    if (!confirm(t.confirmRemoveMember)) return;
+    setRemoveId(null);
     const r = await fetch(`/api/company/members?memberId=${memberId}`, { method: "DELETE" });
     if (r.ok) { toast.success(t.toastRemoved); load(); }
     else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? t.toastRemoveFail); }
@@ -119,7 +124,7 @@ export default function CompanyPage() {
         <SectionHeader title={t.navCompany} />
         <Card>
           <CardHeader>
-            <CardTitle>{t.btnCreateCompany}</CardTitle>
+            <CardTitle as="h2">{t.btnCreateCompany}</CardTitle>
             <CardDescription>{t.coCreateDesc}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -142,7 +147,7 @@ export default function CompanyPage() {
 
       {canManage && (
       <Card>
-        <CardHeader><CardTitle>{t.coMembers}</CardTitle><CardDescription>{t.coYourRole} {role}</CardDescription></CardHeader>
+        <CardHeader><CardTitle as="h2">{t.coMembers}</CardTitle><CardDescription>{t.coYourRole} {roleLabel(role)}</CardDescription></CardHeader>
         <CardContent>
           <ul className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.07]">
             {members.map((m) => {
@@ -160,13 +165,13 @@ export default function CompanyPage() {
                 <div className="flex items-center gap-2">
                   {canChangeRole ? (
                     <Select value={m.role} onChange={(e) => changeRole(m.id, e.target.value)} aria-label={t.fldRole}
-                      className="h-10 !w-auto">
+                      className="!h-11 !w-auto md:!h-10">
                       <option value="member">{t.roleMember}</option>
                       <option value="admin">{t.roleAdmin}</option>
                     </Select>
-                  ) : (<span className="text-sm text-gray-500">{m.role}</span>)}
+                  ) : (<span className="text-sm text-gray-500 dark:text-gray-400">{roleLabel(m.role)}</span>)}
                   {canRemove && (
-                    <Button variant="ghost" onClick={() => removeMember(m.id)} className="h-10 text-red-600 hover:bg-red-50/70 dark:text-red-400 dark:hover:bg-red-950/25">{t.btnDelete}</Button>
+                    <Button variant="ghost" onClick={() => setRemoveId(m.id)} className="text-red-600 hover:bg-red-50/70 dark:text-red-400 dark:hover:bg-red-950/25">{t.btnDelete}</Button>
                   )}
                 </div>
               </li>
@@ -179,7 +184,7 @@ export default function CompanyPage() {
 
       {canManage && details && (
         <Card>
-          <CardHeader><CardTitle>{t.coInvoiceDetailsTitle}</CardTitle><CardDescription>{t.coInvoiceDetailsDesc}</CardDescription></CardHeader>
+          <CardHeader><CardTitle as="h2">{t.coInvoiceDetailsTitle}</CardTitle><CardDescription>{t.coInvoiceDetailsDesc}</CardDescription></CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-2"><Label htmlFor="cd-fldAddress">{t.fldAddress}</Label>
               <Input id="cd-fldAddress" value={details.address} onChange={(e) => setDetails({ ...details, address: e.target.value })} placeholder="Storgatan 1" /></div>
@@ -201,10 +206,12 @@ export default function CompanyPage() {
               <Input id="cd-fldPhone" value={details.phone} onChange={(e) => setDetails({ ...details, phone: e.target.value })} placeholder="08-123 456 78" /></div>
             <div className="space-y-2 sm:col-span-2"><Label htmlFor="cd-fldWebsite">{t.fldWebsite}</Label>
               <Input id="cd-fldWebsite" value={details.website} onChange={(e) => setDetails({ ...details, website: e.target.value })} placeholder="foretag.se" /></div>
-            <label className="flex items-center gap-2 text-sm sm:col-span-2">
-              <input type="checkbox" checked={details.fSkatt} onChange={(e) => setDetails({ ...details, fSkatt: e.target.checked })} />
-              {t.invFSkatt}
-            </label>
+            <Checkbox
+              labelClassName="sm:col-span-2"
+              checked={details.fSkatt}
+              onChange={(e) => setDetails({ ...details, fSkatt: e.target.checked })}
+              label={t.invFSkatt}
+            />
             <div className="sm:col-span-2"><Button onClick={saveDetails}>{t.btnSave}</Button></div>
           </CardContent>
         </Card>
@@ -212,7 +219,7 @@ export default function CompanyPage() {
 
       {canManage && (
         <Card>
-          <CardHeader><CardTitle>{t.btnInviteColleague}</CardTitle><CardDescription>{t.coInviteDesc}</CardDescription></CardHeader>
+          <CardHeader><CardTitle as="h2">{t.btnInviteColleague}</CardTitle><CardDescription>{t.coInviteDesc}</CardDescription></CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2"><Label htmlFor="ci-fldFirstName">{t.fldFirstName}</Label>
               <Input id="ci-fldFirstName" value={invite.firstName} onChange={(e) => setInvite({ ...invite, firstName: e.target.value })} placeholder={t.fldFirstName} /></div>
@@ -229,6 +236,15 @@ export default function CompanyPage() {
           </CardContent>
         </Card>
       )}
+      <ConfirmDialog
+        open={removeId !== null}
+        title={t.confirmRemoveMember}
+        confirmLabel={t.btnDelete}
+        cancelLabel={t.btnCancel}
+        destructive
+        onConfirm={() => removeId && removeMember(removeId)}
+        onCancel={() => setRemoveId(null)}
+      />
     </div>
   );
 }

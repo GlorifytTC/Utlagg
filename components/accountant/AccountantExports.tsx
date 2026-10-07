@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/ui/error-state";
+import { formatDate, formatSek } from "@/lib/utils";
 import { CheckCard } from "@/components/ui/check-card";
 import { PeriodPicker, defaultPeriod } from "@/components/export/PeriodPicker";
 import { ExportList } from "@/components/export/ExportList";
@@ -13,7 +15,6 @@ import type { ExportPreview } from "@/lib/export-preview";
 import { Download, FileText, Car, Bus, Loader2 } from "lucide-react";
 
 type Dataset = "receipts" | "mileage" | "transport";
-const fmtSek = (n: number) => `${n.toLocaleString("sv-SE", { maximumFractionDigits: 0 })} kr`;
 
 interface ExportRow {
   id: string;
@@ -97,7 +98,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
       <span className="skeleton mt-2 block h-4 w-32 rounded" aria-hidden />
     ) : (
       <p className="mt-2 text-xs tabular-nums text-gray-500 dark:text-gray-400">
-        {preview[d].count > 0 ? `${tt.expRows.replace("{n}", String(preview[d].count))} · ${fmtSek(preview[d].total)}` : tt.expNoRows}
+        {preview[d].count > 0 ? `${tt.expRows.replace("{n}", String(preview[d].count))} · ${formatSek(preview[d].total)}` : tt.expNoRows}
       </p>
     );
   const toggle = (d: Dataset) => (e: React.ChangeEvent<HTMLInputElement>) => setSelected((s) => ({ ...s, [d]: e.target.checked }));
@@ -122,7 +123,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
                     role="radio"
                     aria-checked={format === f}
                     onClick={() => setFormat(f)}
-                    className={`min-h-11 rounded-full border px-3.5 sm:min-h-10 py-1.5 text-sm font-medium transition duration-300 ease-premium motion-reduce:transition-none ${
+                    className={`min-h-11 rounded-full border px-3.5 sm:min-h-10 py-1.5 text-sm font-medium transition duration-300 ease-premium focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 motion-reduce:transition-none ${
                       format === f
                         ? "border-nordic-600 bg-nordic-600 text-white"
                         : "border-gray-900/15 text-gray-600 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300"
@@ -150,7 +151,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
           </Button>
           <p className="text-xs text-gray-500 dark:text-gray-400">{picked.length > 1 ? `${tt.expBundleHint} ` : ""}{t.exSieNote}</p>
         </div>
-        {err && <p role="alert" className="text-sm text-red-600">{err}</p>}
+        {err && <ErrorState>{err}</ErrorState>}
       </motion.div>
 
       {/* History */}
@@ -165,7 +166,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
             ))}
           </div>
         ) : histStatus === "error" ? (
-          <p className="text-sm text-red-600">{t.exHistoryError}</p>
+          <ErrorState onRetry={loadHistory} retryLabel={t.retry}>{t.exHistoryError}</ErrorState>
         ) : history.length === 0 ? (
           <div className="rounded-2xl panel p-8 text-center text-sm text-gray-500 dark:text-gray-400">
             {t.exEmpty}
@@ -193,7 +194,7 @@ export function AccountantExports({ companyId }: { companyId: string }) {
                       className="border-t border-gray-900/[0.07] transition-colors hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
                     >
                       <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500 dark:text-gray-400 sm:px-5">
-                        {h.createdAt?.slice(0, 10)}
+                        {formatDate(h.createdAt, lang)}
                       </td>
                       <td className="px-3 py-3 text-sm sm:px-5 text-gray-500 dark:text-gray-400">
                         {h.fromDate || h.toDate ? `${h.fromDate ?? "…"} - ${h.toDate ?? "…"}` : t.exAll}

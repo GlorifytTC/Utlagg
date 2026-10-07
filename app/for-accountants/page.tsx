@@ -65,7 +65,7 @@ function ForAccountantsContent() {
         {/* Hero */}
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-12 md:grid-cols-2 md:pb-28 md:pt-20">
           <div>
-            <motion.p {...enter(0, rm)} className="text-sm font-medium text-nordic-600">
+            <motion.p {...enter(0, rm)} className="text-sm font-medium text-nordic-700">
               {t.fbKicker}
             </motion.p>
             <motion.h1

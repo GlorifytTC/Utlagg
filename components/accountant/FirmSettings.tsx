@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ErrorState } from "@/components/ui/error-state";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import { LogoUploader } from "@/components/dashboard/LogoUploader";
@@ -62,7 +63,7 @@ export function FirmSettings() {
     }
   }
 
-  if (failed) return <p role="alert" className="text-sm text-red-600 dark:text-red-400">{at.error}</p>;
+  if (failed) return <ErrorState>{at.error}</ErrorState>;
   if (!firm) return <div className="skeleton h-48 rounded-2xl" aria-busy="true" aria-label={at.loading} />;
 
   return (

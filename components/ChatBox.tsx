@@ -257,7 +257,7 @@ export function ChatBox() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 3 }}
                     transition={{ duration: 0.18 }}
-                    className="text-xs text-paper/50"
+                    className="text-xs text-paper/65"
                   >
                     {typing ? t.cbTyping : t.cbOnline}
                   </motion.p>
@@ -274,7 +274,7 @@ export function ChatBox() {
                     transition={{ type: "spring", stiffness: 500, damping: 28 }}
                     onClick={handleReset}
                     aria-label={t.cbRestart}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-paper/40 transition hover:bg-paper/10 hover:text-paper/80"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-paper/70 transition hover:bg-paper/10 hover:text-paper focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
                   >
                     <IconReset />
                   </motion.button>
@@ -284,7 +284,7 @@ export function ChatBox() {
               <button
                 onClick={() => setOpen(false)}
                 aria-label={t.cbClose}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-paper/40 transition hover:bg-paper/10 hover:text-paper/80"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-paper/70 transition hover:bg-paper/10 hover:text-paper focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
               >
                 <IconX />
               </button>

@@ -4,7 +4,8 @@ import { and, asc, eq } from "drizzle-orm";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { receipts, receiptReviews, users } from "@/db/schema";
-import { getT } from "@/lib/i18n-server";
+import { getT, getServerLang } from "@/lib/i18n-server";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { formatSek, formatDate } from "@/lib/utils";
 import { resolveReceiptImageSrc } from "@/lib/storage";
 import { getBasAccount } from "@/lib/bas";
@@ -16,10 +17,10 @@ import { PageHeader } from "@/components/ui/page-header";
 export const metadata = { title: "Kvitto" };
 export const dynamic = "force-dynamic";
 
-const STATUS_STYLE: Record<string, string> = {
-  pending: "bg-amber-100/50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
-  approved: "bg-green-100/50 text-green-700 dark:bg-green-900/20 dark:text-green-300",
-  rejected: "bg-red-100/50 text-red-700 dark:bg-red-900/20 dark:text-red-300",
+const STATUS_TONE: Record<string, BadgeTone> = {
+  pending: "warning",
+  approved: "success",
+  rejected: "danger",
 };
 
 export default async function ReceiptDetailPage({
@@ -30,6 +31,7 @@ export default async function ReceiptDetailPage({
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
   const t = getT();
+  const lang = getServerLang();
 
   const [receipt] = await db
     .select()
@@ -65,7 +67,7 @@ export default async function ReceiptDetailPage({
 
   const fields: { label: string; value: React.ReactNode }[] = [
     { label: t.colVendor, value: receipt.vendorName ?? "-" },
-    { label: t.colDate, value: formatDate(receipt.date) },
+    { label: t.colDate, value: formatDate(receipt.date, lang) },
     { label: t.receiptNumberLabel, value: receipt.receiptNumber ?? "-" },
     {
       label: t.colBas,
@@ -84,7 +86,7 @@ export default async function ReceiptDetailPage({
       ),
     },
     { label: t.colAmount, value: formatSek(receipt.totalAmount) },
-    { label: t.receiptCreatedLabel, value: formatDate(receipt.createdAt) },
+    { label: t.receiptCreatedLabel, value: formatDate(receipt.createdAt, lang) },
   ];
 
   return (
@@ -94,9 +96,9 @@ export default async function ReceiptDetailPage({
         subtitle={t.receiptDetails}
         back={{ href: "/dashboard/receipts", label: t.receiptBack }}
         actions={
-          <span className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLE[receipt.status] ?? ""}`}>
+          <Badge tone={STATUS_TONE[receipt.status] ?? "neutral"}>
             {statusLabel[receipt.status] ?? receipt.status}
-          </span>
+          </Badge>
         }
       />
 
@@ -122,7 +124,7 @@ export default async function ReceiptDetailPage({
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         {v.name ? `${v.email} · ` : ""}
-                        {t.reviewedOn} {formatDate(v.reviewedAt)}
+                        {t.reviewedOn} {formatDate(v.reviewedAt, lang)}
                       </p>
                     </div>
                   </div>
@@ -147,7 +149,7 @@ export default async function ReceiptDetailPage({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={imageSrc}
-                alt={receipt.vendorName ?? ""}
+                alt={receipt.vendorName ? `${t.receiptImageAlt}: ${receipt.vendorName}` : t.receiptImageAlt}
                 className="w-full rounded-xl object-contain"
               />
             </a>

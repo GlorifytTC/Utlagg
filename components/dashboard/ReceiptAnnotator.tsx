@@ -126,20 +126,22 @@ export function ReceiptAnnotator({
 
   return (
     <div className="rounded-2xl border border-gray-900/[0.07] bg-[#F5F4F0]/60 p-4 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]">
-      <p className="font-display text-base text-gray-900 dark:text-white">{t.annTitle}</p>
+      <h3 className="font-display text-base font-semibold text-gray-900 dark:text-white">{t.annTitle}</h3>
       <p className="mt-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{t.annDesc}</p>
       
       <div className="mt-3 flex flex-wrap gap-2">
         {fields.map((f) => (
           <motion.button
             key={f.key}
+            type="button"
+            aria-pressed={field === f.key}
             onClick={() => setField(f.key)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className={cn(
-              "min-h-[40px] rounded-full border px-4 text-sm transition",
+              "min-h-11 md:min-h-10 rounded-full border px-4 text-sm transition",
               field === f.key
-                ? "border-nordic-600 bg-nordic-600 text-white shadow-sm"
+                ? "border-nordic-600 bg-nordic-600 text-white shadow-sm dark:text-[#050505]"
                 : "border-gray-900/[0.15] text-gray-600 hover:border-gray-900/40 dark:border-white/[0.15] dark:text-gray-300 dark:hover:border-white/40",
             )}
           >
@@ -157,7 +159,7 @@ export function ReceiptAnnotator({
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
               onClick={() => { setArmed(false); setBox(null); setStart(null); }}
-              className="flex min-h-[40px] items-center gap-1.5 rounded-full border border-gray-900/[0.15] px-4 text-sm text-gray-600 dark:border-white/[0.15] dark:text-gray-300"
+              className="flex min-h-11 md:min-h-10 items-center gap-1.5 rounded-full border border-gray-900/[0.15] px-4 text-sm text-gray-600 dark:border-white/[0.15] dark:text-gray-300"
             >
               <X className="h-4 w-4" /> {t.annCancel}
             </motion.button>
@@ -170,7 +172,7 @@ export function ReceiptAnnotator({
               onClick={() => setArmed(true)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex min-h-[40px] items-center gap-1.5 rounded-full bg-gray-900 px-4 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+              className="flex min-h-11 md:min-h-10 items-center gap-1.5 rounded-full bg-gray-900 px-4 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
             >
               <SquareDashedMousePointer className="h-4 w-4" /> {t.annArm}
             </motion.button>
@@ -178,14 +180,14 @@ export function ReceiptAnnotator({
         </AnimatePresence>
         
         <div className="inline-flex items-center gap-1">
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={zoomOut} aria-label={t.annZoomOut} disabled={zoom === ZOOMS[0]} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-900/[0.12] text-gray-600 disabled:opacity-30 dark:border-white/[0.12] dark:text-gray-300">
+          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={zoomOut} aria-label={t.annZoomOut} disabled={zoom === ZOOMS[0]} className="flex h-11 w-11 items-center justify-center md:h-10 md:w-10 rounded-full border border-gray-900/[0.12] text-gray-600 disabled:opacity-30 dark:border-white/[0.12] dark:text-gray-300">
             <ZoomOut className="h-4 w-4" />
           </motion.button>
           <span className="w-12 text-center text-xs tabular-nums text-gray-500 dark:text-gray-400">{Math.round(zoom * 100)}%</span>
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={zoomIn} aria-label={t.annZoomIn} disabled={zoom === ZOOMS[ZOOMS.length - 1]} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-900/[0.12] text-gray-600 disabled:opacity-30 dark:border-white/[0.12] dark:text-gray-300">
+          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={zoomIn} aria-label={t.annZoomIn} disabled={zoom === ZOOMS[ZOOMS.length - 1]} className="flex h-11 w-11 items-center justify-center md:h-10 md:w-10 rounded-full border border-gray-900/[0.12] text-gray-600 disabled:opacity-30 dark:border-white/[0.12] dark:text-gray-300">
             <ZoomIn className="h-4 w-4" />
           </motion.button>
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={fit} aria-label={t.annFit} className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-900/[0.12] text-gray-600 dark:border-white/[0.12] dark:text-gray-300">
+          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={fit} aria-label={t.annFit} className="flex h-11 w-11 items-center justify-center md:h-10 md:w-10 rounded-full border border-gray-900/[0.12] text-gray-600 dark:border-white/[0.12] dark:text-gray-300">
             <Maximize2 className="h-4 w-4" />
           </motion.button>
         </div>
@@ -198,7 +200,7 @@ export function ReceiptAnnotator({
       <div
         ref={stageRef}
         className={cn(
-          "relative mt-2 max-h-[62vh] overflow-auto rounded-xl border bg-white/60 transition dark:bg-[#0D0D0D]",
+          "relative mt-2 max-h-[62dvh] overflow-auto rounded-xl border bg-white/60 transition dark:bg-[#0D0D0D]",
           armed ? "border-nordic-600 ring-2 ring-nordic-600/40" : "border-gray-900/[0.07] dark:border-white/[0.07]",
         )}
         style={{ touchAction: armed ? "none" : "auto" }}
@@ -221,6 +223,7 @@ export function ReceiptAnnotator({
         <AnimatePresence>
           {busy && (
             <motion.div
+              role="status"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -228,6 +231,7 @@ export function ReceiptAnnotator({
             >
               <span className="flex items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm text-white shadow-lg dark:bg-white dark:text-gray-900">
                 <motion.span
+                  aria-hidden
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 >

@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/input";
+import { PageHeader } from "@/components/ui/page-header";
+import { ErrorState } from "@/components/ui/error-state";
+import { AdminTabs } from "@/components/admin/AdminTabs";
 import { isBanned, type ModerationAction } from "@/lib/moderation";
 
 interface Report {
@@ -42,18 +48,22 @@ export default function AdminChatReportsPage() {
   const [tab, setTab] = useState<"pending" | "resolved" | "dismissed">("pending");
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [detailError, setDetailError] = useState(false);
+  const [detailTry, setDetailTry] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<{ report: ReportDetail; messages: Message[] } | null>(null);
   const [note, setNote] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
+    setError(false);
     try {
       const res = await fetch(`/api/admin/chat-reports?status=${tab}`);
       if (!res.ok) throw new Error();
       setReports((await res.json()).reports);
     } catch {
-      toast.error("Kunde inte ladda rapporter");
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -62,9 +72,10 @@ export default function AdminChatReportsPage() {
   useEffect(() => { load(); }, [load]);
   useEffect(() => { setSelectedId(null); }, [tab]);
 
+  useEffect(() => { setNote(""); }, [selectedId]);
   useEffect(() => {
     setDetail(null);
-    setNote("");
+    setDetailError(false);
     if (!selectedId) return;
     let cancelled = false;
     fetch(`/api/admin/chat-reports/${selectedId}`)
@@ -73,9 +84,9 @@ export default function AdminChatReportsPage() {
         return res.json();
       })
       .then((data) => { if (!cancelled) setDetail(data); })
-      .catch(() => toast.error("Kunde inte ladda konversationen"));
+      .catch(() => { if (!cancelled) setDetailError(true); });
     return () => { cancelled = true; };
-  }, [selectedId]);
+  }, [selectedId, detailTry]);
 
   async function moderate(id: string, status: "resolved" | "dismissed", action?: ModerationAction) {
     const res = await fetch(`/api/admin/chat-reports/${id}`, {
@@ -112,31 +123,30 @@ export default function AdminChatReportsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Chatrapporter</h1>
+      <PageHeader title="Chatrapporter" />
 
-      <div className="flex gap-2">
-        {(["pending", "resolved", "dismissed"] as const).map((s) => (
-          <button
-            key={s}
-            onClick={() => setTab(s)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-              tab === s
-                ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                : "text-gray-500 hover:text-gray-800 dark:text-gray-400"
-            }`}
-          >
-            {s === "pending" ? "Väntande" : s === "resolved" ? "Hanterade" : "Avvisade"}
-          </button>
-        ))}
-      </div>
+      <AdminTabs
+        label="Status"
+        value={tab}
+        onChange={setTab}
+        tabs={[
+          { key: "pending", label: "Väntande" },
+          { key: "resolved", label: "Hanterade" },
+          { key: "dismissed", label: "Avvisade" },
+        ]}
+      />
 
       <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
-        {/* Report list */}
-        <div>
-          {loading ? (
-            <p className="text-sm text-gray-500">Laddar…</p>
+        {/* Report list: below lg only list OR detail is shown */}
+        <div className={cn(selectedId && "max-lg:hidden")}>
+          {error ? (
+            <ErrorState onRetry={load} retryLabel="Försök igen">Kunde inte ladda rapporter.</ErrorState>
+          ) : loading ? (
+            <div className="space-y-2" role="status" aria-label="Laddar">
+              {[0, 1, 2].map((i) => <div key={i} className="skeleton h-28 rounded-2xl" />)}
+            </div>
           ) : reports.length === 0 ? (
-            <p className="text-sm text-gray-500">Inga rapporter.</p>
+            <div className="panel rounded-2xl p-6 text-center text-sm text-gray-500 dark:text-gray-400">Inga rapporter.</div>
           ) : (
             <ul className="space-y-2">
               {reports.map((r) => (
@@ -145,7 +155,7 @@ export default function AdminChatReportsPage() {
                     onClick={() => setSelectedId(r.id)}
                     aria-current={selectedId === r.id}
                     className={cn(
-                      "w-full rounded-2xl border bg-white p-4 text-left transition dark:bg-[#0D0D0D]",
+                      "w-full rounded-2xl border bg-white p-4 text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:bg-[#0D0D0D]",
                       selectedId === r.id
                         ? "border-nordic-600 ring-2 ring-nordic-600/15"
                         : "border-gray-200 hover:border-gray-300 dark:border-white/[0.08] dark:hover:border-white/[0.16]",
@@ -154,11 +164,11 @@ export default function AdminChatReportsPage() {
                     <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
                       {r.reportedName ?? r.reportedEmail}
                     </p>
-                    <p className="truncate text-xs text-gray-500">
+                    <p className="truncate text-xs text-gray-500 dark:text-gray-400">
                       Rapporterad av {r.reporterName ?? r.reporterEmail}
                     </p>
                     <p className="mt-2 line-clamp-2 text-sm text-gray-600 dark:text-gray-300">{r.reason}</p>
-                    <p className="mt-2 text-xs text-gray-400">
+                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                       {new Date(r.createdAt).toLocaleString("sv-SE")}
                       {r.messageId && " · inkl. meddelande"}
                     </p>
@@ -170,13 +180,26 @@ export default function AdminChatReportsPage() {
         </div>
 
         {/* Report detail */}
-        <div className="min-w-0 rounded-2xl border border-gray-200 bg-white dark:border-white/[0.08] dark:bg-[#0D0D0D]">
+        <div className={cn("panel min-w-0 rounded-2xl", !selectedId && "max-lg:hidden")}>
           {!selectedId ? (
-            <p className="p-8 text-center text-sm text-gray-500">Välj en rapport för att se konversationen.</p>
+            <p className="p-8 text-center text-sm text-gray-500 dark:text-gray-400">Välj en rapport för att se konversationen.</p>
+          ) : detailError ? (
+            <div className="p-5">
+              <Button variant="ghost" className="-ml-2 mb-3 lg:hidden" onClick={() => setSelectedId(null)}>
+                <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
+                Tillbaka
+              </Button>
+              <ErrorState onRetry={() => setDetailTry((n) => n + 1)} retryLabel="Försök igen">Kunde inte ladda konversationen.</ErrorState>
+            </div>
           ) : !detail ? (
-            <p className="p-8 text-center text-sm text-gray-500">Laddar…</p>
+            <div className="space-y-3 p-5" role="status" aria-label="Laddar">
+              <div className="skeleton h-6 w-1/2 rounded-lg" />
+              <div className="skeleton h-24 rounded-xl" />
+              <div className="skeleton h-40 rounded-xl" />
+            </div>
           ) : (
             <ReportView
+              onBack={() => setSelectedId(null)}
               detail={detail}
               note={note}
               setNote={setNote}
@@ -196,12 +219,14 @@ function ReportView({
   setNote,
   onModerate,
   onUnban,
+  onBack,
 }: {
   detail: { report: ReportDetail; messages: Message[] };
   note: string;
   setNote: (v: string) => void;
   onModerate: (status: "resolved" | "dismissed", action?: ModerationAction) => void;
   onUnban: () => void;
+  onBack: () => void;
 }) {
   const nameOf = (id: string) =>
     id === r.reporterId
@@ -212,24 +237,28 @@ function ReportView({
 
   return (
     <div className="flex flex-col">
-      <div className="border-b border-gray-200 p-5 dark:border-white/[0.08]">
+      <div className="border-b border-gray-900/10 p-5 dark:border-white/[0.08]">
+        <Button variant="ghost" className="-ml-2 mb-2 lg:hidden" onClick={onBack}>
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
+          Tillbaka
+        </Button>
         <div className="grid gap-3 text-sm sm:grid-cols-2">
           <div>
-            <p className="text-xs text-gray-500">Rapportör</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Rapportör</p>
             <p className="font-medium">{r.reporterName ?? r.reporterEmail}</p>
-            {r.reporterName && <p className="text-xs text-gray-400">{r.reporterEmail}</p>}
+            {r.reporterName && <p className="text-xs text-gray-500 dark:text-gray-400">{r.reporterEmail}</p>}
           </div>
           <div>
-            <p className="text-xs text-gray-500">Rapporterad</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Rapporterad</p>
             <p className="font-medium text-red-600 dark:text-red-400">{r.reportedName ?? r.reportedEmail}</p>
-            {r.reportedName && <p className="text-xs text-gray-400">{r.reportedEmail}</p>}
+            {r.reportedName && <p className="text-xs text-gray-500 dark:text-gray-400">{r.reportedEmail}</p>}
           </div>
         </div>
-        <p className="mt-3 rounded-lg bg-gray-50 p-3 text-sm dark:bg-white/[0.04]">{r.reason}</p>
+        <p className="mt-3 rounded-xl bg-gray-900/[0.04] p-3 text-sm dark:bg-white/[0.06]">{r.reason}</p>
       </div>
 
       {/* Conversation log */}
-      <div className="max-h-[55vh] overflow-y-auto p-5">
+      <div className="max-h-[55dvh] overflow-y-auto p-5">
         {messages.length === 0 ? (
           <p className="text-center text-sm text-gray-500">Ingen konversation hittades mellan användarna.</p>
         ) : (
@@ -241,11 +270,11 @@ function ReportView({
               return (
                 <li key={m.id} className={cn("flex flex-col", fromReporter ? "items-end" : "items-start")}>
                   {showName && (
-                    <p className="mb-1 px-1 text-[11px] font-medium text-gray-500 dark:text-gray-400">{nameOf(m.senderId)}</p>
+                    <p className="mb-1 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">{nameOf(m.senderId)}</p>
                   )}
                   <div
                     className={cn(
-                      "max-w-[78%] rounded-[20px] px-3.5 py-2 text-[14px] leading-relaxed",
+                      "max-w-[78%] rounded-[20px] px-3.5 py-2 text-sm leading-relaxed",
                       fromReporter
                         ? "bg-nordic-600 text-white"
                         : "bg-gray-900/[0.05] text-gray-900 dark:bg-white/[0.08] dark:text-gray-100",
@@ -254,8 +283,8 @@ function ReportView({
                   >
                     <p className="whitespace-pre-wrap break-words">{m.body}</p>
                   </div>
-                  <p className="mt-1 px-1 text-[10.5px] tabular-nums text-gray-400 dark:text-gray-500">
-                    {flagged && <span className="font-medium text-red-500">Rapporterat meddelande · </span>}
+                  <p className="mt-1 px-1 text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                    {flagged && <span className="font-medium text-red-600 dark:text-red-400">Rapporterat meddelande · </span>}
                     {new Date(m.createdAt).toLocaleString("sv-SE")}
                   </p>
                 </li>
@@ -266,29 +295,24 @@ function ReportView({
       </div>
 
       {/* Actions */}
-      <div className="space-y-3 border-t border-gray-200 p-5 dark:border-white/[0.08]">
+      <div className="space-y-3 border-t border-gray-900/10 p-5 dark:border-white/[0.08]">
         {r.status === "pending" ? (
           <>
-            <textarea
+            <Textarea
+              aria-label="Moderatorsanteckning"
               placeholder="Moderatorsanteckning (valfri, visas för användaren vid varning)…"
               rows={2}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-white/[0.08] dark:bg-transparent dark:text-white"
+              className="resize-none"
             />
             <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => onModerate("dismissed")}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 dark:border-white/[0.08] dark:text-gray-400"
-              >
+              <Button variant="outline" onClick={() => onModerate("dismissed")}>
                 Ignorera
-              </button>
-              <button
-                onClick={() => onModerate("resolved")}
-                className="rounded-lg bg-gray-900 px-3 py-1.5 text-sm text-white hover:opacity-80 dark:bg-white dark:text-gray-900"
-              >
+              </Button>
+              <Button onClick={() => onModerate("resolved")}>
                 Markera hanterad
-              </button>
+              </Button>
             </div>
             <div className="rounded-xl border border-red-200 p-3 dark:border-red-900/50">
               <p className="mb-2 text-xs font-medium text-red-600 dark:text-red-400">
@@ -296,23 +320,23 @@ function ReportView({
               </p>
               <div className="flex flex-wrap gap-2">
                 {DISCIPLINARY_ACTIONS.map(({ action, label }) => (
-                  <button
+                  <Button
                     key={action}
+                    variant="destructive"
                     onClick={() => {
                       if (action !== "warn" && !window.confirm(`${label}: ${r.reportedName ?? r.reportedEmail}?`)) return;
                       onModerate("resolved", action);
                     }}
-                    className="rounded-lg bg-red-600 px-3 py-1.5 text-sm text-white hover:bg-red-700"
                   >
                     {label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
           </>
         ) : (
           <>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               {r.status === "resolved" ? "Hanterad" : "Avvisad"}
               {r.moderatedAt && ` ${new Date(r.moderatedAt).toLocaleString("sv-SE")}`}
               {r.moderatorNote && ` · Anteckning: ${r.moderatorNote}`}
@@ -323,14 +347,14 @@ function ReportView({
                   {r.reportedName ?? r.reportedEmail} är avstängd till{" "}
                   {new Date(r.reportedBannedUntil!).toLocaleDateString("sv-SE")}
                 </p>
-                <button
+                <Button
+                  variant="outline"
                   onClick={() => {
                     if (window.confirm(`Häv avstängningen för ${r.reportedName ?? r.reportedEmail}?`)) onUnban();
                   }}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-white/[0.08] dark:text-gray-300 dark:hover:bg-white/[0.04]"
                 >
                   Häv avstängning
-                </button>
+                </Button>
               </div>
             )}
           </>

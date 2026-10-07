@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { users, subscriptions, receipts, auditLogs } from "@/db/schema";
 import { formatDate, formatSek } from "@/lib/utils";
 import { requireAdmin } from "@/lib/admin";
+import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminUserActions } from "@/components/admin/AdminUserActions";
 import { AdminSubscriptionControl } from "@/components/admin/AdminSubscriptionControl";
@@ -59,12 +60,11 @@ export default async function AdminUserDetail({ params }: { params: { id: string
 
   return (
     <div className="max-w-4xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{user.email}</h1>
-        <p className="text-gray-500 dark:text-gray-400">
-          {user.name ?? "-"} · {user.subscriptionTier} · {user.subscriptionStatus} · sedan {formatDate(user.createdAt)}
-        </p>
-      </div>
+      <PageHeader
+        back={{ href: "/admin/users", label: "Användare" }}
+        title={<span className="break-all">{user.email}</span>}
+        subtitle={`${user.name ?? "-"} · ${user.subscriptionTier} · ${user.subscriptionStatus} · sedan ${formatDate(user.createdAt)}`}
+      />
 
       <Card>
         <CardHeader><CardTitle>Åtgärder</CardTitle></CardHeader>
@@ -114,11 +114,11 @@ export default async function AdminUserDetail({ params }: { params: { id: string
         <CardHeader><CardTitle>Senaste kvitton</CardTitle></CardHeader>
         <CardContent>
           {userReceipts.length === 0 ? (
-            <p className="text-sm text-gray-500">Inga kvitton.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Inga kvitton.</p>
           ) : (
             <ul className="divide-y divide-gray-100 text-sm dark:divide-gray-800">
               {userReceipts.map((r: Record<string, unknown>) => (
-                <li key={r.id as string} className="flex justify-between py-2">
+                <li key={r.id as string} className="flex justify-between gap-3 py-2">
                   <span>{(r.vendorName as string) ?? "-"}</span>
                   <span>{formatSek(Number(r.totalAmount ?? 0))}</span>
                 </li>
@@ -132,13 +132,13 @@ export default async function AdminUserDetail({ params }: { params: { id: string
         <CardHeader><CardTitle>Revisionslogg</CardTitle></CardHeader>
         <CardContent>
           {logs.length === 0 ? (
-            <p className="text-sm text-gray-500">Inga händelser.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Inga händelser.</p>
           ) : (
             <ul className="space-y-1 text-sm">
               {logs.map((l: Record<string, unknown>) => (
                 <li key={l.id as string} className="flex justify-between">
                   <span className="font-mono text-xs">{l.action as string}</span>
-                  <span className="text-gray-500">{formatDate(l.createdAt as Date)}</span>
+                  <span className="text-gray-500 dark:text-gray-400">{formatDate(l.createdAt as Date)}</span>
                 </li>
               ))}
             </ul>

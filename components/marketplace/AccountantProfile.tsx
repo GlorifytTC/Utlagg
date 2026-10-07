@@ -9,7 +9,14 @@ import { AccountantChat } from "@/components/AccountantChat";
 import { LogoUploader } from "@/components/dashboard/LogoUploader";
 import { useLanguage } from "@/context/LanguageContext";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
-import { fieldClass } from "@/components/ui/input";
+import { Input, Textarea } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ErrorState } from "@/components/ui/error-state";
+import { PageHeader } from "@/components/ui/page-header";
+import { accountantStrings } from "@/lib/accountant-i18n";
+import { formatDate } from "@/lib/utils";
 
 interface Review {
   id: string;
@@ -131,7 +138,7 @@ function FirmSidebar({ firm }: { firm: Firm }) {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm text-gray-900 dark:text-white">{m.name ?? m.email}</p>
               </div>
-              <span className="shrink-0 rounded-full bg-gray-100/80 px-2 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-white/[0.08] dark:text-gray-400">
+              <span className="shrink-0 rounded-full bg-gray-100/80 px-2 py-0.5 text-xs font-medium text-gray-500 dark:bg-white/[0.08] dark:text-gray-400">
                 {roleLabels[m.role] ?? m.role}
               </span>
             </li>
@@ -277,7 +284,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
     }
   }
 
-  const inputClass = `${fieldClass} py-2`;
+  const at = accountantStrings(lang);
 
   if (loadState === "loading") {
     return (
@@ -287,7 +294,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
     );
   }
   if (loadState === "error" || !data) {
-    return <p className="text-sm text-red-600">{t.profLoadError}</p>;
+    return <ErrorState onRetry={load} retryLabel={at.retry}>{t.profLoadError}</ErrorState>;
   }
 
   const { accountant, reviews } = data;
@@ -298,16 +305,35 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
   const heroLogo = data.firm?.logoUrl ?? accountant.logoUrl;
   const heroAlt = data.firm?.logoUrl ? data.firm.name : (accountant.name ?? accountant.email);
   const heroInitial = (data.firm?.name ?? accountant.name ?? accountant.email).charAt(0).toUpperCase();
-  const labelClass = "mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500";
+  const labelClass = "mb-1 block";
 
   return (
     <div className="space-y-6">
-      <Link
-        href={backHref}
-        className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 dark:hover:text-white"
-      >
-        {t.profBack}
-      </Link>
+      <PageHeader
+        back={{ href: backHref, label: t.profBack }}
+        title={
+          <span className="inline-flex flex-wrap items-center gap-2">
+            {accountant.name ?? accountant.email}
+            {accountant.isVerified && <VerifiedBadge />}
+            {accountant.isBoosted && <Badge tone="accent">{t.mktBoosted}</Badge>}
+          </span>
+        }
+        actions={
+          isSelf ? (
+            <Button variant="outline" onClick={() => setEditing((v) => !v)} aria-expanded={editing}>
+              {editing ? t.btnCancel : t.profEdit}
+            </Button>
+          ) : data.myStatus === "active" ? (
+            <Badge tone="success" className="px-3 py-1.5 text-sm">{t.mktConnected}</Badge>
+          ) : data.myStatus === "pending" ? (
+            <Badge tone="accent" className="px-3 py-1.5 text-sm">{t.mktRequestSent}</Badge>
+          ) : data.viewerCanRequest ? (
+            <Button disabled={busy} onClick={sendRequest}>
+              {busy ? t.mktSending : t.mktSendRequest}
+            </Button>
+          ) : undefined
+        }
+      />
 
       <div className={data.firm ? "lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start lg:gap-6 xl:grid-cols-[minmax(0,1fr)_320px]" : "space-y-8"}>
       <div className="space-y-8">
@@ -334,50 +360,6 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
 
         {/* Content + CTA together so CTA never overflows card */}
         <div className="min-w-0 flex-1 space-y-2">
-          <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-white">
-                {accountant.name ?? accountant.email}
-              </h1>
-              {accountant.isVerified && <VerifiedBadge />}
-              {accountant.isBoosted && (
-                <span className="rounded-full bg-nordic-600/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-widest text-nordic-600 dark:bg-nordic-600/20">
-                  {t.mktBoosted}
-                </span>
-              )}
-            </div>
-
-            {/* CTA - inside content col, no risk of overflowing card */}
-            <div className="shrink-0">
-              {isSelf ? (
-                <button
-                  onClick={() => setEditing((v) => !v)}
-                  className="rounded-full border border-gray-900/[0.12] px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 active:scale-[0.98] dark:border-white/[0.12] dark:text-gray-300 dark:hover:bg-white/[0.06]"
-                >
-                  {editing ? t.btnCancel : t.profEdit}
-                </button>
-              ) : data.myStatus === "active" ? (
-                <span className="rounded-full bg-green-100/50 px-3 py-1.5 text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300">
-                  {t.mktConnected}
-                </span>
-              ) : data.myStatus === "pending" ? (
-                <span className="rounded-full bg-nordic-600/10 px-3 py-1.5 text-sm font-medium text-nordic-600 dark:bg-nordic-600/20">
-                  {t.mktRequestSent}
-                </span>
-              ) : data.viewerCanRequest ? (
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  disabled={busy}
-                  onClick={sendRequest}
-                  className="rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-60"
-                >
-                  {busy ? t.mktSending : t.mktSendRequest}
-                </motion.button>
-              ) : null}
-            </div>
-          </div>
-
           {accountant.city && (
             <p className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
               <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
@@ -404,7 +386,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               {accountant.specializations.map((s) => (
                 <span
                   key={s}
-                  className="rounded-full border border-gray-900/[0.08] px-2.5 py-0.5 text-[11px] text-gray-500 dark:border-white/[0.08] dark:text-gray-400"
+                  className="rounded-full border border-gray-900/[0.08] px-2.5 py-0.5 text-xs text-gray-500 dark:border-white/[0.08] dark:text-gray-400"
                 >
                   {s}
                 </span>
@@ -427,25 +409,20 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
         </motion.div>
       )}
 
-      {/* FAB - sticky message shortcut when connected */}
+      {/* Message shortcut when connected */}
       {data.myStatus === "active" && data.clientId && currentUserId && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.85, y: 12 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ delay: 0.3, type: "spring", bounce: 0, duration: 0.35 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <Button
+          aria-expanded={chatOpen}
           onClick={() => {
             setChatOpen((v) => {
               if (!v) chatRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
               return !v;
             });
           }}
-          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-50 md:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] md:right-6 flex items-center gap-2 rounded-full bg-nordic-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-nordic-600/30 transition-colors hover:bg-nordic-700"
         >
           <MessageSquare size={16} />
           {chatOpen ? t.profCloseChat : t.profMessage}
-        </motion.button>
+        </Button>
       )}
 
       {/* Inline profile editor (own profile only) */}
@@ -464,17 +441,16 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
             {data.firm && (canManageFirm ? (
               <div className="space-y-3 border-b border-gray-900/[0.07] pb-4 dark:border-white/[0.08]">
                 <div>
-                  <label htmlFor="firm-name" className={labelClass}>{t.profFirmName}</label>
-                  <input
+                  <Label htmlFor="firm-name" className={labelClass}>{t.profFirmName}</Label>
+                  <Input
                     id="firm-name"
                     value={editFirmName}
                     onChange={(e) => setEditFirmName(e.target.value)}
                     maxLength={255}
-                    className={inputClass}
                   />
                 </div>
                 <div>
-                  <p className={labelClass}>{t.profFirmLogo}</p>
+                  <p className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">{t.profFirmLogo}</p>
                   <LogoUploader
                     value={data.firm.logoUrl}
                     label={data.firm.name}
@@ -491,46 +467,37 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               </p>
             ))}
             <div>
-              <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                {t.mktCityPlaceholder}
-              </label>
-              <input
+              <Label htmlFor="edit-city" className={labelClass}>{t.mktCityPlaceholder}</Label>
+              <Input
+                id="edit-city"
                 value={editCity}
                 onChange={(e) => setEditCity(e.target.value)}
-                placeholder="Stockholm"
-                className={inputClass}
+                placeholder={at.cityExample}
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                {t.profBio}
-              </label>
-              <textarea
+              <Label htmlFor="edit-bio" className={labelClass}>{t.profBio}</Label>
+              <Textarea
+                id="edit-bio"
                 value={editBio}
                 onChange={(e) => setEditBio(e.target.value)}
                 rows={4}
                 placeholder={t.profBioPlaceholder}
-                className={`${inputClass} resize-none`}
+                className="resize-none"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                {t.profSpecializations}
-              </label>
-              <input
+              <Label htmlFor="edit-spec" className={labelClass}>{t.profSpecializations}</Label>
+              <Input
+                id="edit-spec"
                 value={editSpecializations}
                 onChange={(e) => setEditSpecializations(e.target.value)}
                 placeholder={t.profSpecializationsPlaceholder}
-                className={inputClass}
               />
             </div>
-            <button
-              onClick={saveProfile}
-              disabled={editSaving}
-              className="rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-60"
-            >
+            <Button onClick={saveProfile} disabled={editSaving}>
               {editSaving ? t.stSaving : t.btnSave}
-            </button>
+            </Button>
           </div>
         </motion.div>
       )}
@@ -559,31 +526,32 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               {data.viewerExistingReview ? t.profYourReview : t.profLeaveReview}
             </p>
             <div className="space-y-3">
-              <div className="flex gap-2">
+              <div role="radiogroup" aria-label={t.profLeaveReview} className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button
                     key={n}
+                    type="button"
+                    role="radio"
+                    aria-checked={n === reviewRating}
+                    aria-label={`${n} / 5`}
                     onClick={() => setReviewRating(n)}
-                    className={`text-2xl transition-transform hover:scale-110 ${n <= reviewRating ? "text-nordic-600" : "text-gray-300 dark:text-gray-600"}`}
+                    className={`inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-2xl transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 ${n <= reviewRating ? "text-nordic-600" : "text-gray-300 dark:text-gray-600"}`}
                   >
                     ★
                   </button>
                 ))}
               </div>
-              <textarea
+              <Textarea
                 value={reviewComment}
                 onChange={(e) => setReviewComment(e.target.value)}
                 rows={3}
                 placeholder={t.profCommentPlaceholder}
-                className={`${inputClass} resize-none`}
+                aria-label={t.profCommentPlaceholder}
+                className="resize-none"
               />
-              <button
-                onClick={submitReview}
-                disabled={reviewSubmitting}
-                className="rounded-full bg-nordic-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-nordic-700 disabled:opacity-60"
-              >
+              <Button onClick={submitReview} disabled={reviewSubmitting}>
                 {reviewSubmitting ? t.stSaving : data.viewerExistingReview ? t.profUpdate : t.chatSend}
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -601,7 +569,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                     onClick={() => setRatingFilter(active ? null : star)}
                     aria-pressed={active}
                     aria-label={t.profFilterStars.replace("{star}", String(star)).replace("{count}", String(count))}
-                    className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-white/5 ${active ? "bg-nordic-600/10 ring-1 ring-inset ring-nordic-600/30 dark:bg-nordic-600/[0.16] dark:ring-nordic-600/40" : ""}`}
+                    className={`flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 hover:bg-gray-100 dark:hover:bg-white/5 ${active ? "bg-nordic-600/10 ring-1 ring-inset ring-nordic-600/30 dark:bg-nordic-600/[0.16] dark:ring-nordic-600/40" : ""}`}
                   >
                     <span className="w-[4.5rem] shrink-0 select-none text-right text-xs">
                       <span className="text-nordic-600">{"★".repeat(star)}</span>
@@ -619,12 +587,13 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
               })}
             </div>
             {ratingFilter !== null && (
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setRatingFilter(null)}
-                className="mt-3 text-xs text-nordic-600 hover:text-nordic-700 dark:text-nordic-400 dark:hover:text-nordic-300"
+                className="mt-3 text-nordic-600 dark:!text-nordic-400"
               >
                 {t.mktClearFilters}
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -654,7 +623,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
                     <Stars rating={r.rating} />
                   </div>
                   <p className="shrink-0 text-xs text-gray-500 dark:text-gray-400">
-                    {new Date(r.createdAt).toLocaleDateString(lang === "en" ? "en-GB" : "sv-SE")}
+                    {formatDate(r.createdAt, lang)}
                   </p>
                 </div>
                 {r.comment && (

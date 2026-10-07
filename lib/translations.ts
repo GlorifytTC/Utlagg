@@ -27,7 +27,7 @@ export interface Translations {
   heroVisualItem2: string;
   heroVisualTotal: string;
   heroVisualReady: string;
-  heroVisualFortnox: string;
+  heroVisualSie: string;
   fvRecLodging: string;
   fvRecBreakfast: string;
   fvRecParking: string;
@@ -120,6 +120,14 @@ export interface Translations {
   receiptTo: string;
   receiptExport: string;
   receiptNone: string;
+  btnRetry: string;
+  receiptNoMatch: string;
+  receiptClearFilters: string;
+  receiptLoadFailed: string;
+  receiptDeleteTitle: string;
+  invDeleteTitle: string;
+  roleOwner: string;
+  receiptImageAlt: string;
   receiptLoading: string;
   colDate: string;
   colVendor: string;
@@ -200,7 +208,6 @@ export interface Translations {
   feat25Scans: string;
   featBasicOcr: string;
   featCsv: string;
-  featFortnox: string;
   featSwedishVat: string;
   featAuditLog: string;
   featAllPro: string;
@@ -208,7 +215,6 @@ export interface Translations {
   featMileage: string;
   featCarbon: string;
   featAllBusiness: string;
-  intFortnoxDesc: string;
   intWaitingSync: string;
   intUpsellTitle: string;
   intUpsellDesc: string;
@@ -365,6 +371,7 @@ export interface Translations {
   pricingTableOnboarding: string;
   pricingTableSupport: string;
   pricingIncludedAll: string;
+  pricingScrollHint: string;
   pricingIncluded: string;
   pricingNotIncluded: string;
   btnAddRow: string;
@@ -620,6 +627,7 @@ export interface Translations {
   contact: string;
   navMenu: string;
   navClose: string;
+  navLanguage: string;
   navWebsite: string;
   dashboard: string;
   logout: string;
@@ -1424,14 +1432,6 @@ export interface Translations {
   aiAccept: string;
   aiLoginFirst: string;
   aiTitle: string;
-  bidStartError: string;
-  bidNetworkError: string;
-  bidFailed: string;
-  bidRetry: string;
-  bidStart: string;
-  bidQrAlt: string;
-  bidOpenOnDevice: string;
-  bidScanQr: string;
   cbQ1: string;
   cbA1: string;
   cbQ2: string;
@@ -1687,6 +1687,7 @@ export const strings: Record<Lang, Translations> = {
     contact: "Kontakt",
     navMenu: "Meny",
     navClose: "Stäng",
+    navLanguage: "Språk",
     navWebsite: "Till webbplatsen",
     dashboard: "Kontrollpanel",
     logout: "Logga ut",
@@ -2048,7 +2049,6 @@ export const strings: Record<Lang, Translations> = {
     feat25Scans: "25 skanningar/mån",
     featBasicOcr: "Grundläggande OCR",
     featCsv: "CSV-export",
-    featFortnox: "Fortnox-integration",
     featSwedishVat: "Svensk moms (6/12/25 %)",
     featAuditLog: "7-årig revisionslogg",
     featAllPro: "Allt i Pro",
@@ -2056,7 +2056,6 @@ export const strings: Record<Lang, Translations> = {
     featMileage: "Milersättning",
     featCarbon: "Koldioxidavtryck",
     featAllBusiness: "Allt i Företag",
-    intFortnoxDesc: "Bokför dina kvitton automatiskt som verifikationer i Fortnox.",
     intWaitingSync: "kvitton väntar på synk.",
     intUpsellTitle: "Fortnox-integration",
     intUpsellDesc: "Bokför kvitton automatiskt som verifikationer i Fortnox. Ingår från Pro-planen.",
@@ -2107,6 +2106,14 @@ export const strings: Record<Lang, Translations> = {
     receiptTo: "Till",
     receiptExport: "Exportera",
     receiptNone: "Inga kvitton ännu. Ladda upp ditt första ovan.",
+    btnRetry: "Försök igen",
+    receiptNoMatch: "Inga kvitton matchar dina filter.",
+    receiptClearFilters: "Rensa filter",
+    receiptLoadFailed: "Kunde inte hämta kvitton.",
+    receiptDeleteTitle: "Ta bort kvitto?",
+    invDeleteTitle: "Ta bort faktura?",
+    roleOwner: "Ägare",
+    receiptImageAlt: "Kvittobild",
     receiptLoading: "Laddar…",
     colDate: "Datum",
     colVendor: "Leverantör",
@@ -2173,7 +2180,7 @@ export const strings: Record<Lang, Translations> = {
     heroVisualItem2: "Kaffe ×2",
     heroVisualTotal: "Totalt",
     heroVisualReady: "Godkänt · redo för utbetalning",
-    heroVisualFortnox: "Redo för SIE-export",
+    heroVisualSie: "Redo för SIE-export",
     fvRecLodging: "Logi 1 natt",
     fvRecBreakfast: "Frukost",
     fvRecParking: "Parkering",
@@ -2392,6 +2399,7 @@ export const strings: Record<Lang, Translations> = {
     pricingTableOnboarding: "Anpassad onboarding",
     pricingTableSupport: "Prioriterad support",
     pricingIncludedAll: "Ingår i alla paket",
+    pricingScrollHint: "Svep i sidled för att se alla paket",
     pricingIncluded: "Ingår",
     pricingNotIncluded: "Ingår inte",
     cookieTitle: "Integritet & Cookies",
@@ -2987,14 +2995,6 @@ export const strings: Record<Lang, Translations> = {
     aiAccept: "Acceptera inbjudan",
     aiLoginFirst: "först.",
     aiTitle: "Företagsinbjudan",
-    bidStartError: "Kunde inte starta BankID.",
-    bidNetworkError: "Nätverksfel mot BankID.",
-    bidFailed: "BankID avbröts eller misslyckades.",
-    bidRetry: "Försök igen med BankID",
-    bidStart: "Logga in / skapa konto med BankID",
-    bidQrAlt: "BankID QR-kod",
-    bidOpenOnDevice: "Öppna BankID på den här enheten",
-    bidScanQr: "Skanna QR-koden med BankID-appen.",
     cbQ1: "Hur fungerar kvittoskanningen?",
     cbA1: "Fota kvittot, ladda upp en PDF eller vidarebefordra det via mejl - även från Kivra. AI:n läser leverantör, organisationsnummer, datum, totalbelopp och moms på några sekunder och föreslår BAS-konto. Den lär sig av dina rättningar.",
     cbQ2: "Vilka bokföringsprogram stöds?",
@@ -3248,6 +3248,7 @@ export const strings: Record<Lang, Translations> = {
     contact: "Contact",
     navMenu: "Menu",
     navClose: "Close",
+    navLanguage: "Language",
     navWebsite: "Go to website",
     dashboard: "Dashboard",
     logout: "Log out",
@@ -3609,7 +3610,6 @@ export const strings: Record<Lang, Translations> = {
     feat25Scans: "25 scans/mo",
     featBasicOcr: "Basic OCR",
     featCsv: "CSV export",
-    featFortnox: "Fortnox integration",
     featSwedishVat: "Swedish VAT (6/12/25%)",
     featAuditLog: "7-year audit log",
     featAllPro: "Everything in Pro",
@@ -3617,7 +3617,6 @@ export const strings: Record<Lang, Translations> = {
     featMileage: "Mileage",
     featCarbon: "Carbon footprint",
     featAllBusiness: "Everything in Business",
-    intFortnoxDesc: "Automatically post your receipts as entries in Fortnox.",
     intWaitingSync: "receipts waiting to sync.",
     intUpsellTitle: "Fortnox integration",
     intUpsellDesc: "Automatically post receipts as entries in Fortnox. Included from the Pro plan.",
@@ -3668,6 +3667,14 @@ export const strings: Record<Lang, Translations> = {
     receiptTo: "To",
     receiptExport: "Export",
     receiptNone: "No receipts yet. Upload your first above.",
+    btnRetry: "Try again",
+    receiptNoMatch: "No receipts match your filters.",
+    receiptClearFilters: "Clear filters",
+    receiptLoadFailed: "Could not load receipts.",
+    receiptDeleteTitle: "Delete receipt?",
+    invDeleteTitle: "Delete invoice?",
+    roleOwner: "Owner",
+    receiptImageAlt: "Receipt image",
     receiptLoading: "Loading…",
     colDate: "Date",
     colVendor: "Vendor",
@@ -3734,7 +3741,7 @@ export const strings: Record<Lang, Translations> = {
     heroVisualItem2: "Coffee ×2",
     heroVisualTotal: "Total",
     heroVisualReady: "Approved · ready for payout",
-    heroVisualFortnox: "Ready for SIE export",
+    heroVisualSie: "Ready for SIE export",
     fvRecLodging: "Lodging, 1 night",
     fvRecBreakfast: "Breakfast",
     fvRecParking: "Parking",
@@ -3949,6 +3956,7 @@ export const strings: Record<Lang, Translations> = {
     pricingTableOnboarding: "Custom onboarding",
     pricingTableSupport: "Priority support",
     pricingIncludedAll: "Included in every plan",
+    pricingScrollHint: "Swipe sideways to see all plans",
     pricingIncluded: "Included",
     pricingNotIncluded: "Not included",
     cookieTitle: "Privacy & Cookies",
@@ -4544,14 +4552,6 @@ export const strings: Record<Lang, Translations> = {
     aiAccept: "Accept invitation",
     aiLoginFirst: "first.",
     aiTitle: "Company invitation",
-    bidStartError: "Could not start BankID.",
-    bidNetworkError: "Network error contacting BankID.",
-    bidFailed: "BankID was cancelled or failed.",
-    bidRetry: "Try again with BankID",
-    bidStart: "Log in / create account with BankID",
-    bidQrAlt: "BankID QR code",
-    bidOpenOnDevice: "Open BankID on this device",
-    bidScanQr: "Scan the QR code with the BankID app.",
     cbQ1: "How does receipt scanning work?",
     cbA1: "Snap a photo, upload a PDF or forward it by email - Kivra included. The AI reads vendor, org number, date, total and VAT in seconds and suggests a BAS account. It learns from your corrections.",
     cbQ2: "Which accounting tools are supported?",

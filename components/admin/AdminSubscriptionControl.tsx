@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input, Select } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Props {
   userId: string;
@@ -52,7 +55,7 @@ export function AdminSubscriptionControl({ userId, current }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg bg-gray-50 p-3 text-sm dark:bg-white/[0.08]/50">
+      <div className="rounded-xl bg-gray-900/[0.04] p-3 text-sm dark:bg-white/[0.06]">
         <p>
           Nu: <strong>{current.tier}</strong> · {current.status}
           {current.source ? ` · ${current.source === "manual" ? "manuell (comp)" : current.source}` : ""}
@@ -70,27 +73,23 @@ export function AdminSubscriptionControl({ userId, current }: Props) {
             </p>
           )}
         {!current.grantedUntil && current.tier === "free" && (
-          <p className="mt-1 text-gray-500">Ingen aktiv plan.</p>
+          <p className="mt-1 text-gray-500 dark:text-gray-400">Ingen aktiv plan.</p>
         )}
       </div>
 
       <div className="flex flex-wrap items-end gap-2">
         <div>
-          <label className="mb-1 block text-xs text-gray-500">Plan</label>
-          <select value={tier} onChange={(e) => setTier(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-white/[0.10] dark:bg-[#111]">
+          <Label htmlFor="sub-tier" className="mb-1 block !text-xs !font-normal text-gray-500 dark:text-gray-400">Plan</Label>
+          <Select id="sub-tier" value={tier} onChange={(e) => setTier(e.target.value)} className="sm:!w-44">
             {TIERS.map((t) => <option key={t.v} value={t.v}>{t.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div>
-          <label className="mb-1 block text-xs text-gray-500">Provdagar</label>
-          <input type="number" min="1" value={days} disabled={unlimited}
-            onChange={(e) => setDays(e.target.value)}
-            className="w-24 rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:opacity-50 dark:border-white/[0.10] dark:bg-[#111]" />
+          <Label htmlFor="sub-days" className="mb-1 block !text-xs !font-normal text-gray-500 dark:text-gray-400">Provdagar</Label>
+          <Input id="sub-days" type="number" min="1" value={days} disabled={unlimited}
+            onChange={(e) => setDays(e.target.value)} className="!w-24" />
         </div>
-        <label className="flex items-center gap-1 pb-2 text-sm">
-          <input type="checkbox" checked={unlimited} onChange={(e) => setUnlimited(e.target.checked)} /> Obegränsat
-        </label>
+        <Checkbox checked={unlimited} onChange={(e) => setUnlimited(e.target.checked)} label="Obegränsat" />
         <Button
           disabled={busy !== null}
           onClick={() =>
@@ -104,9 +103,8 @@ export function AdminSubscriptionControl({ userId, current }: Props) {
       {current.tier === "enterprise" && (
         <div className="flex flex-wrap items-end gap-2">
           <div>
-            <label className="mb-1 block text-xs text-gray-500">Enterprise: antal användare (tomt = obegränsat)</label>
-            <input type="number" min="1" value={seats} onChange={(e) => setSeats(e.target.value)}
-              className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-white/[0.10] dark:bg-[#111]" />
+            <Label htmlFor="sub-seats" className="mb-1 block !text-xs !font-normal text-gray-500 dark:text-gray-400">Enterprise: antal användare (tomt = obegränsat)</Label>
+            <Input id="sub-seats" type="number" min="1" value={seats} onChange={(e) => setSeats(e.target.value)} className="!w-32" />
           </div>
           <Button variant="outline" disabled={busy !== null}
             onClick={() => act("set_seats", { seats: Number(seats) > 0 ? Number(seats) : null })}>
@@ -124,10 +122,11 @@ export function AdminSubscriptionControl({ userId, current }: Props) {
         <Button variant="destructive" disabled={busy !== null} onClick={() => act("revoke")}>
           Återkalla (till gratis)
         </Button>
-        {msg && <span className="self-center text-sm text-gray-500">{msg}</span>}
+        {busy && <span role="status" className="self-center text-sm text-gray-500 dark:text-gray-400">Sparar…</span>}
+        {!busy && msg && <span role="status" className="self-center text-sm text-gray-500 dark:text-gray-400">{msg}</span>}
       </div>
 
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-gray-500 dark:text-gray-400">
         "Ge prenumeration" sätter planen direkt utan betalning (comp/test). Provdagar sätter
         ett utgångsdatum då den återgår till gratis. Pausa stänger av premiumåtkomst men
         behåller planen.

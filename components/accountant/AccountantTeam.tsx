@@ -6,7 +6,10 @@ import { UserPlus, X } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import { Button } from "@/components/ui/button";
-import { fieldClass, Select } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { ErrorState } from "@/components/ui/error-state";
 import { SectionHeader } from "@/components/settings/SettingsShell";
 
 interface Member {
@@ -26,18 +29,12 @@ interface Client {
 }
 
 const CARD = "rounded-2xl panel p-5";
-const INPUT = `${fieldClass} h-11 py-2 md:h-10`;
 const SECTION_LABEL = "mb-2 text-sm font-medium text-gray-500 dark:text-gray-400";
 
 function RoleBadge({ role, t }: { role: string; t: ReturnType<typeof accountantStrings> }) {
   const label = role === "owner" ? t.teamRoleOwner : role === "admin" ? t.teamRoleAdmin : t.teamRoleMember;
-  const cls =
-    role === "owner"
-      ? "bg-nordic-600/10 text-nordic-700 dark:bg-nordic-600/20 dark:text-nordic-300"
-      : role === "admin"
-        ? "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
-        : "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300";
-  return <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${cls}`}>{label}</span>;
+  const tone = role === "owner" ? "accent" : role === "admin" ? "warning" : "neutral";
+  return <Badge tone={tone}>{label}</Badge>;
 }
 
 export function AccountantTeam() {
@@ -129,7 +126,7 @@ export function AccountantTeam() {
       {status === "loading" ? (
         <div className="skeleton h-48 rounded-2xl" aria-busy="true" aria-label={t.loading} />
       ) : status === "error" ? (
-        <p className="text-sm text-red-600">{t.error}</p>
+        <ErrorState onRetry={load} retryLabel={t.retry}>{t.error}</ErrorState>
       ) : (
         <>
           {/* Members */}
@@ -189,19 +186,19 @@ export function AccountantTeam() {
               </h2>
               <div className="grid items-end gap-3 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="inv-first" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t.teamFirstName}</label>
-                  <input id="inv-first" value={inviteFirst} onChange={(e) => setInviteFirst(e.target.value)} placeholder={t.teamFirstName} className={INPUT} />
+                  <Label htmlFor="inv-first" className="mb-1.5 block">{t.teamFirstName}</Label>
+                  <Input id="inv-first" value={inviteFirst} onChange={(e) => setInviteFirst(e.target.value)} placeholder={t.teamFirstName} />
                 </div>
                 <div>
-                  <label htmlFor="inv-last" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t.teamLastName}</label>
-                  <input id="inv-last" value={inviteLast} onChange={(e) => setInviteLast(e.target.value)} placeholder={t.teamLastName} className={INPUT} />
+                  <Label htmlFor="inv-last" className="mb-1.5 block">{t.teamLastName}</Label>
+                  <Input id="inv-last" value={inviteLast} onChange={(e) => setInviteLast(e.target.value)} placeholder={t.teamLastName} />
                 </div>
                 <div className="sm:col-span-2">
-                  <label htmlFor="inv-email" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t.teamInviteEmail}</label>
-                  <input id="inv-email" type="email" autoComplete="off" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="namn@byra.se" className={INPUT} />
+                  <Label htmlFor="inv-email" className="mb-1.5 block">{t.teamInviteEmail}</Label>
+                  <Input id="inv-email" type="email" autoComplete="off" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="namn@byra.se" />
                 </div>
                 <div>
-                  <label htmlFor="inv-role" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{t.teamInviteRole}</label>
+                  <Label htmlFor="inv-role" className="mb-1.5 block">{t.teamInviteRole}</Label>
                   <Select id="inv-role" value={inviteRole} onChange={(e) => setInviteRole(e.target.value as "admin" | "member")}>
                     <option value="member">{t.teamRoleMember}</option>
                     <option value="admin">{t.teamRoleAdmin}</option>
