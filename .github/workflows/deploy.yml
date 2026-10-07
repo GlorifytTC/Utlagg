@@ -7,8 +7,6 @@ on:
     branches: [main]
 
 env:
-  # Dummy values so `next build` can collect page data in CI.
-  # Real secrets live in Vercel/Railway, never here.
   NEXTAUTH_SECRET: ci-dummy-secret-not-used-at-runtime
   NEXTAUTH_URL: http://localhost:3000
   DATABASE_URL: postgresql://user:pass@localhost:5432/ci
@@ -51,23 +49,23 @@ jobs:
       - name: Install Vercel CLI
         run: npm i -g vercel
 
-      - name: Pull Vercel env (preview)
+      - name: Link Vercel project
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          vercel pull \
-            --yes \
-            --environment=preview \
-            --scope="$VERCEL_ORG_ID" \
-            --token="$VERCEL_TOKEN"
+          mkdir -p .vercel
+          cat > .vercel/project.json <<EOF
+          {
+            "orgId": "$VERCEL_ORG_ID",
+            "projectId": "$VERCEL_PROJECT_ID"
+          }
+          EOF
 
       - name: Build (preview)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           vercel build \
             --token="$VERCEL_TOKEN"
@@ -75,8 +73,6 @@ jobs:
       - name: Deploy (preview)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           vercel deploy \
             --prebuilt \
@@ -87,9 +83,6 @@ jobs:
     needs: deploy-preview
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-
-    # Manual approval gate: configure required reviewers on this
-    # Environment under Settings -> Environments -> production.
     environment: production
 
     steps:
@@ -102,23 +95,23 @@ jobs:
       - name: Install Vercel CLI
         run: npm i -g vercel
 
-      - name: Pull Vercel env (production)
+      - name: Link Vercel project
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          vercel pull \
-            --yes \
-            --environment=production \
-            --scope="$VERCEL_ORG_ID" \
-            --token="$VERCEL_TOKEN"
+          mkdir -p .vercel
+          cat > .vercel/project.json <<EOF
+          {
+            "orgId": "$VERCEL_ORG_ID",
+            "projectId": "$VERCEL_PROJECT_ID"
+          }
+          EOF
 
       - name: Build (production)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           vercel build \
             --prod \
@@ -127,8 +120,6 @@ jobs:
       - name: Deploy (production)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           vercel deploy \
             --prebuilt \
