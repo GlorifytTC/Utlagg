@@ -289,6 +289,7 @@ export interface Translations {
   audienceFree: string;
   trustAudit: string;
   trustEu: string;
+  trustVat: string;
   fbKicker: string;
   fbTitle: string;
   fbSubtitle: string;
@@ -2324,6 +2325,7 @@ export const strings: Record<Lang, Translations> = {
     audienceFree: "Gratis",
     trustAudit: "7-årig revisionslogg",
     trustEu: "Primär lagring i Sverige och EU",
+    trustVat: "Svensk moms och BAS-konto på varje kvitto",
     fbKicker: "För redovisningsbyråer",
     fbTitle: "Alla klienters kvitton. En lista att beta av.",
     fbSubtitle: "Kvittino samlar klienternas utlägg i en arbetsyta och visar exakt vad som behöver granskas. Byråkontot är gratis. Klienterna betalar sitt eget abonnemang.",
@@ -3887,6 +3889,7 @@ export const strings: Record<Lang, Translations> = {
     audienceFree: "Free",
     trustAudit: "7-year audit log",
     trustEu: "Stored primarily in Sweden and the EU",
+    trustVat: "Swedish VAT and BAS account on every receipt",
     fbKicker: "For accounting firms",
     fbTitle: "Every client's receipts. One to-do list.",
     fbSubtitle: "Kvittino gathers your clients' expenses in one workspace and shows exactly what needs review. The firm account is free. Clients pay for their own plan.",

@@ -73,9 +73,9 @@ export function ProfileCard({ logoEndpoint, onSaved }: { logoEndpoint: string; o
       </CardHeader>
       <CardContent className="space-y-5">
         {logo !== undefined ? (
-          <LogoUploader value={logo} label={t.setProfilePicture} onSave={saveLogo} />
+          <LogoUploader value={logo} label={t.setProfilePicture} avatar onSave={saveLogo} />
         ) : (
-          <div className="skeleton h-16 w-16 rounded-lg" aria-hidden />
+          <div className="skeleton h-16 w-16 rounded-full" aria-hidden />
         )}
         <form onSubmit={saveName} className="space-y-4">
           <div className="space-y-2">

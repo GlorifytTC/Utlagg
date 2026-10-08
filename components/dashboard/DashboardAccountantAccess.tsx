@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users } from "lucide-react";
+import { ArrowUpRight, Users } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface AccountantRow {
@@ -41,26 +41,22 @@ export function DashboardAccountantAccess() {
   return (
     <Link
       href="/dashboard/settings/accountants"
-      className="group flex items-center justify-between rounded-2xl border border-gray-900/[0.07] bg-[#F5F4F0] px-6 py-4 transition-colors hover:border-nordic-600/30 hover:bg-nordic-50/40 dark:border-white/[0.08] dark:bg-[#0D0D0D] dark:hover:bg-white/[0.04]"
+      className="panel group flex items-center gap-4 rounded-2xl p-5 transition duration-300 ease-premium hover:border-nordic-600/30 active:scale-[0.99]"
     >
-      <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-nordic-600/10 text-nordic-700 dark:bg-nordic-400/10 dark:text-nordic-300">
-          <Users className="h-5 w-5" />
-        </span>
-        <div>
-          <p className="text-sm font-medium text-gray-900 dark:text-white">{t.caaTitle}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {rows.length === 0
-              ? t.daaNone
-              : rows.length === 1
-                ? t.daaOne.replace("{name}", rows[0].name ?? rows[0].email)
-                : t.daaMany.replace("{n}", String(rows.length))}
-          </p>
-        </div>
-      </div>
-      <span className="text-sm font-medium text-nordic-700 transition-transform group-hover:translate-x-0.5 dark:text-nordic-300">
-        {t.daaManage}
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-nordic-600/10 text-nordic-700 dark:text-nordic-300">
+        <Users className="h-[18px] w-[18px]" strokeWidth={1.75} />
       </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold text-gray-900 dark:text-white">{t.caaTitle}</span>
+        <span className="mt-0.5 block text-sm text-gray-500 dark:text-gray-400">
+          {rows.length === 0
+            ? t.daaNone
+            : rows.length === 1
+              ? t.daaOne.replace("{name}", rows[0].name ?? rows[0].email)
+              : t.daaMany.replace("{n}", String(rows.length))}
+        </span>
+      </span>
+      <ArrowUpRight className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400 transition duration-300 ease-premium group-hover:-translate-y-px group-hover:translate-x-0.5 group-hover:text-nordic-600" strokeWidth={1.75} />
     </Link>
   );
 }

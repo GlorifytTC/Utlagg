@@ -103,7 +103,7 @@ function FirmSidebar({ firm }: { firm: Firm }) {
             <img
               src={firm.logoUrl}
               alt={firm.name}
-              className="h-12 w-12 shrink-0 rounded-xl border border-gray-900/[0.07] object-contain dark:border-white/[0.08]"
+              className="h-12 w-12 shrink-0 rounded-xl border border-gray-900/[0.07] bg-white object-contain p-1 dark:border-white/[0.08]"
             />
           ) : (
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-nordic-600/10 text-lg font-bold text-nordic-600">
@@ -350,7 +350,7 @@ export function AccountantProfile({ accountantId, viewerAccountantId, backHref, 
           <img
             src={heroLogo}
             alt={heroAlt}
-            className="h-20 w-20 shrink-0 rounded-xl border border-gray-900/[0.07] object-contain dark:border-white/[0.08]"
+            className="h-20 w-20 shrink-0 rounded-xl border border-gray-900/[0.07] bg-white object-contain p-1.5 dark:border-white/[0.08]"
           />
         ) : (
           <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-nordic-600/10 text-2xl font-bold text-nordic-600">

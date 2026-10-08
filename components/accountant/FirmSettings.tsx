@@ -97,7 +97,7 @@ export function FirmSettings() {
             <LogoUploader value={firm.logoUrl} label={at.menuFirmLogo} onSave={(logoUrl) => patch({ logoUrl })} />
           ) : firm.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={firm.logoUrl} alt={firm.name} className="h-16 w-16 rounded-xl object-contain" />
+            <img src={firm.logoUrl} alt={firm.name} className="h-16 w-16 rounded-lg border border-gray-200 bg-gray-50 object-contain p-1 dark:border-white/10 dark:bg-white/[0.03]" />
           ) : null}
         </CardContent>
       </Card>

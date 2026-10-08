@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, ScrollText, Server } from "lucide-react";
+import { ArrowUpRight, Receipt, ScrollText, Server } from "lucide-react";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
@@ -25,6 +25,7 @@ function HomeContent() {
   const trust = [
     { icon: ScrollText, label: t.trustAudit },
     { icon: Server, label: t.trustEu },
+    { icon: Receipt, label: t.trustVat },
   ];
 
   // Businesses and accounting firms are both buyers: asymmetric 7/5 split.

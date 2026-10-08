@@ -147,6 +147,7 @@ export default function CompanyPage() {
 
   return (
     <div className="space-y-6">
+      <SectionHeader title={t.navCompany} />
       <CompanyLogoCard name={company.name} isOwner={role === "owner"} />
 
       {canManage && (
@@ -198,11 +199,15 @@ export default function CompanyPage() {
               </li>
             ))}
           </ul>
+        </CardContent>
+      </Card>
+      )}
 
-          {/* Add a colleague: name + email + role, right under the member list. */}
-          <div className="mt-4 border-t border-gray-900/[0.06] pt-5 dark:border-white/[0.07]">
-            <h3 className="font-medium">{t.btnInviteColleague}</h3>
-            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">{t.coInviteDesc}</p>
+      {canManage && (
+      <Card>
+        <CardHeader><CardTitle as="h2">{t.btnInviteColleague}</CardTitle><CardDescription>{t.coInviteDesc}</CardDescription></CardHeader>
+        <CardContent>
+          <div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2"><Label htmlFor="ci-fldFirstName">{t.fldFirstName}</Label>
                 <Input id="ci-fldFirstName" value={invite.firstName} onChange={(e) => setInvite({ ...invite, firstName: e.target.value })} placeholder={t.fldFirstName} /></div>

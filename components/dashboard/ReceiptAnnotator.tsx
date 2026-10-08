@@ -125,7 +125,7 @@ export function ReceiptAnnotator({
   const fit = () => setZoom(1);
 
   return (
-    <div className="rounded-2xl border border-gray-900/[0.07] bg-[#F5F4F0]/60 p-4 backdrop-blur-sm transition-shadow hover:shadow-sm dark:border-white/[0.07] dark:bg-[#0D0D0D]">
+    <div className="panel rounded-2xl p-4">
       <h3 className="font-display text-base font-semibold text-gray-900 dark:text-white">{t.annTitle}</h3>
       <p className="mt-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{t.annDesc}</p>
       

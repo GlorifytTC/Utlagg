@@ -15,10 +15,13 @@ export function LogoUploader({
   value,
   onSave,
   label: labelProp,
+  avatar = false,
 }: {
   value: string | null;
   onSave: (dataUrl: string | null) => Promise<void> | void;
   label?: string;
+  /** Profile picture: centre-cropped to a square and previewed in a circle. */
+  avatar?: boolean;
 }) {
   const { t } = useLanguage();
   const label = labelProp ?? t.logoDefaultLabel;
@@ -33,7 +36,7 @@ export function LogoUploader({
     }
     setBusy(true);
     try {
-      const dataUrl = await downscale(file, 256);
+      const dataUrl = await downscale(file, 256, avatar);
       setPreview(dataUrl);
       await onSave(dataUrl);
       toast.success(t.logoSaved);
@@ -57,10 +60,10 @@ export function LogoUploader({
 
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-white/[0.03]">
+      <div className={`flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-white/[0.03] ${avatar ? "rounded-full" : "rounded-lg"}`}>
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt={label} className="h-full w-full object-contain" />
+          <img src={preview} alt={label} className={avatar ? "h-full w-full object-cover" : "h-full w-full object-contain p-1"} />
         ) : (
           <span className="text-xs text-gray-500 dark:text-gray-400">{t.logoNone}</span>
         )}
@@ -95,7 +98,7 @@ export function LogoUploader({
 }
 
 /** Downscale an image to a max dimension and return a compressed PNG data URL. */
-function downscale(file: File, maxDim: number): Promise<string> {
+function downscale(file: File, maxDim: number, square = false): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -106,15 +109,20 @@ function downscale(file: File, maxDim: number): Promise<string> {
       }
       const img = new Image();
       img.onload = () => {
-        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-        const w = Math.round(img.width * scale);
-        const h = Math.round(img.height * scale);
         const canvas = document.createElement("canvas");
-        canvas.width = w;
-        canvas.height = h;
         const ctx = canvas.getContext("2d");
         if (!ctx) return reject(new Error("no ctx"));
-        ctx.drawImage(img, 0, 0, w, h);
+        if (square) {
+          const side = Math.min(img.width, img.height);
+          const out = Math.min(maxDim, side);
+          canvas.width = canvas.height = out;
+          ctx.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, out, out);
+        } else {
+          const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
         resolve(canvas.toDataURL("image/png"));
       };
       img.onerror = reject;

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
 import { LogoUploader } from "@/components/dashboard/LogoUploader";
 import { SectionHeader } from "@/components/settings/SettingsShell";
 import { useLanguage } from "@/context/LanguageContext";
@@ -31,17 +32,19 @@ export function CompanyLogoCard({ name, isOwner }: { name: string; isOwner: bool
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+    <Card>
+      <CardContent className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-4 sm:pt-6">
       {logo !== undefined &&
         (isOwner ? (
           <LogoUploader value={logo} label={t.discCompanyLogo} onSave={save} />
         ) : (
           logo && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={logo} alt={name} className="h-16 w-16 rounded-lg border border-gray-200 object-contain dark:border-white/10" />
+            <img src={logo} alt={name} className="h-16 w-16 rounded-lg border border-gray-200 bg-gray-50 object-contain p-1 dark:border-white/10" />
           )
         ))}
       <SectionHeader title={name} />
-    </div>
+      </CardContent>
+    </Card>
   );
 }

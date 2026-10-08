@@ -71,7 +71,7 @@ function Avatar({
       <img
         src={displayLogoUrl}
         alt={displayAlt}
-        className={`h-14 w-14 shrink-0 rounded-full object-cover ${ring}`}
+        className={`h-14 w-14 shrink-0 rounded-full ${firmLogoUrl ? "border border-gray-900/[0.07] bg-white object-contain p-2 dark:border-white/10" : "object-cover"} ${ring}`}
       />
     );
   }

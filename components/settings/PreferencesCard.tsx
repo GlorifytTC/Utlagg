@@ -6,7 +6,7 @@ import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 import type { Lang } from "@/lib/translations";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 function Segmented<T extends string>({
   label,
@@ -57,10 +57,7 @@ export function PreferencesCard() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle as="h2">{t.setPreferences}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-5">
+      <CardContent className="space-y-5 pt-4 sm:pt-6">
         <div className="space-y-2">
           <p className="text-sm font-medium">{t.prLanguageTitle}</p>
           <Segmented<Lang>
