@@ -1253,6 +1253,11 @@ export const receiptTrainingData = pgTable(
     // True if the user changed anything the AI proposed - the most
     // valuable training signal (these are the AI's mistakes).
     wasCorrected: boolean("was_corrected").notNull().default(false),
+    // The own model's read of the same image (free local pipeline: Tesseract
+    // + parser + learned vendors), same shape as aiResult, plus Tesseract's
+    // mean confidence. Scored against the confirmed label next to Gemini.
+    localResult: jsonb("local_result"),
+    localConfidence: real("local_confidence"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => ({

@@ -9,6 +9,7 @@ import { suggestBasCode } from "@/lib/auto-categorize";
 import { resolveVatRate, vatFromGross, type VatRate } from "@/lib/vat";
 import { recognizeReceiptLocally } from "@/lib/ocr-client";
 import { parseReceiptText } from "@/lib/ocr";
+import { readWithOwnModel, postShadowRead, toOwnModelResult } from "@/lib/own-model-client";
 import { useLanguage } from "@/context/LanguageContext";
 import { ReceiptAnnotator } from "@/components/dashboard/ReceiptAnnotator";
 import { cn } from "@/lib/utils";
@@ -106,6 +107,9 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   // ID of the training-data row created when Gemini read this receipt, so
   // the user's final confirmed values can be attached on save (the label).
   const [trainingId, setTrainingId] = useState<string | null>(null);
+  // When only the own model read the receipt, its training row is created in
+  // the background; save() awaits this so the label is never dropped.
+  const pendingTrainingRef = useRef<Promise<string | null> | null>(null);
 
   const applyExtractedData = useCallback(
     (
@@ -168,6 +172,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       setScanStatus(t.rcScanningLocally);
       setOcrSnapshot(null);
       setTrainingId(null);
+      pendingTrainingRef.current = null;
       try {
         const base64 = await compressImage(file);
 
@@ -202,6 +207,17 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 base64,
               );
               setStage("review");
+              // Shadow read: run the own model on the same image in the
+              // background and store its answer next to Gemini's, so the
+              // admin training page can score both against the label.
+              const gid: string | null = ai.trainingId ?? null;
+              if (gid) {
+                void readWithOwnModel(base64)
+                  .then((own) =>
+                    own ? postShadowRead({ trainingId: gid, localResult: own.result, localConfidence: own.confidence }) : null,
+                  )
+                  .catch(() => null);
+              }
               return;
             }
           }
@@ -276,6 +292,19 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             // guess, so it takes precedence.
             setDraft((d) => ({ ...d, basCode: vendorOverride!.basCode, basCodeAutoDetected: true }));
           }
+          // Gemini didn't read this one: still capture it as training data
+          // (own model's answer now, the user's confirmed values on save).
+          pendingTrainingRef.current = postShadowRead({
+            image: base64,
+            localResult: toOwnModelResult({
+              ...localParsed,
+              vendorName: vendorOverride?.vendorName ?? localParsed.vendorName,
+            }),
+            localConfidence: localConfidence,
+          }).then((id) => {
+            if (id) setTrainingId(id);
+            return id;
+          });
           const looksGood =
             localConfidence >= 60 && (localParsed.totalAmount != null || localParsed.vendorName != null);
           if (!looksGood && !vendorOverride) {
@@ -405,7 +434,8 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       // Attach the final confirmed values as the training label for the row
       // Gemini created when it read this receipt. wasCorrected flags whether
       // the user changed what the AI proposed - the highest-value examples.
-      if (trainingId) {
+      const labelId = trainingId ?? (pendingTrainingRef.current ? await pendingTrainingRef.current : null);
+      if (labelId) {
         const wasCorrected =
           !!ocrSnapshot &&
           (draft.vendorName !== (ocrSnapshot.vendorName ?? "") ||
@@ -415,7 +445,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            trainingId,
+            trainingId: labelId,
             confirmedVendor: draft.vendorName || undefined,
             confirmedDate: draft.date || undefined,
             confirmedTotal: draft.totalAmount !== "" ? Number(draft.totalAmount) : undefined,

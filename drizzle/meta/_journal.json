@@ -204,6 +204,13 @@
       "when": 1791429013668,
       "tag": "0029_training_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1791435745231,
+      "tag": "0030_own_model_shadow",
+      "breakpoints": true
     }
   ]
 }
