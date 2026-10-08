@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Users, Banknote, Activity, ShieldCheck, Flag, BadgeCheck, ArrowLeft, X,
+  LayoutDashboard, Users, Building2, Banknote, BrainCircuit, Activity, ShieldCheck, Flag, BadgeCheck, ArrowLeft, X,
   type LucideIcon,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -15,15 +15,19 @@ import { buttonClass } from "@/components/ui/button";
 const nav: { name: string; href: string; icon: LucideIcon }[] = [
   { name: "Översikt", href: "/admin", icon: LayoutDashboard },
   { name: "Användare", href: "/admin/users", icon: Users },
+  { name: "Företag", href: "/admin/companies", icon: Building2 },
   { name: "Intäkter", href: "/admin/revenue", icon: Banknote },
+  { name: "Modellträning", href: "/admin/training", icon: BrainCircuit },
   { name: "Systemhälsa", href: "/admin/health", icon: Activity },
   { name: "Efterlevnad", href: "/admin/compliance", icon: ShieldCheck },
   { name: "Chatrapporter", href: "/admin/chat-reports", icon: Flag },
   { name: "Verifieringar", href: "/admin/verifications", icon: BadgeCheck },
 ];
 
-// Bottom bar has 5 slots; the drawer lists all seven.
-const bottomNav = [nav[0], nav[1], nav[2], nav[5], nav[6]];
+// Bottom bar has 5 slots; the drawer lists everything. Picked by href so
+// adding nav items never silently shifts the bottom bar.
+const BOTTOM = ["/admin", "/admin/users", "/admin/revenue", "/admin/chat-reports", "/admin/verifications"];
+const bottomNav = BOTTOM.map((h) => nav.find((n) => n.href === h)!);
 
 const isActive = (pathname: string, href: string) =>
   href === "/admin" ? pathname === href : pathname.startsWith(href);

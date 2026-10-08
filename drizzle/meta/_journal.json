@@ -197,6 +197,13 @@
       "when": 1796000600000,
       "tag": "0028_session_version_member_unique",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1791429013668,
+      "tag": "0029_training_tables",
+      "breakpoints": true
     }
   ]
 }
