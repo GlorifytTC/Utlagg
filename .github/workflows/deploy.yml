@@ -35,6 +35,14 @@ jobs:
     needs: verify
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    # These two tell the Vercel CLI WHICH project to link in CI, so
+    # `vercel pull` can fetch project settings non-interactively. Without
+    # them `vercel build` fails with "No Project Settings found locally".
+    # Add them as repository secrets (see .vercel/project.json after
+    # `vercel link`, or the Vercel dashboard).
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -57,6 +65,9 @@ jobs:
     # Manual approval gate: configure required reviewers on this
     # Environment under Settings -> Environments -> production.
     environment: production
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
