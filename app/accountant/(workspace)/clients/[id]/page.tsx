@@ -11,7 +11,7 @@ export default function AccountantClientPage({
   searchParams: { tab?: string };
 }) {
   return (
-    <div className="max-w-6xl">
+    <div className="mx-auto max-w-7xl">
       <AccountantClientWorkspace companyId={params.id} initialTab={searchParams.tab} />
     </div>
   );

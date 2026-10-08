@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function ChatPage({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   return (
-    <div className="max-w-6xl">
+    <div className="mx-auto max-w-7xl">
       <AccountantChatPage companyId={params.id} currentUserId={session?.user?.id ?? ""} />
     </div>
   );

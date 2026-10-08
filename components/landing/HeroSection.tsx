@@ -13,7 +13,7 @@ export function HeroSection() {
 
   return (
     <section className="relative">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-16 pt-12 lg:grid-cols-[1fr_1.05fr] md:pb-24 md:pt-20">
+      <div className="mx-auto grid max-w-6xl 2xl:max-w-7xl items-center gap-12 px-6 pb-16 pt-12 lg:grid-cols-[1fr_1.05fr] md:pb-24 md:pt-20">
         <div>
           <motion.p
             {...enter(0, rm)}

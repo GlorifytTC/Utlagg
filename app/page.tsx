@@ -58,7 +58,7 @@ function HomeContent() {
         <HeroSection />
 
         {/* Trust row: what a finance buyer checks first */}
-        <section className="mx-auto max-w-6xl px-6">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6">
           <ul className="grid gap-6 border-y hairline py-8 sm:grid-cols-3">
             {trust.map(({ icon: Icon, label }, i) => (
               <motion.li
@@ -74,7 +74,7 @@ function HomeContent() {
         </section>
 
         {/* Audience split */}
-        <section className="mx-auto grid max-w-6xl gap-5 px-6 py-24 md:grid-cols-12 md:py-32">
+        <section className="mx-auto grid max-w-6xl 2xl:max-w-7xl gap-5 px-6 py-24 md:grid-cols-12 md:py-32">
           {audiences.map((a, i) => (
             <motion.div key={a.href} {...reveal(i, rm)} className={cn("bezel", a.span)}>
               <Link
@@ -109,7 +109,7 @@ function HomeContent() {
         <Testimonials audience="company" />
 
         {/* Feature teaser: 3-cell bento, one tall cell with a live visual */}
-        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-24 md:py-32">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <h2 className="max-w-xl font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
               {t.featuresHeadline}

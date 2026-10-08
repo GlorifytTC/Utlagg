@@ -63,7 +63,7 @@ function ForAccountantsContent() {
 
       <main>
         {/* Hero */}
-        <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-12 md:grid-cols-2 md:pb-28 md:pt-20">
+        <section className="mx-auto grid max-w-6xl 2xl:max-w-7xl items-center gap-12 px-6 pb-20 pt-12 md:grid-cols-2 md:pb-28 md:pt-20">
           <div>
             <motion.p {...enter(0, rm)} className="text-sm font-medium text-nordic-700">
               {t.fbKicker}
@@ -100,7 +100,7 @@ function ForAccountantsContent() {
         </section>
 
         {/* What the queue catches: pinned heading, list scrolls past */}
-        <section className="mx-auto grid max-w-6xl gap-12 px-6 py-24 md:grid-cols-[1fr_1.3fr] md:gap-20 md:py-32">
+        <section className="mx-auto grid max-w-6xl 2xl:max-w-7xl gap-12 px-6 py-24 md:grid-cols-[1fr_1.3fr] md:gap-20 md:py-32">
           <div className="md:sticky md:top-32 md:self-start">
             <h2 className="font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
               {t.fbQueueTitle}
@@ -123,7 +123,7 @@ function ForAccountantsContent() {
         </section>
 
         {/* Workspace */}
-        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-24 md:py-32">
           <h2 className="max-w-xl font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.fbWorkTitle}
           </h2>
@@ -146,7 +146,7 @@ function ForAccountantsContent() {
         <Testimonials audience="firm" />
 
         {/* Getting clients: plain columns, no cards */}
-        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-24 md:py-32">
           <h2 className="max-w-xl font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.fbGrowTitle}
           </h2>

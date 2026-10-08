@@ -14,7 +14,7 @@ export default async function MarketplacePage() {
   const t = getT();
 
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       <PageHeader title={t.navMarketplace} subtitle={t.mktPageDesc} />
       <AccountantMarketplace />
     </div>

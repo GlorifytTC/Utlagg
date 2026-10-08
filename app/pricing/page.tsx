@@ -115,7 +115,7 @@ function PricingPageContent() {
 
       <main>
         {/* Hero */}
-        <section className="mx-auto max-w-6xl px-6 pb-16 pt-12 md:pt-20">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 pb-16 pt-12 md:pt-20">
           <motion.h1
             {...enter(0, rm)}
             className="max-w-3xl font-display text-4xl sm:text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl break-words hyphens-auto"
@@ -131,7 +131,7 @@ function PricingPageContent() {
         </section>
 
         {/* Plan cards: four self-serve plans in an even grid, Enterprise as a strip below */}
-        <section className="mx-auto max-w-6xl px-6 pb-24 md:pb-32">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 pb-24 md:pb-32">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {selfServe.map((plan, i) => (
               <motion.div key={plan.tier} {...reveal(i, rm)} className="bezel">
@@ -202,7 +202,7 @@ function PricingPageContent() {
         </section>
 
         {/* Feature comparison: shared features as chips, only differences in the matrix */}
-        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-24 md:py-32">
           <h2 className="max-w-xl font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.pricingComparisonTitle}
           </h2>
@@ -274,7 +274,7 @@ function PricingPageContent() {
         </section>
 
         {/* FAQ: native disclosure */}
-        <section className="mx-auto grid max-w-6xl gap-12 px-6 py-24 md:grid-cols-[1fr_1.6fr] md:gap-20 md:py-32">
+        <section className="mx-auto grid max-w-6xl 2xl:max-w-7xl gap-12 px-6 py-24 md:grid-cols-[1fr_1.6fr] md:gap-20 md:py-32">
           <h2 className="font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.pricingFaqTitle}
           </h2>
@@ -299,7 +299,7 @@ function PricingPageContent() {
         </section>
 
         {/* Bottom CTA with the trial visual */}
-        <section className="mx-auto max-w-6xl px-6 pb-24 md:pb-32">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 pb-24 md:pb-32">
           <motion.div {...reveal(0, rm)} className="bezel">
             <div className="bezel-core light-surface grid items-center gap-12 overflow-hidden bg-[radial-gradient(120%_100%_at_100%_100%,rgb(var(--accent-tint))_0%,#fffdf8_60%)] p-6 sm:p-8 md:grid-cols-2 md:p-14">
               <div>

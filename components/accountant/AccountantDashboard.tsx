@@ -30,7 +30,7 @@ export function AccountantDashboard() {
   const t = accountantStrings(lang);
 
   return (
-    <div className="max-w-6xl animate-fade-up space-y-10">
+    <div className="mx-auto max-w-7xl animate-fade-up space-y-10">
       <PageHeader title={t.overviewTitle} subtitle={t.overviewSubtitle} />
 
       <AccountantWorkQueue />

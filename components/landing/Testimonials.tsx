@@ -71,7 +71,7 @@ export function Testimonials({ audience }: { audience: "company" | "firm" }) {
   if (process.env.NODE_ENV === "production") return null;
 
   return (
-    <section className="mx-auto max-w-6xl px-6 py-20">
+    <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-20">
       <p className="inline-block rounded-full border border-dashed border-ink/30 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-ink/50">
         {lang === "en" ? "Placeholder quotes · hidden in production" : "Platshållare · visas inte i produktion"}
       </p>

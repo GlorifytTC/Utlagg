@@ -24,7 +24,7 @@ export default async function ReceiptsPage() {
   if (!user) redirect("/login");
 
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       <PageHeader title={t.navReceipts} subtitle={t.receiptsSubtitle} />
       <ReceiptsManager
         used={user.scansUsedThisMonth}

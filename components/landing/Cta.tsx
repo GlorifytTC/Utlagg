@@ -74,7 +74,7 @@ export function CtaPanel({
 }) {
   const rm = useReducedMotion();
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-24 md:py-32">
       <motion.div
         {...reveal(0, rm)}
         className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-14 text-paper sm:px-8 md:px-16 md:py-20"

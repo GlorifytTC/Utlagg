@@ -19,7 +19,7 @@ export default function AccountantWorkQueuePage({ searchParams }: { searchParams
     reviewed: [range === "week" ? t.rcTitleReviewedWeek : t.rcTitleReviewedMonth, t.rcSubReviewed],
   }[filter];
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       <PageHeader title={title} subtitle={subtitle} />
       <AccountantReceipts filter={filter} range={range} />
     </div>

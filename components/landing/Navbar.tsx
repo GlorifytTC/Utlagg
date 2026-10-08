@@ -54,7 +54,7 @@ export function Navbar() {
       {/* Floating island: the sticky wrapper keeps its space in the flow but lets
           clicks through its transparent margins. */}
       <header className="pointer-events-none sticky top-0 z-50 px-4 pt-4">
-        <div className="pointer-events-auto mx-auto flex h-14 max-w-6xl items-center justify-between rounded-full border border-ink/[0.08] bg-paper/75 py-2 pl-5 pr-2 shadow-[0_8px_30px_-12px_rgba(60,40,25,0.18),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl">
+        <div className="pointer-events-auto mx-auto flex h-14 max-w-6xl 2xl:max-w-7xl items-center justify-between rounded-full border border-ink/[0.08] bg-paper/75 py-2 pl-5 pr-2 shadow-[0_8px_30px_-12px_rgba(60,40,25,0.18),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl">
           <Link href="/" onClick={() => setOpen(false)} className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
             <Logo size={26} wordmarkClassName="text-lg" adaptive={false} />
           </Link>

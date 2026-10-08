@@ -15,7 +15,7 @@ export default async function AccountantMarketplacePage() {
   const t = accountantStrings(getServerLang());
 
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       <PageHeader title={t.marketplacePageTitle} subtitle={t.marketplacePageDesc} />
       <AccountantMarketplace
         viewerAccountantId={session.user.id}

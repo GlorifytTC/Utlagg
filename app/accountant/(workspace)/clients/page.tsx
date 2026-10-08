@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default function AccountantClientsPage() {
   const t = accountantStrings(getServerLang());
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       <PageHeader title={t.clientsTitle} />
       <AccountantClientsList />
     </div>

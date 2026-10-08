@@ -59,7 +59,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
     .limit(15);
 
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       <PageHeader
         back={{ href: "/admin/users", label: "Användare" }}
         title={<span className="break-all">{user.email}</span>}

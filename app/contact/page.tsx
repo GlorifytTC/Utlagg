@@ -47,7 +47,7 @@ function ContactContent() {
     <div className="light-surface relative overflow-x-clip">
       <AmbientBackground />
       <Navbar />
-      <main className="mx-auto grid max-w-6xl items-start gap-12 px-6 pb-24 pt-12 md:grid-cols-[1fr_1.15fr] md:gap-20 md:pb-32 md:pt-20">
+      <main className="mx-auto grid max-w-6xl 2xl:max-w-7xl items-start gap-12 px-6 pb-24 pt-12 md:grid-cols-[1fr_1.15fr] md:gap-20 md:pb-32 md:pt-20">
         <div>
           <p className="text-sm font-medium text-nordic-700">{t.contactKicker}</p>
           <h1 className="mt-5 font-display text-4xl sm:text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl break-words hyphens-auto">

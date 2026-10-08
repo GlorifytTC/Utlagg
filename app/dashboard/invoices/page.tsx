@@ -73,7 +73,7 @@ export default async function InvoicesPage() {
   const summary = summarizeInvoiceIncome(rows as unknown as InvoiceLike[]);
 
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       <PageHeader
         title={t.navInvoices}
         actions={<Link href="/dashboard/invoices/new" className={buttonClass()}>{t.btnNewInvoice}</Link>}

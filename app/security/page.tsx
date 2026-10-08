@@ -19,7 +19,7 @@ export default function SecurityPage() {
     <div className="light-surface relative overflow-x-clip text-ink">
       <AmbientBackground />
       <Navbar />
-      <main className="mx-auto max-w-6xl px-6 pb-24 pt-12 md:pb-32 md:pt-20">
+      <main className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 pb-24 pt-12 md:pb-32 md:pt-20">
         <h1 className="max-w-3xl font-display text-4xl sm:text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl break-words hyphens-auto">
           {t.secTitle}
         </h1>

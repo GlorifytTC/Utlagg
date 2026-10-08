@@ -27,7 +27,7 @@ export function StepsSticky({
   const fill = useSpring(scrollYProgress, { stiffness: 120, damping: 24 });
 
   return (
-    <section id={id} className="scroll-mt-24 mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section id={id} className="scroll-mt-24 mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-24 md:py-32">
       <div className="grid gap-12 md:grid-cols-[1fr_1.25fr] md:gap-20">
         <div className="md:sticky md:top-32 md:self-start">
           <h2 className="max-w-md font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">

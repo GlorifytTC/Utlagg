@@ -38,7 +38,7 @@ export function Footer() {
 
   return (
     <footer className="border-t hairline">
-      <div className="mx-auto max-w-6xl px-6 pb-12 pt-20">
+      <div className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 pb-12 pt-20">
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-[2fr_1fr_1fr_1fr]">
           <div className="col-span-2 md:col-span-1">
             <p className="font-display text-2xl font-semibold tracking-tight">{t.footerTitle}</p>

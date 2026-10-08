@@ -31,7 +31,7 @@ function AboutContent() {
       <Navbar />
       <main>
         {/* Hero */}
-        <section className="mx-auto max-w-6xl px-6 pb-20 pt-12 md:pb-28 md:pt-20">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 pb-20 pt-12 md:pb-28 md:pt-20">
           <motion.p {...enter(0, rm)} className="text-sm font-medium text-nordic-700">
             {t.aboutKicker}
           </motion.p>
@@ -50,7 +50,7 @@ function AboutContent() {
         </section>
 
         {/* Story */}
-        <section className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-16 md:py-24">
           <motion.div
             {...reveal(0, rm)}
             className="grid gap-10 border-t-2 border-ink pt-10 md:grid-cols-[1fr_1.4fr] md:gap-20"
@@ -63,7 +63,7 @@ function AboutContent() {
         </section>
 
         {/* Stats: large type on a tinted band, no cards */}
-        <section className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-16 md:py-24">
           <h2 className="sr-only">{t.aboutStatsTitle}</h2>
           <div className="light-surface grid divide-y divide-ink/10 rounded-[2rem] bg-nordic-50 px-8 md:grid-cols-3 md:divide-x md:divide-y-0 md:px-0 md:py-14">
             {stats.map((s, i) => (
@@ -78,7 +78,7 @@ function AboutContent() {
         </section>
 
         {/* Values: asymmetric trio */}
-        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-24 md:py-32">
           <h2 className="max-w-md font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.aboutValuesTitle}
           </h2>

@@ -82,7 +82,7 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="max-w-6xl animate-fade-up space-y-6">
+    <div className="mx-auto max-w-7xl animate-fade-up space-y-6">
       {/* Premium ended notice */}
       {premiumEnded && (
         <div className="flex flex-col gap-4 rounded-2xl border border-amber-300/40 bg-amber-50/80 p-5 sm:flex-row sm:items-center sm:justify-between dark:border-amber-500/15 dark:bg-amber-950/20">

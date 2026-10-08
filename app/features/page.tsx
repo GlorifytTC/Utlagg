@@ -84,7 +84,7 @@ function FeaturesPageContent() {
 
       <main>
         {/* Hero */}
-        <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-12 md:grid-cols-[1fr_1fr] md:pb-28 md:pt-20">
+        <section className="mx-auto grid max-w-6xl 2xl:max-w-7xl items-center gap-12 px-6 pb-20 pt-12 md:grid-cols-[1fr_1fr] md:pb-28 md:pt-20">
           <div>
             <motion.h1
               {...enter(0, rm)}
@@ -115,7 +115,7 @@ function FeaturesPageContent() {
         </section>
 
         {/* The receipt's life in three stages, read left to right */}
-        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-24 md:py-32">
           <div className="grid gap-14 md:grid-cols-3 md:gap-10">
             {GROUPS.map((g, gi) => (
               <motion.div key={g.label} {...reveal(gi, rm)} className="border-t-2 border-ink pt-6">
@@ -134,7 +134,7 @@ function FeaturesPageContent() {
         </section>
 
         {/* Comparison: two panels instead of a hairline table */}
-        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <section className="mx-auto max-w-6xl 2xl:max-w-7xl px-6 py-24 md:py-32">
           <h2 className="max-w-xl font-display text-3xl sm:text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             {t.featuresCompareTitle}
           </h2>
