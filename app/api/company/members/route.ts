@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, gt, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { companyMembers, users } from "@/db/schema";
+import { companyMembers, companyInvites, users } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { getUserCompany, canManageCompany } from "@/lib/company";
 
@@ -34,7 +34,28 @@ export async function GET() {
     .from(companyMembers)
     .leftJoin(users, eq(users.id, companyMembers.userId))
     .where(eq(companyMembers.companyId, membership.companyId));
-  return NextResponse.json({ members, myRole: membership.role, myUserId: session.user.id });
+
+  // Invited but not yet joined (open, unexpired). Same owner/admin gate and
+  // company scope as the roster; the token hash is never returned.
+  const invites = await db
+    .select({
+      id: companyInvites.id,
+      email: companyInvites.email,
+      name: companyInvites.inviteeName,
+      role: companyInvites.role,
+      expiresAt: companyInvites.expiresAt,
+    })
+    .from(companyInvites)
+    .where(
+      and(
+        eq(companyInvites.companyId, membership.companyId),
+        isNull(companyInvites.acceptedAt),
+        gt(companyInvites.expiresAt, new Date()),
+      ),
+    )
+    .orderBy(desc(companyInvites.createdAt));
+
+  return NextResponse.json({ members, invites, myRole: membership.role, myUserId: session.user.id });
 }
 
 const patchSchema = z.object({

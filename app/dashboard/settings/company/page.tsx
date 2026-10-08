@@ -20,12 +20,14 @@ interface Company {
 }
 type DetailsForm = { address: string; postalCode: string; city: string } & Omit<Required<SellerDetails>, "fSkatt"> & { fSkatt: boolean };
 interface Member { id: string; userId: string; role: string; email: string | null; name: string | null; }
+interface PendingInvite { id: string; email: string; name: string | null; role: string; }
 
 export default function CompanyPage() {
   const { t } = useLanguage();
   const [company, setCompany] = useState<Company | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
+  const [invites, setInvites] = useState<PendingInvite[]>([]);
   const [myUserId, setMyUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ name: "", orgNumber: "", vatNumber: "" });
@@ -50,9 +52,11 @@ export default function CompanyPage() {
       if (m.ok) {
         const mj = await m.json();
         setMembers(mj.members ?? []);
+        setInvites(mj.invites ?? []);
         setMyUserId(mj.myUserId ?? null);
       } else {
         setMembers([]);
+        setInvites([]);
         setMyUserId(null);
       }
     }
@@ -90,7 +94,7 @@ export default function CompanyPage() {
     const r = await fetch("/api/company/invite", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(invite),
     });
-    if (r.ok) { toast.success(t.toastInviteSent); setInvite({ firstName: "", lastName: "", email: "", role: "member" }); }
+    if (r.ok) { toast.success(t.toastInviteSent); setInvite({ firstName: "", lastName: "", email: "", role: "member" }); load(); }
     else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? t.toastInviteFail); }
   }
 
@@ -177,7 +181,43 @@ export default function CompanyPage() {
               </li>
               );
             })}
+            {invites
+              .filter((i) => !members.some((m) => m.email?.toLowerCase() === i.email.toLowerCase()))
+              .map((i) => (
+              <li key={i.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
+                <div className="min-w-0 break-words">
+                  <p className="font-medium">{i.name ?? i.email}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{i.email}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{roleLabel(i.role)}</span>
+                  <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
+                    {t.coInvitePending}
+                  </span>
+                </div>
+              </li>
+            ))}
           </ul>
+
+          {/* Add a colleague: name + email + role, right under the member list. */}
+          <div className="mt-4 border-t border-gray-900/[0.06] pt-5 dark:border-white/[0.07]">
+            <h3 className="font-medium">{t.btnInviteColleague}</h3>
+            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">{t.coInviteDesc}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-2"><Label htmlFor="ci-fldFirstName">{t.fldFirstName}</Label>
+                <Input id="ci-fldFirstName" value={invite.firstName} onChange={(e) => setInvite({ ...invite, firstName: e.target.value })} placeholder={t.fldFirstName} /></div>
+              <div className="space-y-2"><Label htmlFor="ci-fldLastName">{t.fldLastName}</Label>
+                <Input id="ci-fldLastName" value={invite.lastName} onChange={(e) => setInvite({ ...invite, lastName: e.target.value })} placeholder={t.fldLastName} /></div>
+              <div className="space-y-2"><Label htmlFor="ci-fldEmail">{t.fldEmail}</Label>
+                <Input id="ci-fldEmail" type="email" value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} placeholder="kollega@foretag.se" /></div>
+              <div className="space-y-2"><Label htmlFor="ci-fldRole">{t.fldRole}</Label>
+                <Select id="ci-fldRole" value={invite.role} onChange={(e) => setInvite({ ...invite, role: e.target.value })}>
+                  <option value="member">{t.roleMember}</option>
+                  <option value="admin">{t.roleAdmin}</option>
+                </Select></div>
+              <Button onClick={sendInvite} className="sm:col-span-2 sm:w-fit">{t.btnSendInvite}</Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
       )}
@@ -217,25 +257,6 @@ export default function CompanyPage() {
         </Card>
       )}
 
-      {canManage && (
-        <Card>
-          <CardHeader><CardTitle as="h2">{t.btnInviteColleague}</CardTitle><CardDescription>{t.coInviteDesc}</CardDescription></CardHeader>
-          <CardContent className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-2"><Label htmlFor="ci-fldFirstName">{t.fldFirstName}</Label>
-              <Input id="ci-fldFirstName" value={invite.firstName} onChange={(e) => setInvite({ ...invite, firstName: e.target.value })} placeholder={t.fldFirstName} /></div>
-            <div className="space-y-2"><Label htmlFor="ci-fldLastName">{t.fldLastName}</Label>
-              <Input id="ci-fldLastName" value={invite.lastName} onChange={(e) => setInvite({ ...invite, lastName: e.target.value })} placeholder={t.fldLastName} /></div>
-            <div className="space-y-2"><Label htmlFor="ci-fldEmail">{t.fldEmail}</Label>
-              <Input id="ci-fldEmail" type="email" value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} placeholder="kollega@foretag.se" /></div>
-            <div className="space-y-2"><Label htmlFor="ci-fldRole">{t.fldRole}</Label>
-              <Select id="ci-fldRole" value={invite.role} onChange={(e) => setInvite({ ...invite, role: e.target.value })}>
-                <option value="member">{t.roleMember}</option>
-                <option value="admin">{t.roleAdmin}</option>
-              </Select></div>
-            <Button onClick={sendInvite} className="sm:col-span-2 sm:w-fit">{t.btnSendInvite}</Button>
-          </CardContent>
-        </Card>
-      )}
       <ConfirmDialog
         open={removeId !== null}
         title={t.confirmRemoveMember}

@@ -450,6 +450,7 @@ export interface Translations {
   roleApprover: string;
   roleAdmin: string;
   coInviteDesc: string;
+  coInvitePending: string;
   fldEmail: string;
   fldFirstName: string;
   fldLastName: string;
@@ -1913,6 +1914,7 @@ export const strings: Record<Lang, Translations> = {
     roleApprover: "Attestant",
     roleAdmin: "Admin",
     coInviteDesc: "Skickar en inbjudan via e-post (gäller 7 dagar).",
+    coInvitePending: "Inbjuden, väntar",
     fldEmail: "E-post",
     fldFirstName: "Förnamn",
     fldLastName: "Efternamn",
@@ -3474,6 +3476,7 @@ export const strings: Record<Lang, Translations> = {
     roleApprover: "Approver",
     roleAdmin: "Admin",
     coInviteDesc: "Sends an invitation by email (valid for 7 days).",
+    coInvitePending: "Invited, pending",
     fldEmail: "Email",
     fldFirstName: "First name",
     fldLastName: "Last name",
