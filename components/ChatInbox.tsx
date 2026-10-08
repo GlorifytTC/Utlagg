@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, MessageSquare, Search } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Bell, BellOff, MessageSquare, Search } from "lucide-react";
 import { AccountantChat } from "@/components/AccountantChat";
 import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 import { useLanguage } from "@/context/LanguageContext";
@@ -38,6 +38,20 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [query, setQuery] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [mutedIds, setMutedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/notifications/mute").then((r) => r.ok ? r.json() : null).then((d) => d && setMutedIds(d.clients)).catch(() => {});
+  }, []);
+
+  function toggleMute(clientId: string) {
+    const muted = !mutedIds.includes(clientId);
+    const apply = (m: boolean) => setMutedIds((ids) => m ? [...ids, clientId] : ids.filter((i) => i !== clientId));
+    apply(muted);
+    fetch("/api/notifications/mute", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ muted, clientId }) })
+      .then((r) => { if (!r.ok) apply(!muted); })
+      .catch(() => apply(!muted));
+  }
 
   const load = useCallback(async () => {
     try {
@@ -198,6 +212,14 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
                     {role === "accountant" ? t.chatRoleClient : t.chatRoleAccountant}
                   </p>
                 </div>
+                <button
+                  onClick={() => toggleMute(selected.clientId)}
+                  aria-label={mutedIds.includes(selected.clientId) ? t.chatUnmute : t.chatMute}
+                  title={mutedIds.includes(selected.clientId) ? t.chatUnmute : t.chatMute}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-900/[0.04] dark:text-gray-400 dark:hover:bg-white/[0.06] md:h-9 md:w-9"
+                >
+                  {mutedIds.includes(selected.clientId) ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+                </button>
                 {role === "accountant" && (
                   <Link
                     href={`/accountant/clients/${selected.companyId}`}

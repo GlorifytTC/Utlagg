@@ -1210,6 +1210,11 @@ export interface Translations {
   dashGsSub3: string;
   // Profile language
   prLanguageTitle: string;
+  prNotifSound: string;
+  prSoundOn: string;
+  prSoundOff: string;
+  chatMute: string;
+  chatUnmute: string;
   prLanguageDesc: string;
   // Generic
   error: string;
@@ -2775,6 +2780,11 @@ export const strings: Record<Lang, Translations> = {
     dashGsMarketplace: "Hitta en revisor",
     dashGsSub3: "Bläddra på marknadsplatsen",
     prLanguageTitle: "Språk",
+    prNotifSound: "Notisljud",
+    prSoundOn: "På",
+    prSoundOff: "Av",
+    chatMute: "Tysta chatten",
+    chatUnmute: "Slå på notiser",
     prLanguageDesc: "Välj ditt föredragna språk.",
     error: "Något gick fel",
     openMenu: "Öppna meny",
@@ -4333,6 +4343,11 @@ export const strings: Record<Lang, Translations> = {
     dashGsMarketplace: "Find an accountant",
     dashGsSub3: "Browse the marketplace",
     prLanguageTitle: "Language",
+    prNotifSound: "Notification sound",
+    prSoundOn: "On",
+    prSoundOff: "Off",
+    chatMute: "Mute chat",
+    chatUnmute: "Unmute chat",
     prLanguageDesc: "Choose your preferred language.",
     error: "Something went wrong",
     openMenu: "Open menu",

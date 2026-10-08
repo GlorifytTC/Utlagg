@@ -12,6 +12,7 @@ import {
   index,
   uniqueIndex,
   jsonb,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -177,6 +178,8 @@ export const users = pgTable("users", {
   // not an admin privilege. Read fresh from the DB by requireAccountant();
   // never cached in the JWT.
   isAccountant: boolean("is_accountant").notNull().default(false),
+  // Global notification-sound mute (toasts + badge stay). Per-chat mutes: chat_mutes.
+  notifSoundMuted: boolean("notif_sound_muted").notNull().default(false),
   // Optional logo/avatar (base64 data URL), e.g. an accountant firm's logo
   // shown in the discovery directory. Nullable/additive.
   logoUrl: text("logo_url"),
@@ -1316,6 +1319,16 @@ export const chatMessages = pgTable(
   }),
 );
 export type ChatMessage = typeof chatMessages.$inferSelect;
+
+/* chat_mutes - chats a user has muted (no toast/sound; badge still counts) */
+export const chatMutes = pgTable(
+  "chat_mutes",
+  {
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    clientId: uuid("client_id").notNull().references(() => accountantClients.id, { onDelete: "cascade" }),
+  },
+  (t) => ({ pk: primaryKey({ columns: [t.userId, t.clientId] }) }),
+);
 
 /* ------------------------------------------------------------------ */
 /* chat_reports - user reports moderator reviews in admin panel        */

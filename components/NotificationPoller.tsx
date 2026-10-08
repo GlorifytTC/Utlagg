@@ -7,11 +7,11 @@ import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { useNotifications } from "@/context/NotificationContext";
 
-type Notif = { type: "connection_request" | "accepted" | "message"; actorName: string; href: string };
+type Notif = { type: "connection_request" | "accepted" | "message"; actorName: string; href: string; clientId?: string };
 
 const POLL_MS = 25_000;
 
-function playNotifSound() {
+function beep() {
   try {
     const ctx = new AudioContext();
     const osc = ctx.createOscillator();
@@ -24,6 +24,12 @@ function playNotifSound() {
   } catch {
     // AudioContext blocked (no user gesture yet) - silent fail is fine
   }
+}
+
+// Site-wide sound: drop a file at public/sounds/notification.mp3. Missing file
+// (or blocked playback) rejects play() and falls back to the synthesized beep.
+function playNotifSound() {
+  new Audio("/sounds/notification.mp3").play().catch(beep);
 }
 
 /**
@@ -58,7 +64,7 @@ export function NotificationPoller() {
       try {
         const res = await fetch(`/api/notifications?since=${encodeURIComponent(since)}`);
         if (!res.ok) return;
-        const data: { events: Notif[]; now: string } = await res.json();
+        const data: { events: Notif[]; now: string; muted: boolean; mutedClients: string[] } = await res.json();
         const tr = tRef.current;
         const inc = incrementRef.current;
         const label: Record<Notif["type"], string> = {
@@ -66,9 +72,11 @@ export function NotificationPoller() {
           accepted: tr.notifAccepted,
           message: tr.notifMessage,
         };
-        if (data.events.length > 0) playNotifSound();
+        // Muted chats: no toast/sound (badge still counts). Global mute: no sound.
+        const audible = data.events.filter((e) => !(e.clientId && data.mutedClients.includes(e.clientId)));
+        if (audible.length > 0 && !data.muted) playNotifSound();
         for (const e of data.events) {
-          toast.success(label[e.type].replace("{name}", e.actorName), {
+          if (audible.includes(e)) toast.success(label[e.type].replace("{name}", e.actorName), {
             action: { label: tr.btnView, onClick: () => routerRef.current.push(e.href) },
           });
           if (e.type === "message") inc("chat");

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { and, eq, gt, inArray, ne, or, type SQL } from "drizzle-orm";
 import { db } from "@/db";
-import { accountantConnectionRequests, accountantClients, chatMessages, companies, users } from "@/db/schema";
+import { accountantConnectionRequests, accountantClients, chatMessages, chatMutes, companies, users } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { getUserCompany } from "@/lib/company";
 
@@ -20,7 +20,7 @@ export const runtime = "nodejs";
  * sub-second latency is ever required. Queries hit existing indexes
  * (accountant_clients_acct_idx, accountant_conn_req_*_idx, chat_messages_client_idx).
  */
-type Notif = { type: "connection_request" | "accepted" | "message"; actorName: string; at: Date; href: string };
+type Notif = { type: "connection_request" | "accepted" | "message"; actorName: string; at: Date; href: string; clientId?: string };
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
   const cutoff = parsed > now ? now : parsed;
 
   // isAccountant is read fresh from the DB (never cached in the JWT - see schema).
-  const [u] = await db.select({ isAccountant: users.isAccountant }).from(users).where(eq(users.id, me)).limit(1);
+  const [u] = await db.select({ isAccountant: users.isAccountant, muted: users.notifSoundMuted }).from(users).where(eq(users.id, me)).limit(1);
   const membership = await getUserCompany(me);
   const isAccountant = !!u?.isAccountant;
 
@@ -92,15 +92,21 @@ export async function GET(req: NextRequest) {
     const clientIds = rels.map((r: { id: string }) => r.id);
     if (clientIds.length) {
       const msgs = await db
-        .select({ at: chatMessages.createdAt, actorName: users.name })
+        .select({ at: chatMessages.createdAt, actorName: users.name, clientId: chatMessages.clientId })
         .from(chatMessages)
         .innerJoin(users, eq(users.id, chatMessages.senderId))
         .where(and(inArray(chatMessages.clientId, clientIds), ne(chatMessages.senderId, me), gt(chatMessages.createdAt, cutoff)));
       const msgHref = isAccountant ? "/accountant/chats" : "/dashboard/chats";
-      for (const m of msgs) events.push({ type: "message", actorName: m.actorName ?? "", at: m.at, href: msgHref });
+      for (const m of msgs) events.push({ type: "message", actorName: m.actorName ?? "", at: m.at, href: msgHref, clientId: m.clientId });
     }
   }
 
   events.sort((a, b) => a.at.getTime() - b.at.getTime());
-  return NextResponse.json({ events: events.slice(-20), now: now.toISOString() });
+  const mutedRows = await db.select({ id: chatMutes.clientId }).from(chatMutes).where(eq(chatMutes.userId, me));
+  return NextResponse.json({
+    events: events.slice(-20),
+    now: now.toISOString(),
+    muted: !!u?.muted,
+    mutedClients: mutedRows.map((r: { id: string }) => r.id),
+  });
 }

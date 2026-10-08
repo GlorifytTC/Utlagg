@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
@@ -45,6 +46,14 @@ export function PreferencesCard() {
   const { t, lang, setLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+  const [soundOn, setSoundOn] = useState(true);
+  useEffect(() => {
+    fetch("/api/notifications/mute").then((r) => r.ok ? r.json() : null).then((d) => d && setSoundOn(!d.global)).catch(() => {});
+  }, []);
+  function setSound(on: boolean) {
+    setSoundOn(on);
+    fetch("/api/notifications/mute", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ muted: !on }) }).catch(() => setSoundOn(!on));
+  }
 
   return (
     <Card>
@@ -68,6 +77,15 @@ export function PreferencesCard() {
             value={theme === "dark" ? "dark" : "light"}
             options={[{ value: "light", label: t.btnLightMode }, { value: "dark", label: t.btnDarkMode }]}
             onChange={toggleTheme}
+          />
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm font-medium">{t.prNotifSound}</p>
+          <Segmented<"on" | "off">
+            label={t.prNotifSound}
+            value={soundOn ? "on" : "off"}
+            options={[{ value: "on", label: t.prSoundOn }, { value: "off", label: t.prSoundOff }]}
+            onChange={(v) => setSound(v === "on")}
           />
         </div>
       </CardContent>
