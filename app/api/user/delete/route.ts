@@ -2,18 +2,17 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { and, count, eq, ne } from "drizzle-orm";
 import { db } from "@/db";
-import { users, subscriptions, accountingFirms, firmMembers, companyMembers } from "@/db/schema";
+import { users, accountingFirms, firmMembers, companyMembers } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
 import { logAudit, clientIp } from "@/lib/audit";
-import { deleteAllUserImages } from "@/lib/storage";
+import { eraseUser } from "@/lib/account-erasure";
 import { recordTrialGuard } from "@/lib/billing/trial-guard";
-import { stripe } from "@/lib/stripe";
 
 export const runtime = "nodejs";
 
 /**
  * Deletes the account. FK cascades remove the user's receipts, expenses,
- * subscriptions and integration tokens. audit_logs.userId is ON DELETE SET NULL,
+ * subscriptions and integration tokens (except retained company receipts). audit_logs.userId is ON DELETE SET NULL,
  * so the 7-year audit trail (Bokföringslagen) survives de-identified rather than
  * being destroyed - this is the safer reading of the GDPR-vs-retention tension.
  *
@@ -25,9 +24,10 @@ export const runtime = "nodejs";
  *   2. Company owner: auto-promote the oldest admin to owner so the company
  *      stays manageable. No admin → company survives without an owner, which is
  *      acceptable when the owner was the only member.
- *   3. Cancel active Stripe subscription immediately so billing stops. Non-
- *      blocking - a Stripe error never prevents erasure (erasure is the user's
- *      right under GDPR).
+ *   3. eraseUser(): cancel ANY Stripe subscription (trialing/past_due too) so
+ *      billing stops - non-blocking, a Stripe error never prevents erasure.
+ *      Company receipts are kept (user row de-identified) while the company
+ *      still has other members, per the 7-year retention rule.
  *
  * Pricing V3 §E: if the account CONSUMED a trial, we persist a pseudonymised
  * one-way token derived from its email BEFORE the wipe, so the same email can't
@@ -99,21 +99,6 @@ export async function DELETE(req: NextRequest) {
     }
   }
 
-  // Cancel active Stripe subscription before the cascade wipes stripeSubscriptionId.
-  const [sub] = await db
-    .select({ stripeSubscriptionId: subscriptions.stripeSubscriptionId })
-    .from(subscriptions)
-    .where(and(eq(subscriptions.userId, userId), eq(subscriptions.status, "active")))
-    .limit(1);
-
-  if (sub?.stripeSubscriptionId) {
-    try {
-      await stripe.subscriptions.cancel(sub.stripeSubscriptionId);
-    } catch (e) {
-      console.error("stripe cancel on account delete failed (non-blocking):", e);
-    }
-  }
-
   await logAudit({
     userId,
     action: "user.delete",
@@ -131,9 +116,8 @@ export async function DELETE(req: NextRequest) {
     }
   }
 
-  // Cascade clears the DB rows; purge the user's R2 receipt images too so no
-  // financial PII is left orphaned in the bucket.
-  await deleteAllUserImages(userId);
-  await db.delete(users).where(eq(users.id, userId));
+  // Cancels Stripe, then hard-deletes - or de-identifies the user row when
+  // company receipts must outlive the account (lib/account-erasure.ts).
+  await eraseUser(userId);
   return NextResponse.json({ ok: true });
 }

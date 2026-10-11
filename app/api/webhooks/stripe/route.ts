@@ -21,6 +21,8 @@ import {
 import { grantCreditPack } from "@/lib/billing/credits";
 import { activateBoostFromWebhook } from "@/lib/accountant-boost";
 import { reverseRefundedCharge } from "@/lib/billing/refunds";
+import { claimWebhookEvent, markWebhookDone } from "@/lib/billing/webhook-claim";
+import { isTrialExtensionPush } from "@/lib/billing/trial-push";
 import {
   TRIAL_SCANS,
   formatOre,
@@ -61,24 +63,26 @@ export async function POST(req: NextRequest) {
   }
 
   // Idempotency keys claimed by this delivery. If handling fails they are
-  // released again, so Stripe's retry actually reprocesses the event instead of
-  // being acked as a duplicate (which would silently drop e.g. an upgrade).
+  // released again, so Stripe's retry reprocesses the event. A crash (no catch)
+  // leaves a claim with no `done:` marker; it goes stale and is taken over by
+  // the retry (lib/billing/webhook-claim.ts) instead of being acked as a dup.
   const claimed: string[] = [];
   const claim = async (id: string) => {
-    const [row] = await db
-      .insert(webhookEvents)
-      .values({ id, type: event.type })
-      .onConflictDoNothing()
-      .returning({ id: webhookEvents.id });
-    if (row) claimed.push(id);
-    return Boolean(row);
+    const r = await claimWebhookEvent(id, event.type);
+    if (r === "new") claimed.push(id);
+    return r === "new";
   };
 
   try {
-    // Skip events we've already processed (Stripe may resend).
-    if (!(await claim(event.id))) {
+    const first = await claimWebhookEvent(event.id, event.type);
+    if (first === "done") {
       return NextResponse.json({ received: true, duplicate: true });
     }
+    if (first === "busy") {
+      // Another delivery is mid-flight; let Stripe retry rather than drop it.
+      return NextResponse.json({ error: "Event in flight" }, { status: 409 });
+    }
+    claimed.push(event.id);
 
     switch (event.type) {
       case "checkout.session.completed": {
@@ -143,7 +147,10 @@ export async function POST(req: NextRequest) {
       }
       case "customer.subscription.updated":
       case "customer.subscription.created": {
-        const sub = event.data.object as Stripe.Subscription;
+        // Events can arrive out of order (a late `trialing` after conversion
+        // would lock a paying user out) - sync from Stripe's current state.
+        const evSub = event.data.object as Stripe.Subscription;
+        const sub = await stripe.subscriptions.retrieve(evSub.id).catch(() => evSub);
         await syncSubscription(sub);
         break;
       }
@@ -208,6 +215,7 @@ export async function POST(req: NextRequest) {
         // Ignore unhandled event types.
         break;
     }
+    await markWebhookDone(claimed);
     return NextResponse.json({ received: true });
   } catch (err) {
     console.error("stripe webhook handling error:", err);
@@ -267,6 +275,19 @@ async function syncSubscription(sub: Stripe.Subscription) {
     // only send the start disclosure once.)
     const existingUser = await findUserRowByCustomer(customerId);
     const firstEntry = existingUser?.subscriptionStatus !== "trialing";
+    // Referral billing-date push on a paying subscription: keep the paid plan,
+    // only track the new period. Not a trial: no downgrade, scan cap, or email.
+    if (isTrialExtensionPush(existingUser, now)) {
+      await db
+        .update(subscriptions)
+        .set({
+          stripeSubscriptionId: sub.id,
+          currentPeriodStart: new Date(sub.current_period_start * 1000),
+          currentPeriodEnd: new Date(sub.current_period_end * 1000),
+        })
+        .where(eq(subscriptions.stripeCustomerId, customerId));
+      return;
+    }
     await db
       .update(subscriptions)
       .set({

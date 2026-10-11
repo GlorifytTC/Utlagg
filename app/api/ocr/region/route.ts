@@ -3,12 +3,13 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { readRegion } from "@/lib/ocr";
+import { guardCostlyCall } from "@/lib/cost-guard";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
 const schema = z.object({
-  crop: z.string().min(10),
+  crop: z.string().min(10).max(400_000), // small cropped field, not a full photo
   field: z.string().max(40),
 });
 
@@ -17,7 +18,9 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   }
-  const parsed = schema.safeParse(await req.json());
+  const blocked = await guardCostlyCall(session.user.id, "ocrregion");
+  if (blocked) return blocked;
+  const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Ogiltiga uppgifter" }, { status: 400 });
   }

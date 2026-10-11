@@ -14,6 +14,7 @@ import {
   getSignedReceiptUrl,
 } from "@/lib/storage";
 import { logAuditEvent, clientIp } from "@/lib/audit";
+import { guardCostlyCall } from "@/lib/cost-guard";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -41,7 +42,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const parsed = schema.safeParse(await req.json());
+  const blocked = await guardCostlyCall(session.user.id, "upload", "upload");
+  if (blocked) return blocked;
+
+  const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Bild saknas" }, { status: 400 });
   }

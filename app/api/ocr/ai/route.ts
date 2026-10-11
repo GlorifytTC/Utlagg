@@ -5,13 +5,18 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { receiptTrainingData } from "@/db/schema";
 import { readReceiptWithGemini } from "@/lib/gemini-ocr";
-import { checkLimit } from "@/lib/rate-limit";
+import { guardCostlyCall } from "@/lib/cost-guard";
+import { decodeImage } from "@/lib/storage";
+import { and, count, eq, gte } from "drizzle-orm";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
 // ~15MB of base64 ≈ an 11MB image - generous for a phone photo, but bounded
 // so a caller can't stream an arbitrarily large body into memory / to Gemini.
+const MAX_DAILY = 300;
+const MAX_STORED_DAILY = 100;
+
 const schema = z.object({
   image: z.string().min(10).max(15_000_000),
 });
@@ -32,19 +37,39 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   }
 
-  // Cap paid-ish AI vision calls per user (30/min). No human scans receipts
-  // faster than this; the ceiling exists to stop a scripted loop running up
-  // Gemini quota/cost, independent of the plan scan-limit metering.
-  if (!(await checkLimit("api", `ocrai:${session.user.id}`))) {
-    return NextResponse.json(
-      { error: "För många förfrågningar. Försök igen snart." },
-      { status: 429 },
-    );
-  }
+  // Cap paid-ish AI vision calls per user (30/min) and refuse accounts that
+  // can't scan. No human scans receipts faster than this; the ceiling stops a
+  // scripted loop running up Gemini quota/cost.
+  const blocked = await guardCostlyCall(session.user.id, "ocrai");
+  if (blocked) return blocked;
 
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Ogiltig förfrågan" }, { status: 400 });
+  }
+
+  try {
+    decodeImage(parsed.data.image); // type-sniff: only real images/PDFs go to Gemini
+  } catch {
+    return NextResponse.json({ error: "Filtypen stöds inte" }, { status: 400 });
+  }
+
+  // Daily caps per user (rows double as the usage counter): hard stop at
+  // MAX_DAILY, and past MAX_STORED_DAILY we still read but skip storing images.
+  const [{ n: today }] = await db
+    .select({ n: count() })
+    .from(receiptTrainingData)
+    .where(
+      and(
+        eq(receiptTrainingData.userId, session.user.id),
+        gte(receiptTrainingData.createdAt, new Date(Date.now() - 86_400_000)),
+      ),
+    );
+  if (today >= MAX_DAILY) {
+    return NextResponse.json(
+      { error: "Dagsgränsen för AI-läsning är nådd. Försök igen i morgon." },
+      { status: 429 },
+    );
   }
 
   let result;
@@ -62,6 +87,7 @@ export async function POST(req: NextRequest) {
   // data must never break the user's actual scan.
   let trainingId: string | null = null;
   try {
+    if (today >= MAX_STORED_DAILY) return NextResponse.json({ ...result, trainingId });
     const [row] = await db
       .insert(receiptTrainingData)
       .values({

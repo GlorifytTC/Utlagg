@@ -1,10 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { eq } from "drizzle-orm";
-import { db } from "@/db";
-import { users } from "@/db/schema";
 import { requireAdmin } from "@/lib/admin";
 import { logAuditEvent, clientIp } from "@/lib/audit";
-import { deleteAllUserImages } from "@/lib/storage";
+import { eraseUser } from "@/lib/account-erasure";
 
 export const runtime = "nodejs";
 
@@ -15,11 +12,9 @@ export async function DELETE(
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  // FK cascade clears receipts/expenses/subscriptions/tokens; audit_logs.userId
-  // is SET NULL so the trail survives de-identified. Purge the user's R2 receipt
-  // images too, which the DB cascade can't reach.
-  await deleteAllUserImages(params.id);
-  await db.delete(users).where(eq(users.id, params.id));
+  // Cancels Stripe, purges images, deletes (or de-identifies, when company
+  // receipts must be retained) - same path as self-service deletion.
+  await eraseUser(params.id);
   await logAuditEvent({
     userId: session.user!.id,
     action: "admin.user.delete",

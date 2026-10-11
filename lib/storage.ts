@@ -173,9 +173,13 @@ export async function deleteReceiptImageIfR2(
 /**
  * Purge every stored image under a user's prefix (`receipts/<userId>/`).
  * Used when an account is deleted: the DB rows cascade away, but their R2
- * objects would otherwise be orphaned. Best-effort and paginated.
+ * objects would otherwise be orphaned. `keepKeys` are retained (company
+ * receipts that outlive the account). Best-effort and paginated.
  */
-export async function deleteAllUserImages(userId: string): Promise<void> {
+export async function deleteAllUserImages(
+  userId: string,
+  keepKeys: ReadonlySet<string> = new Set(),
+): Promise<void> {
   if (!isStorageConfigured()) return;
   const client = getClient();
   const prefix = `receipts/${userId}/`;
@@ -191,7 +195,7 @@ export async function deleteAllUserImages(userId: string): Promise<void> {
       );
       const keys = (listed.Contents ?? [])
         .map((o) => o.Key)
-        .filter((k): k is string => Boolean(k));
+        .filter((k): k is string => Boolean(k) && !keepKeys.has(k as string));
       if (keys.length > 0) {
         await client.send(
           new DeleteObjectsCommand({
