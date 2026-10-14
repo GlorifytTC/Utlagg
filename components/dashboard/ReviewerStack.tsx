@@ -8,7 +8,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
 const MAX = 3;
-const RING = "ring-2 ring-[#fffefb] dark:ring-[#0d0d0d]"; // matches the panel surface
+const RING = "ring-2 ring-black dark:ring-white"; // black is invisible on the dark surface, so dark mode flips to white
 
 type Person = { name: string; logoUrl: string | null };
 
@@ -68,10 +68,11 @@ export function ReviewerStack({
         )}
       >
         {shown.map((p, i) => (
-          <span key={i} className={cn("relative rounded-full", RING)}>
+          // First bubble on top so the approver's check is never covered
+          <span key={i} style={{ zIndex: shown.length - i }} className={cn("relative rounded-full", RING)}>
             <ClientAvatar name={p.name} logoUrl={p.logoUrl} size="sm" />
             {approver && i === 0 && (
-              <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-green-600 text-white ring-2 ring-[#fffefb] dark:ring-[#0d0d0d]">
+              <span className={cn("absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-green-600 text-white", RING)}>
                 <Check className="h-2.5 w-2.5" strokeWidth={3} aria-hidden />
               </span>
             )}

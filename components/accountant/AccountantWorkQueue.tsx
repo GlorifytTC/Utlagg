@@ -10,7 +10,7 @@ import { accountantStrings } from "@/lib/accountant-i18n";
 
 interface Attention {
   totals: { toReview: number; missingInfo: number; lowConfidence: number; pending: number };
-  clients: Array<{ companyId: string; companyName: string; toReview: number; attention: number }>;
+  clients: Array<{ companyId: string; companyName: string; toReview: number; attention: number; needsAttention: number }>;
 }
 
 export function AccountantWorkQueue() {
@@ -99,7 +99,7 @@ export function AccountantWorkQueue() {
                   className="panel inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm text-gray-900 dark:text-white"
                 >
                   {c.companyName}
-                  <span className="text-xs text-gray-500 dark:text-gray-400">{c.attention}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{c.needsAttention}</span>
                 </Link>
               </li>
             ))}

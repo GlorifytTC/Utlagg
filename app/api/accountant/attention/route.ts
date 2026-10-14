@@ -42,13 +42,14 @@ export async function GET() {
     lowConfidence: number;
     pending: number;
     attention: number;
+    needsAttention: number;
   }> = [];
 
   // Accountants have tens of clients, so a bounded per-client aggregate is fine.
   for (const c of clients) {
     const memberIds = membersByCompany.get(c.companyId) ?? [];
     if (memberIds.length === 0) {
-      perClient.push({ companyId: c.companyId, companyName: c.companyName, toReview: 0, missingInfo: 0, lowConfidence: 0, pending: 0, attention: 0 });
+      perClient.push({ companyId: c.companyId, companyName: c.companyName, toReview: 0, missingInfo: 0, lowConfidence: 0, pending: 0, attention: 0, needsAttention: 0 });
       continue;
     }
     const [row] = await db
@@ -57,6 +58,8 @@ export async function GET() {
         missingInfo: sql<number>`count(*) filter (where ${receipts.vatAmount} is null or ${receipts.basCode} is null or ${receipts.category} is null)::int`,
         lowConfidence: sql<number>`count(*) filter (where ${receipts.reviewedAt} is null and ${receipts.aiConfidence} is not null and ${receipts.aiConfidence} < ${LOW_CONFIDENCE})::int`,
         pending: sql<number>`count(*) filter (where ${receipts.status} = 'pending')::int`,
+        // Distinct receipts needing any attention (a receipt counts once, not once per bucket)
+        needsAttention: sql<number>`count(*) filter (where ${receipts.reviewedAt} is null or ${receipts.vatAmount} is null or ${receipts.basCode} is null or ${receipts.category} is null or ${receipts.status} = 'pending')::int`,
       })
       .from(receipts)
       .where(inArray(receipts.userId, memberIds));
@@ -77,6 +80,7 @@ export async function GET() {
       lowConfidence,
       pending,
       // A single "how much attention" score for sorting (unreviewed weighted highest).
+      needsAttention: Number(row?.needsAttention ?? 0),
       attention: toReview * 3 + missingInfo * 2 + lowConfidence + pending,
     });
   }

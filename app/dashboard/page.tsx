@@ -105,7 +105,7 @@ export default async function DashboardPage() {
           company?.logoUrl && (
             // Light tile keeps dark-on-transparent logos legible in dark mode.
             <span className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-xl border border-gray-900/[0.08] bg-white p-1.5 sm:h-14 sm:w-14 dark:border-white/10">
-              <img src={company.logoUrl} alt={company.name} className="max-h-full max-w-full object-contain" />
+              <img src={company.logoUrl} alt={company.name} className="h-full w-full object-contain" />
             </span>
           )
         }
