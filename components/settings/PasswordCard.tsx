@@ -36,8 +36,7 @@ export function PasswordCard() {
       // All sessions (incl. this one) were invalidated server-side.
       await signOut({ callbackUrl: "/login" });
     } else {
-      const e = await res.json().catch(() => ({}));
-      toast.error(e.message ?? t.toastPwChangeFail);
+      toast.error(t.toastPwChangeFail);
     }
     setSaving(false);
   }

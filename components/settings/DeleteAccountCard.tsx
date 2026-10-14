@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
+import { useFocusTrap } from "@/components/useFocusTrap";
 
 export function DeleteAccountCard() {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(open, dialogRef);
 
   useEffect(() => {
     if (!open) return;
@@ -45,7 +48,7 @@ export function DeleteAccountCard() {
       </Card>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div ref={dialogRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <Card role="dialog" aria-modal="true" aria-labelledby="delete-title" className="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto">
             <CardHeader>
               <CardTitle id="delete-title">{t.prSureTitle}</CardTitle>

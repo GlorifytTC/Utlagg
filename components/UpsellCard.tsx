@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +18,14 @@ export function UpsellCard({
   description?: string;
 }) {
   const { t } = useLanguage();
+  // Billing is owner-only (the page redirects others), so don't link non-owners there.
+  const [nonOwner, setNonOwner] = useState(false);
+  useEffect(() => {
+    fetch("/api/company")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setNonOwner(!!d?.role && d.role !== "owner"))
+      .catch(() => {});
+  }, []);
   return (
     <Card>
       <CardHeader>
@@ -29,9 +38,13 @@ export function UpsellCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Link href="/dashboard/settings/billing" className={buttonClass()}>
-          {t.upsellUpgradeTo.replace("{plan}", requiredPlan)}
-        </Link>
+        {nonOwner ? (
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t.upsellAskOwner}</p>
+        ) : (
+          <Link href="/dashboard/settings/billing" className={buttonClass()}>
+            {t.upsellUpgradeTo.replace("{plan}", requiredPlan)}
+          </Link>
+        )}
       </CardContent>
     </Card>
   );

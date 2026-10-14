@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn, tabListKeys } from "@/lib/utils";
 import { buttonClass } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { ErrorState } from "@/components/ui/error-state";
@@ -149,12 +149,15 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
 
       {/* Scrolls sideways on phones instead of wrapping five tabs onto two rows */}
       <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <div ref={tabListRef} role="tablist" className="panel inline-flex gap-1 rounded-full p-1">
+        <div ref={tabListRef} role="tablist" aria-label={t.cwTabsLabel} onKeyDown={(e) => tabListKeys(e, tabs.findIndex((x) => x.key === tab), tabs.length, (i) => setTab(tabs[i].key))} className="panel inline-flex gap-1 rounded-full p-1">
           {tabs.map((tb) => (
             <button
               key={tb.key}
               type="button"
               role="tab"
+              id={`cw-tab-${tb.key}`}
+              aria-controls="cw-panel"
+              tabIndex={tab === tb.key ? 0 : -1}
               aria-selected={tab === tb.key}
               onClick={() => setTab(tb.key)}
               className={tabCls(tab === tb.key)}
@@ -165,6 +168,7 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
         </div>
       </div>
 
+      <div id="cw-panel" role="tabpanel" aria-labelledby={`cw-tab-${tab}`}>
       <AnimatePresence mode="wait">
         {tab === "overview" && (
           <motion.div
@@ -247,6 +251,7 @@ export function AccountantClientWorkspace({ companyId, initialTab }: { companyId
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 }

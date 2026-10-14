@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Textarea } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { ErrorState } from "@/components/ui/error-state";
@@ -31,6 +32,7 @@ export default function AdminVerificationsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const [revoke, setRevoke] = useState<Accountant | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -57,19 +59,18 @@ export default function AdminVerificationsPage() {
     // the short-lived presigned URL once we have it.
     const w = window.open("", "_blank");
     if (w) w.opener = null;
-    const res = await fetch(`/api/admin/verifications/${id}`);
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.url) {
+    try {
+      const res = await fetch(`/api/admin/verifications/${id}`);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) throw new Error(data.error);
+      if (w) w.location.href = data.url;
+    } catch (e) {
       w?.close();
-      toast.error(data.error ?? "Kunde inte öppna dokumentet");
-      return;
+      toast.error((e instanceof Error && e.message) || "Kunde inte öppna dokumentet");
     }
-    if (w) w.location.href = data.url;
   }
 
   async function decide(a: Accountant, status: "approved" | "rejected") {
-    if (status === "rejected" && a.verificationStatus === "approved" &&
-        !window.confirm(`Återkalla verifieringen för ${a.name ?? a.email}?`)) return;
     setBusy(true);
     try {
       const res = await fetch(`/api/admin/verifications/${a.id}`, {
@@ -168,7 +169,7 @@ export default function AdminVerificationsPage() {
               />
               <div className="flex flex-wrap gap-2">
                 {selected.verificationStatus !== "rejected" && (
-                  <Button variant="destructive" disabled={busy} onClick={() => decide(selected, "rejected")}>
+                  <Button variant="destructive" disabled={busy} onClick={() => (selected.verificationStatus === "approved" ? setRevoke(selected) : decide(selected, "rejected"))}>
                     {selected.verificationStatus === "approved" ? "Återkalla" : "Avslå"}
                   </Button>
                 )}
@@ -182,6 +183,20 @@ export default function AdminVerificationsPage() {
           )}
         </div>
       </div>
+      <ConfirmDialog
+        open={revoke !== null}
+        title="Återkalla verifiering"
+        description={revoke ? `Återkalla verifieringen för ${revoke.name ?? revoke.email}?` : undefined}
+        confirmLabel="Återkalla"
+        cancelLabel="Avbryt"
+        destructive
+        busy={busy}
+        onConfirm={async () => {
+          if (revoke) await decide(revoke, "rejected");
+          setRevoke(null);
+        }}
+        onCancel={() => setRevoke(null)}
+      />
     </div>
   );
 }

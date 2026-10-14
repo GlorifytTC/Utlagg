@@ -79,8 +79,7 @@ function VerificationCard({
         body: JSON.stringify({ document }),
       });
       if (!res.ok) {
-        const d = await res.json().catch(() => ({}));
-        toast.error(d.error ?? at.error);
+        toast.error(at.error);
         return;
       }
       toast.success(at.verifySubmitted);

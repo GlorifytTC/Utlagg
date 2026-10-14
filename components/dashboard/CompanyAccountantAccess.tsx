@@ -36,6 +36,33 @@ export function CompanyAccountantAccess() {
   const [busy, setBusy] = useState<string | null>(null);
   const [chatOpen, setChatOpen] = useState<string | null>(null); // relationshipId
 
+  const [incoming, setIncoming] = useState<{ id: string; accountantId: string; requestedBy: string | null; name: string | null; email: string }[]>([]);
+
+  const loadIncoming = useCallback(async () => {
+    try {
+      const res = await fetch("/api/company/accountant-requests");
+      if (!res.ok) return;
+      const d = await res.json();
+      // Only requests the accountant sent can be answered here; ones we sent wait for the accountant.
+      setIncoming((d.incoming ?? []).filter((r: { accountantId: string; requestedBy: string | null }) => r.requestedBy === r.accountantId));
+    } catch {}
+  }, []);
+
+  async function respond(id: string, action: "accept" | "decline") {
+    setBusy(id);
+    try {
+      const res = await fetch(`/api/company/accountant-requests/${id}/${action}`, { method: "POST" });
+      if (!res.ok) throw new Error();
+      toast.success(action === "accept" ? t.caaRequestAccepted : t.caaRequestDeclined);
+      loadIncoming();
+      load();
+    } catch {
+      toast.error(t.caaRequestError);
+    } finally {
+      setBusy(null);
+    }
+  }
+
   const load = useCallback(async () => {
     setStatus("loading");
     try {
@@ -51,7 +78,8 @@ export function CompanyAccountantAccess() {
 
   useEffect(() => {
     load();
-  }, [load]);
+    loadIncoming();
+  }, [load, loadIncoming]);
 
   async function revoke(accountantId: string) {
     setBusy(accountantId);
@@ -90,6 +118,25 @@ export function CompanyAccountantAccess() {
         </div>
       </CardHeader>
       <CardContent>
+        {incoming.length > 0 && (
+          <div className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/[0.06] p-3">
+            <p className="mb-2 text-sm font-medium">{t.caaIncomingTitle}</p>
+            <ul className="space-y-2">
+              {incoming.map((r) => (
+                <li key={r.id} className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="min-w-0 break-words text-sm">
+                    {r.name ?? r.email}
+                    {r.name && <span className="block text-xs text-gray-500 dark:text-gray-400">{r.email}</span>}
+                  </span>
+                  <span className="flex gap-2">
+                    <Button disabled={busy === r.id} onClick={() => respond(r.id, "accept")}>{t.caaAccept}</Button>
+                    <Button variant="outline" disabled={busy === r.id} onClick={() => respond(r.id, "decline")}>{t.caaDecline}</Button>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         {status === "loading" ? (
           <p role="status" aria-busy="true" className="text-sm text-gray-500 dark:text-gray-400">{t.loading}</p>
         ) : status === "error" ? (
@@ -111,6 +158,7 @@ export function CompanyAccountantAccess() {
                   <div className="flex flex-wrap items-center gap-2">
                     <button
                       onClick={() => setChatOpen(chatOpen === a.relationshipId ? null : a.relationshipId)}
+                      aria-expanded={chatOpen === a.relationshipId}
                       className="flex min-h-11 items-center gap-1 text-sm text-gray-500 hover:text-gray-800 md:min-h-0 dark:text-gray-400 dark:hover:text-gray-200"
                     >
                       <MessageSquare size={14} aria-hidden />

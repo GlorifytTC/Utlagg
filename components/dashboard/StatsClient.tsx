@@ -21,6 +21,7 @@ import { Palette } from "lucide-react";
 import { Select } from "@/components/ui/input";
 import { buttonClass } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
+import { ErrorState } from "@/components/ui/error-state";
 import { StatGrid } from "@/components/ui/stat";
 
 type Range = "month" | "year";
@@ -102,6 +103,8 @@ export function StatsClient() {
   const [selYear, setSelYear] = useState<number>(now.getFullYear());
   const [data, setData] = useState<Overview | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const [themeKey, setThemeKey] = useState<keyof typeof THEMES>("terracotta");
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -119,14 +122,24 @@ export function StatsClient() {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setError(false);
     const qs =
       mode === "month"
         ? `month=${selYear}-${String(selMonth + 1).padStart(2, "0")}`
         : `year=${selYear}`;
     fetch(`/api/stats/overview?${qs}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error();
+        return r.json();
+      })
       .then((d) => {
         if (!cancelled) setData(d);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setData(null);
+          setError(true);
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -134,7 +147,7 @@ export function StatsClient() {
     return () => {
       cancelled = true;
     };
-  }, [mode, selMonth, selYear]);
+  }, [mode, selMonth, selYear, attempt]);
 
   const theme = THEMES[themeKey];
 
@@ -244,6 +257,12 @@ export function StatsClient() {
         }
       />
 
+      {error && (
+        <ErrorState onRetry={() => setAttempt((n) => n + 1)} retryLabel={t.btnRetry}>
+          {t.somethingWentWrong}
+        </ErrorState>
+      )}
+
       <StatGrid
         items={[
           { label: t.statTotalAmount, value: formatSek(data?.kpi.totalAmount ?? 0) },
@@ -271,6 +290,7 @@ export function StatsClient() {
             ) : !data || data.trend.length === 0 ? (
               <div className="flex h-72 items-center justify-center text-sm text-gray-500 dark:text-gray-400">{t.stNoData}</div>
             ) : (
+              <div role="img" aria-label={`${t.stTrend}: ${data.trend.map((b) => `${b.bucket} ${formatSek(b.amount)}`).join(", ")}`}>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data.trend}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
@@ -283,6 +303,7 @@ export function StatsClient() {
                   <Bar dataKey="amount" radius={[8, 8, 0, 0]} fill={theme.colors[0]} maxBarSize={48} />
                 </BarChart>
               </ResponsiveContainer>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -298,6 +319,7 @@ export function StatsClient() {
             ) : pieData.length === 0 ? (
               <div className="flex h-72 items-center justify-center text-sm text-gray-500 dark:text-gray-400">{t.stNoCategoryData}</div>
             ) : (
+              <div role="img" aria-label={`${t.stByCategory}: ${pieData.map((p) => `${p.name} ${formatSek(p.value)}`).join(", ")}`}>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -322,6 +344,7 @@ export function StatsClient() {
                   />
                 </PieChart>
               </ResponsiveContainer>
+              </div>
             )}
           </CardContent>
         </Card>

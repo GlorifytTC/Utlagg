@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useFocusTrap } from "@/components/useFocusTrap";
 import { signOut, useSession } from "next-auth/react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -10,9 +11,12 @@ const WARN_SECONDS = 60; // show the warning this long before logging out
 
 export function IdleLogout() {
   const { status } = useSession();
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const [warning, setWarning] = useState(false);
   const [secs, setSecs] = useState(WARN_SECONDS);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const shown = status === "authenticated" && warning;
+  useFocusTrap(shown, dialogRef); // first focusable = the stay-logged-in button
   const warnTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const logoutTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const countdown = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -62,28 +66,31 @@ export function IdleLogout() {
 
   if (status !== "authenticated" || !warning) return null;
 
-  const body =
-    lang === "sv"
-      ? `Du loggas ut om ${secs} sekunder på grund av inaktivitet.`
-      : `You'll be logged out in ${secs} seconds due to inactivity.`;
-
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-[#111]">
-        <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-white">
+      <div
+        ref={dialogRef}
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="idle-title"
+        className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-[#111]"
+      >
+        <h2 id="idle-title" className="font-display text-lg font-semibold text-gray-900 dark:text-white">
           {t.idleTitle}
         </h2>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{body}</p>
+        <p aria-live="assertive" className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          {t.idleBody.replace("{s}", String(secs))}
+        </p>
         <div className="mt-5 flex gap-3">
           <button
             onClick={reset}
-            className="flex-1 rounded-lg bg-nordic-600 px-4 py-2 text-sm font-medium text-white hover:bg-nordic-700"
+            className="flex-1 rounded-lg bg-nordic-600 min-h-11 px-4 py-2 text-sm font-medium text-white hover:bg-nordic-700"
           >
             {t.idleStay}
           </button>
           <button
             onClick={doLogout}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-white/[0.10] dark:text-gray-300 dark:hover:bg-gray-800"
+            className="rounded-lg border border-gray-300 min-h-11 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-white/[0.10] dark:text-gray-300 dark:hover:bg-gray-800"
           >
             {t.idleLogout}
           </button>

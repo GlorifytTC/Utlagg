@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/ui/error-state";
 import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -30,14 +31,24 @@ export default function CompanyPage() {
   const [invites, setInvites] = useState<PendingInvite[]>([]);
   const [myUserId, setMyUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadErr, setLoadErr] = useState(false);
   const [form, setForm] = useState({ name: "", orgNumber: "", vatNumber: "" });
   const [details, setDetails] = useState<DetailsForm | null>(null);
   const [removeId, setRemoveId] = useState<string | null>(null);
   const [invite, setInvite] = useState({ firstName: "", lastName: "", email: "", role: "member" });
 
   const load = useCallback(async () => {
-    const r = await fetch("/api/company");
-    const d = await r.json();
+    let d;
+    try {
+      const r = await fetch("/api/company");
+      if (!r.ok) throw new Error();
+      d = await r.json();
+      setLoadErr(false);
+    } catch {
+      setLoadErr(true);
+      setLoading(false);
+      return;
+    }
     setCompany(d.company);
     setRole(d.role);
     if (d.company) {
@@ -75,7 +86,7 @@ export default function CompanyPage() {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form),
     });
     if (r.ok) { toast.success(t.toastCompanyCreated); load(); }
-    else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? t.toastCreateFail); }
+    else toast.error(t.toastCreateFail);
   }
 
   async function saveDetails() {
@@ -95,7 +106,7 @@ export default function CompanyPage() {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(invite),
     });
     if (r.ok) { toast.success(t.toastInviteSent); setInvite({ firstName: "", lastName: "", email: "", role: "member" }); load(); }
-    else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? t.toastInviteFail); }
+    else toast.error(t.toastInviteFail);
   }
 
   async function changeRole(memberId: string, newRole: string) {
@@ -110,7 +121,7 @@ export default function CompanyPage() {
     setRemoveId(null);
     const r = await fetch(`/api/company/members?memberId=${memberId}`, { method: "DELETE" });
     if (r.ok) { toast.success(t.toastRemoved); load(); }
-    else { const e = await r.json().catch(() => ({})); toast.error(e.error ?? t.toastRemoveFail); }
+    else toast.error(t.toastRemoveFail);
   }
 
   if (loading) {
@@ -118,6 +129,15 @@ export default function CompanyPage() {
       <div className="space-y-6" aria-busy="true" aria-label={t.loading}>
         <div className="skeleton h-9 w-56 rounded-xl" />
         <div className="skeleton h-64 rounded-2xl" />
+      </div>
+    );
+  }
+
+  if (loadErr) {
+    return (
+      <div className="space-y-6">
+        <SectionHeader title={t.navCompany} />
+        <ErrorState onRetry={() => { setLoading(true); load(); }} retryLabel={t.btnRetry}>{t.somethingWentWrong}</ErrorState>
       </div>
     );
   }
@@ -172,6 +192,7 @@ export default function CompanyPage() {
                     <Select value={m.role} onChange={(e) => changeRole(m.id, e.target.value)} aria-label={t.fldRole}
                       className="!h-11 !w-auto md:!h-10">
                       <option value="member">{t.roleMember}</option>
+                      <option value="approver">{t.roleApprover}</option>
                       <option value="admin">{t.roleAdmin}</option>
                     </Select>
                   ) : (<span className="text-sm text-gray-500 dark:text-gray-400">{roleLabel(m.role)}</span>)}
@@ -218,8 +239,10 @@ export default function CompanyPage() {
               <div className="space-y-2"><Label htmlFor="ci-fldRole">{t.fldRole}</Label>
                 <Select id="ci-fldRole" value={invite.role} onChange={(e) => setInvite({ ...invite, role: e.target.value })}>
                   <option value="member">{t.roleMember}</option>
+                  <option value="approver">{t.roleApprover}</option>
                   <option value="admin">{t.roleAdmin}</option>
-                </Select></div>
+                </Select>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{t.roleApproverHint}</p></div>
               <Button onClick={sendInvite} className="sm:col-span-2 sm:w-fit">{t.btnSendInvite}</Button>
             </div>
           </div>

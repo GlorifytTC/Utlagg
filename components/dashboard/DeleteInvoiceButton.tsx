@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useLanguage } from "@/context/LanguageContext";
@@ -21,9 +22,14 @@ export function DeleteInvoiceButton({ id, confirmText, label }: Props) {
   async function handleDelete() {
     setConfirming(false);
     setLoading(true);
-    await fetch(`/api/invoices/${id}`, { method: "DELETE" });
+    try {
+      const res = await fetch(`/api/invoices/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      router.refresh();
+    } catch {
+      toast.error(t.somethingWentWrong);
+    }
     setLoading(false);
-    router.refresh();
   }
 
   return (

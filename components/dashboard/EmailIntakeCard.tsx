@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,9 +36,13 @@ export function EmailIntakeCard() {
   if (enabled === false || !address) return null;
 
   const copy = async () => {
-    await navigator.clipboard.writeText(address);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error(t.error);
+    }
   };
 
   return (
@@ -50,9 +55,10 @@ export function EmailIntakeCard() {
         <code className="min-w-0 flex-1 break-all rounded-xl border border-gray-900/15 bg-white px-3.5 py-2 text-sm text-gray-800 dark:border-white/[0.14] dark:bg-black/40 dark:text-gray-200">
           {address}
         </code>
-        <Button variant="outline" onClick={copy} aria-live="polite">
+        <Button variant="outline" onClick={copy}>
           {copied ? t.btnCopied : t.btnCopy}
         </Button>
+        <span role="status" aria-live="polite" className="sr-only">{copied ? t.btnCopied : ""}</span>
       </CardContent>
     </Card>
   );

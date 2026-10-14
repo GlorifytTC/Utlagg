@@ -67,14 +67,13 @@ export function trialEmailGuardEnabled(): boolean {
 }
 
 /**
- * Card-required trial (spec §3.3, default TRUE). With BankID down, requiring a
- * card at trial start makes payment the identity anchor and neutralises
- * new-email trial farming. Set `TRIAL_REQUIRE_CARD=false` for the no-card
- * variant (which still expires to read-only lockout - never to reusable free
- * scans).
+ * Card-required trial (spec §3.3). Default FALSE: marketing promises "no card
+ * required", so the trial starts when the email is verified (see
+ * api/auth/verify-email) and expires to read-only lockout - never to reusable
+ * free scans. Set `TRIAL_REQUIRE_CARD=true` for the card-at-checkout variant.
  */
 export function trialRequireCard(): boolean {
-  return process.env.TRIAL_REQUIRE_CARD !== "false";
+  return process.env.TRIAL_REQUIRE_CARD === "true";
 }
 
 /** All monthly resets and hold-period math use Swedish wall-clock time. */

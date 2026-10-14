@@ -9,8 +9,9 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Hint } from "@/components/ui/hint";
 import { Checkbox } from "@/components/ui/checkbox";
-import { formatSek } from "@/lib/utils";
+import { formatSek, localDateStr } from "@/lib/utils";
 import {
   computeInvoiceTotals,
   formatSellerAddress,
@@ -30,9 +31,9 @@ const emptyLine = (): InvoiceLine => ({
   vatRate: 25,
 });
 const plusDays = (iso: string, days: number) => {
-  const d = new Date(iso);
+  const d = new Date(`${iso}T00:00:00`);
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return localDateStr(d);
 };
 
 interface Seller {
@@ -52,14 +53,16 @@ export default function NewInvoicePage() {
   const [reverseCharge, setReverseCharge] = useState(false);
   const [seller, setSeller] = useState<Seller | null>(null);
   const [lines, setLines] = useState<InvoiceLine[]>([emptyLine()]);
+  // Raw text of the number inputs so a field can be cleared / typed as "0." without snapping back to 0.
+  const [raw, setRaw] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     invoiceNumber: "",
     buyerName: "",
     buyerOrgNumber: "",
     buyerVatNumber: "",
     buyerAddress: "",
-    issueDate: new Date().toISOString().slice(0, 10),
-    dueDate: plusDays(new Date().toISOString().slice(0, 10), 30),
+    issueDate: localDateStr(),
+    dueDate: plusDays(localDateStr(), 30),
     note: "",
   });
 
@@ -104,6 +107,10 @@ export default function NewInvoicePage() {
       toast.error(t.toastFillCustomerRows);
       return;
     }
+    if (form.dueDate && form.issueDate && form.dueDate < form.issueDate) {
+      toast.error(t.invDueBeforeIssue);
+      return;
+    }
     if (reverseCharge && !form.buyerVatNumber && !form.buyerOrgNumber) {
       toast.error(t.toastReverseNeedsVat);
       return;
@@ -120,8 +127,7 @@ export default function NewInvoicePage() {
       toast.success(t.toastInvoiceSaved);
       router.push(`/dashboard/invoices/${invoice.id}`);
     } else {
-      const e = await res.json().catch(() => ({}));
-      toast.error(e.error ?? t.toastSaveFail);
+      toast.error(t.toastSaveFail);
     }
   }
 
@@ -210,15 +216,19 @@ export default function NewInvoicePage() {
             <Input id="inv-fldIssueDate"
               type="date"
               value={form.issueDate}
-              onChange={(e) =>
-                setForm({ ...form, issueDate: e.target.value })
-              }
+              onChange={(e) => {
+                const issueDate = e.target.value;
+                // Due date keeps its distance (in days) from the issue date.
+                const gap = Math.round((Date.parse(form.dueDate) - Date.parse(form.issueDate)) / 86_400_000);
+                setForm({ ...form, issueDate, dueDate: issueDate && Number.isFinite(gap) && gap >= 0 ? plusDays(issueDate, gap) : form.dueDate });
+              }}
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="inv-fldDueDate">{t.fldDueDate}</Label>
             <Input id="inv-fldDueDate"
               type="date"
+              min={form.issueDate}
               value={form.dueDate}
               onChange={(e) =>
                 setForm({ ...form, dueDate: e.target.value })
@@ -249,10 +259,11 @@ export default function NewInvoicePage() {
                 inputMode="decimal"
                 min="0"
                 step="0.5"
-                value={l.quantity}
-                onChange={(e) =>
-                  setLine(i, { quantity: Number(e.target.value) })
-                }
+                value={raw[`q${i}`] ?? l.quantity}
+                onChange={(e) => {
+                  setRaw((r) => ({ ...r, [`q${i}`]: e.target.value }));
+                  setLine(i, { quantity: Number(e.target.value) });
+                }}
                 aria-label={`${t.phQuantity} ${i + 1}`}
                 placeholder={t.phQuantity}
               />
@@ -262,10 +273,11 @@ export default function NewInvoicePage() {
                 inputMode="decimal"
                 min="0"
                 step="0.01"
-                value={l.unitPrice}
-                onChange={(e) =>
-                  setLine(i, { unitPrice: Number(e.target.value) })
-                }
+                value={raw[`p${i}`] ?? l.unitPrice}
+                onChange={(e) => {
+                  setRaw((r) => ({ ...r, [`p${i}`]: e.target.value }));
+                  setLine(i, { unitPrice: Number(e.target.value) });
+                }}
                 aria-label={`${t.phUnitPrice} ${i + 1}`}
                 placeholder={t.phUnitPrice}
               />
@@ -286,11 +298,12 @@ export default function NewInvoicePage() {
               <Button
                 variant="ghost"
                 className="col-span-2 !h-11 !w-11 justify-self-end sm:col-span-1 md:!h-10 md:!w-10 !p-0 sm:justify-self-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
-                onClick={() =>
+                onClick={() => {
+                  setRaw({});
                   setLines((ls) =>
                     ls.length > 1 ? ls.filter((_, idx) => idx !== i) : ls
-                  )
-                }
+                  );
+                }}
                 aria-label={`${t.ariaRemoveRow} ${i + 1}`}
                 title={t.ariaRemoveRow}
               >
@@ -325,7 +338,7 @@ export default function NewInvoicePage() {
               <span>{formatSek(totals.subtotal)}</span>
             </div>
             <div className="flex justify-between">
-              <span>{t.invColVat}</span>
+              <span className="inline-flex items-center gap-1.5">{t.invColVat}<Hint text={t.hintVat} /></span>
               <span>
                 {reverseCharge ? t.invVatReverse : formatSek(totals.vatTotal)}
               </span>

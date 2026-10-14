@@ -90,13 +90,13 @@ export function AccountantTeam() {
       });
       const d = await res.json().catch(() => ({}));
       if (res.ok) {
-        toast.success(d.alreadyPending ? t.teamPending : t.teamSend);
+        toast.success(d.alreadyPending ? t.teamPending : t.teamInvited);
         setInviteEmail("");
         setInviteFirst("");
         setInviteLast("");
         load();
       } else {
-        toast.error(d.error ?? t.error);
+        toast.error(t.error);
       }
     } finally {
       setInviting(false);
@@ -107,12 +107,11 @@ export function AccountantTeam() {
     try {
       const res = await fetch(`/api/firm/members/${userId}`, { method: "POST" });
       if (res.ok) {
-        toast.success(t.teamRemove);
+        toast.success(t.teamRemoved);
         setMembers((m) => m.filter((x) => x.userId !== userId));
         setConfirmRemove(null);
       } else {
-        const d = await res.json().catch(() => ({}));
-        toast.error(d.error ?? t.error);
+        toast.error(t.error);
       }
     } catch {
       toast.error(t.error);
@@ -148,7 +147,7 @@ export function AccountantTeam() {
                         confirmRemove === m.userId ? (
                           <span className="flex flex-wrap items-center gap-1">
                             <span className="mr-1 text-xs text-gray-500 dark:text-gray-400">{t.teamRemoveConfirm}</span>
-                            <Button variant="destructive" onClick={() => remove(m.userId)} className="!h-11 !px-3 !text-xs lg:!h-8">
+                            <Button variant="destructive" onClick={() => remove(m.userId)} className="!h-11 !px-3 !text-xs lg:[@media(pointer:fine)]:!h-8">
                               {t.teamRemove}
                             </Button>
                             <Button
@@ -156,7 +155,7 @@ export function AccountantTeam() {
                               onClick={() => setConfirmRemove(null)}
                               aria-label={t.teamRemoveCancel}
                               title={t.teamRemoveCancel}
-                              className="!h-11 !w-11 !p-0 text-gray-500 dark:text-gray-400 lg:!h-8 lg:!w-8"
+                              className="!h-11 !w-11 !p-0 text-gray-500 dark:text-gray-400 lg:[@media(pointer:fine)]:!h-8 lg:[@media(pointer:fine)]:!w-8"
                             >
                               <X className="h-4 w-4" strokeWidth={1.75} />
                             </Button>
@@ -165,7 +164,7 @@ export function AccountantTeam() {
                           <Button
                             variant="ghost"
                             onClick={() => setConfirmRemove(m.userId)}
-                            className="!h-11 !px-3 !text-xs text-red-600 hover:bg-red-50/70 dark:text-red-400 dark:hover:bg-red-950/25 lg:!h-8"
+                            className="!h-11 !px-3 !text-xs text-red-600 hover:bg-red-50/70 dark:text-red-400 dark:hover:bg-red-950/25 lg:[@media(pointer:fine)]:!h-8"
                           >
                             {t.teamRemove}
                           </Button>
@@ -344,7 +343,7 @@ function AssignmentsPanel({ t }: { t: ReturnType<typeof accountantStrings> }) {
                         disabled={busy}
                         aria-label={t.teamUnassign}
                         title={t.teamUnassign}
-                        className="!h-11 !w-11 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 lg:!h-8 lg:!w-8"
+                        className="!h-11 !w-11 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 lg:[@media(pointer:fine)]:!h-8 lg:[@media(pointer:fine)]:!w-8"
                       >
                         <X className="h-4 w-4" strokeWidth={1.75} />
                       </Button>
@@ -362,7 +361,7 @@ function AssignmentsPanel({ t }: { t: ReturnType<typeof accountantStrings> }) {
                   {assignableWorkers.map((w) => (
                     <li key={w.userId} className="flex items-center justify-between rounded-xl py-1.5 pl-3 pr-1.5 text-sm">
                       <span className="text-gray-700 dark:text-gray-200">{w.name ?? w.email}</span>
-                      <Button variant="outline" onClick={() => assign(w.userId)} disabled={busy} className="!h-11 !px-3 !text-xs lg:!h-8">
+                      <Button variant="outline" onClick={() => assign(w.userId)} disabled={busy} className="!h-11 !px-3 !text-xs lg:[@media(pointer:fine)]:!h-8">
                         {t.teamAssign}
                       </Button>
                     </li>

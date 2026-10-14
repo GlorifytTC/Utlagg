@@ -2,6 +2,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
+import { planName } from "@/lib/plans";
+import type { Tier } from "@/lib/plans";
 
 export function UsageMeter({
   used,
@@ -27,7 +29,7 @@ export function UsageMeter({
           animate={{ opacity: 1, scale: 1 }}
           className="rounded-full bg-nordic-600/10 px-2.5 py-0.5 text-xs font-medium text-nordic-700 capitalize dark:bg-nordic-600/20 dark:text-nordic-300"
         >
-          {tier}
+          {planName(t, tier as Tier)}
         </motion.span>
       </div>
       <motion.p 

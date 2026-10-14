@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 /** Replacement for window.confirm(): modal alertdialog with Escape, initial focus on Cancel and a Tab trap. */
@@ -12,6 +12,8 @@ export function ConfirmDialog({
   cancelLabel,
   destructive,
   busy,
+  requireText,
+  requireLabel,
   onConfirm,
   onCancel,
 }: {
@@ -22,9 +24,13 @@ export function ConfirmDialog({
   cancelLabel: string;
   destructive?: boolean;
   busy?: boolean;
+  /** Type-to-confirm: confirm stays disabled until the user types exactly this. */
+  requireText?: string;
+  requireLabel?: string;
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const [typed, setTyped] = useState("");
   const ref = useRef<HTMLDivElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
   // Callers pass inline handlers; a ref keeps the effect from re-running (and stealing focus) on every parent render.
@@ -33,12 +39,13 @@ export function ConfirmDialog({
 
   useEffect(() => {
     if (!open) return;
+    setTyped("");
     const prevFocus = document.activeElement as HTMLElement | null;
     cancelRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") return onCancelRef.current();
       if (e.key !== "Tab") return;
-      const f = ref.current?.querySelectorAll<HTMLElement>("button:not(:disabled)");
+      const f = ref.current?.querySelectorAll<HTMLElement>("button:not(:disabled),input");
       if (!f?.length) return;
       const first = f[0];
       const last = f[f.length - 1];
@@ -66,9 +73,20 @@ export function ConfirmDialog({
       >
         <h2 id="confirm-title" className="font-display text-lg font-semibold">{title}</h2>
         {description && <p id="confirm-desc" className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">{description}</p>}
+        {requireText && (
+          <label className="mt-3 block text-sm">
+            <span className="text-gray-500 dark:text-gray-400">{requireLabel}</span>
+            <input
+              value={typed}
+              onChange={(e) => setTyped(e.target.value)}
+              autoComplete="off"
+              className="mt-1 h-11 w-full rounded-xl border border-gray-900/15 bg-white px-3 text-base text-gray-900 outline-none focus:border-nordic-600/50 dark:border-white/[0.14] dark:bg-black/40 dark:text-white sm:text-sm"
+            />
+          </label>
+        )}
         <div className="mt-5 flex justify-end gap-2">
           <Button ref={cancelRef} variant="outline" onClick={onCancel} disabled={busy}>{cancelLabel}</Button>
-          <Button variant={destructive ? "destructive" : "default"} onClick={onConfirm} disabled={busy}>{confirmLabel}</Button>
+          <Button variant={destructive ? "destructive" : "default"} onClick={onConfirm} disabled={busy || (!!requireText && typed.trim() !== requireText)}>{confirmLabel}</Button>
         </div>
       </div>
     </div>

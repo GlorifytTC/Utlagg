@@ -9,7 +9,7 @@ export const Input = React.forwardRef<
   HTMLInputElement,
   React.InputHTMLAttributes<HTMLInputElement>
 >(({ className, ...props }, ref) => (
-  <input ref={ref} className={cn(fieldClass, "flex h-11 py-2 md:h-10", className)} {...props} />
+  <input ref={ref} className={cn(fieldClass, "flex h-11 py-2 md:[@media(pointer:fine)]:h-10", className)} {...props} />
 ));
 Input.displayName = "Input";
 
@@ -17,7 +17,7 @@ export const Select = React.forwardRef<
   HTMLSelectElement,
   React.SelectHTMLAttributes<HTMLSelectElement>
 >(({ className, ...props }, ref) => (
-  <select ref={ref} className={cn(fieldClass, "h-11 md:h-10", className)} {...props} />
+  <select ref={ref} className={cn(fieldClass, "h-11 md:[@media(pointer:fine)]:h-10", className)} {...props} />
 ));
 Select.displayName = "Select";
 

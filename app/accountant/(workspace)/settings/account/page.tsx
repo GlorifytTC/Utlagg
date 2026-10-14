@@ -1,3 +1,4 @@
+import { metaTitle } from "@/lib/i18n-server";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
@@ -5,7 +6,7 @@ import { users } from "@/db/schema";
 import { requireAccountant } from "@/lib/accountant";
 import { AccountantSettings } from "@/components/accountant/AccountantSettings";
 
-export const metadata = { title: "Inställningar" };
+export const generateMetadata = metaTitle("Inställningar", "Settings");
 export const dynamic = "force-dynamic";
 
 export default async function AccountantSettingsPage() {

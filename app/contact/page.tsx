@@ -19,13 +19,20 @@ function ContactContent() {
 
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
-  async function send() {
+  const [emailBad, setEmailBad] = useState(false);
+
+  async function send(e: React.FormEvent) {
+    e.preventDefault();
+    if (status === "sending") return;
+    const bad = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    setEmailBad(bad);
+    if (bad) return;
     setStatus("sending");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ name, email: email.trim(), message }),
       });
       if (!res.ok) throw new Error();
       setStatus("sent");
@@ -88,7 +95,7 @@ function ContactContent() {
           <div className="bezel-core p-6 sm:p-8 md:p-10">
             <h2 className="font-display text-2xl font-semibold tracking-tight">{t.contactFormTitle}</h2>
             <p className="mt-2 text-sm text-ink/60">{t.contactFormDesc}</p>
-            <div className="mt-6 space-y-4">
+            <form onSubmit={send} noValidate className="mt-6 space-y-4">
               <div>
                 <label htmlFor="contact-name" className="text-sm font-medium text-ink/75">{t.contactName}</label>
                 <input
@@ -109,9 +116,12 @@ function ContactContent() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  aria-invalid={emailBad || undefined}
+                  aria-describedby={emailBad ? "contact-email-error" : undefined}
                   className="mt-1.5 w-full rounded-2xl border border-ink/20 bg-paper px-4 py-3 text-base outline-none sm:text-sm transition placeholder:text-ink/60 focus:border-nordic-600 focus-visible:ring-4 focus-visible:ring-nordic-600/15"
                 />
               </div>
+              {emailBad && <p id="contact-email-error" role="alert" className="-mt-2 text-sm text-red-600">{t.contactEmailInvalid}</p>}
               <div>
                 <label htmlFor="contact-message" className="text-sm font-medium text-ink/75">{t.contactMessage}</label>
                 <textarea
@@ -125,16 +135,15 @@ function ContactContent() {
                 />
               </div>
               <button
-                type="button"
-                onClick={send}
+                type="submit"
                 disabled={!name || !email || !message || status === "sending"}
                 className="w-full rounded-full bg-nordic-600 px-6 py-3.5 text-sm font-medium text-white transition duration-500 ease-premium hover:bg-nordic-700 active:scale-[0.98] disabled:opacity-40"
               >
-                {t.contactSend}
+                {status === "sending" ? t.stSubmitting : t.contactSend}
               </button>
               {status === "sent" && <p role="status" className="text-sm text-nordic-700">{t.contactSent}</p>}
               {status === "error" && <p role="alert" className="text-sm text-red-600">{t.contactError}</p>}
-            </div>
+            </form>
           </div>
         </div>
       </main>

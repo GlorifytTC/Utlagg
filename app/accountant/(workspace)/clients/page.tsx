@@ -1,9 +1,9 @@
 import { AccountantClientsList } from "@/components/accountant/AccountantClientsList";
-import { getServerLang } from "@/lib/i18n-server";
+import { getServerLang, metaTitle } from "@/lib/i18n-server";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import { PageHeader } from "@/components/ui/page-header";
 
-export const metadata = { title: "Klienter" };
+export const generateMetadata = metaTitle("Klienter", "Clients");
 export const dynamic = "force-dynamic";
 
 export default function AccountantClientsPage() {

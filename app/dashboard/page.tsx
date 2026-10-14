@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Building2, Download, Store, Upload } from "lucide-react";
+import { ArrowUpRight, Download } from "lucide-react";
 import { getT } from "@/lib/i18n-server";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -15,6 +15,7 @@ import { AccountantEntryLink } from "@/components/accountant/AccountantEntryLink
 import { DashboardAccountantAccess } from "@/components/dashboard/DashboardAccountantAccess";
 import { getUserCompany } from "@/lib/company";
 import { loadReceiptPeople } from "@/lib/receipts/people";
+import { GettingStarted } from "@/components/dashboard/GettingStarted";
 import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata = { title: "Översikt" };
@@ -73,13 +74,7 @@ export default async function DashboardPage() {
     grantExpired ||
     (user.subscriptionTier === "free" && user.subscriptionStatus === "canceled");
 
-  const firstName = user.name?.split(" ")[0] ?? user.email;
-
-  const gettingStarted = [
-    { href: "/dashboard/receipts", icon: Upload, title: t.dashGsReceipt, sub: t.dashGsSub1 },
-    { href: "/dashboard/settings/company", icon: Building2, title: t.dashGsCompany, sub: t.dashGsSub2 },
-    { href: "/dashboard/marketplace", icon: Store, title: t.dashGsMarketplace, sub: t.dashGsSub3 },
-  ];
+  const firstName = user.name?.split(" ")[0];
 
   return (
     <div className="mx-auto max-w-7xl animate-fade-up space-y-6">
@@ -104,7 +99,7 @@ export default async function DashboardPage() {
       )}
 
       <PageHeader
-        title={`${t.dashWelcome}, ${firstName}`}
+        title={firstName ? `${t.dashWelcome}, ${firstName}` : t.dashWelcome}
         subtitle={company?.name}
         leading={
           company?.logoUrl && (
@@ -117,28 +112,7 @@ export default async function DashboardPage() {
         actions={<AccountantEntryLink />}
       />
 
-      {Number(stats?.total ?? 0) === 0 && !premiumEnded && (
-        <section className="rounded-2xl bg-nordic-50 p-6 dark:bg-nordic-600/[0.06]">
-          <h2 className="font-display text-lg font-semibold text-gray-900 dark:text-white">
-            {t.dashGettingStartedTitle}
-          </h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            {gettingStarted.map(({ href, icon: Icon, title, sub }) => (
-              <Link
-                key={href}
-                href={href}
-                className="panel group flex items-start gap-3 rounded-xl p-4 transition duration-300 ease-premium hover:border-nordic-600/30 active:scale-[0.99]"
-              >
-                <Icon className="mt-0.5 h-[18px] w-[18px] shrink-0 text-nordic-600" strokeWidth={1.75} />
-                <span className="min-w-0">
-                  <span className="block text-sm font-medium text-gray-900 dark:text-white">{title}</span>
-                  <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">{sub}</span>
-                </span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      {Number(stats?.total ?? 0) === 0 && <GettingStarted />}
 
       <StatsCards
         totalReceipts={Number(stats?.total ?? 0)}

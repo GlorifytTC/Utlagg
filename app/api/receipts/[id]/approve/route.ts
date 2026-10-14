@@ -11,6 +11,7 @@ export const runtime = "nodejs";
 
 const schema = z.object({
   decision: z.enum(["approve", "remove"]),
+  reason: z.string().trim().max(500).optional(),
 });
 
 /**
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   await logAudit({
     userId,
     action: parsed.data.decision === "approve" ? "receipt.approve" : "receipt.reject",
-    details: `receipt ${params.id}`,
+    details: `receipt ${params.id}${parsed.data.reason ? ` · ${parsed.data.reason}` : ""}`,
     ipAddress: clientIp(req),
   });
   return NextResponse.json({ ok: true, status: newStatus });

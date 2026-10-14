@@ -161,6 +161,7 @@ export interface Translations {
   receiptShowing: string;
   idleTitle: string;
   idleStay: string;
+  idleBody: string;
   idleLogout: string;
   statTotalReceipts: string;
   statThisMonth: string;
@@ -397,6 +398,10 @@ export interface Translations {
   btnSave: string;
   btnSaveTrip: string;
   btnCancel: string;
+  confirmDeleteTitle: string;
+  confirmDeleteDesc: string;
+  trAmountInvalid: string;
+  invDueBeforeIssue: string;
   btnSaveInvoice: string;
   btnDeleteAccountPermanent: string;
   stSaving: string;
@@ -1147,7 +1152,6 @@ export interface Translations {
   todoLowConfidence: string;
   todoMissingInfo: string;
   todoPending: string;
-  todoEmpty: string;
   // Activity
   activityReviewedWeek: string;
   activityReviewedMonth: string;
@@ -1188,12 +1192,10 @@ export interface Translations {
   teamRoleAdmin: string;
   teamRoleMember: string;
   teamRemove: string;
-  teamRemoveConfirm: string;
   teamInvite: string;
   teamInviteEmail: string;
   teamInviteRole: string;
   teamSend: string;
-  teamPending: string;
   teamAssignTitle: string;
   teamAssignHint: string;
   teamAssignedTo: string;
@@ -1202,6 +1204,29 @@ export interface Translations {
   teamUnassign: string;
   // Dashboard getting started
   dashGettingStartedKicker: string;
+  hintWhat: string;
+  hintVat: string;
+  hintBas: string;
+  hintMileage: string;
+  hintSie4: string;
+  dashFirstTitle: string;
+  dashFirstWhy: string;
+  dashFirstCta: string;
+  dashStepCompanyWhy: string;
+  dashStepAccountantWhy: string;
+  dashSkip: string;
+  dashThenLabel: string;
+  recentEmptyBody: string;
+  regErrEmail: string;
+  regErrPassword: string;
+  regErrGeneric: string;
+  regErrRate: string;
+  regNextStep: string;
+  regPlanPicked: string;
+  pricingAccountantLink: string;
+  joinSignInFailed: string;
+  aiNeedLogin: string;
+  contactEmailInvalid: string;
   dashGettingStartedTitle: string;
   dashGsReceipt: string;
   dashGsSub1: string;
@@ -1221,6 +1246,21 @@ export interface Translations {
   error: string;
   openMenu: string;
   somethingWentWrong: string;
+  expLockedUpgrade: string;
+  roleApproverHint: string;
+  phSelectApprover: string;
+  apApprover: string;
+  upsellAskOwner: string;
+  ruLimitTitle: string;
+  ruLimitReached: string;
+  ruLimitUpgrade: string;
+  ruAiNote: string;
+  ruAiNoteLink: string;
+  subSwitchConfirmTitle: string;
+  subSwitchConfirm: string;
+  subEndsOn: string;
+  btnConfirm: string;
+  btnEdit: string;
   accAcceptCreateCompanyError: string;
   accAcceptWorking: string;
   accAcceptNoToken: string;
@@ -1320,6 +1360,12 @@ export interface Translations {
   caaRemoving: string;
   caaYesRemove: string;
   caaRevoke: string;
+  caaIncomingTitle: string;
+  caaAccept: string;
+  caaDecline: string;
+  caaRequestAccepted: string;
+  caaRequestDeclined: string;
+  caaRequestError: string;
   daaNone: string;
   daaOne: string;
   daaMany: string;
@@ -1432,6 +1478,8 @@ export interface Translations {
   rpConfirmPassword: string;
   rpSave: string;
   rpTitle: string;
+  rpSuccess: string;
+  rpRequestNew: string;
   aiAcceptError: string;
   aiInvalidLink: string;
   aiIntro: string;
@@ -1806,7 +1854,7 @@ export const strings: Record<Lang, Translations> = {
     btnChangePw: "Byt lösenord",
     prDeleteDesc: "När du raderar ditt konto försvinner dina kvitton och data permanent.",
     prSureTitle: "Är du helt säker?",
-    prSureDesc: "Detta går inte att ångra. Alla dina kvitton och inställningar raderas permanent.",
+    prSureDesc: "Detta går inte att ångra. Alla dina kvitton och inställningar raderas permanent. Bokföringslagen kräver att räkenskapsinformation sparas i 7 år, så exportera först.",
     prConfirmDelete: "Ja, radera mitt konto",
     stSubtitle: "Översikt över dina kvitton och moms",
     stTotalVat: "Total moms",
@@ -1815,7 +1863,7 @@ export const strings: Record<Lang, Translations> = {
     stNoData: "Ingen data ännu.",
     toastFillAddresses: "Fyll i adresser och sträcka",
     toastTripSaved: "Resa sparad",
-    milUpsellDesc: "Registrera resor och få skattefri milersättning (2,50 kr/km) automatiskt uträknad. Ingår i Företag-planen.",
+    milUpsellDesc: "Registrera resor och få skattefri milersättning (2,50 kr/km) automatiskt uträknad. Ingår från Pro-planen.",
     milRatePre: "Skattefri sats för egen bil:",
     milRateNote: "(25 kr/mil, Skatteverket 2026)",
     milNewTrip: "Ny resa",
@@ -1834,7 +1882,7 @@ export const strings: Record<Lang, Translations> = {
     milNoneYet: "Inga resor ännu.",
     milKm: "km",
     purposeBusinessShort: "Tjänst",
-    milManualNote: "Sträckan anges manuellt. Automatisk avståndsberäkning (Google Maps/OpenRouteService) kan kopplas in med en API-nyckel - den är inte aktiverad här.",
+    milManualNote: "Ange sträckan själv, till exempel från din körjournal eller en kartapp. Avståndet beräknas inte automatiskt.",
     promptComment: "Kommentar (valfritt):",
     promptReason: "Skäl till avslag:",
     toastApproved: "Godkänd",
@@ -2002,6 +2050,10 @@ export const strings: Record<Lang, Translations> = {
     btnSave: "Spara",
     btnSaveTrip: "Spara resa",
     btnCancel: "Avbryt",
+    confirmDeleteTitle: "Ta bort {name}?",
+    confirmDeleteDesc: "Det går inte att ångra.",
+    trAmountInvalid: "Ange ett belopp större än 0.",
+    invDueBeforeIssue: "Förfallodatum kan inte vara före fakturadatum.",
     subManageDesc: "Hantera din plan och fakturering",
     subPausedNotice: "Din prenumeration är pausad, så premiumfunktioner är låsta tills den återupptas.",
     subGrantExpiredNotice: "Din tilldelade plan har gått ut. Du har ingen aktiv plan längre - uppgradera för att låsa upp premiumfunktioner igen.",
@@ -2092,6 +2144,7 @@ export const strings: Record<Lang, Translations> = {
     usagePercentUsed: "använt",
     idleTitle: "Du loggas snart ut",
     idleStay: "Stanna inloggad",
+    idleBody: "Du loggas ut om {s} sekunder på grund av inaktivitet.",
     idleLogout: "Logga ut nu",
     receiptApprove: "Godkänn",
     reviewedBy: "Granskad av",
@@ -2099,7 +2152,7 @@ export const strings: Record<Lang, Translations> = {
     reviewedOn: "Granskad",
     accountantNote: "Notering från revisor",
     receiptDelete: "Ta bort",
-    receiptDeleteConfirm: "Ta bort detta kvitto? Detta går inte att ångra.",
+    receiptDeleteConfirm: "Ta bort detta kvitto? Detta går inte att ångra. Bokföringslagen kräver att räkenskapsinformation sparas i 7 år, så exportera först.",
     colActions: "Åtgärder",
     receiptCancel: "Avbryt",
     receiptsSubtitle: "Ladda upp, granska och exportera",
@@ -2725,7 +2778,6 @@ export const strings: Record<Lang, Translations> = {
     todoLowConfidence: "Låg säkerhet",
     todoMissingInfo: "Saknar info",
     todoPending: "Väntande",
-    todoEmpty: "Inga kvitton att granska",
     activityReviewedWeek: "granskade denna vecka",
     activityReviewedMonth: "granskade denna månad",
     clientDistTitle: "Klientdistribution",
@@ -2761,12 +2813,10 @@ export const strings: Record<Lang, Translations> = {
     teamRoleAdmin: "Admin",
     teamRoleMember: "Medlem",
     teamRemove: "Ta bort",
-    teamRemoveConfirm: "Är du säker?",
     teamInvite: "Bjud in",
     teamInviteEmail: "E-postadress",
     teamInviteRole: "Roll",
     teamSend: "Skicka inbjudan",
-    teamPending: "Väntande",
     teamAssignTitle: "Tilldela klienter",
     teamAssignHint: "Välj en klient och tilldela teammedlemmar",
     teamAssignedTo: "Tilldelad till",
@@ -2774,6 +2824,29 @@ export const strings: Record<Lang, Translations> = {
     teamAssign: "Tilldela",
     teamUnassign: "Avdela",
     dashGettingStartedKicker: "Kom igång",
+    hintWhat: "Vad betyder det?",
+    hintVat: "Moms är skatten på varan. Köper du för verksamheten kan du ofta göra avdrag (dra av momsen) i din momsdeklaration. Vanliga satser: 25, 12 och 6 %.",
+    hintBas: "BAS-kontot är kontoplanen din bokförare använder, t.ex. 6071 för representation (kundlunch, fika med gäster - med särskilda avdragsregler).",
+    hintMileage: "Milersättning är ersättning för tjänsteresor med egen bil. Upp till skatteverkets sats är den skattefri.",
+    hintSie4: "SIE4 är standardfilen som bokföringsprogram som Fortnox, Visma och Bokio kan läsa in.",
+    dashFirstTitle: "Skanna ditt första kvitto",
+    dashFirstWhy: "Ta en bild eller ladda upp en PDF så läser vi av leverantör, belopp och moms åt dig. Det tar ungefär en halv minut.",
+    dashFirstCta: "Skanna kvitto",
+    dashStepCompanyWhy: "Behövs om ni är flera: bjud in kollegor så kan de skicka in kvitton till attest.",
+    dashStepAccountantWhy: "Din redovisningskonsult ser kvittona direkt - ingen pärm eller mejlbilagor.",
+    dashSkip: "Hoppa över",
+    dashThenLabel: "Sedan",
+    recentEmptyBody: "Här dyker dina senaste kvitton upp. Ladda upp ett kvitto så läser vi av belopp och moms och sparar underlaget i sju år.",
+    regErrEmail: "Ange en giltig e-postadress.",
+    regErrPassword: "Lösenordet måste vara minst 8 tecken.",
+    regErrGeneric: "Det gick inte att skapa kontot. Kontrollera uppgifterna och försök igen.",
+    regErrRate: "För många försök. Vänta en stund och försök igen.",
+    regNextStep: "Nästa steg: klicka på länken i mejlet och logga sedan in. Din 30 dagars provperiod startar då.",
+    regPlanPicked: "Du valde {plan} - du börjar med 30 dagars gratis provperiod av Pro, utan kort.",
+    pricingAccountantLink: "Redovisningskonsult? Det är gratis för dig - skapa konto",
+    joinSignInFailed: "Ditt lösenord är sparat, men vi kunde inte logga in dig automatiskt.",
+    aiNeedLogin: "Logga in, eller skapa konto med den e-postadress som fick inbjudan, för att gå med i företaget.",
+    contactEmailInvalid: "Ange en giltig e-postadress.",
     dashGettingStartedTitle: "Välkommen! Här är tre saker att göra först.",
     dashGsReceipt: "Lägg till ditt första kvitto",
     dashGsSub1: "Skanna eller ladda upp",
@@ -2791,6 +2864,21 @@ export const strings: Record<Lang, Translations> = {
     error: "Något gick fel",
     openMenu: "Öppna meny",
     somethingWentWrong: "Något gick fel.",
+    expLockedUpgrade: "Uppgradera",
+    roleApproverHint: "Attestant godkänner medarbetares kvitton men kan inte ändra företagsinställningar.",
+    phSelectApprover: "Välj attestant",
+    apApprover: "Attestant",
+    upsellAskOwner: "Be kontoägaren uppgradera.",
+    ruLimitTitle: "Skanningsgränsen är nådd",
+    ruLimitReached: "Du har nått månadens gräns för skanningar. Uppgradera för fler.",
+    ruLimitUpgrade: "Uppgradera",
+    ruAiNote: "Bilder behandlas av AI, vilket kan förbättra textigenkänningen.",
+    ruAiNoteLink: "Läs mer i integritetspolicyn",
+    subSwitchConfirmTitle: "Byta plan?",
+    subSwitchConfirm: "Du byter till {plan}. Vill du fortsätta?",
+    subEndsOn: "Abonnemanget gäller till {date}.",
+    btnConfirm: "Bekräfta",
+    btnEdit: "Redigera",
     accAcceptCreateCompanyError: "Kunde inte skapa företaget.",
     accAcceptWorking: "Behandlar inbjudan…",
     accAcceptNoToken: "Ingen giltig inbjudningslänk hittades.",
@@ -2890,6 +2978,12 @@ export const strings: Record<Lang, Translations> = {
     caaRemoving: "Tar bort…",
     caaYesRemove: "Ja, ta bort",
     caaRevoke: "Ta bort åtkomst",
+    caaIncomingTitle: "Förfrågningar från revisorer",
+    caaAccept: "Godkänn",
+    caaDecline: "Avböj",
+    caaRequestAccepted: "Revisorn har nu åtkomst",
+    caaRequestDeclined: "Förfrågan avböjd",
+    caaRequestError: "Kunde inte svara på förfrågan",
     daaNone: "Ingen revisor har åtkomst",
     daaOne: "{name} har åtkomst",
     daaMany: "{n} revisorer har åtkomst",
@@ -2950,7 +3044,7 @@ export const strings: Record<Lang, Translations> = {
     ruBasAccount: "BAS-konto",
     ruSaveReceipt: "Spara kvitto",
     dashUsage: "Användning",
-    authVerifySuccess: "E-postadressen är bekräftad. Du kan nu logga in.",
+    authVerifySuccess: "E-postadressen är bekräftad. Logga nu in med din e-postadress och ditt lösenord.",
     authVerifyInvalid: "Länken är ogiltig eller har gått ut. Begär en ny nedan.",
     authMustVerify: "Du måste bekräfta din e-postadress innan du kan logga in.",
     authWrongCredentials: "Fel e-post eller lösenord",
@@ -2969,7 +3063,7 @@ export const strings: Record<Lang, Translations> = {
     regEmailFailed: "Ditt konto skapades, men vi kunde tyvärr inte skicka bekräftelsemejlet till {email} just nu. Det är ett tillfälligt problem med e-postutskick på vår sida - inte med din adress.",
     regEmailFailedHelpPre: "Du kan skicka mejlet igen här nedan, eller kontakta",
     regEmailFailedHelpPost: "om det inte fungerar.",
-    regSentTo: "Om {email} inte redan har ett konto har vi skickat en bekräftelselänk dit. Har du redan ett konto kan du logga in istället. Klicka på länken i mejlet för att aktivera kontot och komma till din instrumentpanel.",
+    regSentTo: "Om {email} inte redan har ett konto har vi skickat en bekräftelselänk dit. Har du redan ett konto kan du logga in istället.",
     regResendIn: "Skicka igen om {n}s",
     regResend: "Skicka mejlet igen",
     regResent: "Skickat! Kolla inkorgen (och skräpposten) för {email}.",
@@ -2977,11 +3071,11 @@ export const strings: Record<Lang, Translations> = {
     regNoMailPre: "Inget mejl efter några minuter? Kolla skräpposten, eller",
     regNoMailLogin: "logga in",
     regNoMailPost: "när du har klickat på länken.",
-    regAccountantSubtitle: "Revisorskonto - hantera dina klienters kvitton.",
+    regAccountantSubtitle: "Gratis för redovisningskonsulter - hantera dina klienters kvitton.",
     regUserSubtitle: "30 dagar gratis provperiod · inget kort krävs.",
-    regTypeUser: "Företag / privat",
+    regTypeUser: "Jag driver ett företag",
     regTypeUserDesc: "Skanna dina egna kvitton",
-    regTypeAccountant: "Redovisningskonsult",
+    regTypeAccountant: "Jag är redovisningskonsult eller byrå",
     regTypeAccountantDesc: "Hantera klienters kvitton",
     regName: "Namn",
     regFirmOptional: "Byrå (valfritt)",
@@ -3002,6 +3096,8 @@ export const strings: Record<Lang, Translations> = {
     rpConfirmPassword: "Bekräfta lösenord",
     rpSave: "Spara nytt lösenord",
     rpTitle: "Återställ lösenord",
+    rpSuccess: "Lösenordet är ändrat. Logga in med det nya lösenordet.",
+    rpRequestNew: "Begär en ny länk",
     aiAcceptError: "Kunde inte acceptera",
     aiInvalidLink: "Ogiltig eller saknad inbjudningslänk.",
     aiIntro: "Du har bjudits in till ett företag på Kvittino. Du måste vara inloggad för att acceptera.",
@@ -3374,7 +3470,7 @@ export const strings: Record<Lang, Translations> = {
     btnChangePw: "Change password",
     prDeleteDesc: "When you delete your account, your receipts and data are permanently removed.",
     prSureTitle: "Are you absolutely sure?",
-    prSureDesc: "This cannot be undone. All your receipts and settings are permanently deleted.",
+    prSureDesc: "This cannot be undone. All your receipts and settings are permanently deleted. Swedish bookkeeping law (Bokföringslagen) requires records to be kept for 7 years, so export first.",
     prConfirmDelete: "Yes, delete my account",
     stSubtitle: "Overview of your receipts and VAT",
     stTotalVat: "Total VAT",
@@ -3383,7 +3479,7 @@ export const strings: Record<Lang, Translations> = {
     stNoData: "No data yet.",
     toastFillAddresses: "Fill in addresses and distance",
     toastTripSaved: "Trip saved",
-    milUpsellDesc: "Log trips and get tax-free mileage (2.50 kr/km) calculated automatically. Included in the Business plan.",
+    milUpsellDesc: "Log trips and get tax-free mileage (2.50 kr/km) calculated automatically. Included from the Pro plan.",
     milRatePre: "Tax-free rate for own car:",
     milRateNote: "(25 kr/10 km, Swedish Tax Agency 2026)",
     milNewTrip: "New trip",
@@ -3402,7 +3498,7 @@ export const strings: Record<Lang, Translations> = {
     milNoneYet: "No trips yet.",
     milKm: "km",
     purposeBusinessShort: "Business",
-    milManualNote: "Distance is entered manually. Automatic distance calculation (Google Maps/OpenRouteService) can be added with an API key - it is not enabled here.",
+    milManualNote: "Enter the distance yourself, for example from your logbook or a map app. It is not calculated automatically.",
     promptComment: "Comment (optional):",
     promptReason: "Reason for rejection:",
     toastApproved: "Approved",
@@ -3570,6 +3666,10 @@ export const strings: Record<Lang, Translations> = {
     btnSave: "Save",
     btnSaveTrip: "Save trip",
     btnCancel: "Cancel",
+    confirmDeleteTitle: "Delete {name}?",
+    confirmDeleteDesc: "This cannot be undone.",
+    trAmountInvalid: "Enter an amount greater than 0.",
+    invDueBeforeIssue: "The due date cannot be before the invoice date.",
     subManageDesc: "Manage your plan and billing",
     subPausedNotice: "Your subscription is paused, so premium features are locked until it is resumed.",
     subGrantExpiredNotice: "Your granted plan has expired. You no longer have an active plan - upgrade to unlock premium features again.",
@@ -3660,6 +3760,7 @@ export const strings: Record<Lang, Translations> = {
     usagePercentUsed: "used",
     idleTitle: "You'll be logged out soon",
     idleStay: "Stay logged in",
+    idleBody: "You'll be logged out in {s} seconds due to inactivity.",
     idleLogout: "Log out now",
     receiptApprove: "Approve",
     reviewedBy: "Reviewed by",
@@ -3667,7 +3768,7 @@ export const strings: Record<Lang, Translations> = {
     reviewedOn: "Reviewed",
     accountantNote: "Accountant note",
     receiptDelete: "Delete",
-    receiptDeleteConfirm: "Delete this receipt? This cannot be undone.",
+    receiptDeleteConfirm: "Delete this receipt? This cannot be undone. Swedish bookkeeping law (Bokföringslagen) requires records to be kept for 7 years, so export first.",
     colActions: "Actions",
     receiptCancel: "Cancel",
     receiptsSubtitle: "Upload, review and export",
@@ -4289,7 +4390,6 @@ export const strings: Record<Lang, Translations> = {
     todoLowConfidence: "Low confidence",
     todoMissingInfo: "Missing info",
     todoPending: "Pending",
-    todoEmpty: "No receipts to review",
     activityReviewedWeek: "reviewed this week",
     activityReviewedMonth: "reviewed this month",
     clientDistTitle: "Client Distribution",
@@ -4325,12 +4425,10 @@ export const strings: Record<Lang, Translations> = {
     teamRoleAdmin: "Admin",
     teamRoleMember: "Member",
     teamRemove: "Remove",
-    teamRemoveConfirm: "Are you sure?",
     teamInvite: "Invite",
     teamInviteEmail: "Email address",
     teamInviteRole: "Role",
     teamSend: "Send invite",
-    teamPending: "Pending",
     teamAssignTitle: "Assign clients",
     teamAssignHint: "Select a client and assign team members",
     teamAssignedTo: "Assigned to",
@@ -4338,6 +4436,29 @@ export const strings: Record<Lang, Translations> = {
     teamAssign: "Assign",
     teamUnassign: "Unassign",
     dashGettingStartedKicker: "Get started",
+    hintWhat: "What does this mean?",
+    hintVat: "VAT (moms) is the tax on goods. If you buy for the business you can usually deduct it (avdrag) in your VAT return. Common rates: 25, 12 and 6%.",
+    hintBas: "The BAS account is the chart of accounts your bookkeeper uses, e.g. 6071 for representation (client lunches, coffee with guests - with special deduction rules).",
+    hintMileage: "Mileage allowance (milersättning) is reimbursement for business trips in your own car. Up to the Tax Agency's rate it is tax-free.",
+    hintSie4: "SIE4 is the standard file that accounting software like Fortnox, Visma and Bokio can import.",
+    dashFirstTitle: "Scan your first receipt",
+    dashFirstWhy: "Take a photo or upload a PDF and we read the vendor, amount and VAT for you. It takes about half a minute.",
+    dashFirstCta: "Scan receipt",
+    dashStepCompanyWhy: "Needed if you're a team: invite colleagues so they can submit receipts for approval.",
+    dashStepAccountantWhy: "Your accountant sees the receipts right away - no folders or email attachments.",
+    dashSkip: "Skip",
+    dashThenLabel: "Then",
+    recentEmptyBody: "Your latest receipts show up here. Upload one and we read the amount and VAT and keep the record for seven years.",
+    regErrEmail: "Enter a valid email address.",
+    regErrPassword: "The password must be at least 8 characters.",
+    regErrGeneric: "We couldn't create the account. Check your details and try again.",
+    regErrRate: "Too many attempts. Wait a moment and try again.",
+    regNextStep: "Next step: click the link in the email, then log in. Your 30-day trial starts then.",
+    regPlanPicked: "You picked {plan} - you start with a 30-day free trial of Pro, no card.",
+    pricingAccountantLink: "Accountant? It's free for you - create an account",
+    joinSignInFailed: "Your password is saved, but we couldn't log you in automatically.",
+    aiNeedLogin: "Log in, or create an account with the email address that received the invitation, to join the company.",
+    contactEmailInvalid: "Enter a valid email address.",
     dashGettingStartedTitle: "Welcome! Here are three things to do first.",
     dashGsReceipt: "Add your first receipt",
     dashGsSub1: "Scan or upload",
@@ -4355,6 +4476,21 @@ export const strings: Record<Lang, Translations> = {
     error: "Something went wrong",
     openMenu: "Open menu",
     somethingWentWrong: "Something went wrong.",
+    expLockedUpgrade: "Upgrade",
+    roleApproverHint: "An approver can approve colleagues' receipts but cannot change company settings.",
+    phSelectApprover: "Select approver",
+    apApprover: "Approver",
+    upsellAskOwner: "Ask your account owner to upgrade.",
+    ruLimitTitle: "Scan limit reached",
+    ruLimitReached: "You have reached this month's scan limit. Upgrade for more.",
+    ruLimitUpgrade: "Upgrade",
+    ruAiNote: "Images are processed by AI, which may improve text recognition.",
+    ruAiNoteLink: "See the privacy policy",
+    subSwitchConfirmTitle: "Switch plan?",
+    subSwitchConfirm: "You are switching to {plan}. Do you want to continue?",
+    subEndsOn: "Your subscription runs until {date}.",
+    btnConfirm: "Confirm",
+    btnEdit: "Edit",
     accAcceptCreateCompanyError: "Could not create the company.",
     accAcceptWorking: "Processing invitation…",
     accAcceptNoToken: "No valid invitation link was found.",
@@ -4454,6 +4590,12 @@ export const strings: Record<Lang, Translations> = {
     caaRemoving: "Removing…",
     caaYesRemove: "Yes, remove",
     caaRevoke: "Remove access",
+    caaIncomingTitle: "Requests from accountants",
+    caaAccept: "Approve",
+    caaDecline: "Decline",
+    caaRequestAccepted: "The accountant now has access",
+    caaRequestDeclined: "Request declined",
+    caaRequestError: "Could not respond to the request",
     daaNone: "No accountant has access",
     daaOne: "{name} has access",
     daaMany: "{n} accountants have access",
@@ -4514,7 +4656,7 @@ export const strings: Record<Lang, Translations> = {
     ruBasAccount: "BAS account",
     ruSaveReceipt: "Save receipt",
     dashUsage: "Usage",
-    authVerifySuccess: "Your email address is confirmed. You can now log in.",
+    authVerifySuccess: "Your email address is confirmed. Now log in with your email and password.",
     authVerifyInvalid: "The link is invalid or has expired. Request a new one below.",
     authMustVerify: "You need to confirm your email address before you can log in.",
     authWrongCredentials: "Wrong email or password",
@@ -4533,7 +4675,7 @@ export const strings: Record<Lang, Translations> = {
     regEmailFailed: "Your account was created, but unfortunately we couldn't send the confirmation email to {email} right now. This is a temporary problem with email delivery on our side - not with your address.",
     regEmailFailedHelpPre: "You can resend the email below, or contact",
     regEmailFailedHelpPost: "if it doesn't work.",
-    regSentTo: "If {email} doesn't already have an account, we've sent a confirmation link there. If you already have an account, log in instead. Click the link in the email to activate your account and reach your dashboard.",
+    regSentTo: "If {email} doesn't already have an account, we've sent a confirmation link there. If you already have an account, log in instead.",
     regResendIn: "Resend in {n}s",
     regResend: "Resend the email",
     regResent: "Sent! Check the inbox (and spam folder) for {email}.",
@@ -4541,11 +4683,11 @@ export const strings: Record<Lang, Translations> = {
     regNoMailPre: "No email after a few minutes? Check your spam folder, or",
     regNoMailLogin: "log in",
     regNoMailPost: "once you've clicked the link.",
-    regAccountantSubtitle: "Accountant account - manage your clients' receipts.",
+    regAccountantSubtitle: "Free for accountants - manage your clients' receipts.",
     regUserSubtitle: "30-day free trial · no card required.",
-    regTypeUser: "Business / personal",
+    regTypeUser: "I run a business",
     regTypeUserDesc: "Scan your own receipts",
-    regTypeAccountant: "Accountant",
+    regTypeAccountant: "I'm an accountant or firm",
     regTypeAccountantDesc: "Manage clients' receipts",
     regName: "Name",
     regFirmOptional: "Firm (optional)",
@@ -4566,6 +4708,8 @@ export const strings: Record<Lang, Translations> = {
     rpConfirmPassword: "Confirm password",
     rpSave: "Save new password",
     rpTitle: "Reset password",
+    rpSuccess: "Your password is changed. Log in with the new password.",
+    rpRequestNew: "Request a new link",
     aiAcceptError: "Could not accept",
     aiInvalidLink: "Invalid or missing invitation link.",
     aiIntro: "You've been invited to a company on Kvittino. You need to be logged in to accept.",
@@ -4582,13 +4726,13 @@ export const strings: Record<Lang, Translations> = {
     cbQ4: "How does the free trial work?",
     cbA4: "You get 30 days free with full Pro access and 500 scans. No credit card required. When the trial ends, pick a plan - your data stays.",
     cbQ5: "What does it cost?",
-    cbA5: "Priced per company, not per user: Starter 50 kr, Pro 149 kr, Företag 299 kr and Max 699 kr a month. Enterprise on quote. All plans are month-to-month and can be cancelled anytime.",
+    cbA5: "Priced per company, not per user: Starter 50 kr, Pro 149 kr, Business 299 kr and Max 699 kr a month. Enterprise on quote. All plans are month-to-month and can be cancelled anytime.",
     cbQ6: "Which VAT rates are detected?",
     cbA6: "6 %, 12 % and 25 % are detected automatically. VAT follows the receipt date, so the temporary 2026-2027 food VAT is handled correctly.",
     cbQ7: "Can my accountant work in Kvittino?",
     cbA7: "Yes. Invite your accountant to review and correct receipts directly, chat with you per receipt, and export SIE or CSV. Firms get a free workspace with one queue across all clients.",
     cbQ8: "Can I manage a team?",
-    cbA8: "Företag (5-10 users) and Max (unlimited) include roles - owner, admin, approver and member - plus approval flows. Scans are shared across the team.",
+    cbA8: "Business (5-10 users) and Max (unlimited) include roles - owner, admin, approver and member - plus approval flows. Scans are shared across the team.",
     cbQ9: "I don't have an accountant - what now?",
     cbA9: "Find one in the marketplace right inside the app. Compare profiles and reviews, then send a request to the one you want.",
     cbQ10: "Can I log mileage and travel?",

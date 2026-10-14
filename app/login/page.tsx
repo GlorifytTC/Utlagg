@@ -43,7 +43,10 @@ function LoginForm() {
   useEffect(() => {
     const verify = searchParams.get("verify");
     if (verify === "success") setNotice(t.authVerifySuccess);
-    else if (verify === "invalid") setError(t.authVerifyInvalid);
+    else if (verify === "invalid") {
+      setError(t.authVerifyInvalid);
+      setUnverified(true); // shows the resend control the message points to
+    } else if (searchParams.get("reset") === "success") setNotice(t.rpSuccess);
   }, [searchParams, t]);
 
   async function handleSubmit() {
@@ -79,7 +82,9 @@ function LoginForm() {
       setLoading(false);
     } else {
       setLoading(false);
-      router.push("/dashboard");
+      // Only follow same-site paths (blocks //evil.com and absolute URLs).
+      const next = searchParams.get("next");
+      router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard");
     }
   }
 
@@ -104,7 +109,13 @@ function LoginForm() {
           <Logo size={28} wordmarkClassName="text-xl" adaptive={false} />
         </Link>
         <h1 className="mt-8 font-display text-3xl font-semibold tracking-tight">{t.login}</h1>
-        <div className="mt-6 space-y-4">
+        <form
+          className="mt-6 space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+        >
           <Field
             id="login-email"
             type="email"
@@ -122,8 +133,12 @@ function LoginForm() {
             value={password}
             error={!!error}
             onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           />
+          <p className="-mt-2 text-right text-sm">
+            <Link href="/forgot-password" className="inline-block py-2 text-nordic-700 underline">
+              {t.authForgotPassword}
+            </Link>
+          </p>
           {notice && !error && <p role="status" className="text-sm text-nordic-700">{notice}</p>}
           {error && <p id="form-error" role="alert" className="text-sm text-red-600">{error}</p>}
           {unverified && (
@@ -145,19 +160,14 @@ function LoginForm() {
               )}
             </div>
           )}
-          <Button onClick={handleSubmit} disabled={loading} className="w-full dark:!text-white">
+          <Button type="submit" disabled={loading} className="w-full dark:!text-white">
             {loading ? t.authLoggingIn : t.login}
           </Button>
-        </div>
+        </form>
         <p className="mt-6 text-sm text-ink/65">
           {t.authNoAccount}{" "}
           <Link href="/register" className="inline-block py-2 text-nordic-700 underline">
             {t.authCreateAccount}
-          </Link>
-        </p>
-        <p className="text-sm text-ink/65">
-          <Link href="/forgot-password" className="inline-block py-2 text-nordic-700 underline">
-            {t.authForgotPassword}
           </Link>
         </p>
       </div>

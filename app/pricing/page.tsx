@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { Check, Minus, Plus } from "lucide-react";
@@ -13,6 +14,7 @@ import { Footer } from "@/components/landing/Footer";
 import { AmbientBackground } from "@/components/landing/AmbientBackground";
 import { ChatBox } from "@/components/ChatBox";
 import { TrialVisual } from "@/components/landing/PageVisuals";
+import { Hint } from "@/components/ui/hint";
 import { CtaLink } from "@/components/landing/Cta";
 import { enter, reveal } from "@/components/landing/motion";
 
@@ -31,7 +33,7 @@ const PRICING_TABLE_ROWS = [
   { labelKey: "pricingTableRoles", starter: "-", pro: "-", business: "✓", max: "✓", enterprise: "✓" },
   { labelKey: "pricingTableLimits", starter: "-", pro: "-", business: "✓", max: "✓", enterprise: "✓" },
   { labelKey: "pricingTableOnboarding", starter: "-", pro: "-", business: "-", max: "✓", enterprise: "✓" },
-  { labelKey: "pricingTableSupport", starter: "-", pro: "-", business: "✓", max: "✓", enterprise: "✓" },
+  { labelKey: "pricingTableSupport", starter: "-", pro: "-", business: "-", max: "✓", enterprise: "✓" },
 ] as const;
 
 const FAQ_KEYS = [
@@ -40,6 +42,8 @@ const FAQ_KEYS = [
   { q: "pricingFaq3Q" as const, a: "pricingFaq3A" as const },
   { q: "pricingFaq4Q" as const, a: "pricingFaq4A" as const },
 ];
+
+const HINTS: Record<string, "hintBas" | "hintSie4"> = { pricingTableBas: "hintBas", pricingTableSie4: "hintSie4" };
 
 const TIER_ORDER = ["starter", "pro", "business", "max", "enterprise"] as const;
 
@@ -51,6 +55,7 @@ function PricingPageContent() {
   const { status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const { t } = useLanguage();
   const rm = useReducedMotion();
 
@@ -68,6 +73,7 @@ function PricingPageContent() {
       return;
     }
     try {
+      setCheckoutError(null);
       setLoading(tier);
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -76,7 +82,9 @@ function PricingPageContent() {
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
-      else alert(data.error ?? t.pricingCheckoutError);
+      else setCheckoutError(t.pricingCheckoutError);
+    } catch {
+      setCheckoutError(t.pricingCheckoutError);
     } finally {
       setLoading(null);
     }
@@ -128,6 +136,9 @@ function PricingPageContent() {
           >
             {t.pricingPageSubtitle}
           </motion.p>
+          <p className="mt-4 text-sm text-ink/65">
+            <Link href="/register?type=accountant" className="text-nordic-700 underline">{t.pricingAccountantLink}</Link>
+          </p>
         </section>
 
         {/* Plan cards: four self-serve plans in an even grid, Enterprise as a strip below */}
@@ -176,6 +187,7 @@ function PricingPageContent() {
               </motion.div>
             ))}
           </div>
+          {checkoutError && <p role="alert" className="mt-4 text-sm text-red-600">{checkoutError}</p>}
           {enterprise && (
             <motion.div {...reveal(selfServe.length, rm)} className="bezel mt-4">
               <div className="bezel-core flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between">
@@ -216,12 +228,38 @@ function PricingPageContent() {
               >
                 <Check className="h-3.5 w-3.5" strokeWidth={2} />
                 {t[row.labelKey as keyof typeof t] as string}
+                {HINTS[row.labelKey] && <Hint text={t[HINTS[row.labelKey]] as string} />}
               </span>
             ))}
           </div>
 
-          <p className="mt-10 text-xs text-ink/65 md:hidden">{t.pricingScrollHint}</p>
-          <div className="bezel mt-3 md:mt-10">
+          {/* Below md: one readable card per plan instead of a 5-column table */}
+          <div className="mt-10 space-y-3 md:hidden">
+            {TIER_ORDER.map((tier) => (
+              <div key={tier} className="rounded-2xl border hairline bg-[#fffdf8] p-4">
+                <h3 className="font-display text-lg font-semibold">{planName(t, tier)}</h3>
+                <dl className="mt-2 divide-y divide-ink/5 text-sm">
+                  {MATRIX_ROWS.map((row) => (
+                    <div key={row.labelKey} className="flex justify-between gap-4 py-2">
+                      <dt className="text-ink/70">{t[row.labelKey as keyof typeof t] as string}</dt>
+                      <dd className="tabular-nums">
+                        {row[tier] === "✓" ? (
+                          <><Check className="h-4 w-4 text-nordic-600" strokeWidth={2} aria-hidden /><span className="sr-only">{t.pricingIncluded}</span></>
+                        ) : row[tier] === "-" ? (
+                          <><Minus className="h-4 w-4 text-ink/25" strokeWidth={1.5} aria-hidden /><span className="sr-only">{t.pricingNotIncluded}</span></>
+                        ) : row[tier] === "∞" ? (
+                          t.unlimited
+                        ) : (
+                          row[tier]
+                        )}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            ))}
+          </div>
+          <div className="bezel mt-10 hidden md:block">
             <div className="bezel-core overflow-x-auto p-2 md:p-4">
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead>

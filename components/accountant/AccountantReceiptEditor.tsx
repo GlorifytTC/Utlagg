@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { ErrorState } from "@/components/ui/error-state";
@@ -29,10 +29,12 @@ export function AccountantReceiptEditor({
   companyId,
   receiptId,
   onSaved,
+  onDirtyChange,
 }: {
   companyId: string;
   receiptId: string;
   onSaved?: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
 }) {
   const { lang } = useLanguage();
   const t = accountantStrings(lang);
@@ -51,6 +53,17 @@ export function AccountantReceiptEditor({
   const [note, setNote] = useState("");
   const [reviewed, setReviewed] = useState(false);
 
+  // Dirty = any editable field differs from what the server last gave us / we last saved.
+  const baseline = useRef("");
+  const snapshot = JSON.stringify([vendorName, category, vatAmount, vatRate, basCode, note]);
+  const dirty = status === "ok" && snapshot !== baseline.current;
+  const onDirtyRef = useRef(onDirtyChange);
+  onDirtyRef.current = onDirtyChange;
+  useEffect(() => {
+    onDirtyRef.current?.(dirty);
+    return () => onDirtyRef.current?.(false);
+  }, [dirty]);
+
   const load = useCallback(async () => {
     setStatus("loading");
     try {
@@ -66,6 +79,10 @@ export function AccountantReceiptEditor({
       setBasCode(receipt.basCode ?? "");
       setNote(receipt.note ?? "");
       setReviewed(Boolean(receipt.reviewedAt));
+      baseline.current = JSON.stringify([
+        receipt.vendorName ?? "", receipt.category ?? "", receipt.vatAmount ?? "",
+        receipt.vatRate != null ? String(receipt.vatRate) : "", receipt.basCode ?? "", receipt.note ?? "",
+      ]);
       setStatus("ok");
     } catch {
       setStatus("error");
@@ -76,15 +93,24 @@ export function AccountantReceiptEditor({
     load();
   }, [load]);
 
-  async function save(extra?: Record<string, unknown>) {
+  // Swedish keyboards type "12,50"; Number("12,50") is NaN, which JSON turns into null and wipes the value.
+  const num = (v: string) => (v.trim() === "" ? null : Number(v.trim().replace(",", ".")));
+
+  async function save(extra?: Record<string, unknown>): Promise<boolean> {
+    const vat = num(vatAmount);
+    const rate = num(vatRate);
+    if (Number.isNaN(vat) || Number.isNaN(rate)) {
+      setMsg(t.reSaveError);
+      return false;
+    }
     setSaving(true);
     setMsg(null);
     try {
       const body: Record<string, unknown> = {
         vendorName: vendorName || null,
         category: category || null,
-        vatAmount: vatAmount === "" ? null : Number(vatAmount),
-        vatRate: vatRate === "" ? null : Number(vatRate),
+        vatAmount: vat,
+        vatRate: rate,
         basCode: basCode || null,
         note: note || null,
         ...extra,
@@ -96,12 +122,15 @@ export function AccountantReceiptEditor({
       });
       if (!res.ok) {
         setMsg(t.reSaveError);
-        return;
+        return false;
       }
+      baseline.current = snapshot;
       setMsg(t.reSaved);
       onSaved?.();
+      return true;
     } catch {
       setMsg(t.reSaveError);
+      return false;
     } finally {
       setSaving(false);
     }
@@ -110,11 +139,11 @@ export function AccountantReceiptEditor({
   async function toggleReviewed() {
     const next = !reviewed;
     setReviewed(next);
-    await save({ reviewed: next });
+    if (!(await save({ reviewed: next }))) setReviewed(!next); // revert optimistic toggle
   }
 
   if (status === "loading") return <p className="text-sm text-gray-500 dark:text-gray-400">{t.reLoading}</p>;
-  if (status === "error" || !detail) return <ErrorState>{t.reLoadError}</ErrorState>;
+  if (status === "error" || !detail) return <ErrorState onRetry={load} retryLabel={t.retry}>{t.reLoadError}</ErrorState>;
 
   return (
     <div className="grid gap-6 md:grid-cols-[1fr_280px]">

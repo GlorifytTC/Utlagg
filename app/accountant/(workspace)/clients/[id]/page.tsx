@@ -1,6 +1,7 @@
+import { metaTitle } from "@/lib/i18n-server";
 import { AccountantClientWorkspace } from "@/components/accountant/AccountantClientWorkspace";
 
-export const metadata = { title: "Klient" };
+export const generateMetadata = metaTitle("Klient", "Client");
 export const dynamic = "force-dynamic";
 
 export default function AccountantClientPage({

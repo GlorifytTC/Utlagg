@@ -10,6 +10,7 @@ import { accountantStrings } from "@/lib/accountant-i18n";
 import { Logo } from "@/components/brand/Logo";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { AppShell, NotifBadge, iconBtn, navIconClass, navItemClass } from "@/components/AppShell";
+import { IdleLogout } from "@/components/IdleLogout";
 import { useNotifications } from "@/context/NotificationContext";
 
 // Re-exported for existing imports; the badge now lives with the shared shell.
@@ -56,7 +57,7 @@ function NavList({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: (
           </button>
         )}
       </div>
-      <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-3 pt-3 [scrollbar-width:thin]">
+      <nav aria-label={lang === "sv" ? "Huvudmeny" : "Main menu"} className="min-h-0 flex-1 overflow-y-auto px-3 pb-3 pt-3 [scrollbar-width:thin]">
         <ul className="space-y-0.5">
           {nav.map((item) => {
             const Icon = item.icon;
@@ -96,7 +97,7 @@ export function AccountantChrome({ children }: { children: React.ReactNode }) {
     <AppShell
       homeHref="/accountant"
       renderNav={(p) => <NavList {...p} />}
-      headerEnd={<ProfileMenu logoEndpoint="/api/accountant/logo" settingsHref="/accountant/settings" links={[{ href: "/dashboard", label: at.menuAccount, icon: UserRound }]} />}
+      headerEnd={<ProfileMenu logoEndpoint="/api/accountant/logo" settingsHref="/accountant/settings" links={[{ href: "/accountant/settings/account", label: at.menuAccount, icon: UserRound }]} />}
       bottomNav={bottomNav.map((item) => ({
         href: item.href,
         label: at[item.key],
@@ -105,6 +106,7 @@ export function AccountantChrome({ children }: { children: React.ReactNode }) {
         badge: item.badge ? badgeCounts[item.badge] : 0,
       }))}
     >
+      <IdleLogout />
       {children}
     </AppShell>
   );

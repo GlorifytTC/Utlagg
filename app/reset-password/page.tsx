@@ -19,7 +19,7 @@ function ResetForm() {
 
   async function submit() {
     setError(null);
-    if (!password || !confirm) {
+    if (password.length < 8) {
       setError(t.joinPwTooShort);
       return;
     }
@@ -38,7 +38,7 @@ function ResetForm() {
         router.push("/login?reset=success");
       } else {
         const e = await res.json().catch(() => ({}));
-        setError(e.message ?? t.rpError);
+        setError(e.error ?? e.message ?? t.rpError);
       }
     } catch {
       setError(t.rpError);
@@ -48,11 +48,24 @@ function ResetForm() {
   }
 
   if (!token) {
-    return <p role="alert" className="mt-6 text-sm text-red-600">{t.rpInvalidLink}</p>;
+    return (
+      <div className="mt-6 space-y-2">
+        <p role="alert" className="text-sm text-red-600">{t.rpInvalidLink}</p>
+        <Link href="/forgot-password" className="inline-block py-2 text-sm text-nordic-700 underline">
+          {t.rpRequestNew}
+        </Link>
+      </div>
+    );
   }
 
   return (
-    <div className="mt-6 space-y-4">
+    <form
+      className="mt-6 space-y-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        submit();
+      }}
+    >
       <Field
         id="rp-password"
         type="password"
@@ -70,13 +83,19 @@ function ResetForm() {
         value={confirm}
         error={!!error}
         onChange={(e) => setConfirm(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && submit()}
       />
-      {error && <p id="form-error" role="alert" className="text-sm text-red-600">{error}</p>}
-      <Button onClick={submit} disabled={loading} className="w-full dark:!text-white">
+      {error && (
+        <div>
+          <p id="form-error" role="alert" className="text-sm text-red-600">{error}</p>
+          <Link href="/forgot-password" className="inline-block py-2 text-sm text-nordic-700 underline">
+            {t.rpRequestNew}
+          </Link>
+        </div>
+      )}
+      <Button type="submit" disabled={loading} className="w-full dark:!text-white">
         {loading ? t.stSaving : t.rpSave}
       </Button>
-    </div>
+    </form>
   );
 }
 

@@ -5,10 +5,10 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { ReceiptsManager } from "@/components/dashboard/ReceiptsManager";
-import { getT } from "@/lib/i18n-server";
+import { getT, metaTitle } from "@/lib/i18n-server";
 import { PageHeader } from "@/components/ui/page-header";
 
-export const metadata = { title: "Kvitton" };
+export const generateMetadata = metaTitle("Kvitton", "Receipts");
 export const dynamic = "force-dynamic";
 
 export default async function ReceiptsPage() {

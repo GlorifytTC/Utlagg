@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { getServerLang } from "@/lib/i18n-server";
 
 export const metadata = { title: "404" };
 
-export default function NotFound() {
+export default async function NotFound() {
   const sv = getServerLang() === "sv";
+  const signedIn = !!(await getServerSession(authOptions));
   return (
     <div className="light-surface relative min-h-dvh overflow-x-clip bg-paper">
       <Navbar />
@@ -18,8 +21,8 @@ export default function NotFound() {
         <p className="mt-4 text-ink/65">
           {sv ? "Sidan finns inte eller har flyttats." : "This page doesn't exist or has moved."}
         </p>
-        <Link href="/" className="mt-8 inline-block rounded-full bg-nordic-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
-          {sv ? "Till startsidan" : "Back to home"}
+        <Link href={signedIn ? "/dashboard" : "/"} className="mt-8 inline-block rounded-full bg-nordic-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-nordic-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
+          {signedIn ? (sv ? "Till översikten" : "Back to dashboard") : sv ? "Till startsidan" : "Back to home"}
         </Link>
       </main>
       <Footer />

@@ -134,7 +134,7 @@ app behaves exactly as V2.
 | `PRICING_V3_ENABLED` | `false` | Master switch for trial / read-only / Starter logic. |
 | `EXPORT_GATING_ENABLED` | `false` | Gate SIE/SIE4/integration/premium-PDF in read-only. |
 | `TRIAL_EMAIL_GUARD_ENABLED` | `false` | Enable the delete→same-email trial guard. |
-| `TRIAL_REQUIRE_CARD` | `true` | Card-required trial (identity anchor). `false` = no-card variant. |
+| `TRIAL_REQUIRE_CARD` | `false` | `true` = card-required trial at checkout. Default no-card: trial starts on email verification. |
 
 Trial shape: `TRIAL_DAYS=30`, `TRIAL_SCANS=500`, post-trial default plan **Pro**.
 

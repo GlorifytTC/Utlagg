@@ -12,3 +12,6 @@ export function getServerLang(): Lang {
 export function getT(): Translations {
   return strings[getServerLang()];
 }
+
+/** Language-aware page title: `export const generateMetadata = metaTitle("Kvitton", "Receipts");` */
+export const metaTitle = (sv: string, en: string) => () => ({ title: getServerLang() === "sv" ? sv : en });

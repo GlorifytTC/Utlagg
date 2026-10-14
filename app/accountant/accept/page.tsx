@@ -113,6 +113,9 @@ function AccountantAcceptInner() {
           <p className="text-ink/70">
             {t.accAcceptDoneBody}
           </p>
+          <Link href="/dashboard" className="inline-block py-2 text-nordic-700 underline">
+            {t.navOverview}
+          </Link>
         </div>
       )}
 

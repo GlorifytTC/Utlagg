@@ -8,7 +8,7 @@ import { customerInvoices } from "@/db/schema";
 import { currentTier } from "@/lib/entitlements";
 import { hasFeature } from "@/lib/features";
 import { getUserCompany, canManageCompany } from "@/lib/company";
-import { getT, getServerLang } from "@/lib/i18n-server";
+import { getT, getServerLang, metaTitle } from "@/lib/i18n-server";
 import { formatSek, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { summarizeInvoiceIncome, type InvoiceLike } from "@/lib/invoice-income";
@@ -20,7 +20,7 @@ import { InvoicePaidToggle } from "@/components/dashboard/InvoicePaidToggle";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatGrid } from "@/components/ui/stat";
 
-export const metadata = { title: "Fakturor" };
+export const generateMetadata = metaTitle("Fakturor", "Invoices");
 export const dynamic = "force-dynamic";
 
 export default async function InvoicesPage() {
@@ -129,11 +129,11 @@ export default async function InvoicesPage() {
                         <td className="px-3 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Link href={`/dashboard/invoices/${r.id}`} className="text-sm font-medium text-nordic-600 transition hover:text-nordic-700 dark:text-nordic-300">{t.btnView}</Link>
-                            <DeleteInvoiceButton
+                            {canManage && <DeleteInvoiceButton
                               id={r.id as string}
                               confirmText={t.invDeleteConfirm}
                               label={t.btnDelete}
-                            />
+                            />}
                           </div>
                         </td>
                       </tr>
@@ -168,11 +168,11 @@ export default async function InvoicesPage() {
                       {canManage && <InvoicePaidToggle id={r.id as string} paid={r.status === "paid"} variant="inline" />}
                       <div className="ml-auto flex items-center gap-2">
                         <Link href={`/dashboard/invoices/${r.id}`} className="inline-flex min-h-11 items-center text-sm font-medium text-nordic-600 transition hover:text-nordic-700 dark:text-nordic-300">{t.btnView}</Link>
-                        <DeleteInvoiceButton
+                        {canManage && <DeleteInvoiceButton
                           id={r.id as string}
                           confirmText={t.invDeleteConfirm}
                           label={t.btnDelete}
-                        />
+                        />}
                       </div>
                     </div>
                   </li>

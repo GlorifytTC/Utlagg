@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatSek, formatDate } from "@/lib/utils";
 
@@ -35,6 +36,7 @@ export function PendingReceiptsInbox() {
   const [busy, setBusy] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [rejecting, setRejecting] = useState<{ id: string; reason: string } | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -48,12 +50,12 @@ export function PendingReceiptsInbox() {
     load();
   }, [load]);
 
-  async function decide(id: string, decision: "approve" | "remove") {
+  async function decide(id: string, decision: "approve" | "remove", reason?: string) {
     setBusy(id);
     const res = await fetch(`/api/receipts/${id}/approve`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ decision }),
+      body: JSON.stringify({ decision, reason: reason || undefined }),
     });
     setBusy(null);
     if (res.ok) {
@@ -98,19 +100,41 @@ export function PendingReceiptsInbox() {
                         {r.date ? ` · ${formatDate(r.date, lang)}` : ""}
                       </p>
                     </button>
-                    <div className="flex w-full gap-2 sm:w-auto">
-                      <Button className="flex-1 sm:flex-none" disabled={busy === r.id} onClick={() => decide(r.id, "approve")}>
-                        {t.btnApprove}
-                      </Button>
-                      <Button
-                        className="flex-1 sm:flex-none"
-                        variant="destructive"
-                        disabled={busy === r.id}
-                        onClick={() => decide(r.id, "remove")}
-                      >
-                        {t.btnRemove}
-                      </Button>
-                    </div>
+                    {rejecting?.id === r.id ? (
+                      <div className="flex w-full flex-col gap-2">
+                        <Input
+                          autoFocus
+                          aria-label={t.promptReason}
+                          placeholder={t.promptReason}
+                          value={rejecting.reason}
+                          onChange={(e) => setRejecting((s) => s && { ...s, reason: e.target.value })}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") { decide(r.id, "remove", rejecting.reason); setRejecting(null); }
+                            if (e.key === "Escape") setRejecting(null);
+                          }}
+                        />
+                        <div className="flex gap-2">
+                          <Button variant="destructive" disabled={busy === r.id} onClick={() => { decide(r.id, "remove", rejecting.reason); setRejecting(null); }}>
+                            {t.btnReject}
+                          </Button>
+                          <Button variant="outline" onClick={() => setRejecting(null)}>{t.btnCancel}</Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex w-full gap-2 sm:w-auto">
+                        <Button className="flex-1 sm:flex-none" disabled={busy === r.id} onClick={() => decide(r.id, "approve")}>
+                          {t.btnApprove}
+                        </Button>
+                        <Button
+                          className="flex-1 sm:flex-none"
+                          variant="destructive"
+                          disabled={busy === r.id}
+                          onClick={() => setRejecting({ id: r.id, reason: "" })}
+                        >
+                          {t.btnReject}
+                        </Button>
+                      </div>
+                    )}
                   </div>
 
                   {open && (

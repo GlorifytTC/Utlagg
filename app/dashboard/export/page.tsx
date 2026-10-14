@@ -1,12 +1,12 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
-import { getT } from "@/lib/i18n-server";
+import { getT, metaTitle } from "@/lib/i18n-server";
 import { assertExportAllowed } from "@/lib/billing/export-gating";
 import { ExportPanel } from "@/components/dashboard/ExportPanel";
 import { PageHeader } from "@/components/ui/page-header";
 
-export const metadata = { title: "Exportera" };
+export const generateMetadata = metaTitle("Exportera", "Export");
 export const dynamic = "force-dynamic";
 
 export default async function ExportPage() {

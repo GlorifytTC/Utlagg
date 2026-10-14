@@ -26,14 +26,46 @@ export async function GET(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   const type = req.nextUrl.searchParams.get("type") ?? "incoming";
 
+  // Managers the caller may send an approval request to (submit-page picker).
+  if (type === "approvers") {
+    const membership = await getUserCompany(session.user.id);
+    if (!membership) return NextResponse.json({ approvers: [] });
+    const approvers = await db
+      .select({ email: users.email, name: users.name })
+      .from(companyMembers)
+      .innerJoin(users, eq(users.id, companyMembers.userId))
+      .where(
+        and(
+          eq(companyMembers.companyId, membership.companyId),
+          inArray(companyMembers.role, ["owner", "admin", "approver"]),
+          ne(users.id, session.user.id),
+        ),
+      );
+    return NextResponse.json({ approvers });
+  }
+
   const where =
     type === "outgoing"
       ? eq(approvalRequests.requesterId, session.user.id)
       : eq(approvalRequests.approverEmail, (session.user.email ?? "").toLowerCase());
 
   const rows = await db
-    .select()
+    .select({
+      id: approvalRequests.id,
+      amount: approvalRequests.amount,
+      status: approvalRequests.status,
+      requesterComment: approvalRequests.requesterComment,
+      approverComment: approvalRequests.approverComment,
+      approverEmail: approvalRequests.approverEmail,
+      receiptId: approvalRequests.receiptId,
+      createdAt: approvalRequests.createdAt,
+      vendorName: receipts.vendorName,
+      requesterName: users.name,
+      requesterEmail: users.email,
+    })
     .from(approvalRequests)
+    .leftJoin(receipts, eq(receipts.id, approvalRequests.receiptId))
+    .leftJoin(users, eq(users.id, approvalRequests.requesterId))
     .where(where)
     .orderBy(desc(approvalRequests.createdAt));
   return NextResponse.json({ requests: rows });

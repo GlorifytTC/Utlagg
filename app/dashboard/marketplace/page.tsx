@@ -2,10 +2,10 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { AccountantMarketplace } from "@/components/marketplace/AccountantMarketplace";
-import { getT } from "@/lib/i18n-server";
+import { getT, metaTitle } from "@/lib/i18n-server";
 import { PageHeader } from "@/components/ui/page-header";
 
-export const metadata = { title: "Hitta revisor" };
+export const generateMetadata = metaTitle("Hitta revisor", "Find an accountant");
 export const dynamic = "force-dynamic";
 
 export default async function MarketplacePage() {

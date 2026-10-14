@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 export interface AdminCharge {
   id: string;
@@ -16,23 +17,28 @@ export function AdminRefund({ userId, charges }: { userId: string; charges: Admi
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
 
+  const [pending, setPending] = useState<AdminCharge | null>(null);
+
   async function refund(c: AdminCharge) {
-    const sek = (c.amountOre / 100).toLocaleString("sv-SE");
-    if (!confirm(`Återbetala ${sek} kr (${c.id})? Åtkomsten som köpet gav återkallas.`)) return;
     setBusy(c.id);
     setMsg(null);
-    const res = await fetch(`/api/admin/users/${userId}/refund`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chargeId: c.id }),
-    });
-    setBusy(null);
-    if (res.ok) {
-      setMsg("Återbetalning skickad");
-      router.refresh();
-    } else {
-      const e = await res.json().catch(() => ({}));
-      setMsg(e.error ?? "Misslyckades");
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/refund`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chargeId: c.id }),
+      });
+      if (res.ok) {
+        setMsg("Återbetalning skickad");
+        router.refresh();
+      } else {
+        const e = await res.json().catch(() => ({}));
+        setMsg(e.error ?? "Misslyckades");
+      }
+    } catch {
+      setMsg("Misslyckades");
+    } finally {
+      setBusy(null);
     }
   }
 
@@ -52,7 +58,7 @@ export function AdminRefund({ userId, charges }: { userId: string; charges: Admi
             {c.refunded ? (
               <span className="text-gray-500 dark:text-gray-400">Återbetald</span>
             ) : (
-              <Button variant="destructive" disabled={busy !== null} onClick={() => refund(c)}>
+              <Button variant="destructive" disabled={busy !== null} onClick={() => setPending(c)}>
                 {busy === c.id ? "Återbetalar…" : "Återbetala"}
               </Button>
             )}
@@ -64,6 +70,20 @@ export function AdminRefund({ userId, charges }: { userId: string; charges: Admi
         Full återbetalning. Krediter nollställs, boost avbryts, prenumeration avslutas
         (om det är senaste fakturan). Delåterbetalning görs i Stripe och påverkar inte åtkomst.
       </p>
+      <ConfirmDialog
+        open={pending !== null}
+        title="Återbetala"
+        description={pending ? `Återbetala ${(pending.amountOre / 100).toLocaleString("sv-SE")} kr (${pending.id})? Åtkomsten som köpet gav återkallas.` : undefined}
+        confirmLabel="Återbetala"
+        cancelLabel="Avbryt"
+        destructive
+        onConfirm={() => {
+          const c = pending!;
+          setPending(null);
+          refund(c);
+        }}
+        onCancel={() => setPending(null)}
+      />
     </div>
   );
 }

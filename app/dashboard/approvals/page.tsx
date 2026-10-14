@@ -18,6 +18,9 @@ interface Req {
   status: string;
   requesterComment: string | null;
   createdAt: string;
+  vendorName: string | null;
+  requesterName: string | null;
+  requesterEmail: string | null;
 }
 
 export default function ApprovalsPage() {
@@ -90,7 +93,8 @@ export default function ApprovalsPage() {
               {pending.map((r) => (
                 <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                   <div>
-                    <p className="font-medium tabular-nums">{formatSek(r.amount)}</p>
+                    <p className="font-medium tabular-nums">{r.vendorName ?? t.apUnknownVendor} · {formatSek(r.amount)}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t.apFrom} {r.requesterName || r.requesterEmail || "-"}</p>
                     {r.requesterComment && <p className="text-sm text-gray-500 dark:text-gray-400">{r.requesterComment}</p>}
                     <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(r.createdAt, lang)}</p>
                   </div>

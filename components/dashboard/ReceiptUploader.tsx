@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { BasSelect } from "./BasSelect";
 import { getBasAccount } from "@/lib/bas";
@@ -15,8 +16,11 @@ import { ReceiptAnnotator } from "@/components/dashboard/ReceiptAnnotator";
 import { cn } from "@/lib/utils";
 import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Hint } from "@/components/ui/hint";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { UpsellCard } from "@/components/UpsellCard";
+import { planName } from "@/lib/plans";
 
 interface Draft {
   vendorName: string;
@@ -93,6 +97,20 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   const streamRef = useRef<MediaStream | null>(null);
   const [showCamera, setShowCamera] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [atLimit, setAtLimit] = useState(false);
+  const [limitHit, setLimitHit] = useState(false);
+
+  // Pre-check the free-plan scan cap so the person sees the upgrade CTA before scanning, not a 402 after.
+  // ponytail: paid plans bill overage, so only the free tier is blocked up front.
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const u = d?.usage;
+        setAtLimit(d?.tier === "free" && !!u && u.planLimit !== -1 && u.planScansUsed >= u.planLimit && (u.creditsRemaining ?? 0) <= 0);
+      })
+      .catch(() => {});
+  }, []);
 
   const [scanStatus, setScanStatus] = useState<string>("");
   // Snapshot of exactly what OCR originally guessed, kept around so save()
@@ -392,6 +410,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   async function save() {
     setIsSaving(true);
     setError(null);
+    setLimitHit(false);
     try {
       const res = await fetch("/api/receipts", {
         method: "POST",
@@ -412,7 +431,8 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? t.ruSaveError);
+        setLimitHit(res.status === 402);
+        setError(res.status === 402 ? t.ruLimitReached : (data.error ?? t.ruSaveError));
         setIsSaving(false);
         return;
       }
@@ -514,7 +534,13 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       <h2 className="font-display text-xl font-semibold text-gray-900 dark:text-white">{t.receiptNewTitle}</h2>
 
       <AnimatePresence mode="wait">
-        {stage === "idle" && (
+        {stage === "idle" && atLimit && (
+          <div key="limit" className="mt-4">
+            <UpsellCard title={t.ruLimitTitle} requiredPlan={planName(t, "starter")} description={t.ruLimitReached} />
+          </div>
+        )}
+
+        {stage === "idle" && !atLimit && (
           <motion.div
             key="drop"
             initial={{ opacity: 0, y: 10 }}
@@ -544,6 +570,10 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             <input ref={inputRef} type="file" aria-label={t.receiptChooseImage} accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             <input ref={cameraRef} type="file" aria-label={t.receiptTakePhoto} accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">{t.receiptCameraHint}</p>
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              {t.ruAiNote}{" "}
+              <Link href="/legal/privacy" className="underline">{t.ruAiNoteLink}</Link>
+            </p>
           </motion.div>
         )}
 
@@ -647,7 +677,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                 />
               </div>
               <div>
-                <Label htmlFor="ru-rate" className="mb-1.5 block">{t.annFieldVatRate}</Label>
+                <Label htmlFor="ru-rate" className="mb-1.5 flex items-center gap-1.5">{t.annFieldVatRate}<Hint text={t.hintVat} /></Label>
                 <Select
                   id="ru-rate"
                   value={draft.vatRate}
@@ -660,6 +690,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                     }));
                   }}
                 >
+                  <option value={0}>0 %</option>
                   <option value={6}>6 %</option>
                   <option value={12}>12 %</option>
                   <option value={25}>25 %</option>
@@ -679,6 +710,7 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             <div>
               <Label htmlFor="ru-bas" className="mb-1.5 flex items-center gap-2">
                 {t.ruBasAccount}
+                <Hint text={t.hintBas} />
                 {draft.basCodeAutoDetected && <Badge tone="success">{t.rcCategoryAutoDetected}</Badge>}
               </Label>
               <BasSelect id="ru-bas" value={draft.basCode} onChange={onBasChange} />
@@ -694,6 +726,12 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                   className="text-sm text-amber-700 dark:text-amber-400"
                 >
                   {error}
+                  {limitHit && (
+                    <>
+                      {" "}
+                      <Link href="/dashboard/settings/billing" className="font-medium underline">{t.ruLimitUpgrade}</Link>
+                    </>
+                  )}
                 </motion.p>
               )}
             </AnimatePresence>

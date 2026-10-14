@@ -117,7 +117,7 @@ const createSchema = z.object({
   date: z.string().datetime().optional(),
   totalAmount: z.number().nonnegative().optional(),
   vatAmount: z.number().nonnegative().optional(),
-  vatRate: z.union([z.literal(6), z.literal(12), z.literal(25)]).optional(),
+  vatRate: z.union([z.literal(0), z.literal(6), z.literal(12), z.literal(25)]).optional(),
   category: z.string().optional(),
   basCode: z.string().optional(),
   aiConfidence: z.number().min(0).max(1).optional(),

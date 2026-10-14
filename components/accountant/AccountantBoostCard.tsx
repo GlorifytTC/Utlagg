@@ -67,7 +67,7 @@ export function AccountantBoostCard() {
         toast.info(t.boostAlreadyActive);
         load();
       } else {
-        toast.error(d.error ?? t.boostBuyError);
+        toast.error(t.boostBuyError);
       }
     } catch {
       toast.error(t.boostBuyError);

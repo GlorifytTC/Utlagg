@@ -7,6 +7,7 @@ import { Logo } from "@/components/brand/Logo";
 import { Field } from "@/components/auth/Field";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
+import { planName, SELECTABLE_PLANS, type Tier } from "@/lib/plans";
 
 // Cooldown between verification-email sends. Also armed right after signup so
 // the button can't be hit instantly - gives the original mail time to arrive.
@@ -43,7 +44,12 @@ function RegisterForm() {
   const [accountType, setAccountType] = useState<"user" | "accountant">(
     searchParams.get("type") === "accountant" ? "accountant" : "user",
   );
+  // Plan chosen on the pricing page (?plan=pro). Everyone starts on the same
+  // no-card Pro trial, so this only changes the greeting.
+  const planParam = searchParams.get("plan");
+  const pickedPlan = SELECTABLE_PLANS.find((p) => p.tier === planParam && p.tier !== "enterprise")?.tier as Tier | undefined;
   const [error, setError] = useState<string | null>(null);
+  const [errorField, setErrorField] = useState<"email" | "password" | null>(null);
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [emailFailed, setEmailFailed] = useState(false);
@@ -84,8 +90,21 @@ function RegisterForm() {
       setForm((f) => ({ ...f, [key]: e.target.value }));
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (loading) return;
     setError(null);
+    setErrorField(null);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setError(t.regErrEmail);
+      setErrorField("email");
+      return;
+    }
+    if (form.password.length < 8) {
+      setError(t.regErrPassword);
+      setErrorField("password");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/auth/register", {
@@ -93,15 +112,16 @@ function RegisterForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, accountType }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.error ?? t.error);
+        // Never show raw server text (it's Swedish-only); map to a translated message.
+        setError(res.status === 429 ? t.regErrRate : t.regErrGeneric);
         return;
       }
       // No auto sign-in: the account isn't active until the email link is
       // clicked, so we show a "check your inbox" screen instead.
       setEmailFailed(data.verificationEmailSent === false);
-      setSentTo(form.email);
+      setSentTo(form.email.trim());
       // Arm the cooldown immediately so "skicka igen" can't be spammed before
       // the first email has had a chance to land.
       setCooldown(RESEND_COOLDOWN);
@@ -132,9 +152,10 @@ function RegisterForm() {
               </p>
             </>
           ) : (
-            <p className="mt-4 text-sm text-ink/70">
-              {withEmail(t.regSentTo, sentTo)}
-            </p>
+            <>
+              <p className="mt-4 text-sm text-ink/70">{withEmail(t.regSentTo, sentTo)}</p>
+              <p className="mt-3 text-sm font-medium text-ink">{t.regNextStep}</p>
+            </>
           )}
 
           {/* Resend, available in both cases - whether the first send failed
@@ -188,6 +209,12 @@ function RegisterForm() {
         </p>
 
         {/* Account type. The server derives isAccountant from this choice. */}
+        {pickedPlan && (
+          <p role="status" className="mt-3 rounded-lg bg-nordic-50 px-3 py-2 text-sm text-nordic-700">
+            {t.regPlanPicked.replace("{plan}", planName(t, pickedPlan))}
+          </p>
+        )}
+
         <div className="mt-5 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
           <button
             type="button"
@@ -219,17 +246,17 @@ function RegisterForm() {
           </button>
         </div>
 
-        <div className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-4">
           <Field id="reg-name" autoComplete="name" label={t.regName} value={form.name} onChange={update("name")} />
           <Field id="reg-company" autoComplete="organization" label={accountType === "accountant" ? t.regFirmOptional : t.regCompanyOptional} value={form.companyName} onChange={update("companyName")} />
-          <Field id="reg-email" type="email" autoComplete="email" label={t.fldEmail} value={form.email} error={!!error} onChange={update("email")} />
-          <Field id="reg-password" type="password" autoComplete="new-password" label={t.regPasswordHint} value={form.password} error={!!error}
-            onChange={update("password")} onKeyDown={(e) => e.key === "Enter" && handleSubmit()} />
-          {error && <p id="form-error" role="alert" className="text-sm text-red-600">{error}</p>}
-          <Button onClick={handleSubmit} disabled={loading} className="w-full dark:!text-white">
+          <Field id="reg-email" type="email" autoComplete="email" label={t.fldEmail} value={form.email} error={errorField === "email"} errorId="reg-email-error" onChange={update("email")} />
+          <Field id="reg-password" type="password" autoComplete="new-password" label={t.regPasswordHint} value={form.password} error={errorField === "password"} errorId="reg-password-error"
+            onChange={update("password")} />
+          {error && <p id={errorField ? `reg-${errorField}-error` : "form-error"} role="alert" className="text-sm text-red-600">{error}</p>}
+          <Button type="submit" disabled={loading} className="w-full dark:!text-white">
             {loading ? t.regCreating : t.authCreateAccount}
           </Button>
-        </div>
+        </form>
         <p className="mt-6 text-sm text-ink/65">
           {t.regHaveAccount}{" "}
           <Link href="/login" className="text-nordic-700 underline">{t.login}</Link>

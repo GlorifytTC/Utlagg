@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, tabListKeys } from "@/lib/utils";
 
 /** Segmented tab pills for admin lists. Scrolls sideways on narrow screens. */
 export function AdminTabs<T extends string>({
@@ -14,13 +14,14 @@ export function AdminTabs<T extends string>({
 }) {
   return (
     <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-      <div role="tablist" aria-label={label} className="panel inline-flex gap-1 rounded-full p-1">
+      <div role="tablist" aria-label={label} onKeyDown={(e) => tabListKeys(e, tabs.findIndex((x) => x.key === value), tabs.length, (i) => onChange(tabs[i].key))} className="panel inline-flex gap-1 rounded-full p-1">
         {tabs.map((tb) => (
           <button
             key={tb.key}
             type="button"
             role="tab"
             aria-selected={value === tb.key}
+            tabIndex={value === tb.key ? 0 : -1}
             onClick={() => onChange(tb.key)}
             className={cn(
               "min-h-11 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition duration-300 ease-premium focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 md:min-h-0 md:py-2.5",

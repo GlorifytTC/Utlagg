@@ -8,6 +8,7 @@ import { accountantStrings } from "@/lib/accountant-i18n";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ErrorState } from "@/components/ui/error-state";
 import { Pager } from "@/components/ui/pager";
 import { formatDate } from "@/lib/utils";
@@ -47,6 +48,14 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
   const [dir, setDir] = useState<"asc" | "desc">("desc");
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [openId, setOpenId] = useState<string | null>(null);
+  // Editor reports unsaved edits; ask before another row (or Close) throws them away.
+  const dirty = useRef(false);
+  const [pendingId, setPendingId] = useState<string | null | undefined>(undefined);
+  const toggleOpen = (id: string) => {
+    const next = openId === id ? null : id;
+    if (dirty.current) setPendingId(next);
+    else setOpenId(next);
+  };
   // table and card list both render; mount the editor in only the visible one
   const [isDesktop, setIsDesktop] = useState(false);
   useEffect(() => {
@@ -82,7 +91,7 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
       setStatus("ok");
       return;
     }
-    setStatus("loading");
+    setStatus((s) => (s === "ok" ? s : "loading")); // keep rows (and an open editor) mounted on reload
     try {
       const res = await fetch(`${endpoint}?${qs}`);
       if (!res.ok) throw new Error();
@@ -269,7 +278,7 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
                     <Fragment key={r.id}>
                       <tr
                         className="cursor-pointer border-t border-gray-900/[0.07] transition-colors hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
-                        onClick={() => setOpenId(openId === r.id ? null : r.id)}
+                        onClick={() => toggleOpen(r.id)}
                       >
                         <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
                           {formatDate(r.date, lang)}
@@ -292,8 +301,18 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
                         <td className="px-5 py-3">
                           <Badge tone={statusTone[r.status] ?? "neutral"}>{statusLabel[r.status] ?? r.status}</Badge>
                         </td>
-                        <td className="px-5 py-3 text-right text-sm font-medium text-nordic-600 transition-opacity hover:opacity-70">
-                          {openId === r.id ? t.rcClose : t.rcReview}
+                        <td className="px-5 py-3 text-right text-sm font-medium text-nordic-600">
+                          <button
+                            type="button"
+                            aria-expanded={openId === r.id}
+                            onClick={(e) => {
+                              e.stopPropagation(); // row onClick is the mouse shortcut; avoid double toggle
+                              toggleOpen(r.id);
+                            }}
+                            className="min-h-11 rounded px-2 transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
+                          >
+                            {openId === r.id ? t.rcClose : t.rcReview}
+                          </button>
                         </td>
                       </tr>
                       {openId === r.id && isDesktop && (
@@ -306,6 +325,7 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
                               companyId={r.companyId ?? companyId!}
                               receiptId={r.id}
                               onSaved={handleSaved}
+                              onDirtyChange={(d) => { dirty.current = d; }}
                             />
                           </td>
                         </tr>
@@ -332,7 +352,7 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
                     </Badge>
                     <button
                       type="button"
-                      onClick={() => setOpenId(openId === r.id ? null : r.id)}
+                      onClick={() => toggleOpen(r.id)}
                       className="min-h-11 shrink-0 rounded-full px-2 text-sm font-medium text-nordic-600 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:text-nordic-400"
                     >
                       {openId === r.id ? t.rcClose : t.rcReview}
@@ -340,7 +360,8 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
                   </div>
                   {openId === r.id && !isDesktop && (
                     <div className="border-t border-gray-900/[0.07] bg-gray-900/[0.02] px-4 py-4 dark:border-white/[0.07] dark:bg-white/[0.02]">
-                      <AccountantReceiptEditor companyId={r.companyId ?? companyId!} receiptId={r.id} onSaved={handleSaved} />
+                      <AccountantReceiptEditor companyId={r.companyId ?? companyId!} receiptId={r.id} onSaved={handleSaved}
+                              onDirtyChange={(d) => { dirty.current = d; }} />
                     </div>
                   )}
                 </li>
@@ -361,6 +382,20 @@ export function AccountantReceipts({ companyId, filter, range }: { companyId?: s
           </motion.div>
         )}
       </AnimatePresence>
+      <ConfirmDialog
+        open={pendingId !== undefined}
+        title={t.reDirtyTitle}
+        description={t.reDirtyBody}
+        confirmLabel={t.reDirtyDiscard}
+        cancelLabel={t.cancel}
+        destructive
+        onConfirm={() => {
+          dirty.current = false;
+          setOpenId(pendingId ?? null);
+          setPendingId(undefined);
+        }}
+        onCancel={() => setPendingId(undefined)}
+      />
     </div>
   );
 }

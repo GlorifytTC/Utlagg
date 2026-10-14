@@ -7,11 +7,11 @@ import { users, subscriptions } from "@/db/schema";
 import { getUserCompany } from "@/lib/company";
 import { SubscriptionManager } from "@/components/dashboard/SubscriptionManager";
 import { InvoiceHistory } from "@/components/dashboard/InvoiceHistory";
-import { getT } from "@/lib/i18n-server";
+import { getT, metaTitle } from "@/lib/i18n-server";
 import { currentTier } from "@/lib/entitlements";
 import { SectionHeader } from "@/components/settings/SettingsShell";
 
-export const metadata = { title: "Prenumeration" };
+export const generateMetadata = metaTitle("Prenumeration", "Subscription");
 export const dynamic = "force-dynamic";
 
 export default async function SubscriptionPage() {

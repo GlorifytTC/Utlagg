@@ -82,7 +82,7 @@ export function Navbar() {
               aria-label={t.navLanguage}
               className="hidden rounded-full px-3 py-1.5 text-xs font-medium text-ink/65 transition hover:bg-ink/5 hover:text-ink lg:block focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
             >
-              {lang === "sv" ? "SV / EN" : "EN / SV"}
+              <span className={lang === "sv" ? "font-bold text-ink" : ""}>SV</span> / <span className={lang === "en" ? "font-bold text-ink" : ""}>EN</span>
             </button>
             {authResolved && !isAuthed && (
               <Link
@@ -95,7 +95,7 @@ export function Navbar() {
             {authResolved && (
               <Link
                 href={primary.href}
-                className="hidden whitespace-nowrap rounded-full bg-nordic-600 px-3.5 py-2.5 text-xs font-medium text-white transition duration-500 ease-premium hover:bg-nordic-700 active:scale-[0.98] min-[380px]:block sm:px-5 sm:text-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
+                className="whitespace-nowrap rounded-full bg-nordic-600 px-3 py-2.5 text-xs font-medium text-white transition duration-500 ease-premium hover:bg-nordic-700 active:scale-[0.98] min-[380px]:px-3.5 sm:px-5 sm:text-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
               >
                 {primary.label}
               </Link>
@@ -192,7 +192,7 @@ export function Navbar() {
                     onClick={toggleLanguage}
                     className="min-h-11 rounded-full border hairline px-4 py-2 text-sm text-ink/70 transition hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
                   >
-                    {lang === "sv" ? "Svenska / English" : "English / Svenska"}
+                    <span className={lang === "sv" ? "font-bold text-ink" : ""}>Svenska</span> / <span className={lang === "en" ? "font-bold text-ink" : ""}>English</span>
                   </button>
                 </div>
               </motion.div>

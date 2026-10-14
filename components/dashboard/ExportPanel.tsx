@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/ui/error-state";
 import { CheckCard } from "@/components/ui/check-card";
 import { PeriodPicker, defaultPeriod } from "@/components/export/PeriodPicker";
 import { useLanguage } from "@/context/LanguageContext";
@@ -24,18 +26,26 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
   const [preview, setPreview] = useState<ExportPreview | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [previewErr, setPreviewErr] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   const qs = `?from=${period.from}&to=${period.to}`;
 
   useEffect(() => {
     const ctl = new AbortController();
     setPreview(null);
+    setPreviewErr(false);
     fetch(`/api/export/preview${qs}`, { signal: ctl.signal })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => d && setPreview(d))
-      .catch(() => {});
+      .then((r) => {
+        if (!r.ok) throw new Error();
+        return r.json();
+      })
+      .then(setPreview)
+      .catch(() => {
+        if (!ctl.signal.aborted) setPreviewErr(true);
+      });
     return () => ctl.abort();
-  }, [qs]);
+  }, [qs, attempt]);
 
   const urls: Record<Category, string> = {
     receipts: `/api/export/${format}${qs}`,
@@ -60,6 +70,7 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
 
   const info = (c: Category) => {
     const p = preview?.[c];
+    if (previewErr) return null;
     if (!preview) return <span className="skeleton mt-2 block h-4 w-32 rounded" aria-hidden />;
     return (
       <p className="mt-2 text-xs tabular-nums text-gray-500 dark:text-gray-400">
@@ -103,12 +114,26 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
             onChange={toggle("receipts")}
           >
             <div>
-              <div role="radiogroup" aria-label={t.expDownloadReceipts} className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">
+              <div
+                role="radiogroup"
+                aria-label={t.expDownloadReceipts}
+                onKeyDown={(e) => {
+                  const d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+                  if (!d) return;
+                  e.preventDefault();
+                  const ok = formats.filter((f) => !f.lock);
+                  const n = ok[(ok.findIndex((f) => f.key === format) + d + ok.length) % ok.length];
+                  setFormat(n.key);
+                  e.currentTarget.querySelector<HTMLElement>(`[data-fmt="${n.key}"]`)?.focus();
+                }}
+                className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">
                 {formats.map((f) => (
                   <button
                     key={f.key}
                     type="button"
                     role="radio"
+                    data-fmt={f.key}
+                    tabIndex={format === f.key ? 0 : -1}
                     aria-checked={format === f.key}
                     disabled={f.lock}
                     onClick={() => setFormat(f.key)}
@@ -119,12 +144,12 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
                         : "border-gray-900/15 text-gray-600 hover:border-gray-900/30 dark:border-white/[0.14] dark:text-gray-300"
                     }`}
                   >
-                    {f.lock ? <Lock className="h-3.5 w-3.5" strokeWidth={2} /> : f.icon}
+                    {f.lock ? <Lock className="h-3.5 w-3.5" strokeWidth={2} aria-hidden /> : f.icon}
                     {f.label}
                   </button>
                 ))}
               </div>
-              {(locked.sie || locked.pdf) && <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{t.expLockedHint}</p>}
+              {(locked.sie || locked.pdf) && <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{t.expLockedHint} <Link href="/dashboard/settings/billing" className="font-medium text-nordic-600 underline dark:text-nordic-300">{t.expLockedUpgrade}</Link></p>}
               {info("receipts")}
             </div>
           </CheckCard>
@@ -148,6 +173,12 @@ export function ExportPanel({ locked }: { locked: { sie: boolean; pdf: boolean }
           >
             {info("transport")}
           </CheckCard>
+
+          {previewErr && (
+            <ErrorState onRetry={() => setAttempt((n) => n + 1)} retryLabel={t.btnRetry}>
+              {t.somethingWentWrong}
+            </ErrorState>
+          )}
 
           {preview && <ExportList preview={preview} selected={selected} />}
 

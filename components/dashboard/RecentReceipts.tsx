@@ -41,16 +41,16 @@ export function RecentReceipts({
       </CardHeader>
       <CardContent>
         {receipts.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t.noReceiptsYet}{" "}
+          <div className="py-4 text-center">
+            <p className="font-medium text-gray-900 dark:text-white">{t.noReceiptsYet}</p>
+            <p className="mx-auto mt-1 max-w-sm text-sm text-gray-500 dark:text-gray-400">{t.recentEmptyBody}</p>
             <Link
               href="/dashboard/receipts"
-              className="font-medium text-nordic-600 transition hover:text-nordic-700 dark:text-nordic-300"
+              className="mt-4 inline-flex min-h-11 items-center rounded-full bg-nordic-600 px-6 text-sm font-medium text-white transition hover:bg-nordic-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20"
             >
               {t.uploadFirst}
             </Link>
-            .
-          </p>
+          </div>
         ) : (
           <ul className="divide-y divide-gray-900/[0.06] dark:divide-white/[0.06]">
             {receipts.map((r, i) => (

@@ -11,6 +11,7 @@ import { useNotifications } from "@/context/NotificationContext";
 import { formatListDate } from "@/lib/chat-format";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/page-header";
+import { ErrorState } from "@/components/ui/error-state";
 
 interface Conversation {
   clientId: string;
@@ -103,7 +104,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
     }
 
     if (status === "error") {
-      return <p className="text-sm text-red-600">{t.chatsLoadError}</p>;
+      return <ErrorState onRetry={() => { setStatus("loading"); load(); }} retryLabel={t.btnRetry}>{t.chatsLoadError}</ErrorState>;
     }
 
     if (conversations.length === 0) {
@@ -129,7 +130,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
 
     // Fixed heights: 21rem (mobile) / 13rem / 10.5rem (lg) approximate the app chrome (header, page title, tab bar) above the inbox, so the panel fills the viewport without page scroll. Adjust if the surrounding layout changes.
     return (
-      <div className="grid h-[calc(100dvh-21rem-env(safe-area-inset-bottom))] overflow-hidden rounded-2xl panel md:h-[calc(100dvh-13rem)] md:min-h-[420px] lg:h-[calc(100dvh-10.5rem)] lg:grid-cols-[320px_1fr] xl:grid-cols-[360px_1fr]">
+      <div className="grid h-[calc(100dvh-21rem-env(safe-area-inset-bottom))] min-h-[420px] overflow-hidden rounded-2xl panel md:h-[calc(100dvh-13rem)] md:min-h-[420px] lg:h-[calc(100dvh-10.5rem)] lg:grid-cols-[320px_1fr] xl:grid-cols-[360px_1fr]">
         {/* Conversation list */}
         <aside className={cn("min-h-0 flex-col border-gray-900/[0.07] dark:border-white/[0.08] lg:flex lg:border-r", selected ? "hidden" : "flex")}>
           <div className="p-3">
@@ -141,7 +142,7 @@ export function ChatInbox({ role, currentUserId }: { role: "accountant" | "compa
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t.chatsSearch}
-                className="w-full rounded-xl border border-transparent bg-gray-900/[0.04] py-2 pl-9 pr-3 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-500 focus:border-nordic-600/40 focus:bg-white dark:bg-white/[0.05] dark:text-white dark:focus:bg-transparent"
+                className="w-full rounded-xl border border-transparent bg-gray-900/[0.04] py-2 pl-9 pr-3 text-base text-gray-900 sm:text-sm outline-none transition-colors placeholder:text-gray-500 focus:border-nordic-600/40 focus:bg-white dark:bg-white/[0.05] dark:text-white dark:focus:bg-transparent"
               />
             </label>
           </div>

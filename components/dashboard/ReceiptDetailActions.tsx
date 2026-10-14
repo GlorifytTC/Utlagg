@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useLanguage } from "@/context/LanguageContext";
@@ -20,19 +21,31 @@ export function ReceiptDetailActions({
 
   async function approve() {
     setBusy("approve");
-    await fetch(`/api/receipts/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "approved" }),
-    });
-    router.refresh();
+    try {
+      const res = await fetch(`/api/receipts/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "approved" }),
+      });
+      if (!res.ok) throw new Error();
+      router.refresh();
+    } catch {
+      toast.error(t.somethingWentWrong);
+    }
     setBusy(null);
   }
 
   async function remove() {
     setConfirming(false);
     setBusy("delete");
-    await fetch(`/api/receipts/${id}`, { method: "DELETE" });
+    try {
+      const res = await fetch(`/api/receipts/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+    } catch {
+      toast.error(t.somethingWentWrong);
+      setBusy(null);
+      return;
+    }
     // Back to the list, which re-fetches the (now smaller) page on mount.
     router.push("/dashboard/receipts");
   }

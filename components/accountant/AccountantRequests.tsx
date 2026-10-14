@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ErrorState } from "@/components/ui/error-state";
 import { formatDate } from "@/lib/utils";
 
@@ -30,9 +32,10 @@ export function AccountantRequests() {
   const [rows, setRows] = useState<RequestRow[]>([]);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [busy, setBusy] = useState<string | null>(null);
+  const [declineId, setDeclineId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    setStatus("loading");
+    setStatus((s) => (s === "ok" ? s : "loading")); // no skeleton flash on reload
     try {
       const res = await fetch("/api/accountant/connection-requests");
       if (!res.ok) throw new Error();
@@ -55,6 +58,9 @@ export function AccountantRequests() {
         method: "POST",
       });
       if (res.ok) await load();
+      else toast.error(t.reqActionError);
+    } catch {
+      toast.error(t.reqActionError);
     } finally {
       setBusy(null);
     }
@@ -107,7 +113,7 @@ export function AccountantRequests() {
                     <Button disabled={busy === r.id} onClick={() => respond(r.id, "accept")}>
                       {t.reqAccept}
                     </Button>
-                    <Button variant="outline" disabled={busy === r.id} onClick={() => respond(r.id, "decline")}>
+                    <Button variant="outline" disabled={busy === r.id} onClick={() => setDeclineId(r.id)}>
                       {t.reqDecline}
                     </Button>
                   </div>
@@ -117,6 +123,20 @@ export function AccountantRequests() {
           );
         })}
       </ul>
+      <ConfirmDialog
+        open={declineId !== null}
+        title={t.reqDeclineTitle}
+        description={t.reqDeclineBody}
+        confirmLabel={t.reqDecline}
+        cancelLabel={t.cancel}
+        destructive
+        busy={busy !== null}
+        onConfirm={async () => {
+          if (declineId) await respond(declineId, "decline");
+          setDeclineId(null);
+        }}
+        onCancel={() => setDeclineId(null)}
+      />
     </motion.div>
   );
 }

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Textarea } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { ErrorState } from "@/components/ui/error-state";
@@ -93,8 +94,8 @@ export default function AdminChatReportsPage() {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status, moderatorNote: note || null, action }),
-    });
-    if (res.ok) {
+    }).catch(() => null);
+    if (res?.ok) {
       toast.success(
         action === "warn" ? "Varning skickad"
           : action ? "Användaren är avstängd"
@@ -112,8 +113,8 @@ export default function AdminChatReportsPage() {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "unban" }),
-    });
-    if (res.ok) {
+    }).catch(() => null);
+    if (res?.ok) {
       toast.success("Avstängningen är hävd");
       setDetail((d) => d && { ...d, report: { ...d.report, reportedBannedUntil: null } });
     } else {
@@ -235,6 +236,9 @@ function ReportView({
         ? r.reportedName ?? r.reportedEmail
         : "Annan deltagare";
 
+  const [ask, setAsk] = useState<{ text: string; run: () => void } | null>(null);
+  const name = r.reportedName ?? r.reportedEmail;
+
   return (
     <div className="flex flex-col">
       <div className="border-b border-gray-900/10 p-5 dark:border-white/[0.08]">
@@ -323,10 +327,11 @@ function ReportView({
                   <Button
                     key={action}
                     variant="destructive"
-                    onClick={() => {
-                      if (action !== "warn" && !window.confirm(`${label}: ${r.reportedName ?? r.reportedEmail}?`)) return;
-                      onModerate("resolved", action);
-                    }}
+                    onClick={() =>
+                      action === "warn"
+                        ? onModerate("resolved", action)
+                        : setAsk({ text: `${label}: ${name}?`, run: () => onModerate("resolved", action) })
+                    }
                   >
                     {label}
                   </Button>
@@ -349,9 +354,7 @@ function ReportView({
                 </p>
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    if (window.confirm(`Häv avstängningen för ${r.reportedName ?? r.reportedEmail}?`)) onUnban();
-                  }}
+                  onClick={() => setAsk({ text: `Häv avstängningen för ${name}?`, run: onUnban })}
                 >
                   Häv avstängning
                 </Button>
@@ -360,6 +363,20 @@ function ReportView({
           </>
         )}
       </div>
+      <ConfirmDialog
+        open={ask !== null}
+        title="Bekräfta åtgärd"
+        description={ask?.text}
+        confirmLabel="Bekräfta"
+        cancelLabel="Avbryt"
+        destructive
+        onConfirm={() => {
+          const a = ask!;
+          setAsk(null);
+          a.run();
+        }}
+        onCancel={() => setAsk(null)}
+      />
     </div>
   );
 }

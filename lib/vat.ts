@@ -15,7 +15,7 @@
  * static category->rate map. Always resolve through `resolveVatRate(category, date)`.
  */
 
-export type VatRate = 6 | 12 | 25;
+export type VatRate = 0 | 6 | 12 | 25;
 
 export type VatCategory =
   | "standard" // most goods & services

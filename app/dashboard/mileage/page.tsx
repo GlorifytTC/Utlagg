@@ -2,15 +2,18 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
+import { downloadExport, fetchFile } from "@/lib/export-download";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
-import { formatSek, formatDate } from "@/lib/utils";
-import { Button, buttonClass } from "@/components/ui/button";
+import { formatSek, formatDate, localDateStr } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Hint } from "@/components/ui/hint";
 import { UpsellCard } from "@/components/UpsellCard";
 import { useLanguage } from "@/context/LanguageContext";
 import { PageHeader } from "@/components/ui/page-header";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface Entry {
   id: string;
@@ -41,13 +44,23 @@ interface Route {
 
 export default function MileagePage() {
   const { t, lang } = useLanguage();
-  const [rate, setRate] = useState(2.5);
+  // Skatteverket rates come from the server (db/schema constants); these are only first-paint placeholders.
+  const [rates, setRates] = useState({ private: 2.5, fossil: 1.2, electric: 0.95 });
+  const rate = rates.private;
+  const kr = (n: number) => n.toFixed(2).replace(".", ",");
+  const [busy, setBusy] = useState<string | null>(null);
+  const [del, setDel] = useState<{ kind: "trip" | "route" | "vehicle"; id: string; name: string } | null>(null);
+  const once = async (key: string, fn: () => Promise<void>) => {
+    if (busy) return;
+    setBusy(key);
+    try { await fn(); } finally { setBusy(null); }
+  };
   const [entries, setEntries] = useState<Entry[]>([]);
   const [form, setForm] = useState({
     startAddress: "",
     endAddress: "",
     distanceKm: "",
-    date: new Date().toISOString().slice(0, 10),
+    date: localDateStr(),
     purpose: "business",
     note: "",
   });
@@ -60,7 +73,7 @@ export default function MileagePage() {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [routeLabel, setRouteLabel] = useState("");
   const [periodFor, setPeriodFor] = useState<string | null>(null);
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = localDateStr();
   const [period, setPeriod] = useState<{ from: string; to: string; dows: boolean[] }>({
     from: todayStr,
     to: todayStr,
@@ -94,14 +107,15 @@ export default function MileagePage() {
     if (res.ok) {
       const d = await res.json();
       setEntries(d.entries);
-      setRate(d.ratePerKm);
+      if (d.rates) setRates(d.rates);
     }
   }, []);
   useEffect(() => { load(); }, [load]);
 
   const km = Number(form.distanceKm) || 0;
   const selectedVehicle = vehicles.find((v) => v.id === vehicleId) || null;
-  const effectiveRate = !selectedVehicle ? rate : selectedVehicle.isElectric ? 0.95 : 1.2;
+  const rateFor = (v: Vehicle | null) => (!v ? rates.private : v.isElectric ? rates.electric : rates.fossil);
+  const effectiveRate = rateFor(selectedVehicle);
   const preview = formatSek(km * effectiveRate);
 
   async function save() {
@@ -121,8 +135,7 @@ export default function MileagePage() {
       setForm({ ...form, startAddress: "", endAddress: "", distanceKm: "", note: "" });
       load();
     } else {
-      const e = await res.json().catch(() => ({}));
-      toast.error(e.error ?? t.toastSaveFail);
+      toast.error(t.toastSaveFail);
     }
   }
 
@@ -147,8 +160,7 @@ export default function MileagePage() {
       setVForm({ registrationNumber: "", model: "", fuelType: "petrol" });
       loadVehicles();
     } else {
-      const e = await res.json().catch(() => ({}));
-      toast.error(e.error ?? t.milVehicleFail);
+      toast.error(t.milVehicleFail);
     }
   }
 
@@ -174,8 +186,7 @@ export default function MileagePage() {
       setRouteLabel("");
       loadRoutes();
     } else {
-      const e = await res.json().catch(() => ({}));
-      toast.error(e.error ?? t.toastSaveFail);
+      toast.error(t.toastSaveFail);
     }
   }
 
@@ -187,7 +198,7 @@ export default function MileagePage() {
         startAddress: r.startAddress,
         endAddress: r.endAddress,
         distanceKm: Number(r.distanceKm),
-        date: new Date().toISOString().slice(0, 10),
+        date: localDateStr(),
         purpose: r.purpose,
         vehicleId: r.vehicleId || undefined,
       }),
@@ -196,19 +207,18 @@ export default function MileagePage() {
       toast.success(t.milTripsLogged);
       load();
     } else {
-      const e = await res.json().catch(() => ({}));
-      toast.error(e.error ?? t.toastSaveFail);
+      toast.error(t.toastSaveFail);
     }
   }
 
   function datesInPeriod(): string[] {
     const out: string[] = [];
-    const from = new Date(period.from);
-    const to = new Date(period.to);
+    const from = new Date(`${period.from}T00:00:00`);
+    const to = new Date(`${period.to}T00:00:00`);
     if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()) || from > to) return out;
     for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
       const dow = (d.getDay() + 6) % 7; // 0 = Mon
-      if (period.dows[dow]) out.push(d.toISOString().slice(0, 10));
+      if (period.dows[dow]) out.push(localDateStr(d));
     }
     return out;
   }
@@ -241,9 +251,30 @@ export default function MileagePage() {
     if (res.ok) loadRoutes();
   }
 
+  async function deleteVehicle(id: string) {
+    const res = await fetch(`/api/company/vehicles/${id}`, { method: "DELETE" });
+    if (res.ok) loadVehicles();
+  }
+
+  async function confirmDelete() {
+    if (!del) return;
+    const { kind, id } = del;
+    await once("delete", () => (kind === "trip" ? remove(id) : kind === "route" ? deleteRoute(id) : deleteVehicle(id)));
+    setDel(null);
+  }
+
   async function remove(id: string) {
     const res = await fetch(`/api/mileage/${id}`, { method: "DELETE" });
     if (res.ok) { toast.success(t.toastRemoved); load(); }
+  }
+
+  async function exportCsv() {
+    try {
+      const f = await fetchFile("/api/mileage/export", undefined, "mileage.csv");
+      await downloadExport([f], f.name);
+    } catch (e) {
+      toast.error(e instanceof Error && e.message ? e.message : t.somethingWentWrong);
+    }
   }
 
   if (allowed === false) {
@@ -263,7 +294,7 @@ export default function MileagePage() {
     <div className="max-w-3xl space-y-6">
       <PageHeader
         title={t.navMileage}
-        subtitle={`${t.milRatePre} ${rate.toFixed(2).replace(".", ",")} kr/km ${t.milRateNote}`}
+        subtitle={`${t.milRatePre} ${kr(rate)} kr/km ${t.milRateNote}`}
       />
 
       <Card>
@@ -282,7 +313,7 @@ export default function MileagePage() {
               <Input id="to" value={form.endAddress} onChange={(e) => setForm({ ...form, endAddress: e.target.value })} placeholder={t.phEndAddress} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="km">{t.fldDistance}</Label>
+              <Label htmlFor="km" className="flex items-center gap-1.5">{t.fldDistance}<Hint text={t.hintMileage} /></Label>
               <Input id="km" type="number" min="0" step="0.1" value={form.distanceKm} onChange={(e) => setForm({ ...form, distanceKm: e.target.value })} />
             </div>
             <div className="space-y-2">
@@ -303,13 +334,13 @@ export default function MileagePage() {
                 value={vehicleId}
                 onChange={(e) => setVehicleId(e.target.value)}
               >
-                <option value="">{t.milPrivateCar} (2,50 kr/km)</option>
+                <option value="">{t.milPrivateCar} ({kr(rates.private)} kr/km)</option>
                 {vehicles.map((v) => (
                   <option key={v.id} value={v.id}>
                     {v.registrationNumber}
                     {v.model ? ` · ${v.model}` : ""}
                     {v.isElectric ? ` · ${t.milElectricTag}` : ""} (
-                    {(v.isElectric ? 0.95 : 1.2).toFixed(2).replace(".", ",")} kr/km)
+                    {kr(rateFor(v))} kr/km)
                   </option>
                 ))}
               </Select>
@@ -320,7 +351,7 @@ export default function MileagePage() {
             </div>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">{t.milVehicleNote}</p>
-          <Button onClick={save} disabled={loading}>{loading ? t.stSaving : t.btnSaveTrip}</Button>
+          <Button onClick={() => once("save", save)} disabled={loading || !!busy}>{loading ? t.stSaving : t.btnSaveTrip}</Button>
         </CardContent>
       </Card>
 
@@ -341,7 +372,7 @@ export default function MileagePage() {
                 placeholder={t.milRouteLabelPh}
               />
             </div>
-            <Button variant="outline" onClick={saveRoute}>{t.milSaveRoute}</Button>
+            <Button variant="outline" onClick={() => once("saveRoute", saveRoute)} disabled={!!busy}>{t.milSaveRoute}</Button>
           </div>
 
           {routes.length === 0 ? (
@@ -354,7 +385,7 @@ export default function MileagePage() {
                   <div>
                     <p className="font-medium">{t.milExampleLabel}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {t.milExampleFrom} → {t.milExampleTo} · 18,4 km · 2,50 kr/km
+                      {t.milExampleFrom} → {t.milExampleTo} · 18,4 km · {kr(rates.private)} kr/km
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
@@ -369,7 +400,7 @@ export default function MileagePage() {
             <ul className="space-y-3">
               {routes.map((r) => {
                 const v = vehicles.find((x) => x.id === r.vehicleId) || null;
-                const rRate = !v ? 2.5 : v.isElectric ? 0.95 : 1.2;
+                const rRate = rateFor(v);
                 const dowLabels = [t.milDowMon, t.milDowTue, t.milDowWed, t.milDowThu, t.milDowFri, t.milDowSat, t.milDowSun];
                 const count = periodFor === r.id ? datesInPeriod().length : 0;
                 return (
@@ -379,11 +410,11 @@ export default function MileagePage() {
                         <p className="font-medium">{r.label}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
                           {r.startAddress} → {r.endAddress} · {Number(r.distanceKm).toFixed(1)} km ·{" "}
-                          {rRate.toFixed(2).replace(".", ",")} kr/km
+                          {kr(rRate)} kr/km
                         </p>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <Button onClick={() => logToday(r)}>{t.milLogToday}</Button>
+                        <Button onClick={() => once(`log-${r.id}`, () => logToday(r))} disabled={!!busy}>{t.milLogToday}</Button>
                         <Button
                           variant="outline"
                           onClick={() => setPeriodFor(periodFor === r.id ? null : r.id)}
@@ -392,8 +423,8 @@ export default function MileagePage() {
                         </Button>
                         <Button
                           variant="ghost"
-                          onClick={() => deleteRoute(r.id)}
-                          aria-label={t.btnDelete}
+                          onClick={() => setDel({ kind: "route", id: r.id, name: r.label })}
+                          aria-label={`${t.btnDelete}: ${r.label}`}
                           title={t.btnDelete}
                           className="!h-11 !w-11 shrink-0 !p-0 md:!h-10 md:!w-10 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
@@ -439,7 +470,7 @@ export default function MileagePage() {
                             ))}
                           </div>
                         </div>
-                        <Button onClick={() => logPeriod(r)} disabled={count === 0}>
+                        <Button onClick={() => once(`period-${r.id}`, () => logPeriod(r))} disabled={count === 0 || !!busy}>
                           {t.milLogN.replace("{n}", String(count))}
                         </Button>
                       </div>
@@ -470,11 +501,8 @@ export default function MileagePage() {
                     </span>
 <Button
                       variant="ghost"
-                      onClick={async () => {
-                        const r = await fetch(`/api/company/vehicles/${v.id}`, { method: "DELETE" });
-                        if (r.ok) loadVehicles();
-                      }}
-                      aria-label={t.btnDelete}
+                      onClick={() => setDel({ kind: "vehicle", id: v.id, name: v.registrationNumber })}
+                      aria-label={`${t.btnDelete}: ${v.registrationNumber}`}
                       title={t.btnDelete}
                       className="!h-11 !w-11 shrink-0 !p-0 md:!h-10 md:!w-10 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                     >
@@ -517,7 +545,7 @@ export default function MileagePage() {
                 </Select>
               </div>
             </div>
-            <Button variant="outline" onClick={addVehicle}>{t.milAddVehicle}</Button>
+            <Button variant="outline" onClick={() => once("vehicle", addVehicle)} disabled={!!busy}>{t.milAddVehicle}</Button>
           </CardContent>
         </Card>
       )}
@@ -525,7 +553,7 @@ export default function MileagePage() {
       <Card>
         <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 space-y-0">
           <CardTitle as="h2">{t.milLog}</CardTitle>
-          <a href="/api/mileage/export" className={buttonClass("outline")}>{t.btnExportCsv}</a>
+          <Button variant="outline" onClick={exportCsv}>{t.btnExportCsv}</Button>
         </CardHeader>
         <CardContent>
           {entries.length === 0 ? (
@@ -552,8 +580,8 @@ export default function MileagePage() {
                       <td className="px-3 py-3">{e.purpose === "business" ? t.purposeBusinessShort : t.purposePrivate}</td>
                       <td className="px-3 py-3 text-right"><Button
                           variant="ghost"
-                          onClick={() => remove(e.id)}
-                          aria-label={t.btnDelete}
+                          onClick={() => setDel({ kind: "trip", id: e.id, name: `${e.startAddress} → ${e.endAddress}` })}
+                          aria-label={`${t.btnDelete}: ${e.startAddress} → ${e.endAddress}`}
                           title={t.btnDelete}
                           className="!h-11 !w-11 shrink-0 !p-0 md:!h-10 md:!w-10 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
@@ -581,8 +609,8 @@ export default function MileagePage() {
                     <span className="font-medium tabular-nums">{formatSek(e.amount)}</span>
                     <Button
                       variant="ghost"
-                      onClick={() => remove(e.id)}
-                      aria-label={t.btnDelete}
+                      onClick={() => setDel({ kind: "trip", id: e.id, name: `${e.startAddress} → ${e.endAddress}` })}
+                      aria-label={`${t.btnDelete}: ${e.startAddress} → ${e.endAddress}`}
                       title={t.btnDelete}
                       className="!h-11 !w-11 shrink-0 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                     >
@@ -600,6 +628,18 @@ export default function MileagePage() {
       <p className="text-xs text-gray-500 dark:text-gray-400">
         {t.milManualNote}
       </p>
+
+      <ConfirmDialog
+        open={!!del}
+        title={t.confirmDeleteTitle.replace("{name}", del?.name ?? "")}
+        description={t.confirmDeleteDesc}
+        confirmLabel={t.btnDelete}
+        cancelLabel={t.btnCancel}
+        destructive
+        busy={busy === "delete"}
+        onConfirm={confirmDelete}
+        onCancel={() => setDel(null)}
+      />
     </div>
   );
 }

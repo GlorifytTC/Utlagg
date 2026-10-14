@@ -48,7 +48,7 @@ const settingsItem = { key: "navSettings", href: "/dashboard/settings", icon: Se
 // Flat list for the mobile bottom bar, which picks items by href
 const nav = [...navGroups.flatMap((g) => g.items), settingsItem];
 
-const bottomNav = nav.filter((n) => ["/dashboard", "/dashboard/receipts", "/dashboard/chats", "/dashboard/stats", "/dashboard/settings"].includes(n.href));
+const bottomNav = nav.filter((n) => ["/dashboard", "/dashboard/receipts", "/dashboard/chats", "/dashboard/stats"].includes(n.href));
 
 function isActive(pathname: string, href: string) {
   return href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
@@ -76,7 +76,7 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
         )}
       </div>
       {/* lg:[@media(max-height:860px)] tightens the rail on short laptop screens (1366×768) so every link fits */}
-      <nav className={cn("min-h-0 flex-1 space-y-4 overflow-y-auto px-3 pb-3 pt-1 [scrollbar-width:thin]", "lg:[@media(max-height:860px)]:space-y-2 lg:[@media(max-height:860px)]:pb-2")}>
+      <nav aria-label={lang === "sv" ? "Huvudmeny" : "Main menu"} className={cn("min-h-0 flex-1 space-y-4 overflow-y-auto px-3 pb-3 pt-1 [scrollbar-width:thin]", "lg:[@media(max-height:860px)]:space-y-2 lg:[@media(max-height:860px)]:pb-2")}>
         {navGroups.map((group) => (
           <div key={group.labelEn}>
             <p className={cn("mb-1 px-3 text-xs font-medium text-gray-500 dark:text-gray-400", "lg:[@media(max-height:860px)]:mb-0.5")}>
@@ -99,7 +99,7 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
                         {item.href === "/dashboard/chats" && <AnimatePresence><NotifBadge n={chat} /></AnimatePresence>}
                       </span>
                       <span className="flex-1 truncate">{t[item.key as keyof Translations]}</span>
-                      {tier && "feature" in item && !hasFeature(tier, (item as { feature: Feature }).feature) && <Lock className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" strokeWidth={1.75} />}
+                      {tier && "feature" in item && !hasFeature(tier, (item as { feature: Feature }).feature) && <><Lock className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" strokeWidth={1.75} aria-hidden /><span className="sr-only">{lang === "sv" ? "(kräver uppgradering)" : "(requires upgrade)"}</span></>}
                     </Link>
                   </li>
                 );
@@ -119,7 +119,7 @@ function NavList({ onNavigate, onClose, tier }: { onNavigate?: () => void; onClo
 }
 
 export function DashboardChrome({ children, tier }: { children: React.ReactNode; tier?: Tier }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const pathname = usePathname();
   const { chat } = useNotifications();
 
@@ -128,6 +128,7 @@ export function DashboardChrome({ children, tier }: { children: React.ReactNode;
       homeHref="/dashboard"
       renderNav={(p) => <NavList {...p} tier={tier} />}
       headerEnd={<ProfileMenu logoEndpoint="/api/user/logo" settingsHref="/dashboard/settings" />}
+      moreLabel={lang === "sv" ? "Mer" : "More"}
       bottomNav={bottomNav.map((item) => ({
         href: item.href,
         label: t[item.key as keyof Translations] as string,

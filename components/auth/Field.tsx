@@ -6,8 +6,9 @@ export function Field({
   id,
   label,
   error,
+  errorId = "form-error",
   ...props
-}: { id: string; label: string; error?: boolean } & React.InputHTMLAttributes<HTMLInputElement>) {
+}: { id: string; label: string; error?: boolean; errorId?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div>
       <Label htmlFor={id} className="mb-1 block dark:!text-gray-700">{label}</Label>
@@ -15,7 +16,7 @@ export function Field({
         id={id}
         className="dark:!border-gray-900/15 dark:!bg-white dark:!text-gray-900 dark:placeholder:!text-gray-500"
         aria-invalid={error || undefined}
-        aria-describedby={error ? "form-error" : undefined}
+        aria-describedby={error ? errorId : undefined}
         {...props}
       />
     </div>

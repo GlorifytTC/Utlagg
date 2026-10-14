@@ -20,6 +20,8 @@ export default function SubmitApprovalPage() {
   const [receipts, setReceipts] = useState<Receipt[]>([]);
   const [receiptId, setReceiptId] = useState("");
   const [approverEmail, setApproverEmail] = useState("");
+  const [approvers, setApprovers] = useState<{ email: string; name: string | null }[]>([]);
+  const [taken, setTaken] = useState<Set<string>>(new Set());
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [allowed, setAllowed] = useState<boolean | null>(null);
@@ -38,6 +40,18 @@ export default function SubmitApprovalPage() {
     });
   }, []);
 
+  useEffect(() => {
+    fetch("/api/approvals?type=approvers").then(async (r) => {
+      if (r.ok) setApprovers((await r.json()).approvers ?? []);
+    });
+    // Receipts that already have a pending/approved request can't be submitted again.
+    fetch("/api/approvals?type=outgoing").then(async (r) => {
+      if (!r.ok) return;
+      const rows: { receiptId: string | null; status: string }[] = (await r.json()).requests ?? [];
+      setTaken(new Set(rows.filter((x) => x.receiptId && x.status !== "rejected").map((x) => x.receiptId as string)));
+    });
+  }, []);
+
   async function submit() {
     if (!receiptId || !approverEmail) { toast.error(t.toastSelectReceiptApprover); return; }
     setLoading(true);
@@ -48,7 +62,7 @@ export default function SubmitApprovalPage() {
     });
     setLoading(false);
     if (res.ok) { toast.success(t.toastSubmitted); router.push("/dashboard/approvals/history"); }
-    else { const e = await res.json().catch(() => ({})); toast.error(e.error ?? t.toastSubmitFail); }
+    else toast.error(t.toastSubmitFail);
   }
 
   if (allowed === false) {
@@ -77,7 +91,7 @@ export default function SubmitApprovalPage() {
             <Label htmlFor="receipt">{t.fldReceipt}</Label>
             <Select id="receipt" value={receiptId} onChange={(e) => setReceiptId(e.target.value)}>
               <option value="">{t.phSelectReceipt}</option>
-              {receipts.map((r) => (
+              {receipts.filter((r) => !taken.has(r.id)).map((r) => (
                 <option key={r.id} value={r.id}>
                   {(r.vendorName ?? t.unknownShort)} - {formatSek(Number(r.totalAmount ?? 0))}
                 </option>
@@ -86,7 +100,12 @@ export default function SubmitApprovalPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="approver">{t.fldApproverEmail}</Label>
-            <Input id="approver" type="email" value={approverEmail} onChange={(e) => setApproverEmail(e.target.value)} placeholder="chef@foretag.se" />
+            <Select id="approver" value={approverEmail} onChange={(e) => setApproverEmail(e.target.value)}>
+              <option value="">{t.phSelectApprover}</option>
+              {approvers.map((a) => (
+                <option key={a.email} value={a.email}>{a.name ? `${a.name} (${a.email})` : a.email}</option>
+              ))}
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="comment">{t.fldComment}</Label>

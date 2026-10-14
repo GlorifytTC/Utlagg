@@ -27,6 +27,8 @@ const schema = z.object({
   vehicleId: z.string().uuid().optional(),
 });
 
+const RATES = { private: MILEAGE_RATE_PER_KM, fossil: COMPANY_CAR_RATE_FOSSIL, electric: COMPANY_CAR_RATE_ELECTRIC };
+
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
@@ -36,10 +38,10 @@ export async function GET() {
       .from(mileageEntries)
       .where(eq(mileageEntries.userId, session.user.id))
       .orderBy(desc(mileageEntries.date));
-    return NextResponse.json({ entries: rows, ratePerKm: MILEAGE_RATE_PER_KM });
+    return NextResponse.json({ entries: rows, ratePerKm: MILEAGE_RATE_PER_KM, rates: RATES });
   } catch (e) {
     console.error("mileage GET failed (run migrations?):", e);
-    return NextResponse.json({ entries: [], ratePerKm: MILEAGE_RATE_PER_KM });
+    return NextResponse.json({ entries: [], ratePerKm: MILEAGE_RATE_PER_KM, rates: RATES });
   }
 }
 

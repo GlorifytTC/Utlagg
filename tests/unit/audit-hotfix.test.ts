@@ -104,7 +104,8 @@ describe("C2: connection requests need the other side's consent", () => {
 
 describe("C3: members whose receipts need approval can't approve them", () => {
   async function setup() {
-    const owner = await makeUser("owner@co.se");
+    // Approval gating is a Business feature (needsApproval is plan-aware).
+    const owner = await makeUser("owner@co.se", "subscription_tier", ["business"]);
     const member = await makeUser("m@co.se");
     const company = await makeCompany(owner);
     await pg.query(`INSERT INTO company_members (company_id, user_id, role) VALUES ($1,$2,'member')`, [company, member]);

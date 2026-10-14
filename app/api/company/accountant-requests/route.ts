@@ -56,6 +56,7 @@ export async function GET() {
     .select({
       id: accountantConnectionRequests.id,
       accountantId: accountantConnectionRequests.accountantId,
+      requestedBy: accountantConnectionRequests.requestedBy,
       name: users.name,
       email: users.email,
       createdAt: accountantConnectionRequests.createdAt,

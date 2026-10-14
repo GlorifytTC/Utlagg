@@ -4,17 +4,18 @@ import { and, asc, eq } from "drizzle-orm";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { receipts, receiptReviews, users } from "@/db/schema";
-import { getT, getServerLang } from "@/lib/i18n-server";
+import { getT, getServerLang, metaTitle } from "@/lib/i18n-server";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { formatSek, formatDate } from "@/lib/utils";
 import { resolveReceiptImageSrc } from "@/lib/storage";
 import { getBasAccount } from "@/lib/bas";
+import { ReceiptEditor } from "@/components/dashboard/ReceiptEditor";
 import { ReceiptDetailActions } from "@/components/dashboard/ReceiptDetailActions";
 import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { PageHeader } from "@/components/ui/page-header";
 
-export const metadata = { title: "Kvitto" };
+export const generateMetadata = metaTitle("Kvitto", "Receipt");
 export const dynamic = "force-dynamic";
 
 const STATUS_TONE: Record<string, BadgeTone> = {
@@ -139,6 +140,19 @@ export default async function ReceiptDetailPage({
             </div>
           )}
           <div className="panel-fill p-4 sm:col-span-2">
+            <div className="mb-3 flex">
+              <ReceiptEditor
+                receipt={{
+                  id: receipt.id,
+                  vendorName: receipt.vendorName,
+                  date: receipt.date ? new Date(receipt.date).toISOString().slice(0, 10) : null,
+                  totalAmount: receipt.totalAmount,
+                  vatAmount: receipt.vatAmount,
+                  vatRate: receipt.vatRate,
+                  basCode: receipt.basCode,
+                }}
+              />
+            </div>
             <ReceiptDetailActions id={receipt.id} status={receipt.status} />
           </div>
         </dl>

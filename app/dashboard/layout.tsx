@@ -18,6 +18,10 @@ export default async function DashboardLayout({
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
 
+  // Accountants have their own workspace; /dashboard would only bounce them back.
+  const [me] = await db.select({ isAccountant: users.isAccountant }).from(users).where(eq(users.id, session.user.id)).limit(1);
+  if (me?.isAccountant) redirect("/accountant");
+
   const [u] = await db
     .select({ tier: users.subscriptionTier })
     .from(users)

@@ -12,6 +12,7 @@ import { PLANS, SELECTABLE_PLANS, planFeatures, planName, planPrice } from "@/li
 import { useLanguage } from "@/context/LanguageContext";
 import { cn, formatDate } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 export function SubscriptionManager({
   currentTier,
@@ -25,6 +26,7 @@ export function SubscriptionManager({
   const [loading, setLoading] = useState<string | null>(null);
   const [showCancel, setShowCancel] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const [switchTo, setSwitchTo] = useState<"starter" | "pro" | "business" | "max" | null>(null);
   const { t, lang } = useLanguage();
   const router = useRouter();
 
@@ -48,7 +50,7 @@ export function SubscriptionManager({
         setLoading(null);
         router.refresh();
       } else {
-        toast.error(data.error ?? t.toastCheckoutFail);
+        toast.error(t.toastCheckoutFail);
         setLoading(null);
       }
     } catch {
@@ -66,7 +68,7 @@ export function SubscriptionManager({
         window.location.href = data.url;
         return;
       }
-      toast.error(data.error ?? t.toastPortalFail);
+      toast.error(t.toastPortalFail);
     } catch {
       toast.error(t.toastNetwork);
     }
@@ -75,13 +77,16 @@ export function SubscriptionManager({
 
   async function cancel() {
     setLoading("cancel");
-    const res = await fetch("/api/subscription/cancel", { method: "POST" });
-    if (res.ok) {
-      toast.success(t.toastCancelScheduled);
+    try {
+      const res = await fetch("/api/subscription/cancel", { method: "POST" });
+      if (!res.ok) throw new Error();
+      toast.success(
+        periodEnd ? `${t.toastCancelScheduled} ${t.subEndsOn.replace("{date}", formatDate(periodEnd, lang))}` : t.toastCancelScheduled,
+      );
       setShowCancel(false);
-    } else {
-      const e = await res.json().catch(() => ({}));
-      toast.error(e.error ?? t.toastCancelFail);
+      router.refresh();
+    } catch {
+      toast.error(t.toastCancelFail);
     }
     setLoading(null);
   }
@@ -133,6 +138,16 @@ export function SubscriptionManager({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        open={switchTo !== null}
+        title={t.subSwitchConfirmTitle}
+        description={switchTo ? t.subSwitchConfirm.replace("{plan}", planName(t, switchTo)) : undefined}
+        confirmLabel={t.btnConfirm}
+        cancelLabel={t.btnCancel}
+        onConfirm={() => { const tier = switchTo; setSwitchTo(null); if (tier) upgrade(tier); }}
+        onCancel={() => setSwitchTo(null)}
+      />
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -201,7 +216,7 @@ export function SubscriptionManager({
                 className="mt-6 w-full"
                 variant={isCurrent ? "outline" : "default"}
                 disabled={isCurrent || loading !== null}
-                onClick={() => upgrade(plan.tier as "starter" | "pro" | "business" | "max")}
+                onClick={() => setSwitchTo(plan.tier as "starter" | "pro" | "business" | "max")}
               >
                 {loading === plan.tier ? (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />

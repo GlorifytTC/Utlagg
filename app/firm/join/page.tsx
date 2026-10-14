@@ -21,6 +21,7 @@ function FirmJoinInner() {
   const token = params.get("token") ?? "";
 
   const [state, setState] = useState<"checking" | "form" | "invalid" | "done" | "working">("checking");
+  const [signedIn, setSignedIn] = useState(true);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -80,6 +81,7 @@ function FirmJoinInner() {
         password,
         redirect: false,
       });
+      setSignedIn(!!signInRes?.ok);
       setState("done");
       if (signInRes?.ok) {
         router.push("/accountant");
@@ -105,12 +107,23 @@ function FirmJoinInner() {
             <p className="text-sm text-ink/70">
               {t.joinInvalidBody}
             </p>
+            <p className="text-sm">
+              <Link href="/login" className="text-nordic-700 underline">{t.login}</Link>
+              {" · "}
+              <Link href="/contact" className="text-nordic-700 underline">{t.pricingContactUs}</Link>
+            </p>
           </div>
         )}
 
         {state === "done" && (
           <div className="mt-6 space-y-3">
             <h1 className="font-display text-2xl">{t.joinWelcome}</h1>
+            {!signedIn && (
+              <p role="alert" className="text-sm text-red-600">
+                {t.joinSignInFailed}{" "}
+                <Link href="/login" className="underline">{t.login}</Link>
+              </p>
+            )}
             <p className="text-sm text-ink/70">
               {t.joinReady}{" "}
               <Link href="/accountant" className="underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">

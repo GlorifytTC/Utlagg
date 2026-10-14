@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { downloadExport, fetchFile } from "@/lib/export-download";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatSek, formatDate, cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
@@ -167,13 +169,19 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
     { key: "pdf", label: "PDF", path: "/api/export/pdf" },
   ] as const;
 
-  function exportAs(path: string) {
+  async function exportAs(path: string) {
     const params = new URLSearchParams();
     if (from) params.set("from", from);
     if (to) params.set("to", to);
     const qs = params.toString();
     setExportOpen(false);
-    window.location.href = `${path}${qs ? `?${qs}` : ""}`;
+    // fetch (not navigation) so a plan-locked 403 becomes a toast, not a raw JSON page.
+    try {
+      const f = await fetchFile(`${path}${qs ? `?${qs}` : ""}`);
+      await downloadExport([f], f.name);
+    } catch (e) {
+      toast.error(e instanceof Error && e.message ? e.message : t.somethingWentWrong);
+    }
   }
 
   useEffect(() => {
@@ -198,20 +206,34 @@ export function ReceiptTable({ refreshKey }: { refreshKey: number }) {
   }, [exportOpen]);
 
   async function approve(id: string) {
-    await fetch(`/api/receipts/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "approved" }),
-    });
+    try {
+      const res = await fetch(`/api/receipts/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "approved" }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      toast.error(t.somethingWentWrong);
+      return;
+    }
+    cache.current.clear(); // else load() serves the stale "pending" row
     load();
   }
 
   async function remove(id: string) {
     setConfirmId(null);
     setRemovingId(id);
-    await fetch(`/api/receipts/${id}`, { method: "DELETE" });
-    await load();
-    setRemovingId(null);
+    try {
+      const res = await fetch(`/api/receipts/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      cache.current.clear();
+      await load();
+    } catch {
+      toast.error(t.somethingWentWrong);
+    } finally {
+      setRemovingId(null);
+    }
   }
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));

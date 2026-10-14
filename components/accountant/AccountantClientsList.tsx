@@ -7,6 +7,7 @@ import { ChevronRight } from "lucide-react";
 import { ClientAvatar } from "@/components/accountant/ClientAvatar";
 import { useLanguage } from "@/context/LanguageContext";
 import { accountantStrings } from "@/lib/accountant-i18n";
+import { Input, Select } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ErrorState } from "@/components/ui/error-state";
 import { Pager } from "@/components/ui/pager";
@@ -30,6 +31,8 @@ export function AccountantClientsList({ limit }: { limit?: number }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(limit ?? 25);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
+  const [q, setQ] = useState("");
+  const [sort, setSort] = useState<"name" | "receipts">("name");
 
   const load = useCallback(async (p: number) => {
     setStatus("loading");
@@ -77,14 +80,41 @@ export function AccountantClientsList({ limit }: { limit?: number }) {
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {t.clientsListEmptyHint}
         </p>
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          <Link href="/accountant/marketplace" className="inline-flex min-h-11 items-center rounded-full bg-nordic-600 px-5 text-sm font-medium text-white transition hover:bg-nordic-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20">
+            {t.clientsEmptyProfile}
+          </Link>
+          <Link href="/accountant/settings" className="inline-flex min-h-11 items-center rounded-full border border-gray-900/15 px-5 text-sm font-medium text-gray-900 transition hover:bg-gray-900/5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-nordic-600/20 dark:border-white/15 dark:text-white dark:hover:bg-white/5">
+            {t.clientsEmptySettings}
+          </Link>
+        </div>
       </div>
     );
   }
 
+  // Search/sort only when every client is on this page (client-side).
+  const canFilter = !limit && total <= pageSize;
+  const shown = canFilter
+    ? rows
+        .filter((c) => c.companyName.toLowerCase().includes(q.trim().toLowerCase()))
+        .sort((a, b) => (sort === "name" ? a.companyName.localeCompare(b.companyName) : b.receiptCount - a.receiptCount))
+    : rows;
   const totalPages = limit ? 1 : Math.max(1, Math.ceil(total / pageSize));
 
   return (
     <div className="space-y-4">
+      {canFilter && (
+        <div className="flex flex-wrap gap-2">
+          <Input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.clientsSearch} aria-label={t.clientsSearch} className="max-w-xs" />
+          <Select value={sort} onChange={(e) => setSort(e.target.value as "name" | "receipts")} aria-label={t.clientsSortName} className="w-auto">
+            <option value="name">{t.clientsSortName}</option>
+            <option value="receipts">{t.clientsSortReceipts}</option>
+          </Select>
+        </div>
+      )}
+      {canFilter && shown.length === 0 && (
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t.clientsNoMatch}</p>
+      )}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -110,7 +140,7 @@ export function AccountantClientsList({ limit }: { limit?: number }) {
               </tr>
             </thead>
             <tbody>
-              {rows.map((c) => (
+              {shown.map((c) => (
                 <tr
                   key={c.companyId}
                   className="border-t border-gray-900/[0.07] transition-colors hover:bg-gray-900/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.02]"
@@ -145,7 +175,7 @@ export function AccountantClientsList({ limit }: { limit?: number }) {
         </div>
 
         <ul className="divide-y divide-gray-900/[0.07] dark:divide-white/[0.07] md:hidden">
-          {rows.map((c) => (
+          {shown.map((c) => (
             <li key={c.companyId}>
               <Link
                 href={`/accountant/clients/${c.companyId}`}

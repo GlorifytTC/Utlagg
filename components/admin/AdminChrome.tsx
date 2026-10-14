@@ -9,6 +9,7 @@ import {
 import { useLanguage } from "@/context/LanguageContext";
 import { Logo } from "@/components/brand/Logo";
 import { AppShell, iconBtn, navIconClass, navItemClass } from "@/components/AppShell";
+import { IdleLogout } from "@/components/IdleLogout";
 import { buttonClass } from "@/components/ui/button";
 
 // Admin is an internal, Swedish-only tool: strings stay inline (no i18n by design).
@@ -82,6 +83,7 @@ export function AdminChrome({ email, children }: { email?: string | null; childr
       }
       bottomNav={bottomNav.map((i) => ({ href: i.href, label: i.name, icon: i.icon, active: isActive(pathname, i.href) }))}
     >
+      <IdleLogout />
       {children}
     </AppShell>
   );

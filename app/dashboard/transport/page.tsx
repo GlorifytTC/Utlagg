@@ -2,15 +2,17 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { downloadExport, fetchFile } from "@/lib/export-download";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
-import { Button, buttonClass } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
-import { formatSek, formatDate, localeFor } from "@/lib/utils";
+import { formatSek, formatDate, localeFor, localDateStr } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/context/LanguageContext";
 import { PageHeader } from "@/components/ui/page-header";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface Pass {
   id: string;
@@ -29,7 +31,7 @@ const PROVIDERS = ["SL", "Västtrafik", "Skånetrafiken", "Other"] as const;
 function monthRange(d = new Date()) {
   const from = new Date(d.getFullYear(), d.getMonth(), 1);
   const to = new Date(d.getFullYear(), d.getMonth() + 1, 0);
-  return { from: from.toISOString().slice(0, 10), to: to.toISOString().slice(0, 10) };
+  return { from: localDateStr(from), to: localDateStr(to) };
 }
 
 export default function TransportPage() {
@@ -37,6 +39,9 @@ export default function TransportPage() {
   const locale = localeFor(lang);
   const [passes, setPasses] = useState<Pass[]>([]);
   const init = monthRange();
+  const [saving, setSaving] = useState(false);
+  const [quickAmount, setQuickAmount] = useState("");
+  const [del, setDel] = useState<Pass | null>(null);
   const [form, setForm] = useState({
     passType: "monthly",
     provider: "SL",
@@ -59,26 +64,42 @@ export default function TransportPage() {
     const payload = { ...form, ...overrides };
     const amount = parseFloat(payload.amount);
     if (!amount || amount <= 0) {
-      toast.error(t.trAmount);
+      toast.error(t.trAmountInvalid);
       return;
     }
-    const res = await fetch("/api/transport/pass", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...payload, amount }),
-    });
-    if (res.ok) {
-      toast.success(t.trSaved);
-      fetchPasses();
-    } else {
-      const e = await res.json().catch(() => ({}));
-      toast.error(e.error ?? t.trSaveFail);
+    if (saving) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/transport/pass", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...payload, amount }),
+      });
+      if (res.ok) {
+        toast.success(t.trSaved);
+        fetchPasses();
+      } else {
+        toast.error(t.trSaveFail);
+      }
+    } catch {
+      toast.error(t.trSaveFail);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function exportCsv() {
+    try {
+      const f = await fetchFile("/api/transport/export", undefined, "transport.csv");
+      await downloadExport([f], f.name);
+    } catch (e) {
+      toast.error(e instanceof Error && e.message ? e.message : t.somethingWentWrong);
     }
   }
 
   async function quickAddCurrentMonth() {
     const r = monthRange();
-    await save({ passType: "monthly", validFrom: r.from, validTo: r.to, isRecurring: true });
+    await save({ passType: "monthly", validFrom: r.from, validTo: r.to, isRecurring: true, amount: quickAmount });
   }
 
   async function remove(id: string) {
@@ -99,8 +120,20 @@ export default function TransportPage() {
           <CardTitle as="h2">{t.trQuickTitle}</CardTitle>
           <CardDescription>{t.trQuickDesc}</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Button onClick={quickAddCurrentMonth}>
+        <CardContent className="space-y-3">
+          <div className="max-w-xs space-y-2">
+            <Label htmlFor="tr-quick-amount">{t.trAmount}</Label>
+            <Input
+              id="tr-quick-amount"
+              type="number"
+              inputMode="decimal"
+              min="0"
+              placeholder="970"
+              value={quickAmount}
+              onChange={(e) => setQuickAmount(e.target.value)}
+            />
+          </div>
+          <Button onClick={quickAddCurrentMonth} disabled={saving}>
             {t.trQuickBtn.replace("{month}", monthLabel)}
           </Button>
         </CardContent>
@@ -192,7 +225,7 @@ export default function TransportPage() {
             label={t.trRecurring}
           />
 
-          <Button onClick={() => save()}>{t.trSave}</Button>
+          <Button onClick={() => save()} disabled={saving}>{t.trSave}</Button>
         </CardContent>
       </Card>
 
@@ -235,8 +268,8 @@ export default function TransportPage() {
                       <td className="px-3 py-3 text-right">
                         <Button
                           variant="ghost"
-                          onClick={() => remove(p.id)}
-                          aria-label={t.btnDelete}
+                          onClick={() => setDel(p)}
+                          aria-label={`${t.btnDelete}: ${providerLabel(p)} ${formatDate(p.validFrom, lang)}`}
                           title={t.btnDelete}
                           className="!h-11 !w-11 md:!h-10 md:!w-10 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
@@ -266,8 +299,8 @@ export default function TransportPage() {
                     <span className="font-medium tabular-nums">{formatSek(p.amount)}</span>
                     <Button
                       variant="ghost"
-                      onClick={() => remove(p.id)}
-                      aria-label={t.btnDelete}
+                      onClick={() => setDel(p)}
+                      aria-label={`${t.btnDelete}: ${providerLabel(p)} ${formatDate(p.validFrom, lang)}`}
                       title={t.btnDelete}
                       className="!h-11 !w-11 md:!h-10 md:!w-10 !p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                     >
@@ -289,11 +322,22 @@ export default function TransportPage() {
           <CardDescription>{t.trExportDesc}</CardDescription>
         </CardHeader>
         <CardContent>
-          <a href="/api/transport/export" className={buttonClass("outline")}>
+          <Button variant="outline" onClick={exportCsv}>
             {t.trExportBtn}
-          </a>
+          </Button>
         </CardContent>
       </Card>
+
+      <ConfirmDialog
+        open={!!del}
+        title={t.confirmDeleteTitle.replace("{name}", del ? `${providerLabel(del)} ${formatDate(del.validFrom, lang)}` : "")}
+        description={t.confirmDeleteDesc}
+        confirmLabel={t.btnDelete}
+        cancelLabel={t.btnCancel}
+        destructive
+        onConfirm={async () => { if (del) await remove(del.id); setDel(null); }}
+        onCancel={() => setDel(null)}
+      />
     </div>
   );
 }

@@ -33,6 +33,7 @@ export function navIconClass(active: boolean) {
 }
 
 export function NotifBadge({ n }: { n: number }) {
+  const sv = useLanguage().lang === "sv";
   if (!n) return null;
   return (
     <motion.span
@@ -44,6 +45,7 @@ export function NotifBadge({ n }: { n: number }) {
       className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-nordic-600 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-[#fffefb] dark:ring-[#0d0d0d]"
     >
       {n > 9 ? "9+" : n}
+      <span className="sr-only">{sv ? " nya" : " new"}</span>
     </motion.span>
   );
 }
@@ -61,6 +63,7 @@ export function AppShell({
   renderNav,
   headerEnd,
   bottomNav,
+  moreLabel,
   children,
 }: {
   homeHref: string;
@@ -68,9 +71,11 @@ export function AppShell({
   renderNav: (p: { onNavigate?: () => void; onClose?: () => void }) => React.ReactNode;
   headerEnd: React.ReactNode;
   bottomNav: BottomNavItem[];
+  /** When set, the bottom bar gets a last "More" button that opens the drawer. */
+  moreLabel?: string;
   children: React.ReactNode;
 }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [open, setOpen] = useState(false);
   const drawerRef = useRef<HTMLElement>(null);
   useFocusTrap(open, drawerRef);
@@ -90,6 +95,12 @@ export function AppShell({
 
   return (
     <div className="app-shell relative min-h-dvh bg-[#F5F4F0] dark:bg-black dark:text-gray-100 print:bg-white print:min-h-0">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-full focus:bg-nordic-600 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+      >
+        {lang === "sv" ? "Hoppa till innehållet" : "Skip to content"}
+      </a>
       {/* Canvas texture + one warm glow; fixed layers, light theme only */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 opacity-[0.035] dark:hidden print:hidden" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden print:hidden dark:hidden">
@@ -149,12 +160,12 @@ export function AppShell({
       <div className="relative z-30 hidden h-16 px-6 pt-3 lg:ml-[16.5rem] lg:block xl:px-8 print:hidden"><div className="mx-auto flex h-full max-w-[96rem] items-center justify-end">{headerEnd}</div></div>
 
       {/* No z-index here: page modals use fixed z-50 and must stack above the rail */}
-      <main className="min-h-[calc(100dvh-4.25rem)] p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-8 lg:ml-[16.5rem] lg:min-h-[calc(100dvh-4rem)] lg:p-6 lg:pt-2 xl:p-8 xl:pt-2 print:ml-0 print:min-h-0 print:p-0">
+      <main id="main-content" tabIndex={-1} className="outline-none min-h-[calc(100dvh-4.25rem)] p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-8 lg:ml-[16.5rem] lg:min-h-[calc(100dvh-4rem)] lg:p-6 lg:pt-2 xl:p-8 xl:pt-2 print:ml-0 print:min-h-0 print:p-0">
         <div className="mx-auto max-w-[96rem]">{children}</div>
       </main>
 
       {/* Mobile bottom bar: floating, clear of the home indicator */}
-      <nav className="panel fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 grid grid-cols-5 rounded-[1.25rem] p-1 md:hidden print:hidden">
+      <nav aria-label={lang === "sv" ? "Snabbmeny" : "Quick navigation"} className="panel fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 grid grid-cols-5 rounded-[1.25rem] p-1 md:hidden print:hidden">
         {bottomNav.map(({ href, label, icon: Icon, active, badge }) => (
           <Link
             key={href}
@@ -166,12 +177,23 @@ export function AppShell({
             )}
           >
             <span className="relative">
-              <Icon className="h-5 w-5" strokeWidth={1.75} />
+              <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
               <AnimatePresence>{badge ? <NotifBadge n={badge} /> : null}</AnimatePresence>
             </span>
             <span className="max-w-full break-words text-center">{label}</span>
           </Link>
         ))}
+        {moreLabel && (
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            aria-expanded={open}
+            className="flex flex-col items-center gap-1 rounded-2xl px-0.5 py-2 text-xs font-medium leading-tight text-gray-500 transition duration-300 ease-premium active:scale-95 dark:text-gray-400"
+          >
+            <Menu className="h-5 w-5" strokeWidth={1.75} aria-hidden />
+            <span>{moreLabel}</span>
+          </button>
+        )}
       </nav>
     </div>
   );

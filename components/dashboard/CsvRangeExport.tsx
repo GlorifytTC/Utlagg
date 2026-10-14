@@ -6,10 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { cn, localDateStr } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
 
-const iso = (d: Date) => d.toISOString().slice(0, 10);
+const iso = localDateStr;
 
 export function CsvRangeExport() {
   const { t } = useLanguage();

@@ -1,8 +1,8 @@
 import { CompanyAccountantAudit } from "@/components/dashboard/CompanyAccountantAudit";
-import { getT } from "@/lib/i18n-server";
+import { getT, metaTitle } from "@/lib/i18n-server";
 import { PageHeader } from "@/components/ui/page-header";
 
-export const metadata = { title: "Revisorsaktivitet" };
+export const generateMetadata = metaTitle("Revisorsaktivitet", "Accountant activity");
 export const dynamic = "force-dynamic";
 
 export default function AccountantActivityPage() {

@@ -8,9 +8,13 @@
 
 import { and, eq, inArray, ne } from "drizzle-orm";
 import { db } from "@/db";
-import { receipts, companyMembers } from "@/db/schema";
+import { receipts, companyMembers, users } from "@/db/schema";
 import { logAudit } from "@/lib/audit";
-import { getUserCompany } from "@/lib/company";
+import { getUserCompany, getPayerUserId } from "@/lib/company";
+import { hasFeature } from "@/lib/features";
+import { pricingV3Enabled } from "@/lib/billing/config";
+import { resolveAccountState } from "@/lib/billing/access";
+import type { Tier } from "@/lib/plans";
 import { suggestBasCode } from "@/lib/auto-categorize";
 import { getBasAccount } from "@/lib/bas";
 import { meterScan, type MeterOutcome } from "@/lib/billing/metering";
@@ -23,7 +27,7 @@ export interface CreateReceiptInput {
   date?: string | Date | null;
   totalAmount?: number | null;
   vatAmount?: number | null;
-  vatRate?: 6 | 12 | 25 | null;
+  vatRate?: 0 | 6 | 12 | 25 | null;
   category?: string;
   basCode?: string;
   aiConfidence?: number;
@@ -33,6 +37,30 @@ export interface CreateReceiptInput {
 export type CreateReceiptResult =
   | { ok: true; receipt: typeof receipts.$inferSelect }
   | { ok: false; meter: MeterOutcome };
+
+async function payerHasApprovals(userId: string): Promise<boolean> {
+  const payerId = await getPayerUserId(userId);
+  const [u] = await db
+    .select({
+      tier: users.subscriptionTier,
+      status: users.subscriptionStatus,
+      paused: users.subscriptionPaused,
+      grantedUntil: users.subscriptionGrantedUntil,
+      trialEndsAt: users.trialEndsAt,
+    })
+    .from(users)
+    .where(eq(users.id, payerId))
+    .limit(1);
+  const { entitledTier } = resolveAccountState({
+    subscriptionTier: (u?.tier ?? "free") as Tier,
+    subscriptionStatus: u?.status ?? "active",
+    subscriptionPaused: u?.paused ?? false,
+    subscriptionGrantedUntil: u?.grantedUntil ?? null,
+    trialEndsAt: u?.trialEndsAt ?? null,
+    v3Enabled: pricingV3Enabled(),
+  });
+  return hasFeature(entitledTier, "approvals");
+}
 
 /**
  * True when `userId`'s receipts must be approved by someone else: a plain
@@ -45,6 +73,9 @@ export async function needsApproval(
 ): Promise<boolean> {
   if (membership === undefined) membership = await getUserCompany(userId);
   if (!membership || membership.role !== "member") return false;
+  // Approval flows are a Business feature: below it nobody could clear the
+  // queue, so receipts are approved on creation.
+  if (!(await payerHasApprovals(userId))) return false;
   const approvers = await db
     .select({ id: companyMembers.id })
     .from(companyMembers)

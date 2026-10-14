@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { ArrowUp, Flag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
+import { ErrorState } from "@/components/ui/error-state";
 import { formatDayLabel, formatTime } from "@/lib/chat-format";
 
 interface Message {
@@ -64,10 +65,11 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
     if (refreshKey) load();
   }, [refreshKey, load]);
 
-  // Scroll the thread itself, never the page.
+  // Scroll the thread itself, never the page - and only while the reader is near the bottom.
+  const stickRef = useRef(true);
   useEffect(() => {
     const el = scrollRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
+    if (el && stickRef.current) el.scrollTop = el.scrollHeight;
   }, [messages, status]);
 
   // Auto-grow the composer up to ~6 lines.
@@ -89,6 +91,7 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
       });
       if (!res.ok) throw new Error();
       setText("");
+      stickRef.current = true; // own message: always jump to it
       await load();
       onSent?.();
     } catch {
@@ -101,20 +104,21 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
 
   async function submitReport() {
     if (!reportTarget || !reportReason.trim()) return;
-    const res = await fetch(`/api/chat/${clientId}/report`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        reportedUserId: reportTarget.userId,
-        messageId: reportTarget.messageId ?? null,
-        reason: reportReason,
-      }),
-    });
-    if (res.ok) {
+    try {
+      const res = await fetch(`/api/chat/${clientId}/report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportedUserId: reportTarget.userId,
+          messageId: reportTarget.messageId ?? null,
+          reason: reportReason,
+        }),
+      });
+      if (!res.ok) throw new Error();
       toast.success(t.chatReportSent);
       setReportTarget(null);
       setReportReason("");
-    } else {
+    } catch {
       toast.error(t.chatReportFailed);
     }
   }
@@ -130,7 +134,7 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
         {status === "loading" ? (
           <div role="status" aria-label={t.loading} className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-transparent dark:border-gray-600 dark:border-t-transparent" />
         ) : (
-          <p role="alert" className="text-sm text-red-600 dark:text-red-400">{t.chatLoadError}</p>
+          <ErrorState onRetry={() => { setStatus("loading"); load(); }} retryLabel={t.btnRetry}>{t.chatLoadError}</ErrorState>
         )}
       </div>
     );
@@ -145,6 +149,10 @@ export function AccountantChat({ clientId, currentUserId, fill, refreshKey, onSe
         ref={scrollRef}
         role="log"
         aria-live="polite"
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          stickRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+        }}
         className={cn("flex flex-col overflow-y-auto px-4 py-5 sm:px-6", fill ? "flex-1 min-h-0" : "h-[50dvh] min-h-[320px]")}
       >
         {messages.length === 0 && (
