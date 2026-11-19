@@ -127,6 +127,7 @@ export async function POST(req: NextRequest) {
               paymentIntentId: pi,
               amount: paidOre,
               currency: cur,
+              region: sessionObj.metadata.region ?? null,
             });
           } else {
             console.error(

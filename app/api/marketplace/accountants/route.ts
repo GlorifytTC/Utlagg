@@ -8,7 +8,6 @@ import {
   companies,
   accountantClients,
   accountantConnectionRequests,
-  accountantBoosts,
   accountantReviews,
   firmMembers,
   accountingFirms,
@@ -18,6 +17,8 @@ import { getUserCompany, canManageCompany } from "@/lib/company";
 import { requireAccountant } from "@/lib/accountant";
 import { verifiedFirmIds } from "@/lib/firm-verified";
 import { rankAccountants } from "@/lib/marketplace-rank";
+import { getRunningBoosts, recordImpressions, SPONSORED_SLOTS } from "@/lib/accountant-boost";
+import { pickSponsored, regionKey } from "@/lib/boost-schedule";
 
 export const runtime = "nodejs";
 
@@ -51,9 +52,12 @@ type RankedItem = AccountantRow & {
 /**
  * GET /api/marketplace/accountants - unified accountant marketplace.
  *
- * Any signed-in user can browse. Accountants are ranked by relevance (industry
- * match vs viewer's company) + popularity (active client count), with boost as
- * a +4 bonus that rotates hourly among boosted accountants/firms (lib/marketplace-rank.ts). Only safe display fields are returned.
+ * Any signed-in user can browse. Accountants are ranked ORGANICALLY by relevance
+ * (industry match vs viewer's company) + popularity + reviews. Boost does not
+ * change that order. Instead, page 1 carries up to SPONSORED_SLOTS `sponsored`
+ * accountants on top, chosen among running boosts in the viewer's region by
+ * fewest impressions (lib/boost-schedule.ts), so every payer gets an equal
+ * share no matter how many bought. Only safe display fields are returned.
  *
  * ponytail: in-memory rank after DB filter. Fine for ~hundreds of accountants;
  * add a DB rank column if the listing grows to thousands.
@@ -122,7 +126,7 @@ export async function GET(req: NextRequest) {
 
   const verifiedFirms = await verifiedFirmIds([...new Set((firmRows as { firmId: string }[]).map((f) => f.firmId))]);
 
-  const [clientCounts, activeBoosts, reviewStats, viewerCompany] = await Promise.all([
+  const [clientCounts, runningBoosts, reviewStats, viewerCompany, [viewer]] = await Promise.all([
     db
       .select({
         accountantId: accountantClients.accountantId,
@@ -131,15 +135,7 @@ export async function GET(req: NextRequest) {
       .from(accountantClients)
       .where(eq(accountantClients.status, "active"))
       .groupBy(accountantClients.accountantId),
-    db
-      .select({ accountantId: accountantBoosts.accountantId })
-      .from(accountantBoosts)
-      .where(
-        and(
-          eq(accountantBoosts.status, "active"),
-          sql`${accountantBoosts.expiresAt} > now()`,
-        ),
-      ),
+    getRunningBoosts(ids),
     db
       .select({
         accountantId: accountantReviews.accountantId,
@@ -149,17 +145,13 @@ export async function GET(req: NextRequest) {
       .from(accountantReviews)
       .groupBy(accountantReviews.accountantId),
     getUserCompany(session.user.id),
+    db.select({ isAccountant: users.isAccountant }).from(users).where(eq(users.id, session.user.id)).limit(1),
   ]);
 
   const clientCountMap = new Map<string, number>(
     clientCounts
       .filter((r: { accountantId: string; count: number }) => ids.includes(r.accountantId))
       .map((r: { accountantId: string; count: number }) => [r.accountantId, r.count]),
-  );
-  const boostedIds = new Set<string>(
-    activeBoosts
-      .filter((r: { accountantId: string }) => ids.includes(r.accountantId))
-      .map((r: { accountantId: string }) => r.accountantId),
   );
   const reviewStatsMap = new Map<string, { avgRating: number | null; reviewCount: number }>(
     reviewStats
@@ -171,6 +163,7 @@ export async function GET(req: NextRequest) {
   );
 
   let viewerIndustry: string | null = null;
+  let viewerRegion: string | null = null;
   let viewerCanRequest = false;
   const statusMap = new Map<string, string>();
 
@@ -178,11 +171,12 @@ export async function GET(req: NextRequest) {
     viewerCanRequest = canManageCompany(viewerCompany.role);
 
     const [co] = await db
-      .select({ industry: companies.industry })
+      .select({ industry: companies.industry, city: companies.city })
       .from(companies)
       .where(eq(companies.id, viewerCompany.companyId))
       .limit(1);
     viewerIndustry = co?.industry ?? null;
+    viewerRegion = co?.city ? regionKey(co.city) : null;
 
     const [reqs, rels] = await Promise.all([
       db
@@ -244,17 +238,39 @@ export async function GET(req: NextRequest) {
     };
   });
 
+  // Organic order only: boost no longer adds a ranking bonus.
   const ranked = rankAccountants(
     items.map((a) => ({ ...a, firmId: firmMap.get(a.id)?.firmId ?? null })),
-    boostedIds,
+    new Set<string>(),
   );
 
   const start = (page - 1) * pageSize;
   const pageItems = ranked.slice(start, start + pageSize);
   const hasMore = start + pageSize < ranked.length;
 
-  return NextResponse.json({
-    accountants: pageItems.map((a) => {
+  // Sponsored slots (page 1 only). Candidates are running boosts among the
+  // accountants that match the current filters:
+  //  - city filter given: those results (already filtered by city)
+  //  - else viewer's company city known: boosts in that region + nationwide
+  //  - else: every running boost
+  let sponsored: RankedItem[] = [];
+  if (page === 1) {
+    const region = city ? null : viewerRegion;
+    const candidates = runningBoosts.filter(
+      (b) => region == null || b.region === region || b.region === "",
+    );
+    const picked = pickSponsored(candidates, SPONSORED_SLOTS);
+    const byId = new Map(items.map((a) => [a.id, a]));
+    sponsored = picked.map((p) => byId.get(p.accountantId)).filter((a): a is RankedItem => !!a);
+    // Count views from companies, not from accountants browsing the marketplace.
+    if (!viewer?.isAccountant && picked.length) {
+      await recordImpressions(picked.map((p) => p.boostId)).catch((e) =>
+        console.error("boost impressions failed (non-blocking):", e),
+      );
+    }
+  }
+
+  const toDto = (a: RankedItem, isSponsored: boolean) => {
       const firm = firmMap.get(a.id);
       return {
         id: a.id,
@@ -265,7 +281,8 @@ export async function GET(req: NextRequest) {
         bio: a.accountantBio,
         specializations: a.accountantSpecializations,
         activeClientCount: a.activeClientCount,
-        isBoosted: boostedIds.has(a.id),
+        isBoosted: isSponsored,
+        sponsored: isSponsored,
         isVerified: a.verificationStatus === "approved",
         avgRating: a.avgRating,
         reviewCount: a.reviewCount,
@@ -276,7 +293,11 @@ export async function GET(req: NextRequest) {
         firmLogoUrl: firm?.firmLogoUrl ?? null,
         firmVerified: firm ? verifiedFirms.has(firm.firmId) : false,
       };
-    }),
+  };
+
+  return NextResponse.json({
+    sponsored: sponsored.map((a) => toDto(a, true)),
+    accountants: pageItems.map((a) => toDto(a, false)),
     page,
     pageSize,
     hasMore,

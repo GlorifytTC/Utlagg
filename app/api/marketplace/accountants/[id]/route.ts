@@ -14,6 +14,7 @@ import {
   accountingFirms,
 } from "@/db/schema";
 import { authOptions } from "@/lib/auth";
+import { runningNow } from "@/lib/accountant-boost";
 import { getUserCompany, canManageCompany } from "@/lib/company";
 
 export const runtime = "nodejs";
@@ -61,11 +62,8 @@ export async function GET(
       .select({ accountantId: accountantBoosts.accountantId })
       .from(accountantBoosts)
       .where(
-        and(
-          eq(accountantBoosts.accountantId, id),
-          eq(accountantBoosts.status, "active"),
-          sql`${accountantBoosts.expiresAt} > now()`,
-        ),
+        // Running now: paid, started (queued boosts don't count yet), not expired.
+        and(eq(accountantBoosts.accountantId, id), runningNow(new Date())),
       )
       .limit(1),
     db

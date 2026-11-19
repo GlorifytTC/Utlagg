@@ -23,6 +23,8 @@ interface AccountantRow {
   specializations: string[] | null;
   activeClientCount: number;
   isBoosted: boolean;
+  /** Shown in a paid sponsored slot on top (Boost). */
+  sponsored?: boolean;
   isVerified: boolean;
   avgRating: number | null;
   reviewCount: number;
@@ -132,7 +134,12 @@ export function AccountantMarketplace({
       const res = await fetch(`/api/marketplace/accountants?${p}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setRows(data.accountants ?? []);
+      // Sponsored (Boost) places first, then the organic list without them.
+      const sponsored: AccountantRow[] = data.sponsored ?? [];
+      const sponsoredIds = new Set(sponsored.map((a) => a.id));
+      const organic: AccountantRow[] = (data.accountants ?? []).filter((a: AccountantRow) => !sponsoredIds.has(a.id));
+      const merged = [...sponsored, ...organic];
+      setRows(compact ? merged.slice(0, 6) : merged);
       setCanRequest(data.viewerCanRequest ?? false);
       setLoadState("ok");
     } catch {
@@ -304,9 +311,9 @@ export function AccountantMarketplace({
                             {a.name ?? a.email}
                           </span>
                           {a.isVerified && <VerifiedBadge />}
-                          {a.isBoosted && (
+                          {a.sponsored && (
                             <span className="rounded-full bg-nordic-600/10 px-1.5 py-px text-xs font-bold text-nordic-600 dark:bg-nordic-600/20">
-                              {t.mktBoosted}
+                              {t.mktSponsored}
                             </span>
                           )}
                           {isSelf && (

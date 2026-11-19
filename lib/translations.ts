@@ -1292,6 +1292,7 @@ export interface Translations {
   mktClearFilters: string;
   mktViewProfile: string;
   mktBoosted: string;
+  mktSponsored: string;
   verifiedBadge: string;
   verifiedBadgeTitle: string;
   verifiedFirmBadgeTitle: string;
@@ -2910,6 +2911,7 @@ export const strings: Record<Lang, Translations> = {
     mktClearFilters: "Rensa filter",
     mktViewProfile: "Visa profil för {name}",
     mktBoosted: "Boostad",
+    mktSponsored: "Sponsrad",
     verifiedBadge: "Verifierad",
     verifiedBadgeTitle: "Kvittino har granskat revisorns behörighetsdokument",
     verifiedFirmBadgeTitle: "Verifierad byrå: alla medarbetare är verifierade",
@@ -4522,6 +4524,7 @@ export const strings: Record<Lang, Translations> = {
     mktClearFilters: "Clear filters",
     mktViewProfile: "View profile for {name}",
     mktBoosted: "Boosted",
+    mktSponsored: "Sponsored",
     verifiedBadge: "Verified",
     verifiedBadgeTitle: "Kvittino has reviewed this accountant's credentials",
     verifiedFirmBadgeTitle: "Verified firm: every member is verified",

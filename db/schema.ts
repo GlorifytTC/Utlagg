@@ -629,10 +629,15 @@ export const accountantBoosts = pgTable(
     currency: varchar("currency", { length: 3 }),
     startsAt: timestamp("starts_at", { withTimezone: true }),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
+    // Normalized city at purchase ('' = nationwide). Capacity is per region.
+    region: varchar("region", { length: 100 }).notNull().default(""),
+    // Sponsored-slot views; fewest are shown first (fair rotation).
+    impressions: integer("impressions").notNull().default(0),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => ({
     acctIdx: index("accountant_boosts_acct_idx").on(t.accountantId),
+    regionIdx: index("accountant_boosts_region_idx").on(t.region, t.expiresAt),
     // Idempotency: one row per checkout session, so a replayed webhook can't
     // create a second boost.
     sessionIdx: uniqueIndex("accountant_boosts_session_idx").on(t.stripeCheckoutSessionId),

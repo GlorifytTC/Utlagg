@@ -9,7 +9,9 @@ import {
   BOOST_CURRENCY,
   BOOST_DURATION_DAYS,
   getBoostState,
-  isBoostActive,
+  hasBoostOrQueued,
+  accountantRegion,
+  getRegionAvailability,
 } from "@/lib/accountant-boost";
 
 export const runtime = "nodejs";
@@ -25,17 +27,31 @@ export const runtime = "nodejs";
  * Stripe customer, metadata read by the webhook. Boost is granted ONLY by the
  * verified webhook (idempotent on session id) - never here, never from /success.
  *
- * If the accountant already has an active boost, we refuse a second purchase
- * (simplest safe behavior - avoids ambiguous overlapping expiries).
+ * If the accountant already has a running or queued boost, we refuse a second
+ * purchase. Each region runs at most MAX_BOOSTS_PER_REGION boosts at once; when
+ * full, a new boost is queued (the webhook schedules it), and if the queue is
+ * longer than MAX_QUEUE_DAYS the purchase is refused up front with the date a
+ * place frees up. The checkout session expires after 30 minutes so a burst of
+ * open checkouts can't pile up behind the queue estimate.
  */
 export async function POST(_req: NextRequest) {
   const acct = await requireAccountant();
   if (!acct) return NextResponse.json({ error: "Saknar behörighet" }, { status: 403 });
   if (!acct.email) return NextResponse.json({ error: "E-post saknas" }, { status: 400 });
 
-  if (await isBoostActive(acct.userId)) {
+  if (await hasBoostOrQueued(acct.userId)) {
     return NextResponse.json(
       { error: "Du har redan en aktiv boost.", alreadyActive: true },
+      { status: 409 },
+    );
+  }
+
+  // Region comes from the accountant's own profile (server-side), never input.
+  const region = await accountantRegion(acct.userId);
+  const availability = await getRegionAvailability(region);
+  if (availability.full) {
+    return NextResponse.json(
+      { error: "Fullbokat i ditt område.", full: true, nextAvailableAt: availability.startsAt },
       { status: 409 },
     );
   }
@@ -84,6 +100,8 @@ export async function POST(_req: NextRequest) {
         ? { customer: existing.customerId }
         : { customer_email: acct.email }),
       line_items: [lineItem],
+      // Short-lived checkout: limits how many open checkouts can race the queue.
+      expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
       billing_address_collection: "required",
       ...(process.env.STRIPE_TAX_ENABLED === "true" ? { automatic_tax: { enabled: true } } : {}),
       // The webhook reads these to activate the boost for the right accountant.
@@ -93,6 +111,7 @@ export async function POST(_req: NextRequest) {
         durationDays: String(BOOST_DURATION_DAYS),
         priceOre: String(BOOST_PRICE_ORE),
         currency: BOOST_CURRENCY,
+        region, // server-computed; the webhook schedules within this region
       },
       success_url: `${baseUrl}/accountant/settings/visibility?boost=processing`,
       cancel_url: `${baseUrl}/accountant/settings/visibility?boost=cancelled`,
@@ -111,9 +130,11 @@ export async function POST(_req: NextRequest) {
   }
 }
 
-/** GET - the accountant's authoritative boost state (for the UI). */
+/** GET - the accountant's boost state + what a purchase now would get (for the UI). */
 export async function GET() {
   const acct = await requireAccountant();
   if (!acct) return NextResponse.json({ error: "Saknar behörighet" }, { status: 403 });
-  return NextResponse.json(await getBoostState(acct.userId));
+  const [state, region] = await Promise.all([getBoostState(acct.userId), accountantRegion(acct.userId)]);
+  const availability = await getRegionAvailability(region);
+  return NextResponse.json({ ...state, availability });
 }
