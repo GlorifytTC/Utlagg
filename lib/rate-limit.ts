@@ -37,7 +37,10 @@ const BUCKETS = {
   // the tighter per-route buckets above). Far above what a person clicking
   // around generates; they stop scripts, scrapers and runaway clients.
   userRead: { tokens: 300, windowMs: 60_000 },
-  userWrite: { tokens: 60, windowMs: 60_000 },
+  userWrite: { tokens: 30, windowMs: 60_000 },
+  // Creating receipts (POST /api/receipts) is what fills the database: 10 a
+  // minute per user, counted in addition to userWrite.
+  receiptCreate: { tokens: 10, windowMs: 60_000 },
 } as const;
 export type BucketName = keyof typeof BUCKETS;
 
@@ -104,6 +107,7 @@ export const rateLimit = {
   auth: make("auth"),
   userRead: make("userRead"),
   userWrite: make("userWrite"),
+  receiptCreate: make("receiptCreate"),
 };
 
 /** Window length of a named bucket, in seconds (for Retry-After). */

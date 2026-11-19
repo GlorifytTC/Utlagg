@@ -21,6 +21,15 @@ export function userLimitBucket(pathname: string, method: string): UserLimitBuck
   return m === "GET" || m === "HEAD" ? "userRead" : "userWrite";
 }
 
+/**
+ * Extra, tighter bucket for specific routes, checked on top of the general
+ * one: creating a receipt is limited to 10 a minute per user.
+ */
+export function routeLimitBucket(pathname: string, method: string): "receiptCreate" | null {
+  const path = pathname.replace(/\/+$/, "");
+  return path === "/api/receipts" && method.toUpperCase() === "POST" ? "receiptCreate" : null;
+}
+
 /** Rate-limit key: the signed-in user's id, else the client IP. */
 export function userLimitKey(userId: string | null | undefined, ip: string | null | undefined): string {
   return userId ? `u:${userId}` : `ip:${ip || "anonymous"}`;
