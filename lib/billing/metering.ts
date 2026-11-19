@@ -1,7 +1,7 @@
 import "server-only";
-import { and, eq, gt, sql } from "drizzle-orm";
+import { and, eq, gt, gte, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { users, scanUsage, scanCredits } from "@/db/schema";
+import { users, scanUsage, scanCredits, receipts } from "@/db/schema";
 import {
   DEFAULT_OVERAGE_CAP_ORE,
   TRIAL_SCANS,
@@ -34,7 +34,9 @@ export interface MeterOutcome {
     | "legacy_ok"
     | "no_user"
     | "trial_hard_stop"
-    | "read_only";
+    | "read_only"
+    | "free_no_scan"
+    | "free_manual_limit";
   source: ConsumeSource | null;
   planScansUsed: number;
   planLimit: number; // -1 = unlimited
@@ -57,7 +59,39 @@ const TRIAL_STOP_MSG =
 // Read-only lockout (spec §C): scanning/uploading is blocked, but a complete CSV
 // export and your original files remain available.
 const READ_ONLY_MSG =
-  "Ditt konto är i läsläge. Du kan fortfarande exportera dina kvitton (CSV) och ladda ner dina originalfiler. Aktivera en prenumeration för att skanna igen.";
+  "Skanning är pausad på ditt konto. Du kan fortfarande lägga till kvitton manuellt, exportera (CSV) och ladda ner dina originalfiler. Aktivera en prenumeration för att skanna igen.";
+// Free plan: manual receipts only. Scanning, OCR and image storage are paid.
+const FREE_NO_SCAN_MSG =
+  "Gratisplanen har inte skanning eller bildlagring. Lägg till kvittot manuellt eller uppgradera för att skanna.";
+const FREE_MANUAL_LIMIT_MSG =
+  "Du har nått gränsen för manuella kvitton denna månad på gratisplanen. Uppgradera för att fortsätta.";
+
+/**
+ * Manual receipts a Free (or read-only) account may add per calendar month.
+ * Manual rows are a few KB with no image or OCR cost; this is only an
+ * anti-abuse ceiling, not a product limit.
+ */
+export const FREE_MANUAL_MONTHLY = 500;
+
+/** Free plan = no paid entitlement: tier "free" outside a trial, or read-only. */
+export function isFreeAccess(ctx: Pick<BillingContext, "tier" | "state">): boolean {
+  return ctx.state === "read_only" || (ctx.state !== "trial" && ctx.tier === "free");
+}
+
+function blocked(reason: MeterOutcome["reason"], message: string): MeterOutcome {
+  return {
+    allowed: false,
+    reason,
+    source: null,
+    planScansUsed: 0,
+    planLimit: 0,
+    creditsRemaining: 0,
+    overageScansThisPeriod: 0,
+    overageOreThisPeriod: 0,
+    spendCapOre: 0,
+    message,
+  };
+}
 
 /** Sum of unexpired, non-empty purchased credits for a billing account. */
 async function creditsRemaining(scope: "user" | "company", scopeId: string): Promise<number> {
@@ -138,25 +172,13 @@ export async function meterScan(userId: string): Promise<MeterOutcome> {
     };
   }
 
+  // ---- Free plan: no scanning at all (manual receipts are not metered). -----
+  if (ctx.state === "read_only") return blocked("read_only", READ_ONLY_MSG);
+  if (isFreeAccess(ctx)) return blocked("free_no_scan", FREE_NO_SCAN_MSG);
+
   // ---- Legacy path: flag off → keep the old flat per-user counter. ----------
   if (!pricingV2Enabled()) {
     return legacyMeter(userId);
-  }
-
-  // ---- V3 read-only lockout (spec §C): no new scans; exports stay open. ------
-  if (ctx.state === "read_only") {
-    return {
-      allowed: false,
-      reason: "read_only",
-      source: null,
-      planScansUsed: 0,
-      planLimit: 0,
-      creditsRemaining: 0,
-      overageScansThisPeriod: 0,
-      overageOreThisPeriod: 0,
-      spendCapOre: 0,
-      message: READ_ONLY_MSG,
-    };
   }
 
   // Trial = full Pro entitlement (ctx.tier is already 'pro') but hard-stops at
@@ -262,23 +284,9 @@ export async function meterScan(userId: string): Promise<MeterOutcome> {
 export async function getUsageSnapshot(userId: string): Promise<MeterOutcome | null> {
   const ctx = await resolveBillingContext(userId);
   if (!ctx) return null;
+  if (ctx.state === "read_only") return blocked("read_only", READ_ONLY_MSG);
+  if (isFreeAccess(ctx)) return blocked("free_no_scan", FREE_NO_SCAN_MSG);
   if (!pricingV2Enabled()) return legacyMeter(userId, { peek: true });
-
-  // Read-only: nothing to meter - scanning is locked (exports remain open).
-  if (ctx.state === "read_only") {
-    return {
-      allowed: false,
-      reason: "read_only",
-      source: null,
-      planScansUsed: 0,
-      planLimit: 0,
-      creditsRemaining: 0,
-      overageScansThisPeriod: 0,
-      overageOreThisPeriod: 0,
-      spendCapOre: 0,
-      message: READ_ONLY_MSG,
-    };
-  }
 
   const isTrial = ctx.state === "trial";
   const cfg = tierConfig(ctx.tier);
@@ -337,4 +345,42 @@ async function legacyMeter(
     spendCapOre: 0,
     message: allowed ? undefined : FREE_STOP_MSG,
   };
+}
+
+/**
+ * Allowance for a MANUAL receipt (no image, no OCR text). Paid plans and
+ * trials: always allowed and never metered. Free / read-only: allowed up to
+ * FREE_MANUAL_MONTHLY per calendar month for the acting user.
+ */
+export async function checkManualAllowance(userId: string): Promise<MeterOutcome> {
+  const ctx = await resolveBillingContext(userId);
+  if (!ctx) return blocked("no_user", "Kontot hittades inte.");
+  const ok: MeterOutcome = {
+    allowed: true,
+    reason: "plan",
+    source: null,
+    planScansUsed: 0,
+    planLimit: 0,
+    creditsRemaining: 0,
+    overageScansThisPeriod: 0,
+    overageOreThisPeriod: 0,
+    spendCapOre: 0,
+  };
+  if (!isFreeAccess(ctx)) return ok;
+
+  const [row] = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(receipts)
+    .where(
+      and(
+        eq(receipts.userId, userId),
+        isNull(receipts.imageUrl),
+        gte(receipts.createdAt, sql`date_trunc('month', now())`),
+      ),
+    );
+  const used = row?.n ?? 0;
+  if (used >= FREE_MANUAL_MONTHLY) {
+    return { ...blocked("free_manual_limit", FREE_MANUAL_LIMIT_MSG), planScansUsed: used, planLimit: FREE_MANUAL_MONTHLY };
+  }
+  return { ...ok, planScansUsed: used, planLimit: FREE_MANUAL_MONTHLY };
 }

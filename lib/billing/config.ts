@@ -146,7 +146,7 @@ export const TIERS: Record<Tier, TierConfig> = {
     tier: "free",
     name: "Gratis",
     priceOre: 0,
-    monthlyScans: 15, // FREE_MONTHLY_SCANS - recurring monthly quota, not lifetime
+    monthlyScans: 0, // Free = manual receipts only: no scanning, OCR or image storage
     seats: 1,
     overageOrePerScan: null, // no payment method on file → never auto-charge
     stripeLookupKey: null,

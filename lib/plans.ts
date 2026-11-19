@@ -33,7 +33,7 @@ export interface Plan {
 const FEATURES: Record<Tier, string[]> = {
   // Free is a deprecated tombstone (spec §7) - kept for existing rows and the
   // 30-day Trial's entitlement copy, never shown as an offerable plan.
-  free: ["15 skanningar/mån", "Grundläggande OCR", "CSV-export"],
+  free: ["Manuella kvitton", "Koppla redovisningskonsult", "Export"],
   starter: [
     "100 skanningar/mån",
     "OCR, moms & BAS",

@@ -1254,6 +1254,12 @@ export interface Translations {
   ruLimitTitle: string;
   ruLimitReached: string;
   ruLimitUpgrade: string;
+  ruAddManual: string;
+  ruFreeTitle: string;
+  ruFreeDesc: string;
+  ruScanLocked: string;
+  ruKeepPaper: string;
+  ruManualLimit: string;
   ruAiNote: string;
   ruAiNoteLink: string;
   subSwitchConfirmTitle: string;
@@ -2290,9 +2296,9 @@ export const strings: Record<Lang, Translations> = {
 
     // Plan features
     planFreeFeatures: [
-      "15 skanningar/mån",
-      "Grundläggande OCR",
-      "CSV-export",
+      "Manuella kvitton",
+      "Koppla redovisningskonsult",
+      "Export",
     ],
     planStarterFeatures: [
       "100 skanningar/mån",
@@ -2873,6 +2879,12 @@ export const strings: Record<Lang, Translations> = {
     ruLimitTitle: "Skanningsgränsen är nådd",
     ruLimitReached: "Du har nått månadens gräns för skanningar. Uppgradera för fler.",
     ruLimitUpgrade: "Uppgradera",
+    ruAddManual: "Lägg till manuellt",
+    ruFreeTitle: "Gratisplan: manuella kvitton",
+    ruFreeDesc: "Skanning och bildlagring ingår i betalda planer. På gratisplanen lägger du till kvitton manuellt och kan dela dem med din redovisningskonsult.",
+    ruScanLocked: "Uppgradera för att skanna",
+    ruKeepPaper: "Spara originalkvittot. Bokföringslagen kräver att underlaget arkiveras i sju år.",
+    ruManualLimit: "Du har nått gränsen för manuella kvitton denna månad. Uppgradera för att fortsätta.",
     ruAiNote: "Bilder behandlas av AI, vilket kan förbättra textigenkänningen.",
     ruAiNoteLink: "Läs mer i integritetspolicyn",
     subSwitchConfirmTitle: "Byta plan?",
@@ -3907,7 +3919,7 @@ export const strings: Record<Lang, Translations> = {
     // Plan names
 
     // Plan features
-    planFreeFeatures: ["15 scans/month", "Basic OCR", "CSV export"],
+    planFreeFeatures: ["Manual receipts", "Connect an accountant", "Export"],
     planStarterFeatures: [
       "100 scans/month",
       "OCR, VAT & BAS",
@@ -4486,6 +4498,12 @@ export const strings: Record<Lang, Translations> = {
     ruLimitTitle: "Scan limit reached",
     ruLimitReached: "You have reached this month's scan limit. Upgrade for more.",
     ruLimitUpgrade: "Upgrade",
+    ruAddManual: "Add manually",
+    ruFreeTitle: "Free plan: manual receipts",
+    ruFreeDesc: "Scanning and image storage are included in paid plans. On the free plan you add receipts manually and can share them with your accountant.",
+    ruScanLocked: "Upgrade to scan",
+    ruKeepPaper: "Keep the original receipt. Swedish bookkeeping law requires it to be archived for seven years.",
+    ruManualLimit: "You have reached this month's limit for manual receipts. Upgrade to continue.",
     ruAiNote: "Images are processed by AI, which may improve text recognition.",
     ruAiNoteLink: "See the privacy policy",
     subSwitchConfirmTitle: "Switch plan?",

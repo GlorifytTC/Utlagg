@@ -17,7 +17,7 @@ import { resolveAccountState } from "@/lib/billing/access";
 import type { Tier } from "@/lib/plans";
 import { suggestBasCode } from "@/lib/auto-categorize";
 import { getBasAccount } from "@/lib/bas";
-import { meterScan, type MeterOutcome } from "@/lib/billing/metering";
+import { checkManualAllowance, meterScan, type MeterOutcome } from "@/lib/billing/metering";
 
 export interface CreateReceiptInput {
   imageUrl?: string;
@@ -32,6 +32,15 @@ export interface CreateReceiptInput {
   basCode?: string;
   aiConfidence?: number;
   receiptText?: string;
+}
+
+/**
+ * A receipt is a SCAN when it carries an image or OCR output. Only scans are
+ * metered against the plan's scan quota; a typed-in manual receipt is a few KB
+ * of data and is free on every plan (Free: up to FREE_MANUAL_MONTHLY a month).
+ */
+export function isScannedReceipt(d: Pick<CreateReceiptInput, "imageUrl" | "receiptText" | "aiConfidence">): boolean {
+  return !!d.imageUrl || !!d.receiptText?.trim() || d.aiConfidence != null;
 }
 
 export type CreateReceiptResult =
@@ -105,7 +114,10 @@ export async function createReceipt(
   // Scan metering - the single choke-point (lib/billing/metering.ts) enforces
   // the monthly cap, consumes credits before overage, applies the tapered
   // overage rate and honours the spend cap. Do NOT add cap checks elsewhere.
-  const meter = await meterScan(userId);
+  // Manual receipts skip the scan meter but Free accounts have a monthly
+  // anti-abuse ceiling; scans (image / OCR) go through the meter, which also
+  // refuses them outright on the Free plan.
+  const meter = isScannedReceipt(d) ? await meterScan(userId) : await checkManualAllowance(userId);
   if (!meter.allowed) return { ok: false, meter };
 
   const membership = await getUserCompany(userId);

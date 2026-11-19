@@ -5,7 +5,7 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { receiptTrainingData } from "@/db/schema";
-import { checkLimit } from "@/lib/rate-limit";
+import { guardCostlyCall } from "@/lib/cost-guard";
 
 export const runtime = "nodejs";
 
@@ -45,9 +45,9 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
 
-  if (!(await checkLimit("api", `ocrshadow:${session.user.id}`))) {
-    return NextResponse.json({ error: "För många förfrågningar." }, { status: 429 });
-  }
+  // Rate limit + refuse Free / read-only accounts (scanning is a paid feature).
+  const blocked = await guardCostlyCall(session.user.id, "ocrshadow");
+  if (blocked) return blocked;
 
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Ogiltig förfrågan" }, { status: 400 });

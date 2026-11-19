@@ -33,8 +33,13 @@ const BUCKETS = {
   upload: { tokens: 10, windowMs: 10_000 },
   api: { tokens: 30, windowMs: 60_000 },
   auth: { tokens: 5, windowMs: 60_000 },
+  // Per-user ceilings applied to EVERY API route in middleware.ts (on top of
+  // the tighter per-route buckets above). Far above what a person clicking
+  // around generates; they stop scripts, scrapers and runaway clients.
+  userRead: { tokens: 300, windowMs: 60_000 },
+  userWrite: { tokens: 60, windowMs: 60_000 },
 } as const;
-type BucketName = keyof typeof BUCKETS;
+export type BucketName = keyof typeof BUCKETS;
 
 /**
  * Default limit for enforceRateLimit(), whose bucket argument is a free-form
@@ -97,7 +102,14 @@ export const rateLimit = {
   upload: make("upload"),
   api: make("api"),
   auth: make("auth"),
+  userRead: make("userRead"),
+  userWrite: make("userWrite"),
 };
+
+/** Window length of a named bucket, in seconds (for Retry-After). */
+export function bucketWindowSeconds(bucket: BucketName): number {
+  return Math.ceil(BUCKETS[bucket].windowMs / 1000);
+}
 
 /** General limiter for enforceRateLimit (free-form bucket prefixes). */
 const generalLimiter = upstashConfigured

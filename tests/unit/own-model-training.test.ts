@@ -36,8 +36,11 @@ const post = (body: unknown) =>
 async function q<T>(sql: string, p: unknown[] = []) {
   return (await pg.query<T>(sql, p)).rows;
 }
-async function user(email: string) {
-  return (await q<{ id: string }>(`INSERT INTO users (email, scan_limit) VALUES ($1,25) RETURNING id`, [email]))[0].id;
+// Scanning (and so training data) is a paid feature: fixtures are on Pro.
+async function user(email: string, tier = "pro") {
+  return (
+    await q<{ id: string }>(`INSERT INTO users (email, scan_limit, subscription_tier) VALUES ($1,25,$2) RETURNING id`, [email, tier])
+  )[0].id;
 }
 
 const RIGHT = { vendorName: "ICA Maxi", date: "2026-10-01", totalAmount: 100, vatAmount: 12, vatRate: 12 };
@@ -119,6 +122,11 @@ describe("POST /api/ocr/shadow", () => {
       [d.trainingId],
     );
     expect(r).toMatchObject({ source: "local", ai_result: null, user_id: u });
+  });
+
+  it("refuses Free accounts (no scanning on the free plan)", async () => {
+    sessionUser = { id: await user("free@x.se", "free"), email: "free@x.se" };
+    expect((await shadow(post({ localResult: own }))).status).toBe(402);
   });
 
   it("rejects malformed input", async () => {

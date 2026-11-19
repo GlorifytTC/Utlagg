@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
+import { guardCostlyCall } from "@/lib/cost-guard";
 import { db } from "@/db";
 import { ocrSamples } from "@/db/schema";
 
@@ -20,6 +21,9 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   }
+  // Scanning is a paid feature: Free / read-only accounts are refused here.
+  const blocked = await guardCostlyCall(session.user.id, "ocrsample");
+  if (blocked) return blocked;
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success) {
     return NextResponse.json({ error: "Ogiltiga uppgifter" }, { status: 400 });

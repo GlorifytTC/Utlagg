@@ -21,6 +21,7 @@ import { parseReceiptText } from "@/lib/ocr-parse";
 import { extractPdfText } from "@/lib/pdf-text";
 import { recipientToken, htmlToText } from "@/lib/inbound/parse";
 import { createReceipt } from "@/lib/receipts/create";
+import { getUsageSnapshot } from "@/lib/billing/metering";
 import { uploadReceiptImage, isStorageConfigured } from "@/lib/storage";
 
 export const runtime = "nodejs";
@@ -82,6 +83,14 @@ async function handleItem(item: BrevoItem): Promise<void> {
     .limit(1);
   // Unknown token: silently drop (don't reveal which addresses exist).
   if (!user) return;
+
+  // Emailed receipts are scans (stored PDF + extracted text). Free / read-only
+  // accounts can't scan, so drop before downloading or storing anything.
+  const usage = await getUsageSnapshot(user.id);
+  if (usage && !usage.allowed) {
+    console.warn("inbound receipt skipped: scanning not available for user", user.id, usage.reason);
+    return;
+  }
 
   // Collect machine text: email body first, then any PDF attachment's text
   // layer. Store the first PDF as the receipt's source document.

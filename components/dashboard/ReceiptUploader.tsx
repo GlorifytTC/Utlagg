@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 import { Input, Select } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Hint } from "@/components/ui/hint";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClass } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { UpsellCard } from "@/components/UpsellCard";
 import { planName } from "@/lib/plans";
@@ -99,18 +99,34 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
   const [isSaving, setIsSaving] = useState(false);
   const [atLimit, setAtLimit] = useState(false);
   const [limitHit, setLimitHit] = useState(false);
+  // Free / read-only plan: manual receipts only (no scanning, no images).
+  const [manualOnly, setManualOnly] = useState(false);
 
-  // Pre-check the free-plan scan cap so the person sees the upgrade CTA before scanning, not a 402 after.
-  // ponytail: paid plans bill overage, so only the free tier is blocked up front.
+  // Pre-check scan access so the person sees the right option before scanning, not a 402 after.
+  // The server enforces all of this; the UI only avoids a dead end.
   useEffect(() => {
     fetch("/api/me")
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        const u = d?.usage;
-        setAtLimit(d?.tier === "free" && !!u && u.planLimit !== -1 && u.planScansUsed >= u.planLimit && (u.creditsRemaining ?? 0) <= 0);
+        if (!d || d.canScan !== false) return;
+        const free = d.scanBlockReason === "free_no_scan" || d.scanBlockReason === "read_only";
+        setManualOnly(free);
+        // Paid plans that hit a hard stop (trial cap, legacy cap) see the upsell;
+        // the spend cap is handled by the save error instead.
+        setAtLimit(!free && d.scanBlockReason !== "spend_cap_reached");
       })
       .catch(() => {});
   }, []);
+
+  function startManual() {
+    setError(null);
+    setLimitHit(false);
+    setOcrSnapshot(null);
+    setTrainingId(null);
+    pendingTrainingRef.current = null;
+    setDraft(emptyDraft());
+    setStage("review");
+  }
 
   const [scanStatus, setScanStatus] = useState<string>("");
   // Snapshot of exactly what OCR originally guessed, kept around so save()
@@ -432,7 +448,15 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       const data = await res.json();
       if (!res.ok) {
         setLimitHit(res.status === 402);
-        setError(res.status === 402 ? t.ruLimitReached : (data.error ?? t.ruSaveError));
+        setError(
+          res.status === 402
+            ? data.code === "MANUAL_LIMIT_REACHED"
+              ? t.ruManualLimit
+              : data.code === "FREE_NO_SCAN"
+                ? t.ruFreeDesc
+                : t.ruLimitReached
+            : (data.error ?? t.ruSaveError),
+        );
         setIsSaving(false);
         return;
       }
@@ -534,13 +558,35 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
       <h2 className="font-display text-xl font-semibold text-gray-900 dark:text-white">{t.receiptNewTitle}</h2>
 
       <AnimatePresence mode="wait">
-        {stage === "idle" && atLimit && (
-          <div key="limit" className="mt-4">
+        {stage === "idle" && manualOnly && (
+          <motion.div
+            key="free"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mt-4 rounded-xl border border-gray-900/[0.1] bg-white/40 p-6 text-center dark:border-white/[0.1] dark:bg-black/30"
+          >
+            <p className="font-medium text-gray-900 dark:text-white">{t.ruFreeTitle}</p>
+            <p className="mx-auto mt-1 max-w-md text-sm text-gray-600 dark:text-gray-300">{t.ruFreeDesc}</p>
+            <div className="mt-4 flex flex-wrap justify-center gap-3">
+              <Button onClick={startManual}>{t.ruAddManual}</Button>
+              <Link href="/dashboard/settings/billing" className={buttonClass("outline")}>
+                {t.ruScanLocked}
+              </Link>
+            </div>
+          </motion.div>
+        )}
+
+        {stage === "idle" && !manualOnly && atLimit && (
+          <div key="limit" className="mt-4 space-y-3">
             <UpsellCard title={t.ruLimitTitle} requiredPlan={planName(t, "starter")} description={t.ruLimitReached} />
+            <div className="text-center">
+              <Button variant="outline" onClick={startManual}>{t.ruAddManual}</Button>
+            </div>
           </div>
         )}
 
-        {stage === "idle" && !atLimit && (
+        {stage === "idle" && !manualOnly && !atLimit && (
           <motion.div
             key="drop"
             initial={{ opacity: 0, y: 10 }}
@@ -569,6 +615,9 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
             </div>
             <input ref={inputRef} type="file" aria-label={t.receiptChooseImage} accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             <input ref={cameraRef} type="file" aria-label={t.receiptTakePhoto} accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+            <button type="button" onClick={startManual} className="mt-3 text-sm font-medium text-nordic-600 underline-offset-2 hover:underline dark:text-nordic-400">
+              {t.ruAddManual}
+            </button>
             <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">{t.receiptCameraHint}</p>
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
               {t.ruAiNote}{" "}
@@ -632,6 +681,9 @@ export function ReceiptUploader({ onSaved }: { onSaved: () => void }) {
                   })
                 }
               />
+            )}
+            {!draft.image && (
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t.ruKeepPaper}</p>
             )}
             <div className="grid gap-4 md:grid-cols-2">
               <div>

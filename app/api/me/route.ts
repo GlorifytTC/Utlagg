@@ -38,6 +38,9 @@ export async function GET() {
     features: entitlementsFor(ctx.tier),
     isAccountant: u?.isAccountant ?? false,
     pricingV2: pricingV2Enabled(),
+    // Free / read-only accounts add receipts manually only (no scan, no images).
+    canScan: usage ? usage.allowed : true,
+    scanBlockReason: usage && !usage.allowed ? usage.reason : null,
     referralCode,
     usage: usage
       ? {

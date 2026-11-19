@@ -154,9 +154,14 @@ export async function POST(req: NextRequest) {
           error:
             meter.message ??
             "Du har nått månadens gräns. Uppgradera för fler skanningar.",
-          code: meter.reason === "spend_cap_reached"
-            ? "OVERAGE_CAP_REACHED"
-            : "SCAN_LIMIT_REACHED",
+          code:
+            meter.reason === "spend_cap_reached"
+              ? "OVERAGE_CAP_REACHED"
+              : meter.reason === "free_no_scan" || meter.reason === "read_only"
+                ? "FREE_NO_SCAN"
+                : meter.reason === "free_manual_limit"
+                  ? "MANUAL_LIMIT_REACHED"
+                  : "SCAN_LIMIT_REACHED",
           usage: {
             planScansUsed: meter.planScansUsed,
             planLimit: meter.planLimit,

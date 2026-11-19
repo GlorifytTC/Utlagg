@@ -1,5 +1,7 @@
-import { withAuth } from "next-auth/middleware";
+import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
+import { checkLimit, bucketWindowSeconds } from "@/lib/rate-limit";
+import { userLimitBucket, userLimitKey } from "@/lib/user-rate-limit-policy";
 
 /**
  * Adds security headers to every response and enforces auth on private routes.
@@ -69,8 +71,37 @@ function captureRefCookie(req: RefRequest, res: NextResponse): NextResponse {
   return res;
 }
 
+/**
+ * Per-user rate limit for every API route: 300 reads + 60 writes per minute per
+ * signed-in user (by IP when signed out). Upstash when configured (shared across
+ * instances), the in-memory limiter otherwise; it never fails open. Only /api
+ * requests pay the lookup, pages and assets do not. Tighter per-route limits
+ * (auth, OCR, uploads) still apply on top inside the routes.
+ */
+async function userRateLimit(req: NextRequestWithAuth): Promise<NextResponse | null> {
+  const bucket = userLimitBucket(req.nextUrl.pathname, req.method);
+  if (!bucket) return null;
+  const userId = (req.nextauth?.token as { id?: string } | null)?.id;
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? req.headers.get("x-real-ip");
+  try {
+    if (await checkLimit(bucket, userLimitKey(userId, ip))) return null;
+  } catch (e) {
+    // Limiter backend unreachable: let the request through rather than take the
+    // whole API down. Routes keep their own per-route limits.
+    console.error("[rate-limit] user limiter error:", e);
+    return null;
+  }
+  return NextResponse.json(
+    { error: "För många förfrågningar. Försök igen om en stund." },
+    { status: 429, headers: { "Retry-After": String(bucketWindowSeconds(bucket)) } },
+  );
+}
+
 export default withAuth(
-  function middleware(req) {
+  async function middleware(req: NextRequestWithAuth) {
+    const limited = await userRateLimit(req);
+    if (limited) return applySecurityHeaders(limited);
     const res = applySecurityHeaders(NextResponse.next());
     return captureRefCookie(req, res);
   },

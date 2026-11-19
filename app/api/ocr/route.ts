@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
+import { guardCostlyCall } from "@/lib/cost-guard";
 import { runOcr, runOcrSpace, runMindee, runVisionLLM, parseReceiptText, OCR_CONFIDENCE_THRESHOLD, type ExtractedReceipt } from "@/lib/ocr";
 
 export const runtime = "nodejs";
@@ -45,6 +46,9 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Ej inloggad" }, { status: 401 });
   }
+  // Scanning is a paid feature: Free / read-only accounts are refused here.
+  const blocked = await guardCostlyCall(session.user.id, "ocr");
+  if (blocked) return blocked;
 
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success) {
